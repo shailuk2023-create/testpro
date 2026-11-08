@@ -2,7 +2,15 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b7196">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TESTPRO">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>TESTPRO — Railway Super 1000 Maths</title>
 <style>
 /* ================= THEME VARIABLES ================= */
@@ -1170,6 +1178,14 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
   .edu-item{font-size:12px;padding:0 12px}
   .edu-proof{display:none}
 }
+
+/* ============ v17: fullscreen buttons visible on mobile as icon buttons ============ */
+#fsBtn,#solFsBtn{display:inline-flex;align-items:center;gap:6px}
+#fsBtn .ico,#solFsBtn .ico{width:16px;height:16px}
+@media (max-width:900px){
+  #fsBtn,#solFsBtn{display:inline-flex!important;align-items:center;justify-content:center;padding:6px!important;min-width:34px}
+  #fsBtn .fs-txt,#solFsBtn .fs-txt{display:none}
+}
 </style>
 </head>
 <body>
@@ -1183,6 +1199,16 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
       try { return orig.call(this, state, title, url); }
       catch(e){ try { return orig.call(this, state, title); } catch(e2){} }
     };
+  });
+})();
+</script>
+<script>
+/* PWA: service worker for offline use + home-screen install (site only; skipped on file://). */
+(function(){
+  if (!('serviceWorker' in navigator)) return;
+  if (location.protocol.indexOf('http') !== 0) return;
+  window.addEventListener('load', function(){
+    try { navigator.serviceWorker.register('sw.js').catch(function(){}); } catch (e) {}
   });
 })();
 </script>
@@ -1237,6 +1263,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
 <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+<symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></symbol>
 </defs></svg>
 <div id="view-onboarding" class="view">
   <div class="ob-wrap">
@@ -1298,6 +1325,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="tb-actions">
           <button class="icon-btn mob-only" id="homeSearchIcon" title="Search" aria-label="Search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
           <button class="icon-btn" id="darkToggle" title="Dark mode" aria-label="Dark mode"><svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg><svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg></button>
+          <button class="icon-btn" id="fsBtnHome" title="Full screen" aria-label="Full screen"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg></button>
           <div class="avatar" id="avatarInitial" title="Profile" role="button" tabindex="0">S</div>
         </div>
       </div>
@@ -1628,7 +1656,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     </div>
     <div class="right">
       <div class="time-left" id="timeLeftWrap"><span>Time Left</span><span class="tbox" id="tH">00</span>:<span class="tbox" id="tM">00</span>:<span class="tbox" id="tS">00</span></div>
-      <button class="tb-btn" id="fsBtn">Switch Full Screen</button>
+      <button class="tb-btn" id="fsBtn"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></svg><span class="fs-txt">Switch Full Screen</span></button>
       <button class="tb-btn" id="pauseBtn">Pause</button>
       <button class="tb-btn" id="pauseBtnMob" title="Pause"><svg class="ico" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg></button>
       <button class="tb-btn" id="langIconBtn" title="Language"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg></button>
@@ -1746,7 +1774,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <div class="right">
       <button class="pill-btn" id="solAttemptBtn">Attempt 1 ▾</button>
       <button class="pill-btn" id="solSummaryBtn">Summary</button>
-      <button class="sol-fs-btn" id="solFsBtn">Switch Full Screen</button>
+      <button class="sol-fs-btn" id="solFsBtn"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></svg><span class="fs-txt">Switch Full Screen</span></button>
     </div>
   </div>
   <div class="sol-sub">
@@ -2941,6 +2969,7 @@ $('fsBtn').addEventListener('click', function(){
 $('solFsBtn').addEventListener('click', function(){
   toggleFullscreen();
 });
+var _fsHome = $('fsBtnHome'); if (_fsHome) _fsHome.addEventListener('click', function(){ toggleFullscreen(); });
 function toggleFullscreen(){
   if (!document.fullscreenElement){
     if (document.documentElement.requestFullscreen){
@@ -2952,11 +2981,13 @@ function toggleFullscreen(){
   }
 }
 document.addEventListener('fullscreenchange', function(){
-  var b = $('fsBtn');
-  var sol = $('solFsBtn');
   var label = document.fullscreenElement ? 'Exit Full Screen' : 'Switch Full Screen';
-  if (b) b.textContent = label;
-  if (sol) sol.textContent = label;
+  ['fsBtn','solFsBtn'].forEach(function(id){
+    var b = $(id); if (!b) return;
+    var t = b.querySelector('.fs-txt');
+    if (t) t.textContent = label; else b.textContent = label;
+  });
+  var h = $('fsBtnHome'); if (h){ h.setAttribute('aria-label', label); h.title = label; }
 });
 /* palette drawer (mobile <900px) */
 function openPaletteDrawer(){
