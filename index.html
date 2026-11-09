@@ -2367,7 +2367,7 @@ function goCAMonths(){
   state.caMonth = null;
   renderHome();
   showView('list');
-  var lb = $('listBody'); if (lb) lb.scrollTop = 0;
+  var lb = $('listBody'), cp = $('caPages'); if (lb && cp) lb.scrollTop = cp.offsetTop || 0;
 }
 function goCAMonth(monthKey){
   state.navTab = 'tests';
@@ -2380,7 +2380,7 @@ function goCAMonth(monthKey){
   state.caMonth = monthKey;
   renderHome();
   showView('list');
-  var lb = $('listBody'); if (lb) lb.scrollTop = 0;
+  var lb = $('listBody'), cp = $('caPages'); if (lb && cp) lb.scrollTop = cp.offsetTop || 0;
 }
 /* Back from a finished CA test / instructions / result: land on THAT MONTH'S tests page.
    Maths tests keep the old behaviour (back to the maths series list). */
@@ -2748,7 +2748,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 32; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 33; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3100,7 +3100,7 @@ function renderList(){
       if (lf === 'notattempted' && (rec && rec.attempts > 0)) return;
       if (lf === 'high' && !(rec && rec.attempts > 0 && Math.round((rec.best / t.marks) * 100) >= 85)) return;
       shown++;
-      groupHtml += tcxCard({t:t, rec:rec, hasResume:hasResume, title:'Test ' + t.num + ' — ' + t.nameEn + (t.parts > 1 ? ' (Part ' + t.part + '/' + t.parts + ')' : ''), startAttr:'data-start', solAttr:'data-sol', anAttr:'data-analysis', reAttr:'data-reattempt', share:true});
+      groupHtml += tcxCard({t:t, rec:rec, hasResume:hasResume, title:'Test ' + t.num + ' — ' + t.nameEn + (t.parts > 1 ? ' (Part ' + t.part + '/' + t.parts + ')' : ''), startAttr:'data-start', solAttr:'data-sol', anAttr:'data-analysis', reAttr:'data-reattempt', share:false});
     });
     if (groupHtml){
       html += '<div class="chapter-group"><h2>Chapter ' + ch.chapter + ' — ' + esc(ch.name_en) + (ch.name_hi ? ' <span>(' + esc(ch.name_hi) + ')</span>' : '') + '</h2>' + groupHtml + '</div>';
