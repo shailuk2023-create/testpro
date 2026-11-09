@@ -1416,6 +1416,244 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 body.fb-gated > div:not(#fbModal){display:none!important}
 body.fb-gated .fb-modal-x{display:none!important}
 body.fb-gated::before{content:'TESTPRO';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;font-size:22px;letter-spacing:1px;z-index:1}
+
+/* ================= v39: premium auth (register / login) + settings redesign ================= */
+@property --au-ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+body.fb-gated::before{content:none!important}
+/* v39 Skip button (temporary — remove only when the user says so) */
+.fb-skip-btn{display:block;width:100%;margin:0 0 14px;padding:11px 14px;border-radius:14px;border:1px dashed var(--border);background:var(--surface3);color:var(--text-strong);font-family:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.fb-skip-btn:hover{opacity:.85}
+#fbModal[data-view="account"] .fb-skip-btn{display:none}
+@keyframes auDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,50px) scale(1.12)}}
+@keyframes auDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-80px,-40px) scale(1.1)}}
+@keyframes auDrift3{0%,100%{transform:translate(0,0)}33%{transform:translate(-60px,40px)}66%{transform:translate(50px,-50px)}}
+@keyframes auRise{0%{transform:translateY(0) scale(.6);opacity:0}10%{opacity:1}90%{opacity:.8}100%{transform:translateY(-115vh) scale(1.1);opacity:0}}
+@keyframes auCardIn{from{opacity:0;transform:translateY(26px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes auPanel{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes auShake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@keyframes auShine{0%,55%{left:-60%}100%{left:140%}}
+@keyframes auSpin{to{--au-ang:360deg}}
+@keyframes auSpinner{to{transform:rotate(360deg)}}
+@keyframes auFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes auTwinkle{0%,100%{opacity:.35;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes auRing{to{stroke-dashoffset:19}}
+@keyframes auBar{to{transform:scaleY(1)}}
+@keyframes auCheck{to{stroke-dashoffset:0}}
+@keyframes auPick{to{opacity:1}}
+@keyframes auPulse{0%{box-shadow:0 0 0 0 rgba(0,194,203,.5)}100%{box-shadow:0 0 0 16px rgba(0,194,203,0)}}
+
+#fbModal.fb-modal{padding:0;align-items:stretch;justify-content:center;overflow-y:auto;overflow-x:hidden;background:#06182a;-webkit-overflow-scrolling:touch}
+#fbModal .fb-modal-backdrop{position:fixed;inset:0;overflow:hidden;animation:none;background:radial-gradient(1100px 650px at 10% -10%,#0e6f8f 0%,transparent 60%),radial-gradient(900px 600px at 100% 110%,#4c2a85 0%,transparent 55%),linear-gradient(160deg,#06202e 0%,#0a3550 50%,#14194a 100%)}
+.au-blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;will-change:transform}
+.au-blob.b1{width:420px;height:420px;left:-120px;top:-100px;background:#00b4d0;animation:auDrift1 16s ease-in-out infinite}
+.au-blob.b2{width:380px;height:380px;right:-110px;bottom:-120px;background:#7e55a3;animation:auDrift2 19s ease-in-out infinite}
+.au-blob.b3{width:240px;height:240px;left:44%;top:40%;background:#f59e0b;opacity:.2;animation:auDrift3 22s ease-in-out infinite}
+.au-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.3px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse at 28% 30%,#000 0%,transparent 70%);mask-image:radial-gradient(ellipse at 28% 30%,#000 0%,transparent 70%)}
+.au-bub{position:absolute;bottom:-40px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.07);animation:auRise var(--d) linear var(--dl) infinite}
+
+.au-shell{position:relative;z-index:1;width:100%;max-width:1080px;margin:auto;display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;padding:32px 28px}
+.au-hero{color:#fff;display:flex;flex-direction:column;gap:14px;min-width:0}
+.au-brand{display:flex;align-items:center;gap:12px}
+.au-logo{width:46px;height:46px;border-radius:14px;background:#fff;display:grid;place-items:center;padding:5px;box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
+.au-logo svg{width:100%;height:100%}
+.au-brand b{font-size:21px;font-weight:800;letter-spacing:1.5px}
+.au-headline{font-size:clamp(28px,4.2vw,46px);line-height:1.08;font-weight:800;letter-spacing:-.5px;color:#fff;margin:6px 0 0}
+.au-headline em{font-style:normal;background:linear-gradient(90deg,#22d3ee,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent}
+.au-lead{font-size:16px;line-height:1.6;color:rgba(255,255,255,.78);max-width:460px;margin:0}
+.au-art{width:100%;max-width:400px;margin:4px 0 0}
+.au-art svg{width:100%;height:auto;overflow:visible;display:block}
+.art-card{animation:auFloat 6s ease-in-out infinite}
+.art-ring{animation:auFloat 5s ease-in-out -1.5s infinite}
+.art-bars{animation:auFloat 7s ease-in-out -3s infinite}
+.art-timer{animation:auFloat 5.5s ease-in-out -2.2s infinite}
+.art-star{transform-box:fill-box;transform-origin:center;animation:auTwinkle 2.6s ease-in-out infinite}
+.art-star.s2{animation-delay:-1s}.art-star.s3{animation-delay:-1.8s}
+.art-prog{stroke-dasharray:214;stroke-dashoffset:214;animation:auRing 2.4s .5s cubic-bezier(.3,.7,.2,1) forwards}
+.art-bar{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);animation:auBar 1.1s cubic-bezier(.3,1.4,.4,1) forwards}
+.art-bar.b1{animation-delay:.8s}.art-bar.b2{animation-delay:1s}.art-bar.b3{animation-delay:1.2s}.art-bar.b4{animation-delay:1.4s}
+.art-pick{opacity:0;animation:auPick .5s 1.2s ease forwards}
+.art-check{stroke-dasharray:22;stroke-dashoffset:22;animation:auCheck .6s 1.5s ease forwards}
+.au-points{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:10px;max-width:440px}
+.au-points li{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.au-pi{width:34px;height:34px;border-radius:11px;flex-shrink:0;display:grid;place-items:center;background:linear-gradient(135deg,#00c2cb,#0a7ea3);color:#fff}
+.au-pi svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.au-points b{display:block;font-size:14px;color:#fff}
+.au-points span:not(.au-pi){font-size:12.5px;color:rgba(255,255,255,.7)}
+
+#fbModal .fb-modal-card{position:relative;isolation:isolate;width:100%;max-width:440px;max-height:none;overflow:visible;margin:0 0 0 auto;padding:26px 26px 22px;border:none;border-radius:28px;background:transparent;box-shadow:0 36px 80px -24px rgba(0,0,0,.65);animation:auCardIn .65s cubic-bezier(.2,.8,.2,1) both}
+#fbModal .fb-modal-card::before{content:"";position:absolute;inset:-2px;border-radius:30px;z-index:-2;background:conic-gradient(from var(--au-ang),#00c2cb,#7e55a3,#f59e0b,#00c2cb);animation:auSpin 7s linear infinite;opacity:.8}
+#fbModal .fb-modal-card::after{content:"";position:absolute;inset:0;border-radius:28px;z-index:-1;background:var(--surface)}
+#fbModal.closing .fb-modal-card,.fb-modal.closing .fb-modal-card{animation:fbModalOut .18s ease forwards}
+#fbModal .fb-modal-x{top:14px;right:14px;z-index:3;background:var(--surface3)}
+
+.au-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--surface3);border:1px solid var(--border);border-radius:16px;padding:4px;margin-bottom:20px}
+.au-tabpill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:12px;background:linear-gradient(135deg,#00b4d0,#0a7ea3);box-shadow:0 8px 16px -8px rgba(0,130,170,.8);transition:transform .35s cubic-bezier(.4,.2,.2,1)}
+#fbModal[data-view="login"] .au-tabpill{transform:translateX(100%)}
+.au-tab{position:relative;z-index:1;background:none;border:none;padding:10px;font-family:inherit;font-weight:800;font-size:14px;color:var(--muted);cursor:pointer;border-radius:12px;transition:color .25s}
+#fbModal[data-view="register"] .au-tab[data-au-tab="register"],#fbModal[data-view="login"] .au-tab[data-au-tab="login"]{color:#fff}
+#fbModal[data-view="account"] .au-tabs,#fbModal[data-step="pw"] .au-tabs{display:none}
+#fbModal .au-x{display:none!important}
+#fbModal #fbModalRegister:not([hidden]),#fbModal #fbModalLoggedOut:not([hidden]),#fbModal #fbModalLoggedIn:not([hidden]){animation:auPanel .4s ease both}
+
+.au-head{text-align:center;margin-bottom:16px}
+.au-badge{width:54px;height:54px;margin:0 auto 10px;border-radius:18px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#00b4d0,#0a7ea3 55%,#7e55a3);animation:auPulse 2.4s ease-out infinite;box-shadow:0 12px 24px -10px rgba(0,150,181,.7)}
+.au-badge svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#fbModal .au-head h3,#fbModal .fb-modal-card h3{font-size:23px;font-weight:800;letter-spacing:-.2px;margin:0 0 4px;color:var(--text-strong)}
+#fbModal .fb-modal-sub{font-size:13.5px;line-height:1.5;margin:0;color:var(--muted)}
+.t-pw{display:none}
+#fbModal[data-step="pw"] .t-reg{display:none}
+#fbModal[data-step="pw"] .t-pw{display:inline}
+
+#fbModal .fb-google-btn{margin-top:0;border-radius:14px;padding:13px 14px;background:var(--surface);color:var(--text-strong);border:1.5px solid var(--border2);box-shadow:none;font-size:15px;transition:transform .15s,border-color .2s,box-shadow .2s}
+#fbModal .fb-google-btn:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 12px 24px -14px rgba(0,0,0,.45)}
+#fbModal .fb-google-btn:active{transform:scale(.98)}
+.fb-divider{margin:16px 0 2px;font-weight:600;letter-spacing:.2px}
+#fbModal .au-f{display:block;margin-top:12px;font-weight:400}
+.au-lb{display:block;font-size:12.5px;font-weight:700;color:var(--muted2);margin-bottom:6px;letter-spacing:.2px}
+.au-in{position:relative;display:flex;align-items:center}
+.au-in .au-ic{position:absolute;left:14px;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--muted);pointer-events:none;transition:color .2s}
+.au-in:focus-within .au-ic{color:var(--teal)}
+#fbModal .au-in input{display:block;width:100%;box-sizing:border-box;margin:0;padding:13px 44px 13px 42px;border-radius:14px;border:1.5px solid var(--border2);background:var(--input-bg);color:var(--text);font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+#fbModal .au-in input:focus{border-color:var(--teal);background:var(--surface);box-shadow:0 0 0 4px rgba(0,150,181,.16)}
+#fbModal .au-in input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--input-bg) inset;-webkit-text-fill-color:var(--text)}
+.au-eye{position:absolute;right:6px;width:36px;height:36px;border:none;border-radius:10px;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center;padding:0}
+.au-eye:hover{background:var(--surface3)}
+.au-eye svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.au-eye .e-off{display:none}
+.au-eye.on .e-on{display:none}.au-eye.on .e-off{display:block}
+.au-meter{display:flex;align-items:center;gap:5px;margin-top:8px}
+.au-meter i{flex:1;height:5px;border-radius:99px;background:var(--border2);transition:background .25s}
+.au-meter em{font-style:normal;font-size:11.5px;font-weight:700;color:var(--muted);min-width:84px;text-align:right}
+.au-meter[data-l="1"] i:nth-child(-n+1){background:#ef4444}
+.au-meter[data-l="2"] i:nth-child(-n+2){background:#f59e0b}
+.au-meter[data-l="3"] i:nth-child(-n+3){background:#84cc16}
+.au-meter[data-l="4"] i:nth-child(-n+4){background:#22c55e}
+#fbModal .fb-auth-err,.settings-v2 .fb-auth-err{margin:12px 0 0;padding:10px 12px;border-radius:12px;font-size:13px;font-weight:600;text-align:left;color:#ef4444;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.28);animation:auShake .4s ease}
+#fbModal .fb-auth-err.ok,.settings-v2 .fb-auth-err.ok{color:#16a34a;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);animation:none}
+#fbModal .fb-auth-err[hidden],.settings-v2 .fb-auth-err[hidden]{display:none!important}
+#fbModal .fb-email-btn,.settings-v2 .fb-email-btn{position:relative;overflow:hidden;margin-top:16px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#00b4d0,#0a7ea3 60%,#4f46e5);background-size:160% 100%;font-size:15.5px;letter-spacing:.2px;box-shadow:0 14px 26px -12px rgba(0,150,181,.8);transition:transform .15s,box-shadow .2s,background-position .4s}
+#fbModal .fb-email-btn:hover,.settings-v2 .fb-email-btn:hover{background-position:100% 0;transform:translateY(-1px)}
+#fbModal .fb-email-btn:active,.settings-v2 .fb-email-btn:active{transform:scale(.98)}
+#fbModal .fb-email-btn::after{content:"";position:absolute;top:0;left:-60%;width:36%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-20deg);animation:auShine 3.8s ease-in-out infinite;pointer-events:none}
+#fbModal .fb-email-btn:disabled,.settings-v2 .fb-email-btn:disabled{opacity:.75;cursor:wait}
+#fbModal .fb-email-btn:disabled::before{content:"";position:absolute;right:16px;top:50%;width:16px;height:16px;margin-top:-8px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:auSpinner .7s linear infinite}
+.fb-auth-links{margin-top:14px}
+.fb-auth-links a{font-size:13px;font-weight:700;color:var(--accent)}
+#fbModal #fbEmailForm .fb-auth-links{justify-content:center}
+#fbModal .fb-modal-note{font-size:12px;line-height:1.5;margin:16px 4px 0;color:var(--muted)}
+#fbModal .fb-modal-user{margin:0 0 4px;border-radius:18px;padding:12px 14px}
+.au-verified{margin-left:auto;width:26px;height:26px;border-radius:50%;background:#22c55e;color:#fff;display:grid;place-items:center;flex-shrink:0}
+.au-verified svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.au-pwsub{margin:12px 2px 2px!important;text-align:center}
+.au-acct{position:relative;text-align:center;padding:0 0 4px}
+.au-acct-banner{height:84px;margin:-26px -26px 0;border-radius:28px 28px 0 0;background:linear-gradient(135deg,#0b7196,#0096b5 50%,#7e55a3)}
+.au-acct-av{margin:-38px auto 10px;width:76px;height:76px;border-radius:50%;padding:4px;background:var(--surface);box-shadow:0 10px 22px -10px rgba(0,0,0,.5)}
+.au-acct-av .fb-modal-avatar,.au-acct-av .fb-modal-photo{width:100%;height:100%;font-size:30px}
+.au-acct .fb-modal-userinfo b{font-size:18px}
+#fbModal[data-view="account"] .au-hero{display:none}
+#fbModal[data-view="account"] .au-shell{grid-template-columns:1fr;max-width:460px}
+#fbModal[data-view="account"] .fb-modal-card{margin:0 auto}
+#fbModal[data-view="account"] .fb-modal-backdrop{background:rgba(2,6,23,.72);backdrop-filter:blur(6px)}
+#fbModal[data-view="account"] .au-blob,#fbModal[data-view="account"] .au-bub,#fbModal[data-view="account"] .au-grid{display:none}
+#fbModal .fb-modal-sync{border-radius:14px;margin-top:12px}
+#fbModal .fb-logout-btn{border-radius:14px;background:transparent;color:#ef4444;border:1.5px solid rgba(239,68,68,.45);box-shadow:none;transition:background .2s,color .2s}
+#fbModal .fb-logout-btn:hover{background:#ef4444;color:#fff}
+
+@media (max-width:900px){
+  .au-shell{grid-template-columns:1fr;gap:16px;padding:20px 14px 28px;align-content:start}
+  .au-hero{align-items:center;text-align:center;gap:8px}
+  .au-brand b{font-size:19px}
+  .au-headline{font-size:27px;margin-top:2px}
+  .au-lead,.au-points{display:none}
+  .au-art{max-width:210px;margin:0 auto}
+  #fbModal .fb-modal-card{margin:0 auto;max-width:480px;padding:22px 18px 18px}
+  .au-acct-banner{margin:-22px -18px 0}
+}
+@media (max-width:420px){.au-art{max-width:170px}.au-headline{font-size:24px}}
+[data-theme="dark"] #fbModal .fb-google-btn{background:var(--surface2)}
+@media (prefers-reduced-motion:reduce){
+  .au-blob,.au-bub,.art-card,.art-ring,.art-bars,.art-timer,.art-star,#fbModal .fb-modal-card::before,#fbModal .fb-email-btn::after,.au-badge{animation:none!important}
+  .art-prog{stroke-dashoffset:19;animation:none!important}.art-bar{transform:none;animation:none!important}.art-pick{opacity:1;animation:none!important}.art-check{stroke-dashoffset:0;animation:none!important}
+}
+
+/* ---- onboarding (profile setup) matches the new look ---- */
+#view-onboarding{position:relative;overflow:hidden;background:linear-gradient(160deg,#06202e 0%,#0a3550 50%,#14194a 100%)}
+#view-onboarding::before,#view-onboarding::after{content:"";position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none}
+#view-onboarding::before{width:380px;height:380px;left:-110px;top:-90px;background:#00b4d0;animation:auDrift1 16s ease-in-out infinite}
+#view-onboarding::after{width:340px;height:340px;right:-90px;bottom:-100px;background:#7e55a3;animation:auDrift2 19s ease-in-out infinite}
+.ob-wrap{position:relative;z-index:1;border-radius:28px;padding:30px 26px 26px;box-shadow:0 36px 80px -24px rgba(0,0,0,.65)}
+.ob-form input{border-radius:14px;border-width:1.5px;padding:13px 14px;background:var(--input-bg);color:var(--text)}
+.ob-start{border-radius:14px;border:none;background:linear-gradient(135deg,#00b4d0,#0a7ea3 60%,#4f46e5);box-shadow:0 14px 26px -12px rgba(0,150,181,.8)}
+
+/* ---- Settings page ---- */
+.settings-wrap.settings-v2{max-width:860px}
+.set-title{font-size:22px;font-weight:800;color:var(--text-strong);margin:0 2px 14px}
+.set-hero{position:relative;overflow:hidden;border-radius:26px;padding:26px 24px;color:#fff;background:linear-gradient(135deg,#0b7196 0%,#0096b5 45%,#7e55a3 100%);box-shadow:0 24px 44px -24px rgba(11,113,150,.85);margin-bottom:16px}
+.set-hero-bg span{position:absolute;border-radius:50%;background:rgba(255,255,255,.12);animation:auDrift1 14s ease-in-out infinite}
+.set-hero-bg span:nth-child(1){width:230px;height:230px;right:-60px;top:-100px}
+.set-hero-bg span:nth-child(2){width:150px;height:150px;left:34%;bottom:-80px;background:rgba(255,255,255,.08);animation-duration:18s;animation-delay:-4s}
+.set-hero-bg span:nth-child(3){width:70px;height:70px;left:-18px;top:18px;background:rgba(245,158,11,.28);animation-duration:12s;animation-delay:-2s}
+.set-hero-in{position:relative;display:flex;align-items:center;gap:18px}
+.set-avatar{position:relative;flex-shrink:0;width:84px;height:84px;border-radius:50%;padding:4px;background:conic-gradient(from 0deg,#fff,rgba(255,255,255,.35),#fff);box-shadow:0 12px 26px -10px rgba(0,0,0,.5)}
+.set-avatar b,.set-avatar img{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#fff;background:linear-gradient(135deg,#00c2cb,#0b7196);object-fit:cover}
+.set-avatar [hidden]{display:none!important}
+.set-hero-txt{min-width:0;flex:1}
+.settings-v2 .set-hero h2{color:#fff;font-size:24px;font-weight:800;margin:0 0 2px;line-height:1.2;overflow-wrap:anywhere}
+.set-hero p{margin:0;font-size:13.5px;opacity:.9;overflow-wrap:anywhere}
+.set-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.set-chips:empty{display:none}
+.set-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.set-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:#86efac}
+.set-hero-sync{flex-shrink:0;display:flex;align-items:center;background:rgba(0,0,0,.24);padding:9px 14px;border-radius:99px;font-size:12.5px;white-space:nowrap}
+.set-hero-sync .sd{display:none}
+.set-hero-sync b{font-weight:700}
+.set-hero-sync[data-st="synced"] b{color:#86efac}
+.set-hero-sync[data-st="pending"] b{color:#fde68a}
+.set-hero-sync[data-st="offline"] b,.set-hero-sync[data-st="logged-out"] b{color:#fecaca}
+.settings-v2 .set-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.settings-v2 .set-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:20px;margin:0;box-shadow:0 1px 2px rgba(15,23,42,.04),0 16px 30px -24px rgba(15,23,42,.4);transition:box-shadow .2s,transform .2s}
+.settings-v2 .set-card:hover{box-shadow:0 1px 2px rgba(15,23,42,.05),0 22px 38px -22px rgba(15,23,42,.45)}
+.settings-v2 .set-card h3{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800;margin-bottom:14px}
+.set-ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;flex-shrink:0}
+.set-ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ic-teal{background:linear-gradient(135deg,#00b4d0,#0a7ea3)}.ic-green{background:linear-gradient(135deg,#22c55e,#15803d)}.ic-violet{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}.ic-amber{background:linear-gradient(135deg,#f59e0b,#ea580c)}
+.settings-v2 .set-acct-status{display:flex;align-items:center;gap:8px;margin:0 0 4px;padding:10px 12px;border-radius:14px;font-size:13px}
+.settings-v2 .set-acct-status::before{content:"";width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.2);flex-shrink:0}
+.settings-v2 .set-card label:not(.set-row){font-size:12.5px;font-weight:700;color:var(--muted2);margin-top:12px}
+.settings-v2 .set-card input:not([type=checkbox]),.settings-v2 .set-card select{width:100%;box-sizing:border-box;margin-top:6px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--border2);background:var(--input-bg);color:var(--text);font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
+.settings-v2 .set-card input:not([type=checkbox]):focus,.settings-v2 .set-card select:focus{border-color:var(--teal);background:var(--surface);box-shadow:0 0 0 4px rgba(0,150,181,.16)}
+.settings-v2 .set-card select{appearance:none;-webkit-appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.settings-v2 .fb-google-btn{margin-top:12px;border-radius:14px;background:var(--surface);color:var(--text-strong);border:1.5px solid var(--border2);box-shadow:none;transition:transform .15s,border-color .2s}
+.settings-v2 .fb-google-btn:hover{transform:translateY(-1px);border-color:var(--teal)}
+.settings-v2 .fb-google-btn[hidden],.settings-v2 .fb-logout-btn[hidden]{display:none!important}
+.settings-v2 .fb-logout-btn{border-radius:14px;margin-top:14px;background:transparent;color:#ef4444;border:1.5px solid rgba(239,68,68,.45);box-shadow:none;transition:background .2s,color .2s}
+.settings-v2 .fb-logout-btn:hover{background:#ef4444;color:#fff}
+.settings-v2 #setChangePwBtn{width:100%;border:none;border-radius:14px;padding:13px 16px;font-size:14.5px;background:linear-gradient(135deg,#00b4d0,#0a7ea3);color:#fff;box-shadow:0 12px 22px -12px rgba(0,150,181,.8)}
+.settings-v2 .set-sync-row{padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--border);margin-bottom:8px}
+.settings-v2 .set-sync-note{margin:12px 2px 0;line-height:1.55}
+.settings-v2 .set-row{display:flex!important;align-items:center;justify-content:space-between;gap:14px;margin-top:14px!important;padding:12px 14px;border:1px solid var(--border);border-radius:16px;background:var(--surface2);cursor:pointer}
+.set-row-t b{display:block;font-size:14px;color:var(--text-strong)}
+.set-row-t small{font-size:12px;font-weight:500;color:var(--muted)}
+.settings-v2 .switch{width:52px;height:30px}
+.settings-v2 .switch .slider{position:absolute;inset:0;margin:0;overflow:visible;box-shadow:none;border-radius:99px;background:#cbd5e1;transition:.25s}
+.settings-v2 .switch .slider::before{width:24px;height:24px;top:3px;left:3px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.settings-v2 .switch input:checked+.slider{background:linear-gradient(135deg,#00b4d0,#0a7ea3)}
+.settings-v2 .switch input:checked+.slider::before{transform:translateX(22px)}
+.set-actions{display:flex;gap:10px;margin-top:16px}
+.set-btn{border:none;border-radius:16px;padding:14px 20px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .2s}
+.set-btn:active{transform:scale(.98)}
+.set-btn.primary{flex:1;color:#fff;background:linear-gradient(135deg,#00b4d0,#0a7ea3 60%,#4f46e5);box-shadow:0 16px 28px -14px rgba(0,150,181,.85)}
+.set-btn.ghost{flex:0 0 auto;min-width:110px;background:var(--surface);color:var(--text-strong);border:1.5px solid var(--border2)}
+@media (max-width:720px){
+  .settings-v2 .set-grid{grid-template-columns:1fr}
+  .set-hero{padding:20px 16px;border-radius:22px}
+  .set-hero-in{flex-wrap:wrap;gap:14px}
+  .set-avatar{width:68px;height:68px}
+  .set-avatar b{font-size:28px}
+  .settings-v2 .set-hero h2{font-size:20px}
+  .set-hero-sync{width:100%;justify-content:center}
+}
+
 </style>
 </head>
 <body>
@@ -1436,7 +1674,14 @@ setTimeout(function(){
       var re=document.getElementById('fbRegErr');
       if(re){ re.textContent='Register karne ke liye internet chahiye — internet on karke dobara try karo.'; re.hidden=false; }
       var er=document.getElementById('fbAuthErr');
-      if(er){ er.textContent='Login ke liye internet chahiye — internet on karke dobara try karo.'; er.hidden=false; } }
+      if(er){ er.textContent='Login ke liye internet chahiye — internet on karke dobara try karo.'; er.hidden=false; }
+      /* v39 Skip (Firebase script never ran — wire it here so it always works) */
+      var sk=document.getElementById('fbSkipBtn');
+      if(sk) sk.addEventListener('click',function(){
+        try{ window.__fbSkipped=true; }catch(e){}
+        try{ document.body.classList.remove('fb-gated'); }catch(e){}
+        m.classList.remove('open','closing'); m.setAttribute('aria-hidden','true');
+      }); }
   }catch(e){}
 },1500);</script>
 <script id="tp-history-shim">
@@ -1783,68 +2028,86 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <!-- ================= SETTINGS ================= -->
 <div id="view-settings" class="view">
   <div class="settings-wrap settings-v2">
-    <h1>Settings</h1>
-    <div class="card set-card set-account">
-      <h3>Account</h3>
-      <p class="set-acct-status" id="setAccountStatus">Login nahi hai</p>
-      <button class="fb-google-btn" id="setGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
-      <div class="fb-divider"><span>ya ID-password se</span></div>
-      <div id="setEmailForm">
-        <label>Email
-          <input id="setEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
-        </label>
-        <label>Password
-          <input id="setPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="current-password">
-        </label>
-        <p class="fb-auth-err" id="setAuthErr" hidden></p>
-        <button class="fb-email-btn" id="setEmailBtn">Login karein</button>
-        <div class="fb-auth-links">
-          <a href="#" id="setAuthToggle">Naya account banao</a>
-          <a href="#" id="setForgotLink">Password bhool gaye?</a>
+    <h1 class="set-title">Settings</h1>
+    <div class="set-hero">
+      <div class="set-hero-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="set-hero-in">
+        <div class="set-avatar"><img id="setHeroPhoto" alt="" hidden><b id="setHeroAvatar">S</b></div>
+        <div class="set-hero-txt">
+          <h2 id="setHeroName">Student</h2>
+          <p id="setHeroEmail">Login nahi hai</p>
+          <div class="set-chips" id="setHeroChips"></div>
         </div>
+        <div class="set-hero-sync" data-st="offline"><span class="sd"></span><b id="setHeroSync">● Offline</b></div>
       </div>
-      <div id="setChangePwWrap" hidden>
-        <label>Naya password
-          <input id="setNewPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
+    </div>
+
+    <div class="set-grid">
+      <section class="card set-card set-account">
+        <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>Account</h3>
+        <p class="set-acct-status" id="setAccountStatus">Login nahi hai</p>
+        <button class="fb-google-btn" id="setGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
+        <div class="fb-divider"><span>ya ID-password se</span></div>
+        <div id="setEmailForm">
+          <label>Email
+            <input id="setEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
+          </label>
+          <label>Password
+            <input id="setPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="current-password">
+          </label>
+          <p class="fb-auth-err" id="setAuthErr" hidden></p>
+          <button class="fb-email-btn" id="setEmailBtn">Login karein</button>
+          <div class="fb-auth-links">
+            <a href="#" id="setAuthToggle">Naya account banao</a>
+            <a href="#" id="setForgotLink">Password bhool gaye?</a>
+          </div>
+        </div>
+        <div id="setChangePwWrap" hidden>
+          <label>Naya password
+            <input id="setNewPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
+          </label>
+          <button class="btn btn-teal" id="setChangePwBtn" style="margin-top:10px">Password badlo</button>
+        </div>
+        <button class="fb-logout-btn" id="setLogoutBtn" hidden>Logout</button>
+      </section>
+
+      <section class="card set-card set-sync">
+        <h3><span class="set-ic ic-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5z"/><path d="M9.5 13.5l2 2 3.5-3.5"/></svg></span>Sync</h3>
+        <div class="set-sync-row"><span>Status</span><b class="sync-pill" id="setSyncStatus">● Offline</b></div>
+        <div class="set-sync-row"><span>Last synced</span><b id="setLastSync">Abhi tak sync nahi hua</b></div>
+        <p class="set-sync-note">Sync apne aap hota hai — internet on hote hi is device ka data upload aur doosre device ka data download ho jata hai.</p>
+      </section>
+
+      <section class="card set-card">
+        <h3><span class="set-ic ic-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>Profile</h3>
+        <label>Name
+          <input id="setName" type="text" placeholder="Your name" autocomplete="off">
         </label>
-        <button class="btn btn-teal" id="setChangePwBtn" style="margin-top:10px">Password badlo</button>
-      </div>
-      <button class="fb-logout-btn" id="setLogoutBtn" hidden>Logout</button>
+        <label>Exam
+          <input id="setExam" type="text" value="RRB NTPC" autocomplete="off">
+        </label>
+        <label>Target score (out of 100)
+          <input id="setTarget" type="number" min="1" max="100" value="91">
+        </label>
+      </section>
+
+      <section class="card set-card">
+        <h3><span class="set-ic ic-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Preferences</h3>
+        <label>Default language
+          <select id="setLang">
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label class="set-row"><span class="set-row-t"><b>Dark mode</b><small>Raat mein aankhon ko aaram</small></span>
+          <span class="switch"><input type="checkbox" id="setDarkToggle"><span class="slider"></span></span>
+        </label>
+      </section>
     </div>
-    <div class="card set-card set-sync">
-      <h3>Sync</h3>
-      <div class="set-sync-row"><span>Status</span><b class="sync-pill" id="setSyncStatus">● Offline</b></div>
-      <div class="set-sync-row"><span>Last synced</span><b id="setLastSync">Abhi tak sync nahi hua</b></div>
-      <p class="set-sync-note">Sync apne aap hota hai — internet on hote hi is device ka data upload aur doosre device ka data download ho jata hai.</p>
-    </div>
-    <h2 class="set-sec-title">Preferences</h2>
-    <div class="card set-card">
-      <h3>Profile</h3>
-      <label>Name
-        <input id="setName" type="text" placeholder="Your name" autocomplete="off">
-      </label>
-      <label>Exam
-        <input id="setExam" type="text" value="RRB NTPC" autocomplete="off">
-      </label>
-      <label>Target score (out of 100)
-        <input id="setTarget" type="number" min="1" max="100" value="91">
-      </label>
-    </div>
-    <div class="card set-card">
-      <h3>Preferences</h3>
-      <label>Default language
-        <select id="setLang">
-          <option value="hi">Hindi</option>
-          <option value="en">English</option>
-        </select>
-      </label>
-      <label class="set-row"><span>Dark mode</span>
-        <span class="switch"><input type="checkbox" id="setDarkToggle"><span class="slider"></span></span>
-      </label>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-teal" id="setSaveBtn">Save Settings</button>
-      <button class="btn btn-grey" id="setBackBtn">Back</button>
+
+    <div class="set-actions">
+      <button class="set-btn ghost" id="setBackBtn">Back</button>
+      <button class="set-btn primary" id="setSaveBtn">Save Settings</button>
     </div>
   </div>
 </div>
@@ -2871,7 +3134,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 38; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 39; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5505,97 +5768,230 @@ attachSwipe($('solScroll'),
 })();
 </script>
 
-<div class="fb-modal" id="fbModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Login">
-  <div class="fb-modal-backdrop" id="fbModalBackdrop"></div>
-  <div class="fb-modal-card" role="document">
-    <button class="fb-modal-x" id="fbModalClose" aria-label="Band karein"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>
-    <div id="fbModalRegister">
-      <div class="fb-modal-badge"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></div>
-      <h3>Pehle register karein</h3>
-      <p class="fb-modal-sub">Ek baar register karo — phir har device par login hoga.</p>
-      <div id="fbRegMain">
-        <button class="fb-google-btn" id="fbRegGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se register karein</button>
-        <div class="fb-divider"><span>ya apne details se</span></div>
-        <label>Naam
-          <input id="fbRegName" type="text" placeholder="Aapka naam" autocomplete="name">
-        </label>
-        <label>Email
-          <input id="fbRegEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
-        </label>
-        <label>Password
-          <input id="fbRegPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
-        </label>
-        <label>Confirm password
-          <input id="fbRegPassword2" type="password" placeholder="Password dobara likho" autocomplete="new-password">
-        </label>
-        <p class="fb-auth-err" id="fbRegErr" hidden></p>
-        <button class="fb-email-btn" id="fbRegBtn">Register karein</button>
-        <div class="fb-auth-links" style="justify-content:center;margin-top:4px">
-          <a href="#" id="fbRegToLogin">Pehle se account hai? Login karein</a>
+<div class="fb-modal" id="fbModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Login" data-view="register" data-step="1">
+  <div class="fb-modal-backdrop" id="fbModalBackdrop" aria-hidden="true">
+    <span class="au-blob b1"></span><span class="au-blob b2"></span><span class="au-blob b3"></span>
+    <span class="au-grid"></span>
+    <i class="au-bub" style="--x:6%;--s:14px;--d:13s;--dl:0s"></i><i class="au-bub" style="--x:16%;--s:22px;--d:17s;--dl:-6s"></i><i class="au-bub" style="--x:28%;--s:10px;--d:11s;--dl:-3s"></i><i class="au-bub" style="--x:41%;--s:18px;--d:15s;--dl:-9s"></i><i class="au-bub" style="--x:55%;--s:12px;--d:12s;--dl:-1s"></i><i class="au-bub" style="--x:67%;--s:24px;--d:19s;--dl:-11s"></i><i class="au-bub" style="--x:79%;--s:11px;--d:14s;--dl:-5s"></i><i class="au-bub" style="--x:90%;--s:16px;--d:16s;--dl:-8s"></i>
+  </div>
+  <div class="au-shell">
+    <aside class="au-hero">
+      <div class="au-brand"><span class="au-logo"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></span><b>TESTPRO</b></div>
+      <h2 class="au-headline">Test do. <em>Seekho.</em> Top karo.</h2>
+      <p class="au-lead">Mock tests, solutions aur analysis — sab ek jagah, har device par sync.</p>
+      <div class="au-art">
+        <svg viewBox="0 0 360 310" role="img" aria-label="Test, score aur analysis ka illustration">
+          <defs>
+            <linearGradient id="auG1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00c2cb"/><stop offset="1" stop-color="#0a7ea3"/></linearGradient>
+            <linearGradient id="auG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
+            <linearGradient id="auG3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0a7ea3"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+            <radialGradient id="auGlow"><stop offset="0" stop-color="#22d3ee" stop-opacity=".45"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></radialGradient>
+            <filter id="auSh" x="-20%" y="-20%" width="140%" height="155%"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#020617" flood-opacity=".35"/></filter>
+          </defs>
+          <circle cx="180" cy="160" r="142" fill="url(#auGlow)"/>
+          <g class="art-card" filter="url(#auSh)">
+            <rect x="70" y="40" width="200" height="230" rx="24" fill="#fff"/>
+            <rect x="90" y="60" width="64" height="12" rx="6" fill="url(#auG1)"/>
+            <rect x="90" y="84" width="160" height="9" rx="4.5" fill="#e2e8f0"/>
+            <rect x="90" y="100" width="116" height="9" rx="4.5" fill="#e2e8f0"/>
+            <rect x="90" y="126" width="160" height="26" rx="13" fill="#f1f5f9"/><circle cx="105" cy="139" r="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><rect x="120" y="136" width="96" height="6" rx="3" fill="#cbd5e1"/>
+            <rect x="90" y="158" width="160" height="26" rx="13" fill="#f1f5f9"/>
+            <rect class="art-pick" x="90" y="158" width="160" height="26" rx="13" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+            <circle class="art-pick" cx="105" cy="171" r="7" fill="#22c55e"/><path class="art-check" d="M101.5 171.2l2.6 2.8 5-5.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="120" y="168" width="112" height="6" rx="3" fill="#86efac"/>
+            <rect x="90" y="190" width="160" height="26" rx="13" fill="#f1f5f9"/><circle cx="105" cy="203" r="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><rect x="120" y="200" width="80" height="6" rx="3" fill="#cbd5e1"/>
+            <rect x="90" y="222" width="160" height="26" rx="13" fill="#f1f5f9"/><circle cx="105" cy="235" r="7" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><rect x="120" y="232" width="104" height="6" rx="3" fill="#cbd5e1"/>
+          </g>
+          <g class="art-ring" filter="url(#auSh)">
+            <circle cx="268" cy="72" r="46" fill="#fff"/>
+            <circle cx="268" cy="72" r="34" fill="none" stroke="#e2e8f0" stroke-width="9"/>
+            <circle class="art-prog" cx="268" cy="72" r="34" fill="none" stroke="url(#auG1)" stroke-width="9" stroke-linecap="round" transform="rotate(-90 268 72)"/>
+            <text x="268" y="77" text-anchor="middle" font-size="20" font-weight="800" fill="#0f1f4d">91%</text>
+            <text x="268" y="92" text-anchor="middle" font-size="8" font-weight="700" fill="#64748b" letter-spacing="1">SCORE</text>
+          </g>
+          <g class="art-bars" filter="url(#auSh)">
+            <rect x="20" y="206" width="112" height="86" rx="18" fill="#fff"/>
+            <rect class="art-bar b1" x="36" y="248" width="13" height="22" rx="4" fill="url(#auG3)"/>
+            <rect class="art-bar b2" x="56" y="234" width="13" height="36" rx="4" fill="url(#auG3)"/>
+            <rect class="art-bar b3" x="76" y="242" width="13" height="28" rx="4" fill="url(#auG3)"/>
+            <rect class="art-bar b4" x="96" y="222" width="13" height="48" rx="4" fill="url(#auG2)"/>
+            <rect x="32" y="270" width="82" height="2" rx="1" fill="#e2e8f0"/>
+            <text x="76" y="285" text-anchor="middle" font-size="8" font-weight="700" fill="#64748b" letter-spacing="1">ANALYSIS</text>
+          </g>
+          <g class="art-timer" filter="url(#auSh)">
+            <rect x="196" y="252" width="106" height="38" rx="19" fill="url(#auG2)"/>
+            <circle cx="218" cy="271" r="10" fill="rgba(255,255,255,.25)"/>
+            <path d="M218 265v6l4 2.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="238" y="276" font-size="14" font-weight="800" fill="#fff">29:00</text>
+          </g>
+          <path class="art-star" d="M44 50l5.2 11 12 1.6-8.8 8.2 2.3 12-10.7-6-10.7 6 2.3-12-8.8-8.2 12-1.6z" fill="#fbbf24"/>
+          <path class="art-star s2" d="M322 168q2 14 16 16-14 2-16 16-2-14-16-16 14-2 16-16z" fill="#fde68a"/>
+          <circle class="art-star s3" cx="336" cy="112" r="5" fill="#f472b6"/>
+          <circle class="art-star s2" cx="30" cy="150" r="4" fill="#22d3ee"/>
+          <circle class="art-star" cx="310" cy="240" r="3.5" fill="#a78bfa"/>
+        </svg>
+      </div>
+      <ul class="au-points">
+        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>Scores aur attempts sync</b><span>Har test ki history har device par</span></div></li>
+        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></span><div><b>Saved questions sync</b><span>Bookmark kiye questions kahin se bhi kholo</span></div></li>
+        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Offline chalega, auto-sync</b><span>Internet aate hi data sync ho jayega</span></div></li>
+      </ul>
+    </aside>
+
+    <div class="fb-modal-card" role="document">
+      <button class="fb-modal-x" id="fbModalClose" aria-label="Band karein"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>
+
+      <button type="button" class="fb-skip-btn" id="fbSkipBtn">Skip karein — bina login ke enter karein</button>
+      <div class="au-tabs" role="tablist" aria-label="Register ya Login">
+        <span class="au-tabpill" aria-hidden="true"></span>
+        <button type="button" class="au-tab" data-au-tab="register" role="tab">Register</button>
+        <button type="button" class="au-tab" data-au-tab="login" role="tab">Login</button>
+      </div>
+
+      <div id="fbModalRegister">
+        <div class="au-head">
+          <div class="au-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
+          <h3><span class="t-reg">Apna account banao</span><span class="t-pw">Password set karein</span></h3>
+          <p class="fb-modal-sub"><span class="t-reg">Pehli baar? 1 minute mein register karo — phir har device par login.</span><span class="t-pw">Google se ho gaya — ab ek password rakho.</span></p>
         </div>
-      </div>
-      <div id="fbPwSetWrap" hidden>
-        <div class="fb-modal-user">
-          <div class="fb-modal-avatar" id="fbPwSetAvatar">S</div>
-          <div class="fb-modal-userinfo"><b id="fbPwSetName">Student</b><span id="fbPwSetEmail"></span></div>
+        <div id="fbRegMain">
+          <button class="fb-google-btn" id="fbRegGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se register karein</button>
+          <div class="fb-divider"><span>ya apne details se</span></div>
+          <label class="au-f"><span class="au-lb">Naam</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input id="fbRegName" type="text" placeholder="Aapka naam" autocomplete="name"></span>
+          </label>
+          <label class="au-f"><span class="au-lb">Email</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbRegEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+          </label>
+          <label class="au-f"><span class="au-lb">Password</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbRegPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-meter" data-for="fbRegPassword" data-l="0"><i></i><i></i><i></i><i></i><em>Password strength</em></span>
+          </label>
+          <label class="au-f"><span class="au-lb">Confirm password</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbRegPassword2" type="password" placeholder="Password dobara likho" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+          </label>
+          <p class="fb-auth-err" id="fbRegErr" hidden></p>
+          <button class="fb-email-btn" id="fbRegBtn">Register karein</button>
+          <div class="fb-auth-links au-x" style="justify-content:center;margin-top:4px">
+            <a href="#" id="fbRegToLogin">Pehle se account hai? Login karein</a>
+          </div>
         </div>
-        <p class="fb-modal-sub">Ab ek password set karo — phir Google ya ID-password, dono se login hoga.</p>
-        <label>Password
-          <input id="fbPwSetPw" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
-        </label>
-        <label>Confirm password
-          <input id="fbPwSetPw2" type="password" placeholder="Password dobara likho" autocomplete="new-password">
-        </label>
-        <p class="fb-auth-err" id="fbPwSetErr" hidden></p>
-        <button class="fb-email-btn" id="fbPwSetBtn">Password set karein</button>
-      </div>
-      <p class="fb-modal-note" id="fbRegNote">Register karne ke liye pehli baar internet chahiye.</p>
-    </div>
-    <div id="fbModalLoggedOut" hidden>
-      <div class="fb-modal-badge"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></div>
-      <h3>Apna progress har device par</h3>
-      <p class="fb-modal-sub">Ek baar login karo — phir phone ya kisi bhi device se wahi progress.</p>
-      <div class="fb-modal-benefits">
-        <div class="fb-benefit"><span class="fb-benefit-ico"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><div><b>Scores aur attempts sync</b><span>Har test ka score aur history har device par</span></div></div>
-        <div class="fb-benefit"><span class="fb-benefit-ico"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg></span><div><b>Saved questions sync</b><span>Bookmark kiye questions kahin se bhi kholo</span></div></div>
-        <div class="fb-benefit"><span class="fb-benefit-ico"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span><div><b>Offline chalega, auto-sync</b><span>Bina internet ke test do — internet aate hi sync</span></div></div>
-      </div>
-      <button class="fb-google-btn" id="fbGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
-      <div class="fb-divider"><span>ya ID-password se</span></div>
-      <div id="fbEmailForm">
-        <label>Email
-          <input id="fbEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
-        </label>
-        <label>Password
-          <input id="fbPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="current-password">
-        </label>
-        <p class="fb-auth-err" id="fbAuthErr" hidden></p>
-        <button class="fb-email-btn" id="fbEmailBtn">Login karein</button>
-        <div class="fb-auth-links">
-          <a href="#" id="fbAuthToggle">Naya account banao</a>
-          <a href="#" id="fbForgotLink">Password bhool gaye?</a>
+        <div id="fbPwSetWrap" hidden>
+          <div class="fb-modal-user">
+            <div class="fb-modal-avatar" id="fbPwSetAvatar">S</div>
+            <div class="fb-modal-userinfo"><b id="fbPwSetName">Student</b><span id="fbPwSetEmail"></span></div>
+            <span class="au-verified" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          </div>
+          <p class="fb-modal-sub au-pwsub">Ab ek password set karo — phir Google ya ID-password, dono se login hoga.</p>
+          <label class="au-f"><span class="au-lb">Password</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPwSetPw" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-meter" data-for="fbPwSetPw" data-l="0"><i></i><i></i><i></i><i></i><em>Password strength</em></span>
+          </label>
+          <label class="au-f"><span class="au-lb">Confirm password</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPwSetPw2" type="password" placeholder="Password dobara likho" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+          </label>
+          <p class="fb-auth-err" id="fbPwSetErr" hidden></p>
+          <button class="fb-email-btn" id="fbPwSetBtn">Password set karein</button>
         </div>
-        <div class="fb-auth-links" style="justify-content:center;margin-top:4px">
-          <a href="#" id="fbLoginToReg">Naya account banao? Register karein</a>
+        <p class="fb-modal-note" id="fbRegNote">Register karne ke liye pehli baar internet chahiye.</p>
+      </div>
+
+      <div id="fbModalLoggedOut" hidden>
+        <div class="au-head">
+          <div class="au-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg></div>
+          <h3>Wapas aaye? Login karein</h3>
+          <p class="fb-modal-sub">Google ya ID-password se — kisi bhi device par apna progress kholo.</p>
         </div>
+        <button class="fb-google-btn" id="fbGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
+        <div class="fb-divider"><span>ya ID-password se</span></div>
+        <div id="fbEmailForm">
+          <label class="au-f"><span class="au-lb">Email</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+          </label>
+          <label class="au-f"><span class="au-lb">Password</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPassword" type="password" placeholder="Aapka password" autocomplete="current-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+          </label>
+          <p class="fb-auth-err" id="fbAuthErr" hidden></p>
+          <button class="fb-email-btn" id="fbEmailBtn">Login karein</button>
+          <div class="fb-auth-links">
+            <a href="#" id="fbAuthToggle" class="au-x">Naya account banao</a>
+            <a href="#" id="fbForgotLink">Password bhool gaye?</a>
+          </div>
+          <div class="fb-auth-links au-x" style="justify-content:center;margin-top:4px">
+            <a href="#" id="fbLoginToReg">Naya account banao? Register karein</a>
+          </div>
+        </div>
+        <p class="fb-modal-note" id="fbModalNote">Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.</p>
       </div>
-      <p class="fb-modal-note" id="fbModalNote">Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.</p>
-    </div>
-    <div id="fbModalLoggedIn" hidden>
-      <div class="fb-modal-user">
-        <img class="fb-modal-photo" id="fbModalPhoto" alt="" hidden>
-        <div class="fb-modal-avatar" id="fbModalAvatar">S</div>
-        <div class="fb-modal-userinfo"><b id="fbModalName">Student</b><span id="fbModalEmail"></span></div>
+
+      <div id="fbModalLoggedIn" hidden>
+        <div class="au-acct">
+          <div class="au-acct-banner"></div>
+          <div class="au-acct-av"><img class="fb-modal-photo" id="fbModalPhoto" alt="" hidden><div class="fb-modal-avatar" id="fbModalAvatar">S</div></div>
+          <div class="fb-modal-userinfo"><b id="fbModalName">Student</b><span id="fbModalEmail"></span></div>
+        </div>
+        <div class="fb-modal-sync"><span>Sync status</span><b id="fbModalSyncState">● Offline</b></div>
+        <button class="fb-logout-btn" id="fbLogoutBtn">Logout</button>
+        <p class="fb-modal-note">Logout karne par is device ka data yahin rahega, sync band ho jayega.</p>
       </div>
-      <div class="fb-modal-sync"><span>Sync status</span><b id="fbModalSyncState">● Offline</b></div>
-      <button class="fb-logout-btn" id="fbLogoutBtn">Logout</button>
-      <p class="fb-modal-note">Logout karne par is device ka data yahin rahega, sync band ho jayega.</p>
     </div>
   </div>
 </div>
+<script>
+/* v39 auth UI helpers: tab state, password eye, strength meter (UI only — no auth logic here) */
+(function(){
+  var m = document.getElementById('fbModal'); if (!m) return;
+  function sync(){
+    var r = document.getElementById('fbModalRegister'), lo = document.getElementById('fbModalLoggedOut'),
+        li = document.getElementById('fbModalLoggedIn'), pw = document.getElementById('fbPwSetWrap');
+    var v = (r && !r.hidden) ? 'register' : (lo && !lo.hidden ? 'login' : (li && !li.hidden ? 'account' : 'register'));
+    m.setAttribute('data-view', v);
+    m.setAttribute('data-step', (v === 'register' && pw && !pw.hidden) ? 'pw' : '1');
+  }
+  var mo = new MutationObserver(sync);
+  ['fbModalRegister','fbModalLoggedOut','fbModalLoggedIn','fbPwSetWrap'].forEach(function(id){
+    var e = document.getElementById(id); if (e) mo.observe(e, {attributes:true, attributeFilter:['hidden']});
+  });
+  sync();
+  m.addEventListener('click', function(e){
+    var t = e.target.closest ? e.target.closest('[data-au-tab]') : null;
+    if (t){
+      var want = t.getAttribute('data-au-tab');
+      if (want === m.getAttribute('data-view')) return;
+      var l = document.getElementById(want === 'login' ? 'fbRegToLogin' : 'fbLoginToReg');
+      if (l) l.click();
+      return;
+    }
+    var eye = e.target.closest ? e.target.closest('[data-eye]') : null;
+    if (eye){
+      var inp = eye.parentNode.querySelector('input');
+      if (inp){
+        var show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        eye.classList.toggle('on', show);
+        eye.setAttribute('aria-label', show ? 'Password chhupao' : 'Password dikhao');
+      }
+    }
+  });
+  var LBL = ['', 'Kamzor', 'Theek hai', 'Accha', 'Mazboot'];
+  function level(p){
+    if (!p) return 0; var s = 0;
+    if (p.length >= 6) s++;
+    if (p.length >= 9) s++;
+    if ((/[a-z]/.test(p) && /[A-Z]/.test(p)) || (/\d/.test(p) && /[a-zA-Z]/.test(p))) s++;
+    if (/[^A-Za-z0-9]/.test(p) || p.length >= 12) s++;
+    return Math.min(4, s);
+  }
+  m.addEventListener('input', function(e){
+    var el = e.target; if (!el || !el.id) return;
+    var mt = m.querySelector('.au-meter[data-for="' + el.id + '"]');
+    if (mt){ var l = level(el.value); mt.setAttribute('data-l', l); mt.querySelector('em').textContent = l ? LBL[l] : 'Password strength'; }
+  });
+})();
+</script>
 
 
-<script type="module">
+<script>
 /* TESTPRO v37 — Firebase Auth + Firestore sync (project testpro777, user's own).
    Google + email/password sign-in; all progress syncs to Firestore when
    online and works fully offline from localStorage (auto-sync on reconnect).
@@ -5606,6 +6002,9 @@ attachSwipe($('solScroll'),
    login needs internet. Local-only keys (NEVER synced): dark, inProgress. */
 (async function(){
 'use strict';
+/* v39: readiness flags — setAuthReadyUI keeps them in sync; the gate
+   snippet / UI reads window.__fbReady / window.__fbFailed. */
+try { window.__fbReady = false; window.__fbFailed = false; } catch(e){}
 var FB_VERSION = '11.0.2';
 var FIREBASE_CONFIG = {
   apiKey: 'AIzaSyBp18NsYFPq4XR4qKQ1jDfqZ_Xrv0iO_UU',
@@ -5641,6 +6040,7 @@ function updatePill(){
   var p = $('syncStatus'); if (p) p.textContent = STATUS_TEXT[status] || status;
   var m = $('fbModalSyncState'); if (m) m.textContent = STATUS_TEXT[status] || status;
   var s = $('setSyncStatus'); if (s) s.textContent = STATUS_TEXT[status] || status;
+    var hs = $('setHeroSync'); if (hs){ hs.textContent = STATUS_TEXT[status] || status; if (hs.parentNode) hs.parentNode.setAttribute('data-st', status); }
   var ls = $('setLastSync'); if (ls) ls.textContent = fmtLastSync();
 }
 function setStatus(s){
@@ -5662,6 +6062,7 @@ function showFbView(v){
 }
 function updateModalView(){
   var u = fb && fb.user;
+  var sk = $('fbSkipBtn'); if (sk) sk.hidden = !!(u && !pwStepActive); /* v39: Skip only while logged out or in the password step */
   if (u && !pwStepActive) showFbView('account');
   else if (u && pwStepActive) showFbView('register');
   else showFbView(fbModalView === 'account' ? 'register' : fbModalView);
@@ -5705,9 +6106,49 @@ function resetPwStep(){
    register window (non-dismissable) while logged out. */
 function enterApp(){
   fbGated = false;
+  try { window.__fbSkipped = false; } catch(e){} /* v39: a real login supersedes Skip */
   resetPwStep();
   try { document.body.classList.remove('fb-gated'); } catch(e){}
   closeFbModal(true);
+}
+/* v39: temporary Skip — enter without login, local-only, per-session.
+   It never persists: a fresh boot gates again (window.__fbSkipped is
+   in-memory only; nothing is written to localStorage or Firestore). */
+function skipAuth(){
+  try { window.__fbSkipped = true; } catch(e){}
+  fbGated = false;
+  try { document.body.classList.remove('fb-gated'); } catch(e){}
+  closeFbModal(true);
+}
+/* v39: auth buttons must never be dead-tappable while Firebase loads.
+   Until the SDK is ready they stay disabled with a visible loading
+   label; on SDK failure the label says internet is needed instead. */
+var AUTH_BTN_IDS = ['fbRegGoogleBtn', 'fbGoogleBtn', 'fbRegBtn', 'fbEmailBtn', 'setEmailBtn'];
+function btnLabel(btn){
+  if (!btn) return '';
+  var t = '';
+  for (var i = 0; i < btn.childNodes.length; i++){
+    if (btn.childNodes[i].nodeType === 3) t += btn.childNodes[i].data;
+  }
+  return t.trim() || (btn.textContent || '').trim();
+}
+function setBtnLabel(btn, txt){
+  if (!btn) return;
+  var nodes = btn.childNodes, done = false;
+  for (var i = nodes.length - 1; i >= 0; i--){
+    if (nodes[i].nodeType === 3 && nodes[i].data.trim()){ nodes[i].data = txt; done = true; break; }
+  }
+  if (!done) btn.textContent = txt;
+}
+function setAuthReadyUI(ready, failed){
+  try { window.__fbReady = !!ready; window.__fbFailed = !!failed; } catch(e){}
+  AUTH_BTN_IDS.forEach(function(id){
+    var b = $(id); if (!b) return;
+    if (!b.dataset.origLabel) b.dataset.origLabel = btnLabel(b);
+    b.disabled = !ready;
+    if (!ready){ setBtnLabel(b, failed ? 'Internet chahiye' : 'Taiyaar ho raha hai…'); b.dataset.loading = '1'; }
+    else if (b.dataset.loading === '1'){ setBtnLabel(b, b.dataset.origLabel); delete b.dataset.loading; }
+  });
 }
 function redirectErrorText(e){
   var code = (e && e.code) || '';
@@ -5717,10 +6158,13 @@ function redirectErrorText(e){
       return 'Is link se login nahi hoga — Pages wale link se kholo: shailuk2023-create.github.io/testpro/';
     return 'Login abhi allowed nahi hai — thodi der baad try karo';
   }
+  if (code === 'auth/account-exists-with-different-credential')
+    return 'Is email ka account pehle se hai — Google se nahi, ID-password se login karo';
   if (code === 'auth/network-request-failed') return 'Internet nahi hai — connection check karke dobara try karo';
   return 'Login mein kuch galat hua — dobara try karo';
 }
 function showGate(offline, err){
+  if (window.__fbSkipped) return; /* v39: user chose Skip this session — never re-gate */
   fbGated = true;
   try { document.body.classList.add('fb-gated'); } catch(e){}
   if (offline){
@@ -5730,6 +6174,7 @@ function showGate(offline, err){
     if (rn) rn.textContent = 'Register karne ke liye internet chahiye — internet on karke dobara try karo.';
   }
   if (err){
+    if (err.code === 'auth/account-exists-with-different-credential') showFbView('login');
     var txt = redirectErrorText(err);
     var re = $('fbRegErr');
     if (re){ re.textContent = txt; re.hidden = false; }
@@ -5779,6 +6224,30 @@ function updateSettingsAccount(){
   var ef = $('setEmailForm'); if (ef) ef.hidden = !!u;
   var cp = $('setChangePwWrap'); if (cp) cp.hidden = !u;
   var lo = $('setLogoutBtn'); if (lo) lo.hidden = !u;
+    /* v39: settings profile hero (UI only) */
+  var hn = $('setHeroName');
+  if (hn){
+    var hnm = u ? (u.displayName || (u.email ? u.email.split('@')[0] : 'Student')) : 'Guest';
+    hn.textContent = hnm;
+    var he = $('setHeroEmail'); if (he) he.textContent = u ? (u.email || '') : 'Login nahi hai';
+    var ha = $('setHeroAvatar'), hph = $('setHeroPhoto');
+    if (ha) ha.textContent = hnm.charAt(0).toUpperCase();
+    if (hph){
+      if (u && u.photoURL){ hph.src = u.photoURL; hph.hidden = false; if (ha) ha.hidden = true; }
+      else { hph.hidden = true; if (ha) ha.hidden = false; }
+    }
+    var hc = $('setHeroChips');
+    if (hc){
+      var chips = '';
+      if (u && u.providerData){
+        u.providerData.forEach(function(p){
+          if (p.providerId === 'google.com') chips += '<span class="set-chip">Google</span>';
+          else if (p.providerId === 'password') chips += '<span class="set-chip">ID-Password</span>';
+        });
+      }
+      hc.innerHTML = chips;
+    }
+  }
   updatePill();
 }
 
@@ -5809,6 +6278,7 @@ function signIn(entry){
 function signInFailed(e){
   setStatus('offline');
   var txt = redirectErrorText(e);
+  if (e && e.code === 'auth/account-exists-with-different-credential') showFbView('login');
   var el = $('fbAuthErr');
   if (el){ el.textContent = txt; el.hidden = false; }
   var re = $('fbRegErr');
@@ -5816,6 +6286,7 @@ function signInFailed(e){
   openFbModal();
 }
 function signOut(){
+  try { window.__fbSkipped = false; } catch(e){} /* v39: logout brings the gate back */
   if (!fb || !F){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); return; }
   F.signOut(fb.auth).then(function(){ /* onAuthStateChanged fires */ })
     .catch(function(){ setStatus('logged-out'); updateHeader(); updateModalView(); updateSettingsAccount(); });
@@ -6157,6 +6628,8 @@ async function submitPasswordSet(){
 /* ---------------- wiring + boot ---------------- */
 function wireModal(){
   /* v38: header login button wiring removed (button gone) */
+  setAuthReadyUI(false); /* v39: auth buttons disabled until the SDK is ready */
+  var sk = $('fbSkipBtn'); if (sk) sk.addEventListener('click', skipAuth);
   var x = $('fbModalClose'); if (x) x.addEventListener('click', function(){ closeFbModal(); });
   var bd = $('fbModalBackdrop'); if (bd) bd.addEventListener('click', function(){ closeFbModal(); });
   var g = $('fbGoogleBtn'); if (g) g.addEventListener('click', function(){ signIn('login'); });
@@ -6188,7 +6661,7 @@ function wireSettings(){
 }
 function installBridge(){
   window.__fbSync = {
-    signIn: signIn, signOut: signOut,
+    signIn: signIn, signOut: signOut, skipAuth: skipAuth,
     pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge,
     openModal: openFbModal, closeModal: closeFbModal,
     syncNow: syncNow,
@@ -6212,7 +6685,7 @@ async function boot(){
     ]);
     var timeoutP = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('sdk-timeout')); }, 8000); });
     mods = await Promise.race([importP, timeoutP]);
-  } catch(e){ window.__fb = null; setStatus('offline'); showGate(true); return; }
+  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); showGate(true); return; }
   try {
     var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
     F = {
@@ -6240,6 +6713,7 @@ async function boot(){
     catch(e){ db = null; /* v38: auth still works without Firestore; sync stays offline */ }
     fb = {app: app, auth: auth, db: db, user: null};
     window.__fb = fb;
+    setAuthReadyUI(true); /* v39: SDK ready — auth buttons become tappable */
     var redirectResult = null, redirectErr = null, authEntry = null;
     try { redirectResult = await F.getRedirectResult(auth); } catch(e){ redirectErr = e; }
     try { authEntry = sessionStorage.getItem('fbAuthEntry'); sessionStorage.removeItem('fbAuthEntry'); } catch(e){}
@@ -6277,7 +6751,7 @@ async function boot(){
     document.addEventListener('visibilitychange', function(){
       if (!document.hidden && fb && fb.user && Date.now() - lastPullAt > 60000) pullAndMerge();
     });
-  } catch(e){ window.__fb = null; setStatus('offline'); showGate(true); }
+  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); showGate(true); }
 }
 boot();
 })();
