@@ -729,6 +729,9 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 .opt.sel:has(input:disabled):hover{background:var(--opt-sel)}
 .sm-qn{font-weight:700;color:var(--text-strong)}
 .sm-time{color:var(--muted2)}
+/* v23 Part C: speed indicator icon next to the per-question time */
+.sm-time-ico{display:inline-flex;vertical-align:-3px;margin-left:2px}
+.sm-time-ico svg{width:16px;height:16px;display:block}
 /* --- dark mode: everything light / white --- */
 [data-theme="dark"]{color-scheme:dark;--text:#f1f5f9;--text-strong:#ffffff;--muted:#b6c2d6;--muted2:#e2e8f0;--accent:#7dd3fc;--accent2:#7dd3fc;--border:#2f405e;--border2:#46587a}
 [data-theme="dark"] [style*="#6b7280"],[data-theme="dark"] [style*="#4b5563"],[data-theme="dark"] [style*="#374151"],[data-theme="dark"] [style*="#9ca3af"],[data-theme="dark"] [style*="#d1d5db"]{color:#cbd5e1!important}
@@ -770,7 +773,8 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
   #reportBtn{width:30px;height:30px}
   .sol-meta #solReportBtn{width:30px;height:30px;padding:0}
   /* v22: compact one-row solutions header on mobile */
-  .sol-meta{flex-wrap:nowrap;gap:5px;padding:6px 8px;min-height:40px;font-size:12px}
+  /* v23 Part C: gap/padding tightened 1-2px to fit the 16px speed icon in the one-row header */
+  .sol-meta{flex-wrap:nowrap;gap:4px;padding:6px 6px;min-height:40px;font-size:12px}
   .sol-meta .sm-qn,.sol-meta .sm-time,.sol-meta .badge{white-space:nowrap}
   .sol-meta .badge{padding:2px 8px;font-size:11px}
   .sol-meta .marks-chip{padding:2px 8px;font-size:11px}
@@ -1111,6 +1115,14 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 [data-theme="dark"] .fa-amber{background:linear-gradient(135deg,#43330f,#33270f)}
 .feat-card h3{font-size:16px;font-weight:800;color:var(--text-strong);margin:0 8px 6px}
 .feat-card p{font-size:13.5px;line-height:1.55;color:var(--muted);margin:0 8px}
+/* v23: live feat-card values */
+.feat-val{font-size:30px;font-weight:800;color:var(--text-strong);margin:2px 8px 4px;line-height:1.1}
+.feat-val-sm{font-size:20px;font-weight:800;color:var(--text-strong);margin:6px 8px 4px;line-height:1.2}
+.feat-delta{font-size:13px;font-weight:700;margin:0 8px 4px}
+.feat-delta:empty{display:none}
+.feat-delta.up{color:#16a34a}
+.feat-delta.down{color:#dc2626}
+.feat-card.feat-tap{cursor:pointer}
 .fx-sweep{animation:fxSweep 6s linear infinite;transform-origin:104px 56px}
 .fx-glow{animation:fxGlow 2.6s ease-in-out infinite}
 .fx-bar{transform-box:fill-box;transform-origin:50% 100%;animation:fxGrow 2.2s ease-in-out infinite alternate}
@@ -1199,7 +1211,9 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 @media (max-width:560px){
   .edu-strip{margin-bottom:14px}
   .edu-item{font-size:12px;padding:0 12px}
-  .edu-proof{display:none}
+  /* v23: feature pills now show on mobile too, compact (was display:none for the old counting stats) */
+  .edu-proof{gap:6px;margin-top:12px}
+  .edu-proof span{padding:5px 9px;font-size:11.5px}
 }
 
 /* ============ v17: fullscreen buttons visible on mobile as icon buttons ============ */
@@ -1356,8 +1370,9 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
               <button class="hx-ghost" id="heroSaved" type="button"><svg class="i i-sm" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved</button>
             </div>
             <div class="edu-proof" aria-label="Course highlights">
-              <span><svg class="i i-sm" aria-hidden="true"><use href="#i-help"/></svg>1013 Questions</span>
-              <span><svg class="i i-sm" aria-hidden="true"><use href="#i-tests"/></svg>43 Tests • 28 Chapters</span>
+              <span><svg class="i i-sm" aria-hidden="true"><use href="#i-check-circle"/></svg>Ad-Free Solutions</span>
+              <span><svg class="i i-sm" aria-hidden="true"><use href="#i-play"/></svg>Video Solution In-App</span>
+              <span>Fully Offline</span>
               <span><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span>
             </div>
           </div>
@@ -1453,7 +1468,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   </g></g>
 </svg>
         </section>
-        <div class="edu-strip" aria-hidden="true"><div class="edu-track"><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-target"/></svg>RRB NTPC CBT-1</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-help"/></svg>1013 Questions</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-tests"/></svg>43 Tests</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-calc"/></svg>28 Chapters</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-clock"/></svg>70 sec / Question</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-target"/></svg>RRB NTPC CBT-1</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-help"/></svg>1013 Questions</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-tests"/></svg>43 Tests</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-calc"/></svg>28 Chapters</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-clock"/></svg>70 sec / Question</span><span class="edu-dot">•</span></div></div>
+        <div class="edu-strip" aria-hidden="true"><div class="edu-track"><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-target"/></svg>RRB NTPC CBT-1</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-check-circle"/></svg>Ad-Free Solutions</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-play"/></svg>Video Solution In-App</span><span class="edu-dot">•</span><span class="edu-item">Fully Offline</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-clock"/></svg>70 sec / Question</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-target"/></svg>RRB NTPC CBT-1</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-check-circle"/></svg>Ad-Free Solutions</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-play"/></svg>Video Solution In-App</span><span class="edu-dot">•</span><span class="edu-item">Fully Offline</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-clock"/></svg>70 sec / Question</span><span class="edu-dot">•</span></div></div>
         <div class="resume-card anim" id="resumeCard" style="display:none">
           <span class="rc-ico"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span>
           <div class="rc-body">
@@ -1507,19 +1522,8 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   <g class="fx-sweep"><path d="M104 56V33" stroke="#f97316" stroke-width="2.6" stroke-linecap="round"/></g>
   <circle cx="104" cy="56" r="4" fill="#0f172a"/>
   <g class="hx-spark s2"><path transform="translate(146 36)" d="M0-6L1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6z" fill="#06b6d4"/></g>
-</svg></div><h3>Timed Mock Tests</h3><p>Real exam interface with timer, question palette and negative marking, just like the actual paper.</p></article>
-              <article class="feat-card anim" style="--d:.34s"><div class="feat-art fa-violet"><svg viewBox="0 0 160 96" aria-hidden="true" focusable="false">
-  <g class="fx-glow"><circle cx="80" cy="20" r="17" fill="#fde047" opacity=".35"/></g>
-  <circle cx="80" cy="19" r="10.5" fill="#fde047"/><rect x="74.5" y="28" width="11" height="6" rx="2.5" fill="#a78bfa"/>
-  <path d="M80 1v3M64 6l2 2.2M96 6l-2 2.2M58 19h3M99 19h3" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M80 88C62 78 38 78 20 84V42c18-6 42-6 60 4z" fill="#fff" stroke="#7c3aed" stroke-width="3.4" stroke-linejoin="round"/>
-  <path d="M80 88C98 78 122 78 140 84V42c-18-6-42-6-60 4z" fill="#fff" stroke="#7c3aed" stroke-width="3.4" stroke-linejoin="round"/>
-  <path d="M80 46v42" stroke="#7c3aed" stroke-width="3.2"/>
-  <path d="M30 54c12-3 28-2 40 3M30 64c12-3 28-2 40 3M30 74c8-2 18-2 28 1" fill="none" stroke="#ddd6fe" stroke-width="3" stroke-linecap="round"/>
-  <path d="M90 57c12-5 28-6 40-3M90 67c12-5 28-6 40-3" fill="none" stroke="#ddd6fe" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="121" cy="76" r="8" fill="#22c55e"/><path d="M117 76l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg></div><h3>Detailed Solutions</h3><p>Step-by-step explanations, Hindi and English view, and a reattempt mode to fix your mistakes.</p></article>
-              <article class="feat-card anim" style="--d:.4s"><div class="feat-art fa-amber"><svg viewBox="0 0 160 96" aria-hidden="true" focusable="false">
+</svg></div><h3>Avg Time / Question</h3><div class="feat-val" id="featAvgTime">—</div><p id="featAvgSub">Take a test to see your avg time</p></article>
+              <article class="feat-card anim" style="--d:.34s"><div class="feat-art fa-amber"><svg viewBox="0 0 160 96" aria-hidden="true" focusable="false">
   <path d="M14 86h132" stroke="#d6a84a" stroke-width="3" stroke-linecap="round"/>
   <rect class="fx-bar b1" x="26" y="60" width="20" height="26" rx="4" fill="#fcd34d"/>
   <rect class="fx-bar b2" x="54" y="46" width="20" height="40" rx="4" fill="#fbbf24"/>
@@ -1531,7 +1535,18 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <circle cx="128" cy="62" r="16" fill="#fff" stroke="#f59e0b" stroke-width="4"/>
     <path d="M128 53l2.7 5.5 6 .9-4.4 4.2 1 6-5.3-2.8-5.3 2.8 1-6-4.4-4.2 6-.9z" fill="#f59e0b"/>
   </g></g>
-</svg></div><h3>Track &amp; Revise</h3><p>Check scores, filter incorrect or unattempted questions and revisit your saved ones anytime.</p></article>
+</svg></div><h3>Performance</h3><div class="feat-val" id="featPerf">—</div><div class="feat-delta" id="featPerfDelta"></div><p id="featPerfSub">Take a test to see your performance</p></article>
+              <article class="feat-card anim feat-tap" id="featCardRevise" style="--d:.4s" role="button" tabindex="0"><div class="feat-art fa-violet"><svg viewBox="0 0 160 96" aria-hidden="true" focusable="false">
+  <g class="fx-glow"><circle cx="80" cy="20" r="17" fill="#fde047" opacity=".35"/></g>
+  <circle cx="80" cy="19" r="10.5" fill="#fde047"/><rect x="74.5" y="28" width="11" height="6" rx="2.5" fill="#a78bfa"/>
+  <path d="M80 1v3M64 6l2 2.2M96 6l-2 2.2M58 19h3M99 19h3" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M80 88C62 78 38 78 20 84V42c18-6 42-6 60 4z" fill="#fff" stroke="#7c3aed" stroke-width="3.4" stroke-linejoin="round"/>
+  <path d="M80 88C98 78 122 78 140 84V42c-18-6-42-6-60 4z" fill="#fff" stroke="#7c3aed" stroke-width="3.4" stroke-linejoin="round"/>
+  <path d="M80 46v42" stroke="#7c3aed" stroke-width="3.2"/>
+  <path d="M30 54c12-3 28-2 40 3M30 64c12-3 28-2 40 3M30 74c8-2 18-2 28 1" fill="none" stroke="#ddd6fe" stroke-width="3" stroke-linecap="round"/>
+  <path d="M90 57c12-5 28-6 40-3M90 67c12-5 28-6 40-3" fill="none" stroke="#ddd6fe" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="121" cy="76" r="8" fill="#22c55e"/><path d="M117 76l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div><h3>Revise Your Mistakes</h3><div class="feat-val-sm"><span id="featSavedCount">0</span> saved • <span id="featWrongCount">0</span> incorrect</div><p>Tap to review your saved questions →</p></article>
             </div>
           </section>
         </div>
@@ -2155,7 +2170,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 22; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 23; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3681,6 +3696,22 @@ function toggleInlineVideo(url){
 document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){
   b.addEventListener('click', function(){ setInlineVideoRate(parseFloat(b.getAttribute('data-rate'))); });
 });
+/* v23 Part C: speed indicator - stopwatch-face icon next to the per-question
+   time. Green happy <=45s, yellow neutral 46-60s, red sad >60s. Only for
+   attempted questions (selected != null); unattempted shows no icon. */
+function solTimeIcon(secs, attempted){
+  if (!attempted) return '';
+  secs = +secs || 0;
+  var conf = secs <= 45 ? { c: '#16a34a', mouth: 'M9 15 Q12 18.2 15 15', t: 'Fast - 45s or less' } :
+             secs <= 60 ? { c: '#d97706', mouth: 'M9.5 16h5', t: 'On time - 46 to 60s' } :
+                          { c: '#dc2626', mouth: 'M9 17 Q12 14 15 17', t: 'Slow - over 60s' };
+  return '<span class="sm-time-ico" title="' + conf.t + '"><svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<circle cx="12" cy="13.5" r="8" fill="#fff" stroke="' + conf.c + '" stroke-width="2"/>' +
+    '<rect x="10.6" y="2" width="2.8" height="3.6" rx="1" fill="' + conf.c + '"/>' +
+    '<circle cx="9.2" cy="12" r="1.1" fill="' + conf.c + '"/>' +
+    '<circle cx="14.8" cy="12" r="1.1" fill="' + conf.c + '"/>' +
+    '<path d="' + conf.mouth + '" stroke="' + conf.c + '" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>';
+}
 function renderSolution(keepOpen){
   closeInlineVideo();
   var t = state.test, i = state.solIdx, q = t.questions[i], st = state.qStates[i];
@@ -3704,7 +3735,7 @@ function renderSolution(keepOpen){
   }
   $('solMeta').innerHTML =
     '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge +
-    '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b></span>' +
+    '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b>' + solTimeIcon(st.timeSpent, st.selected != null) + '</span>' +
     '<span class="sm-time">Marks <span class="marks-chip ' + marksCls + '">' + marksTxt + '</span></span>' +
     '<button class="sol-save-btn" id="solBookmarkBtn" type="button" title="Save question" aria-label="Save question" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button>' +
     '<button class="tb-btn icon-flat" id="solReportBtn" type="button" title="Report"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/></svg><span class="rep-txt">Report</span></button>';
@@ -4120,7 +4151,141 @@ function renderHome(){
   var hs = $('homeSections'); if (hs) hs.style.display = open ? 'none' : '';
   var ts = $('testSeries'); if (ts) ts.style.display = open ? '' : 'none';
   if (open) renderList();
+  renderFeatCards();
 }
+/* v23: "Prepare Smarter" cards are live, animated, real-data cards.
+   Card 1 = avg seconds per answered question (all attempts, real times[]).
+   Card 2 = latest attempt score % + delta vs previous attempt.
+   Card 3 = live saved + incorrect (latest attempt per test) counts, tap opens Saved.
+   No fake numbers: no attempts yet -> "—" + hint. Values are cached, so the
+   animations run when the card appears / the value changes, not on every render. */
+var _featLast = {avg: null, perf: null, rev: null};
+var _featAnimAvg = false, _featAnimPerf = false;
+var _featReduce = (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) || false;
+function featEaseOut(k){ return 1 - Math.pow(1 - k, 3); }
+function featAvgTimeSec(){
+  var store = storeGet(), total = 0, n = 0;
+  TESTS.forEach(function(t){
+    var rec = store.tests[t.id];
+    getAttempts(rec).forEach(function(a){
+      (a.answers || []).forEach(function(sel, i){
+        if (sel != null){ total += (a.times && a.times[i]) || 0; n++; }
+      });
+    });
+  });
+  return n > 0 ? {sec: total / n, qs: n} : null;
+}
+function featPerfData(){
+  /* Attempts carry no global timestamp, so "latest" = last in TESTS order
+     (the order tests are normally attempted). Good enough for the trend. */
+  var store = storeGet();
+  var list = [];
+  TESTS.forEach(function(t){
+    var rec = store.tests[t.id];
+    getAttempts(rec).forEach(function(a){
+      list.push({pct: (a.score / t.marks) * 100});
+    });
+  });
+  if (!list.length) return null;
+  var latest = list[list.length - 1];
+  var prev = list.length > 1 ? list[list.length - 2] : null;
+  return {pct: Math.round(latest.pct), delta: prev ? Math.round(latest.pct - prev.pct) : null, n: list.length};
+}
+function featReviseData(){
+  var store = storeGet(), wrong = 0;
+  TESTS.forEach(function(t){
+    var rec = store.tests[t.id];
+    if (rec && rec.last) wrong += rec.last.wrong || 0;
+  });
+  return {saved: getSaved().length, wrong: wrong};
+}
+function featCountDown(el, targetSec, done){
+  /* price-drop countdown: 5:00 se tez, target ke paas slow, bilkul target par ruko */
+  var start = Math.max(300, Math.ceil(targetSec) + 60);
+  var t0 = null, dur = 2000;
+  function step(ts){
+    if (t0 === null) t0 = ts;
+    var k = Math.min(1, (ts - t0) / dur), e = featEaseOut(k);
+    el.textContent = fmtMMSS(Math.round(start + (targetSec - start) * e));
+    if (k < 1) requestAnimationFrame(step);
+    else { el.textContent = fmtMMSS(Math.round(targetSec)); if (done) done(); }
+  }
+  requestAnimationFrame(step);
+}
+function featCountUp(el, target, suffix, done){
+  var t0 = null, dur = 900;
+  function step(ts){
+    if (t0 === null) t0 = ts;
+    var k = Math.min(1, (ts - t0) / dur), e = featEaseOut(k);
+    el.textContent = Math.round(target * e) + suffix;
+    if (k < 1) requestAnimationFrame(step);
+    else { el.textContent = target + suffix; if (done) done(); }
+  }
+  requestAnimationFrame(step);
+}
+function renderFeatCards(){
+  if (state.view !== 'list' || state.seriesOpen) return;
+  var avgEl = $('featAvgTime'), perfEl = $('featPerf');
+  var svEl = $('featSavedCount'), wrEl = $('featWrongCount');
+  if (!avgEl || !perfEl || !svEl || !wrEl) return;
+  var card3 = $('featCardRevise');
+  if (card3 && !card3.dataset.wired){
+    card3.dataset.wired = '1';
+    card3.addEventListener('click', function(){ openSaved(); });
+    card3.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openSaved(); }
+    });
+  }
+  var rev = featReviseData();
+  var revKey = rev.saved + ':' + rev.wrong;
+  if (_featLast.rev !== revKey){
+    _featLast.rev = revKey;
+    svEl.textContent = rev.saved;
+    wrEl.textContent = rev.wrong;
+  }
+  var avg = featAvgTimeSec();
+  var avgKey = avg ? Math.round(avg.sec) : null;
+  if (_featLast.avg !== avgKey){
+    _featLast.avg = avgKey;
+    var sub = $('featAvgSub');
+    if (!avg){
+      avgEl.textContent = '—';
+      if (sub) sub.textContent = 'Take a test to see your avg time';
+    } else {
+      if (sub) sub.textContent = 'avg per question • ' + avg.qs + ' questions answered';
+      if (_featReduce || _featAnimAvg){ avgEl.textContent = fmtMMSS(Math.round(avg.sec)); }
+      else {
+        _featAnimAvg = true;
+        featCountDown(avgEl, avg.sec, function(){ _featAnimAvg = false; });
+      }
+    }
+  }
+  var perf = featPerfData();
+  var perfKey = perf ? perf.pct + ':' + perf.delta : null;
+  if (_featLast.perf !== perfKey){
+    _featLast.perf = perfKey;
+    var dEl = $('featPerfDelta'), pSub = $('featPerfSub');
+    if (!perf){
+      perfEl.textContent = '—';
+      if (dEl){ dEl.textContent = ''; dEl.className = 'feat-delta'; }
+      if (pSub) pSub.textContent = 'Take a test to see your performance';
+    } else {
+      if (dEl){
+        if (perf.delta == null){ dEl.textContent = ''; dEl.className = 'feat-delta'; }
+        else if (perf.delta > 0){ dEl.textContent = '▲ ' + perf.delta + '% vs last test'; dEl.className = 'feat-delta up'; }
+        else if (perf.delta < 0){ dEl.textContent = '▼ ' + Math.abs(perf.delta) + '% vs last test'; dEl.className = 'feat-delta down'; }
+        else { dEl.textContent = '— same as last test'; dEl.className = 'feat-delta'; }
+      }
+      if (pSub) pSub.textContent = 'latest test score • ' + perf.n + (perf.n === 1 ? ' attempt' : ' attempts');
+      if (_featReduce || _featAnimPerf){ perfEl.textContent = perf.pct + '%'; }
+      else {
+        _featAnimPerf = true;
+        featCountUp(perfEl, perf.pct, '%', function(){ _featAnimPerf = false; });
+      }
+    }
+  }
+}
+
 /* ---- saved questions view ---- */
 function openSaved(){
   state.navTab = 'home';
