@@ -395,6 +395,14 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 /* v21 TESTING: inline video player (YouTube-style, 16:9) */
 .inline-video-wrap{margin-top:14px;position:relative;width:100%;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000}
 .inline-video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* v22: poster (covers the black screen until playback starts) + speed pills */
+.inline-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;cursor:pointer;background:#000}
+.inline-video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.inline-video-speeds{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.spd-btn{padding:5px 12px;font-size:13px;font-weight:700;border-radius:999px;border:1px solid #cbd5e1;background:#f1f5f9;color:#0f172a;cursor:pointer}
+.spd-btn:disabled{opacity:.45;cursor:default}
+.spd-btn.active{background:#0e7490;border-color:#0e7490;color:#fff}
+[data-theme="dark"] .spd-btn{background:#1e293b;color:#e2e8f0;border-color:#334155}
 .sol-toggle-row{margin-top:10px}
 .sol-toggle-link{color:#0891b2;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
 .sol-toggle-link:hover{color:#0e7490}
@@ -761,6 +769,14 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
   #reportBtn,#bookmarkBtn,#starBtn{width:34px;height:34px;padding:0;color:var(--muted2)!important}
   #reportBtn{width:30px;height:30px}
   .sol-meta #solReportBtn{width:30px;height:30px;padding:0}
+  /* v22: compact one-row solutions header on mobile */
+  .sol-meta{flex-wrap:nowrap;gap:5px;padding:6px 8px;min-height:40px;font-size:12px}
+  .sol-meta .sm-qn,.sol-meta .sm-time,.sol-meta .badge{white-space:nowrap}
+  .sol-meta .badge{padding:2px 8px;font-size:11px}
+  .sol-meta .marks-chip{padding:2px 8px;font-size:11px}
+  .sol-meta .sol-save-btn{width:30px;height:30px;padding:0;justify-content:center;flex-shrink:0}
+  .sol-meta .sol-save-btn .ico{width:18px;height:18px}
+  .sol-meta #solReportBtn{flex-shrink:0}
   #bookmarkBtn.on{color:#facc15!important}
   #starBtn.on{color:#f472b6!important}
   .q-scroll{padding:14px 14px 20px}
@@ -968,6 +984,9 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 @media (max-width:359px){
   .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .st-val{font-size:19px}
+  /* v22: solutions header stays one row on very narrow screens */
+  .sol-meta{gap:4px;padding:6px 8px;font-size:11px}
+  .sol-meta .badge{padding:2px 6px;font-size:10px}
 }
 @media (prefers-reduced-motion:reduce){
   .series-card,.qa-btn,.fc-bar,.sidebar nav a,.list-topbar .search,.stat-tile{transition:none}
@@ -1804,6 +1823,13 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <button class="video-btn video-btn-sm" id="videoBtn">▶ See Video Solution</button>
         </div>
         <div id="inlineVideoWrap" class="inline-video-wrap hidden"></div>
+        <div id="inlineVideoSpeeds" class="inline-video-speeds hidden">
+          <button class="spd-btn" data-rate="1" disabled>1x</button>
+          <button class="spd-btn" data-rate="1.25" disabled>1.25x</button>
+          <button class="spd-btn" data-rate="1.5" disabled>1.5x</button>
+          <button class="spd-btn" data-rate="1.75" disabled>1.75x</button>
+          <button class="spd-btn" data-rate="2" disabled>2x</button>
+        </div>
       </div>
       <div class="sol-bottom">
         <button class="btn btn-light" id="solPrev">Previous</button>
@@ -2129,7 +2155,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 21; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 22; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3525,12 +3551,87 @@ function openAttemptPicker(){
     });
   });
 }
-/* v21 TESTING: inline video player. YouTube video ko app ke andar hi
-   (youtube-nocookie embed, YouTube jaisa player) chalata hai, solution wale
-   timestamp se seedha. NOTE: YouTube apne player ke andar apne ads khud
-   lagata hai - app unhe block/remove nahi karta aur na kar sakta hai.
+/* v22: inline video player upgrades (v21 TESTING feature, VIDEO_INLINE_TEST flag).
+   Speed pills (1x/1.25x/1.5x/1.75x/2x) use the YouTube IFrame API, lazy-loaded
+   on first video open only - no static <script> block. Poster thumbnail covers
+   the black screen until playback starts. HONEST LIMITS (do not claim otherwise):
+   - YouTube apne player ke andar apne ads khud lagata hai - app unhe block/remove
+     nahi karta aur na kar sakta hai.
+   - YouTube ke player ke andar ke control icons (play/settings/fullscreen) YouTube
+     khud cross-origin iframe ke andar render karta hai - app unka size change nahi
+     kar sakta; speed buttons + poster hi asal fix hain.
+   - API load na ho to plain iframe phir bhi chalta hai (speed buttons disabled
+     rehte hain, playback kabhi nahi toot-ta).
    Poora feature hatana ho to VIDEO_INLINE_TEST = false kar do. */
+var inlineVideoPlayer = null;        /* YT.Player instance, ya null */
+var inlineVideoApiState = 'idle';    /* idle | loading | ready | failed */
+var inlineVideoPendingRate = null;   /* speed tap hui par player ready nahi - onReady par lagao */
+var inlineVideoPosterTimer = null;   /* poster hide karne wala timeout */
+function hideInlineVideoPoster(){
+  if (inlineVideoPosterTimer){ clearTimeout(inlineVideoPosterTimer); inlineVideoPosterTimer = null; }
+  var p = $('inlineVideoPoster'), b = $('inlineVideoPlay');
+  if (p) p.classList.add('hidden');
+  if (b) b.classList.add('hidden');
+}
+function setInlineSpeedButtons(on){
+  document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){ b.disabled = !on; });
+}
+function markInlineSpeed(rate){
+  document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){
+    b.classList.toggle('active', parseFloat(b.getAttribute('data-rate')) === rate);
+  });
+}
+function setInlineVideoRate(rate){
+  inlineVideoPendingRate = rate;
+  markInlineSpeed(rate);
+  if (inlineVideoPlayer && inlineVideoPlayer.setPlaybackRate){
+    try { inlineVideoPlayer.setPlaybackRate(rate); } catch (e) {}
+  }
+}
+function createInlineVideoPlayer(){
+  var fr = $('inlineVideoFrame');
+  if (!fr || !window.YT || !window.YT.Player) return;
+  try {
+    inlineVideoPlayer = new window.YT.Player(fr, {
+      events: {
+        onReady: function(){
+          inlineVideoApiState = 'ready';
+          setInlineSpeedButtons(true);
+          if (inlineVideoPendingRate !== null){
+            try { inlineVideoPlayer.setPlaybackRate(inlineVideoPendingRate); } catch (e) {}
+          }
+        },
+        onStateChange: function(ev){
+          if (window.YT && window.YT.PlayerState && ev.data === window.YT.PlayerState.PLAYING) hideInlineVideoPoster();
+        }
+      }
+    });
+  } catch (e) {
+    inlineVideoPlayer = null;
+    inlineVideoApiState = 'failed';
+  }
+}
+function loadInlineVideoApi(){
+  if (inlineVideoApiState !== 'idle') return;
+  inlineVideoApiState = 'loading';
+  window.onYouTubeIframeAPIReady = function(){ createInlineVideoPlayer(); };
+  var s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  s.async = true;
+  s.onerror = function(){ inlineVideoApiState = 'failed'; };
+  document.head.appendChild(s);
+}
 function closeInlineVideo(){
+  if (inlineVideoPosterTimer){ clearTimeout(inlineVideoPosterTimer); inlineVideoPosterTimer = null; }
+  if (inlineVideoPlayer){
+    try { inlineVideoPlayer.destroy(); } catch (e) {}
+    inlineVideoPlayer = null;
+  }
+  inlineVideoPendingRate = null;
+  var sp = $('inlineVideoSpeeds');
+  if (sp) sp.classList.add('hidden');
+  setInlineSpeedButtons(false);
+  markInlineSpeed(1);
   var w = $('inlineVideoWrap');
   if (w){ w.innerHTML = ''; w.classList.add('hidden'); }
   var vb = $('videoBtn');
@@ -3544,14 +3645,42 @@ function toggleInlineVideo(url){
   if (!m){ window.open(url, '_blank'); return; }
   var tm = url.match(/[?&]t=(\d+)/);
   var start = tm ? parseInt(tm[1], 10) : 0;
-  w.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + m[1] +
-    '?start=' + start + '&autoplay=1&rel=0" title="Video solution" frameborder="0" ' +
+  inlineVideoPlayer = null;
+  inlineVideoPendingRate = null;
+  markInlineSpeed(1);
+  setInlineSpeedButtons(false);
+  w.innerHTML = '<iframe id="inlineVideoFrame" src="https://www.youtube-nocookie.com/embed/' + m[1] +
+    '?start=' + start + '&autoplay=1&rel=0&enablejsapi=1&modestbranding=1" title="Video solution" frameborder="0" ' +
     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
-    'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' +
+    '<img class="inline-video-poster" id="inlineVideoPoster" src="https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg" alt="Video thumbnail">' +
+    '<span class="inline-video-play" id="inlineVideoPlay">▶</span>';
   w.classList.remove('hidden');
+  var sp = $('inlineVideoSpeeds');
+  if (sp) sp.classList.remove('hidden');
   var vb = $('videoBtn');
   if (vb) vb.textContent = '✕ Hide Video';
+  /* poster: playback shuru hote hi hat jata hai (PLAYING event); 2.5s ka timeout
+     fallback hai - API load na ho ya autoplay block ho tab bhi poster hat jayega
+     aur YouTube ka apna play button dab sakta hai. Poster par tap karne se bhi
+     poster hat jata hai aur video play hoti hai. */
+  var posterTap = function(){
+    hideInlineVideoPoster();
+    if (inlineVideoPlayer && inlineVideoPlayer.playVideo){
+      try { inlineVideoPlayer.playVideo(); } catch (e) {}
+    }
+  };
+  var p = $('inlineVideoPoster'), pl = $('inlineVideoPlay');
+  if (p){ p.addEventListener('click', posterTap); p.onerror = function(){ p.style.display = 'none'; }; }
+  if (pl) pl.addEventListener('click', posterTap);
+  inlineVideoPosterTimer = setTimeout(hideInlineVideoPoster, 2500);
+  if (window.YT && window.YT.Player) createInlineVideoPlayer();
+  else loadInlineVideoApi();
 }
+/* speed pills: ek baar boot par wire karo (static markup hai) */
+document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){
+  b.addEventListener('click', function(){ setInlineVideoRate(parseFloat(b.getAttribute('data-rate'))); });
+});
 function renderSolution(keepOpen){
   closeInlineVideo();
   var t = state.test, i = state.solIdx, q = t.questions[i], st = state.qStates[i];
@@ -3574,10 +3703,10 @@ function renderSolution(keepOpen){
     else { marksCls = 'neg'; marksTxt = '-0.33'; }
   }
   $('solMeta').innerHTML =
-    '<span class="sm-qn">Question No.' + (i + 1) + '</span>' + badge +
+    '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge +
     '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b></span>' +
     '<span class="sm-time">Marks <span class="marks-chip ' + marksCls + '">' + marksTxt + '</span></span>' +
-    '<button class="sol-save-btn" id="solBookmarkBtn" type="button" title="Save question" aria-label="Save question" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span>Save</span></button>' +
+    '<button class="sol-save-btn" id="solBookmarkBtn" type="button" title="Save question" aria-label="Save question" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button>' +
     '<button class="tb-btn icon-flat" id="solReportBtn" type="button" title="Report"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/></svg><span class="rep-txt">Report</span></button>';
   var solBookmarkBtn = $('solBookmarkBtn');
   if (solBookmarkBtn){
@@ -4223,7 +4352,7 @@ function syncSolSaveBtn(){
   b.setAttribute('aria-pressed', on ? 'true' : 'false');
   b.title = on ? 'Remove saved question' : 'Save question';
   b.setAttribute('aria-label', b.title);
-  b.querySelector('span').textContent = on ? 'Saved' : 'Save';
+  /* v22: icon-only button - saved state shows via .on class (accent colour + filled icon) */
 }
 function syncStarBtn(){
   var b = $('starBtn');
