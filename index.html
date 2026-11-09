@@ -2170,7 +2170,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 23; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 25; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3696,13 +3696,15 @@ function toggleInlineVideo(url){
 document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){
   b.addEventListener('click', function(){ setInlineVideoRate(parseFloat(b.getAttribute('data-rate'))); });
 });
-/* v23 Part C: speed indicator - stopwatch-face icon next to the per-question
-   time. Green happy <=45s, yellow neutral 46-60s, red sad >60s. Only for
-   attempted questions (selected != null); unattempted shows no icon. */
-function solTimeIcon(secs, attempted){
+/* v23 Part C + v24: speed indicator - stopwatch-face icon next to the per-question
+   time. WRONG answer = ALWAYS red sad, however fast it was (never green).
+   Correct answers only: green happy <=45s, yellow neutral 46-60s, red sad >60s.
+   Only for attempted questions (selected != null); unattempted shows no icon. */
+function solTimeIcon(secs, attempted, wrong){
   if (!attempted) return '';
   secs = +secs || 0;
-  var conf = secs <= 45 ? { c: '#16a34a', mouth: 'M9 15 Q12 18.2 15 15', t: 'Fast - 45s or less' } :
+  var conf = wrong ? { c: '#dc2626', mouth: 'M9 17 Q12 14 15 17', t: 'Wrong answer' } :
+             secs <= 45 ? { c: '#16a34a', mouth: 'M9 15 Q12 18.2 15 15', t: 'Fast - 45s or less' } :
              secs <= 60 ? { c: '#d97706', mouth: 'M9.5 16h5', t: 'On time - 46 to 60s' } :
                           { c: '#dc2626', mouth: 'M9 17 Q12 14 15 17', t: 'Slow - over 60s' };
   return '<span class="sm-time-ico" title="' + conf.t + '"><svg viewBox="0 0 24 24" aria-hidden="true">' +
@@ -3735,7 +3737,7 @@ function renderSolution(keepOpen){
   }
   $('solMeta').innerHTML =
     '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge +
-    '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b>' + solTimeIcon(st.timeSpent, st.selected != null) + '</span>' +
+    '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b>' + solTimeIcon(st.timeSpent, st.selected != null, status === 'incorrect') + '</span>' +
     '<span class="sm-time">Marks <span class="marks-chip ' + marksCls + '">' + marksTxt + '</span></span>' +
     '<button class="sol-save-btn" id="solBookmarkBtn" type="button" title="Save question" aria-label="Save question" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button>' +
     '<button class="tb-btn icon-flat" id="solReportBtn" type="button" title="Report"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v5M12 18v.5"/></svg><span class="rep-txt">Report</span></button>';
