@@ -1350,6 +1350,67 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
   .tcx-links .tcx-btn{flex:1}
 }
 
+
+/* ================= v37: Firebase login modal + Settings v2 ================= */
+.fb-login-btn{margin-left:2px;padding:0 12px;height:34px;border-radius:999px;border:1px solid var(--border2);background:linear-gradient(135deg,var(--teal),var(--accent2));color:#fff;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.fb-login-btn .fb-login-g{display:none;width:18px;height:18px}
+.sync-pill{font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}
+@media (max-width:560px){.sync-pill{display:none}.fb-login-btn{width:34px;padding:0;border-radius:50%}.fb-login-btn .fb-login-txt{display:none}.fb-login-btn .fb-login-g{display:block}.fb-login-btn.is-user .fb-login-txt{display:block}.fb-login-btn.is-user .fb-login-g{display:none}}
+.fb-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+.fb-modal.open{display:flex}
+.fb-modal-backdrop{position:absolute;inset:0;background:rgba(2,6,23,.62);animation:fbFadeIn .2s ease}
+.fb-modal-card{position:relative;width:100%;max-width:380px;max-height:88vh;overflow:auto;border-radius:22px;padding:22px 20px 18px;background:linear-gradient(165deg,var(--surface2),var(--surface) 55%,var(--surface3));border:1px solid var(--border2);box-shadow:0 24px 60px rgba(0,0,0,.45);animation:fbModalIn .28s cubic-bezier(.2,.9,.3,1.15)}
+.fb-modal.closing .fb-modal-card{animation:fbModalOut .18s ease forwards}
+.fb-modal.closing .fb-modal-backdrop{animation:fbFadeOut .18s ease forwards}
+@keyframes fbModalIn{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fbModalOut{to{opacity:0;transform:translateY(10px) scale(.96)}}
+@keyframes fbFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fbFadeOut{to{opacity:0}}
+#fbModal [hidden]{display:none!important}
+.fb-modal-x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fb-modal-x svg{width:15px;height:15px}
+.fb-modal-badge{width:56px;height:56px;margin:2px auto 10px;border-radius:18px;background:linear-gradient(135deg,#00a8c4,#0b7196 55%,#7e55a3);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,150,181,.35)}
+.fb-modal-badge svg{width:34px;height:26px;color:#fff}
+.fb-modal-card h3{margin:4px 0 2px;font-size:20px;text-align:center;color:var(--text-strong)}
+.fb-modal-sub{text-align:center;color:var(--muted);font-size:13.5px;margin:0 0 6px}
+.fb-benefit{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;background:linear-gradient(120deg,var(--surface3),var(--surface2));border:1px solid var(--border);margin-top:8px}
+.fb-benefit-ico{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,var(--teal),var(--accent2));color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fb-benefit-ico svg{width:19px;height:19px}
+.fb-benefit b{display:block;font-size:13.5px;color:var(--text-strong)}
+.fb-benefit span{font-size:12.5px;color:var(--muted)}
+.fb-google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:12px 14px;border-radius:999px;border:1px solid #dadce0;background:linear-gradient(180deg,#ffffff,#f8f9fa);color:#1f1f1f;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.fb-google-btn .fb-g{width:20px;height:20px;flex:none}
+.fb-divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12.5px;margin:16px 0 4px}
+.fb-divider::before,.fb-divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+.fb-modal label,.set-account label{display:block;font-weight:600;font-size:13.5px;color:var(--text-strong);margin-top:10px}
+.fb-modal input[type=email],.fb-modal input[type=password],.set-account input[type=email],.set-account input[type=password]{display:block;width:100%;margin-top:5px;padding:11px 12px;border-radius:12px;border:1px solid var(--border2);background:var(--input-bg);color:var(--text);font-size:14.5px;outline:none;box-sizing:border-box}
+.fb-modal input:focus,.set-account input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,150,181,.16)}
+.fb-email-btn{display:block;width:100%;margin-top:14px;padding:12px 14px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--teal),var(--accent2));color:#fff;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,150,181,.35)}
+.fb-email-btn:disabled{opacity:.6;cursor:wait}
+.fb-auth-err{margin:10px 2px 0;font-size:13px;font-weight:600;color:#ef4444;text-align:center}
+.fb-auth-err.ok{color:var(--good)}
+.fb-auth-links{display:flex;justify-content:space-between;gap:8px;margin-top:12px}
+.fb-auth-links a{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;cursor:pointer}
+.fb-modal-note{text-align:center;color:var(--muted);font-size:12px;margin:14px 2px 0}
+.fb-modal-user{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:linear-gradient(120deg,var(--surface3),var(--surface2));border:1px solid var(--border);margin-top:8px}
+.fb-modal-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#00a8c4,#0b7196);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex:none}
+.fb-modal-photo{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none}
+.fb-modal-userinfo b{display:block;font-size:15px;color:var(--text-strong);word-break:break-word}
+.fb-modal-userinfo span{font-size:12.5px;color:var(--muted);word-break:break-word}
+.fb-modal-sync{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:10px 12px;border-radius:12px;border:1px dashed var(--border2);color:var(--muted);font-size:13px}
+.fb-modal-sync b{color:var(--text-strong)}
+.fb-logout-btn{display:block;width:100%;margin-top:14px;padding:12px 14px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--bad),#b91c1c);color:#fff;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(218,61,53,.3)}
+/* ---- Settings v2 ---- */
+.settings-v2 .set-card{background:linear-gradient(165deg,var(--surface2),var(--surface) 60%,var(--surface3));border:1px solid var(--border2);border-radius:18px;box-shadow:0 10px 26px rgba(0,0,0,.16)}
+.settings-v2 .set-card h3{display:flex;align-items:center;gap:8px}
+.set-sec-title{font-size:17px;margin:18px 2px 10px;color:var(--text-strong)}
+.set-acct-status{margin:6px 2px 0;padding:10px 12px;border-radius:12px;background:linear-gradient(120deg,var(--surface3),var(--surface2));border:1px solid var(--border);font-size:13.5px;font-weight:600;color:var(--text-strong);word-break:break-word}
+.set-sync-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 2px;font-size:13.5px;color:var(--muted)}
+.set-sync-row b{color:var(--text-strong);text-align:right;word-break:break-word}
+.set-sync-note{font-size:12px;color:var(--muted);margin:8px 2px 0}
+.settings-v2 .set-card label:not(.set-row){display:block;font-weight:600;font-size:13.5px;color:var(--text-strong);margin-top:10px}
+.settings-v2 .set-card input[type=text],.settings-v2 .set-card input[type=number],.settings-v2 .set-card select{width:100%;box-sizing:border-box}
+
 </style>
 </head>
 <body>
@@ -1480,6 +1541,8 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <button class="icon-btn mob-only" id="homeSearchIcon" title="Search" aria-label="Search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
           <button class="icon-btn" id="darkToggle" title="Dark mode" aria-label="Dark mode"><svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg><svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg></button>
           <button class="icon-btn" id="fsBtnHome" title="Full screen" aria-label="Full screen"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg></button>
+          <span class="sync-pill" id="syncStatus" title="Sync status">● Offline</span>
+          <button class="fb-login-btn" id="fbLoginBtn" title="Google se login"><span class="fb-login-txt">Login</span><svg class="fb-login-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></button>
           <div class="avatar" id="avatarInitial" title="Profile" role="button" tabindex="0">S</div>
         </div>
       </div>
@@ -1697,8 +1760,43 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 
 <!-- ================= SETTINGS ================= -->
 <div id="view-settings" class="view">
-  <div class="settings-wrap">
+  <div class="settings-wrap settings-v2">
     <h1>Settings</h1>
+    <div class="card set-card set-account">
+      <h3>Account</h3>
+      <p class="set-acct-status" id="setAccountStatus">Login nahi hai</p>
+      <button class="fb-google-btn" id="setGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
+      <div class="fb-divider"><span>ya ID-password se</span></div>
+      <div id="setEmailForm">
+        <label>Email
+          <input id="setEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
+        </label>
+        <label>Password
+          <input id="setPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="current-password">
+        </label>
+        <p class="fb-auth-err" id="setAuthErr" hidden></p>
+        <button class="fb-email-btn" id="setEmailBtn">Login karein</button>
+        <div class="fb-auth-links">
+          <a href="#" id="setAuthToggle">Naya account banao</a>
+          <a href="#" id="setForgotLink">Password bhool gaye?</a>
+        </div>
+      </div>
+      <div id="setChangePwWrap" hidden>
+        <label>Naya password
+          <input id="setNewPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
+        </label>
+        <button class="btn btn-teal" id="setChangePwBtn" style="margin-top:10px">Password badlo</button>
+      </div>
+      <button class="fb-logout-btn" id="setLogoutBtn" hidden>Logout</button>
+    </div>
+    <div class="card set-card set-sync">
+      <h3>Sync</h3>
+      <div class="set-sync-row"><span>Status</span><b class="sync-pill" id="setSyncStatus">● Offline</b></div>
+      <div class="set-sync-row"><span>Last synced</span><b id="setLastSync">Abhi tak sync nahi hua</b></div>
+      <button class="btn btn-teal" id="setSyncNowBtn" style="margin-top:6px">Sync Now</button>
+      <p class="set-sync-note">Sync Now dabane par is device ka data upload hoga aur doosre device ka data download hoga.</p>
+    </div>
+    <h2 class="set-sec-title">Preferences</h2>
     <div class="card set-card">
       <h3>Profile</h3>
       <label>Name
@@ -2169,6 +2267,10 @@ function storeGet(){
 }
 function storeSet(d){
   try { localStorage.setItem('super1000_v1', JSON.stringify(d)); } catch(e){}
+  /* v37: Firebase sync hook — debounced shadow-diff push; guarded so the
+     app works 100% from localStorage when the Firebase module never ran
+     (offline / jsdom) or the SDK failed to load. */
+  try { if (window.__fbSync && window.__fbSync.pushSoon) window.__fbSync.pushSoon(); } catch(e){}
 }
 function optLetter(i){ return ['A','B','C','D'][i] || ''; }
 
@@ -2748,7 +2850,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 36; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 37; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3904,6 +4006,12 @@ function submitTest(auto){
     score: stats.score, correct: stats.correct, wrong: stats.wrong, skipped: stats.skipped,
     accuracy: stats.accuracy, timeTaken: state.timeTaken, auto: !!auto,
     date: new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}),
+    ts: Date.now(), testId: state.test.id,
+    qs: state.qStates.map(function(st, i){
+      var q = state.test.questions[i];
+      return {n: q.n, sel: st.selected, ok: st.selected != null && st.selected === q.ans,
+              secs: st.timeSpent || 0, marked: !!st.marked};
+    }),
     answers: state.qStates.map(function(st){ return st.selected; }),
     times: state.qStates.map(function(st){ return st.timeSpent; }),
     re: state.qStates.map(function(){ return null; })
@@ -5375,5 +5483,554 @@ attachSwipe($('solScroll'),
   if (sv) sv.addEventListener('click', function(){ var b = document.getElementById('irSaved'); if (b) b.click(); });
 })();
 </script>
+
+<div class="fb-modal" id="fbModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Login">
+  <div class="fb-modal-backdrop" id="fbModalBackdrop"></div>
+  <div class="fb-modal-card" role="document">
+    <button class="fb-modal-x" id="fbModalClose" aria-label="Band karein"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>
+    <div id="fbModalLoggedOut">
+      <div class="fb-modal-badge"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></div>
+      <h3>Apna progress har device par</h3>
+      <p class="fb-modal-sub">Ek baar login karo — phir phone ya kisi bhi device se wahi progress.</p>
+      <div class="fb-modal-benefits">
+        <div class="fb-benefit"><span class="fb-benefit-ico"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><div><b>Scores aur attempts sync</b><span>Har test ka score aur history har device par</span></div></div>
+        <div class="fb-benefit"><span class="fb-benefit-ico"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg></span><div><b>Saved questions sync</b><span>Bookmark kiye questions kahin se bhi kholo</span></div></div>
+        <div class="fb-benefit"><span class="fb-benefit-ico"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span><div><b>Offline chalega, auto-sync</b><span>Bina internet ke test do — internet aate hi sync</span></div></div>
+      </div>
+      <button class="fb-google-btn" id="fbGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
+      <div class="fb-divider"><span>ya ID-password se</span></div>
+      <div id="fbEmailForm">
+        <label>Email
+          <input id="fbEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
+        </label>
+        <label>Password
+          <input id="fbPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="current-password">
+        </label>
+        <p class="fb-auth-err" id="fbAuthErr" hidden></p>
+        <button class="fb-email-btn" id="fbEmailBtn">Login karein</button>
+        <div class="fb-auth-links">
+          <a href="#" id="fbAuthToggle">Naya account banao</a>
+          <a href="#" id="fbForgotLink">Password bhool gaye?</a>
+        </div>
+      </div>
+      <p class="fb-modal-note" id="fbModalNote">Login sirf sync ke liye hai — app bina login ke bhi poori tarah chalega.</p>
+    </div>
+    <div id="fbModalLoggedIn" hidden>
+      <div class="fb-modal-user">
+        <img class="fb-modal-photo" id="fbModalPhoto" alt="" hidden>
+        <div class="fb-modal-avatar" id="fbModalAvatar">S</div>
+        <div class="fb-modal-userinfo"><b id="fbModalName">Student</b><span id="fbModalEmail"></span></div>
+      </div>
+      <div class="fb-modal-sync"><span>Sync status</span><b id="fbModalSyncState">● Offline</b></div>
+      <button class="fb-logout-btn" id="fbLogoutBtn">Logout</button>
+      <p class="fb-modal-note">Logout karne par is device ka data yahin rahega, sync band ho jayega.</p>
+    </div>
+  </div>
+</div>
+
+
+<script type="module">
+/* TESTPRO v37 — Firebase Auth + Firestore sync (project testpro777, user's own).
+   Google + email/password sign-in; all progress syncs to Firestore when
+   online and works fully offline from localStorage (auto-sync on reconnect).
+   The sync layer keys everything by Firebase uid, so Google and
+   email/password accounts behave identically. NO Analytics.
+   Offline first: if the SDK cannot load, window.__fb stays null and the
+   app works 100% from localStorage; the login modal still opens and says
+   login needs internet. Local-only keys (NEVER synced): dark, inProgress. */
+(async function(){
+'use strict';
+var FB_VERSION = '11.0.2';
+var FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyBp18NsYFPq4XR4qKQ1jDfqZ_Xrv0iO_UU',
+  authDomain: 'testpro777.firebaseapp.com',
+  projectId: 'testpro777',
+  storageBucket: 'testpro777.firebasestorage.app',
+  messagingSenderId: '627666336409',
+  appId: '1:627666336409:web:82b1c2c0f6f15a23bb5608'
+};
+var CDN = 'https://www.gstatic.com/firebasejs/' + FB_VERSION + '/';
+var fb = null;
+var F = null;
+var shadow = null;
+var pushTimer = null;
+var pushRunning = null;
+var status = 'offline';
+var lastSyncAt = 0;
+var lastPullAt = 0;
+var authListeners = [];
+var emailMode = {modal: 'login', settings: 'login'};
+var STATUS_TEXT = {'logged-out': '○ Logged out', 'synced': '● Synced', 'pending': '● Syncing…', 'offline': '● Offline'};
+
+function $(id){ return document.getElementById(id); }
+function deepCopy(o){ return JSON.parse(JSON.stringify(o)); }
+function storeLocal(){ try { return (window.storeGet ? window.storeGet() : {tests:{}}); } catch(e){ return {tests:{}}; } }
+function saveLocal(d){ try { if (window.storeSet) window.storeSet(d); } catch(e){} }
+function fmtLastSync(){
+  if (!lastSyncAt) return 'Abhi tak sync nahi hua';
+  try { return new Date(lastSyncAt).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
+  catch(e){ return 'Abhi tak sync nahi hua'; }
+}
+function updatePill(){
+  var p = $('syncStatus'); if (p) p.textContent = STATUS_TEXT[status] || status;
+  var m = $('fbModalSyncState'); if (m) m.textContent = STATUS_TEXT[status] || status;
+  var s = $('setSyncStatus'); if (s) s.textContent = STATUS_TEXT[status] || status;
+  var ls = $('setLastSync'); if (ls) ls.textContent = fmtLastSync();
+}
+function setStatus(s){
+  if (status === s){ updatePill(); return; }
+  status = s; updatePill();
+  for (var i = 0; i < authListeners.length; i++){ try { authListeners[i](s); } catch(e){} }
+}
+
+/* ---------------- login modal ---------------- */
+function updateModalView(){
+  var u = fb && fb.user;
+  var lo = $('fbModalLoggedOut'), li = $('fbModalLoggedIn');
+  if (lo) lo.hidden = !!u;
+  if (li) li.hidden = !u;
+  if (u){
+    var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Student');
+    var nm = $('fbModalName'); if (nm) nm.textContent = name;
+    var em = $('fbModalEmail'); if (em) em.textContent = u.email || '';
+    var av = $('fbModalAvatar'), ph = $('fbModalPhoto');
+    if (u.photoURL && ph){ ph.src = u.photoURL; ph.hidden = false; if (av) av.hidden = true; }
+    else { if (ph) ph.hidden = true; if (av){ av.hidden = false; av.textContent = name.charAt(0).toUpperCase(); } }
+  }
+  updatePill();
+}
+function openFbModal(){
+  var m = $('fbModal'); if (!m) return;
+  updateModalView();
+  m.classList.remove('closing');
+  m.classList.add('open');
+  m.setAttribute('aria-hidden', 'false');
+}
+function closeFbModal(){
+  var m = $('fbModal'); if (!m) return;
+  if (!m.classList.contains('open')) return;
+  m.classList.add('closing');
+  setTimeout(function(){
+    m.classList.remove('open', 'closing');
+    m.setAttribute('aria-hidden', 'true');
+  }, 180);
+}
+function updateHeader(){
+  var b = $('fbLoginBtn'); if (!b) return;
+  var u = fb && fb.user;
+  var txt = b.querySelector('.fb-login-txt');
+  if (u){
+    var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Student');
+    if (txt) txt.textContent = name.charAt(0).toUpperCase();
+    b.classList.add('is-user');
+    b.title = name + ' — account kholo';
+    var av = $('avatarInitial');
+    if (av) av.textContent = name.charAt(0).toUpperCase();
+  } else {
+    if (txt) txt.textContent = 'Login';
+    b.classList.remove('is-user');
+    b.title = 'Google se login';
+    try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+  }
+  updatePill();
+}
+
+/* ---------------- Settings account section ---------------- */
+function updateSettingsAccount(){
+  var u = fb && fb.user;
+  var st = $('setAccountStatus');
+  if (st){
+    st.textContent = u
+      ? ('Logged in: ' + (u.displayName || (u.email ? u.email.split('@')[0] : 'Student')) + (u.email ? ' (' + u.email + ')' : ''))
+      : 'Login nahi hai';
+  }
+  var g = $('setGoogleBtn'); if (g) g.hidden = !!u;
+  var ef = $('setEmailForm'); if (ef) ef.hidden = !!u;
+  var cp = $('setChangePwWrap'); if (cp) cp.hidden = !u;
+  var lo = $('setLogoutBtn'); if (lo) lo.hidden = !u;
+  updatePill();
+}
+
+/* ---------------- auth ---------------- */
+function signIn(){
+  if (!fb || !F){
+    setStatus('offline');
+    var note = $('fbModalNote');
+    if (note) note.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.';
+    var se = $('setAuthErr');
+    if (se){ se.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.'; se.hidden = false; }
+    return;
+  }
+  try { F.signInWithRedirect(fb.auth, new F.GoogleAuthProvider()); }
+  catch(e){ setStatus('offline'); }
+}
+function signOut(){
+  if (!fb || !F){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); return; }
+  F.signOut(fb.auth).then(function(){ /* onAuthStateChanged fires */ })
+    .catch(function(){ setStatus('logged-out'); updateHeader(); updateModalView(); updateSettingsAccount(); });
+}
+function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function emailErrorText(code){
+  var map = {
+    'auth/invalid-email': 'Sahi email ID likho',
+    'auth/user-not-found': 'Is email se koi account nahi mila',
+    'auth/wrong-password': 'Galat password — dobara try karo',
+    'auth/invalid-credential': 'Email ya password galat hai',
+    'auth/email-already-in-use': 'Ye email pehle se use mein hai — login karo',
+    'auth/weak-password': 'Password kamzor hai — kam se kam 6 akshar',
+    'auth/network-request-failed': 'Internet nahi hai — connection check karo',
+    'auth/too-many-requests': 'Bahut baar try kar liya — thodi der baad try karo',
+    'auth/requires-recent-login': 'Security ke liye dobara login karke try karo',
+    'auth/operation-not-allowed': 'Email login abhi on nahi hai — Firebase console mein Email/Password enable karo'
+  };
+  return map[code] || 'Kuch galat hua — dobara try karo';
+}
+function errEls(which){
+  return {
+    em: $(which === 'modal' ? 'fbEmail' : 'setEmail'),
+    pw: $(which === 'modal' ? 'fbPassword' : 'setPassword'),
+    err: $(which === 'modal' ? 'fbAuthErr' : 'setAuthErr'),
+    btn: $(which === 'modal' ? 'fbEmailBtn' : 'setEmailBtn'),
+    tog: $(which === 'modal' ? 'fbAuthToggle' : 'setAuthToggle')
+  };
+}
+function showErr(el, msg, ok){
+  if (!el) return;
+  el.textContent = msg;
+  el.hidden = false;
+  if (ok) el.classList.add('ok'); else el.classList.remove('ok');
+}
+async function submitEmailAuth(which){
+  var x = errEls(which);
+  var email = ((x.em && x.em.value) || '').trim();
+  var pw = (x.pw && x.pw.value) || '';
+  var mode = emailMode[which];
+  if (x.err){ x.err.textContent = ''; x.err.hidden = true; x.err.classList.remove('ok'); }
+  if (!validEmail(email)){ showErr(x.err, 'Sahi email ID likho'); return; }
+  if (pw.length < 6){ showErr(x.err, 'Password kam se kam 6 akshar ka ho'); return; }
+  if (!fb || !F){ showErr(x.err, 'Internet nahi hai — connection check karo'); setStatus('offline'); return; }
+  if (x.btn) x.btn.disabled = true;
+  try {
+    if (mode === 'signup') await F.createUserWithEmailAndPassword(fb.auth, email, pw);
+    else await F.signInWithEmailAndPassword(fb.auth, email, pw);
+    if (which === 'modal') closeFbModal();
+  } catch(e){ showErr(x.err, emailErrorText(e && e.code)); }
+  finally { if (x.btn) x.btn.disabled = false; }
+}
+function toggleEmailMode(which, ev){
+  if (ev) ev.preventDefault();
+  emailMode[which] = (emailMode[which] === 'login') ? 'signup' : 'login';
+  var mode = emailMode[which];
+  var x = errEls(which);
+  if (x.btn) x.btn.textContent = (mode === 'signup') ? 'Account banao' : 'Login karein';
+  if (x.tog) x.tog.textContent = (mode === 'signup') ? 'Pehle se account hai? Login karo' : 'Naya account banao';
+  if (x.err){ x.err.textContent = ''; x.err.hidden = true; }
+}
+async function forgotPassword(which, ev){
+  if (ev) ev.preventDefault();
+  var x = errEls(which);
+  var email = ((x.em && x.em.value) || '').trim();
+  if (x.err){ x.err.textContent = ''; x.err.hidden = true; x.err.classList.remove('ok'); }
+  if (!validEmail(email)){ showErr(x.err, 'Pehle sahi email ID likho'); return; }
+  if (!fb || !F){ showErr(x.err, 'Internet nahi hai — connection check karo'); return; }
+  try {
+    await F.sendPasswordResetEmail(fb.auth, email);
+    showErr(x.err, 'Reset link email par bhej diya — inbox check karo', true);
+  } catch(e){ showErr(x.err, emailErrorText(e && e.code)); }
+}
+async function changePassword(){
+  var pwEl = $('setNewPassword');
+  var errEl = $('setAuthErr');
+  var pw = (pwEl && pwEl.value) || '';
+  if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
+  if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
+  if (!fb || !F || !fb.user){ showErr(errEl, 'Pehle login karo'); return; }
+  try {
+    await F.updatePassword(fb.user, pw);
+    if (pwEl) pwEl.value = '';
+    showErr(errEl, 'Password badal gaya', true);
+  } catch(e){ showErr(errEl, emailErrorText(e && e.code)); }
+}
+
+/* ---------------- sync engine ---------------- */
+function attemptDocId(testId, at){ return testId + '_' + at.no + '_' + at.ts; }
+function savedDocId(key){ return String(key).replace(/:/g, '_'); }
+function stableTs(testId, at){
+  var s = testId + '|' + (at.no || 0) + '|' + (at.score || 0) + '|' + (at.date || '');
+  var h = 0;
+  for (var i = 0; i < s.length; i++){ h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+  return 1700000000000 + (Math.abs(h) % 900000000);
+}
+function ensureAttemptTs(store){
+  var changed = false;
+  ['tests', 'tests_ca'].forEach(function(sec){
+    var map = store[sec] || {};
+    Object.keys(map).forEach(function(tid){
+      var hist = (map[tid] && map[tid].history) || [];
+      hist.forEach(function(at){ if (at && !at.ts){ at.ts = stableTs(tid, at); changed = true; } });
+    });
+  });
+  return changed;
+}
+function collectAttemptIds(store){
+  var ids = {};
+  ['tests', 'tests_ca'].forEach(function(sec){
+    var map = store[sec] || {};
+    Object.keys(map).forEach(function(tid){
+      var hist = (map[tid] && map[tid].history) || [];
+      hist.forEach(function(at){ if (at && at.ts) ids[attemptDocId(tid, at)] = {testId: tid, at: at}; });
+    });
+  });
+  return ids;
+}
+function shadowOf(store){
+  return {
+    attempts: collectAttemptIds(store),
+    saved: (store.saved || []).concat(store.saved_ca || []),
+    profile: store.profile ? deepCopy(store.profile) : null
+  };
+}
+function diffAndPush(){
+  if (!fb || !F || !fb.user) return Promise.resolve(false);
+  if (pushRunning) return pushRunning;
+  var store = storeLocal();
+  var cur = shadowOf(store);
+  var ops = [];
+  var uid = fb.user.uid;
+  Object.keys(cur.attempts).forEach(function(id){
+    if (!shadow || !shadow.attempts || !shadow.attempts[id]){
+      var e = cur.attempts[id];
+      var data = deepCopy(e.at);
+      data.testId = e.testId;
+      ops.push({type: 'set', path: 'users/' + uid + '/attempts/' + id, data: data});
+    }
+  });
+  var curSaved = {};
+  cur.saved.forEach(function(k){ curSaved[k] = true; });
+  var oldSaved = {};
+  (shadow && shadow.saved || []).forEach(function(k){ oldSaved[k] = true; });
+  cur.saved.forEach(function(k){
+    if (!oldSaved[k]){
+      var series = (String(k).indexOf('ca-') === 0) ? 'ca' : 'maths';
+      ops.push({type: 'set', path: 'users/' + uid + '/saved/' + savedDocId(k),
+                data: {key: k, series: series, savedAt: Date.now()}});
+    }
+  });
+  Object.keys(oldSaved).forEach(function(k){
+    if (!curSaved[k]) ops.push({type: 'delete', path: 'users/' + uid + '/saved/' + savedDocId(k)});
+  });
+  var profChanged = !shadow || JSON.stringify(shadow.profile) !== JSON.stringify(cur.profile);
+  if (cur.profile && profChanged){
+    var pd = deepCopy(cur.profile);
+    pd.updatedAt = Date.now();
+    ops.push({type: 'set', path: 'users/' + uid + '/profile', data: pd, merge: true});
+    if (store._fbMeta == null) store._fbMeta = {};
+    store._fbMeta.profileUpdatedAt = pd.updatedAt;
+    try { localStorage.setItem('super1000_v1', JSON.stringify(store)); } catch(e){}
+  }
+  if (!ops.length){ setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(true); }
+  setStatus('pending');
+  pushRunning = (async function(){
+    try {
+      for (var i = 0; i < ops.length; i += 500){
+        var batch = F.writeBatch(fb.db);
+        ops.slice(i, i + 500).forEach(function(op){
+          var ref = F.doc(fb.db, op.path);
+          if (op.type === 'set'){ if (op.merge) batch.set(ref, op.data, {merge: true}); else batch.set(ref, op.data); }
+          else batch.delete(ref);
+        });
+        await batch.commit();
+      }
+      shadow = cur;
+      lastSyncAt = Date.now();
+      setStatus(navigator.onLine ? 'synced' : 'offline');
+      return true;
+    } catch(e){
+      setStatus('offline');
+      return false;
+    } finally { pushRunning = null; }
+  })();
+  return pushRunning;
+}
+function pushSoon(){
+  if (!fb || !fb.user) return;
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(function(){ pushTimer = null; diffAndPush(); }, 1500);
+}
+function pushNow(){
+  if (pushTimer){ clearTimeout(pushTimer); pushTimer = null; }
+  return diffAndPush();
+}
+async function pullAndMerge(){
+  if (!fb || !F || !fb.user) return false;
+  try {
+    var uid = fb.user.uid;
+    var aSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/attempts'));
+    var sSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/saved'));
+    var pSnap = await F.getDoc(F.doc(fb.db, 'users/' + uid + '/profile'));
+    var cloudAttempts = {};
+    aSnap.forEach(function(d){ var data = d.data(); if (data && data.testId && data.ts) cloudAttempts[d.id] = {testId: data.testId, at: data}; });
+    var cloudSaved = [];
+    sSnap.forEach(function(d){ var data = d.data(); if (data && data.key) cloudSaved.push(data.key); });
+    var cloudProfile = (pSnap.exists && pSnap.exists()) ? pSnap.data() : null;
+
+    var store = storeLocal();
+    if (!store.tests) store.tests = {};
+    if (!store.tests_ca) store.tests_ca = {};
+    if (!store.saved) store.saved = [];
+    if (!store.saved_ca) store.saved_ca = [];
+    var changed = ensureAttemptTs(store);
+    shadow = {attempts: cloudAttempts, saved: cloudSaved.slice(),
+              profile: cloudProfile ? {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target} : null};
+    Object.keys(cloudAttempts).forEach(function(id){
+      var e = cloudAttempts[id];
+      var map = (e.testId.indexOf('ca-') === 0) ? store.tests_ca : store.tests;
+      var rec = map[e.testId] || {best: 0, attempts: 0, history: []};
+      var hist = rec.history || [];
+      var exists = hist.some(function(a){ return a && a.ts && attemptDocId(e.testId, a) === id; });
+      if (!exists){
+        hist.push(e.at);
+        hist.sort(function(a, b){ return (a.no - b.no) || ((a.ts || 0) - (b.ts || 0)); });
+        rec.history = hist;
+        rec.attempts = Math.max.apply(null, hist.map(function(a){ return a.no || 0; }).concat([rec.attempts || 0]));
+        rec.best = Math.max.apply(null, hist.map(function(a){ return a.score || 0; }).concat([rec.best || 0]));
+        rec.last = hist[hist.length - 1];
+        map[e.testId] = rec;
+        changed = true;
+      }
+    });
+    var savedSet = {};
+    (store.saved || []).forEach(function(k){ savedSet[k] = true; });
+    (store.saved_ca || []).forEach(function(k){ savedSet[k] = true; });
+    cloudSaved.forEach(function(k){
+      if (!savedSet[k]){
+        if (String(k).indexOf('ca-') === 0){ if (store.saved_ca.indexOf(k) === -1) store.saved_ca.push(k); }
+        else if (store.saved.indexOf(k) === -1) store.saved.push(k);
+        savedSet[k] = true; changed = true;
+      }
+    });
+    var localProfAt = (store._fbMeta && store._fbMeta.profileUpdatedAt) || 0;
+    if (cloudProfile && cloudProfile.updatedAt && cloudProfile.updatedAt > localProfAt){
+      store.profile = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target};
+      if (!store._fbMeta) store._fbMeta = {};
+      store._fbMeta.profileUpdatedAt = cloudProfile.updatedAt;
+      changed = true;
+    }
+    if (!store._fbMigrated){ store._fbMigrated = true; changed = true; }
+    if (changed) saveLocal(store);
+    lastPullAt = Date.now();
+    await pushNow();
+    lastSyncAt = Date.now();
+    setStatus(navigator.onLine ? 'synced' : 'offline');
+    try {
+      if (window.state && window.state.view !== 'test' && window.state.view !== 'instructions' && window.renderHome) window.renderHome();
+    } catch(e){}
+    try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+    if (window.state && window.state.view === 'onboarding'){
+      try { var st2 = storeLocal(); if (st2.profile && st2.profile.name && window.goHome) window.goHome(); } catch(e){}
+    }
+    updateHeader(); updateModalView(); updateSettingsAccount();
+    return true;
+  } catch(e){ setStatus('offline'); return false; }
+}
+async function syncNow(){
+  if (!fb || !fb.user){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); return false; }
+  setStatus('pending');
+  return await pullAndMerge();
+}
+
+/* ---------------- wiring + boot ---------------- */
+function wireModal(){
+  var b = $('fbLoginBtn'); if (b) b.addEventListener('click', openFbModal);
+  var x = $('fbModalClose'); if (x) x.addEventListener('click', closeFbModal);
+  var bd = $('fbModalBackdrop'); if (bd) bd.addEventListener('click', closeFbModal);
+  var g = $('fbGoogleBtn'); if (g) g.addEventListener('click', signIn);
+  var lo = $('fbLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); closeFbModal(); });
+  var eb = $('fbEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('modal'); });
+  var tg = $('fbAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('modal', e); });
+  var fg = $('fbForgotLink'); if (fg) fg.addEventListener('click', function(e){ forgotPassword('modal', e); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeFbModal(); });
+}
+function wireSettings(){
+  var g = $('setGoogleBtn'); if (g) g.addEventListener('click', signIn);
+  var eb = $('setEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('settings'); });
+  var tg = $('setAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('settings', e); });
+  var fg = $('setForgotLink'); if (fg) fg.addEventListener('click', function(e){ forgotPassword('settings', e); });
+  var cp = $('setChangePwBtn'); if (cp) cp.addEventListener('click', changePassword);
+  var lo = $('setLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); });
+  var sn = $('setSyncNowBtn'); if (sn) sn.addEventListener('click', function(){ syncNow(); });
+  var sv = $('view-settings');
+  if (sv && window.MutationObserver){
+    new MutationObserver(function(){
+      if (sv.classList.contains('active')) updateSettingsAccount();
+    }).observe(sv, {attributes: true, attributeFilter: ['class']});
+  }
+}
+function installBridge(){
+  window.__fbSync = {
+    signIn: signIn, signOut: signOut,
+    pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge,
+    openModal: openFbModal, closeModal: closeFbModal,
+    syncNow: syncNow,
+    status: function(){ return status; },
+    lastSync: function(){ return lastSyncAt; },
+    onAuthChange: function(fn){ if (typeof fn === 'function') authListeners.push(fn); }
+  };
+}
+async function boot(){
+  installBridge();
+  wireModal();
+  wireSettings();
+  updateHeader();
+  setStatus('offline');
+  var mods;
+  try {
+    mods = await Promise.all([
+      import(CDN + 'firebase-app.js'),
+      import(CDN + 'firebase-auth.js'),
+      import(CDN + 'firebase-firestore.js')
+    ]);
+  } catch(e){ window.__fb = null; setStatus('offline'); return; }
+  try {
+    var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
+    F = {
+      GoogleAuthProvider: authMod.GoogleAuthProvider,
+      signInWithRedirect: authMod.signInWithRedirect,
+      getRedirectResult: authMod.getRedirectResult,
+      signOut: authMod.signOut,
+      onAuthStateChanged: authMod.onAuthStateChanged,
+      createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
+      signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
+      sendPasswordResetEmail: authMod.sendPasswordResetEmail,
+      updatePassword: authMod.updatePassword,
+      collection: fsMod.collection, doc: fsMod.doc, setDoc: fsMod.setDoc,
+      deleteDoc: fsMod.deleteDoc, getDocs: fsMod.getDocs, getDoc: fsMod.getDoc,
+      query: fsMod.query, writeBatch: fsMod.writeBatch
+    };
+    var app = appMod.initializeApp(FIREBASE_CONFIG);
+    var auth = authMod.getAuth(app);
+    var db = fsMod.initializeFirestore(app, {localCache: fsMod.persistentLocalCache({tabManager: fsMod.persistentMultipleTabManager()})});
+    fb = {app: app, auth: auth, db: db, user: null};
+    window.__fb = fb;
+    try { await F.getRedirectResult(auth); } catch(e){}
+    F.onAuthStateChanged(auth, function(user){
+      fb.user = user || null;
+      if (user){ setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
+      else { setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); }
+    });
+    window.addEventListener('online', function(){
+      if (fb && fb.user) pushSoon();
+      else setStatus(navigator.onLine ? 'logged-out' : 'offline');
+    });
+    window.addEventListener('offline', function(){ setStatus('offline'); });
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden && fb && fb.user && Date.now() - lastPullAt > 60000) pullAndMerge();
+    });
+  } catch(e){ window.__fb = null; setStatus('offline'); }
+}
+boot();
+})();
+</script>
+
 </body>
 </html>
