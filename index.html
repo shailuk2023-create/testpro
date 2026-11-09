@@ -611,6 +611,18 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .saved-series-card .ss-title{font-size:15px;font-weight:800;color:var(--text-strong)}
 .saved-series-card .ss-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
 .ca-month-sub{font-size:13px;color:var(--muted);margin:2px 0 14px 12px}
+/* ---- CA month folders (v27): one expandable folder per month, tests nested inside ---- */
+.ca-folder{margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.ca-folder-head{display:flex;align-items:center;gap:16px;padding:18px;cursor:pointer}
+.ca-folder-head:hover{background:var(--surface2)}
+.ca-folder .ca-ico-open{display:none}
+.ca-folder.open .ca-ico-open{display:block}
+.ca-folder.open .ca-ico-closed{display:none}
+.ca-folder .ca-chev{transition:transform .2s;flex-shrink:0}
+.ca-folder.open .ca-chev{transform:rotate(90deg);color:var(--teal)}
+.ca-folder-body{border-top:1px solid var(--border);padding:14px 14px 4px;background:var(--surface2)}
+.ca-folder:not(.open) .ca-folder-body{display:none}
+.ca-folder-body .test-card{margin-bottom:12px}
 .saved-empty{text-align:center;padding:44px 16px;color:var(--muted)}
 .saved-empty svg{width:120px;height:auto;margin-bottom:12px}
 .saved-empty p{font-size:15px;line-height:1.6}
@@ -1573,10 +1585,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           </div>
           <div id="testList"></div>
         </div>
-        <div id="caTestSeries" style="display:none">
-          <div class="tabs-row"><button class="tab active">Monthly Current Affairs</button><button class="link-btn" id="caBackBtn" type="button" style="margin-left:auto">← Back</button></div>
-          <div id="caTestList"></div>
-        </div>
        </div>
       </div>
     </div>
@@ -2188,7 +2196,27 @@ function resolveSavedCA(){
   });
   return out;
 }
-/* ---- CA home: one month card per month in CABANK ---- */
+/* ---- CA home: one expandable folder per month in CABANK, tests nested inside ---- */
+function isCAFolderOpen(monthKey){
+  if (state.caFolderOpen && state.caFolderOpen[monthKey] !== undefined) return !!state.caFolderOpen[monthKey];
+  return (CABANK || []).length === 1; /* single month -> open by default; later months collapsed */
+}
+function toggleCAFolder(monthKey){
+  if (!state.caFolderOpen) state.caFolderOpen = {};
+  state.caFolderOpen[monthKey] = !isCAFolderOpen(monthKey);
+  renderCAMonths();
+}
+/* Back from a finished CA test / instructions: land on home with that month's folder open.
+   Maths tests keep the old behaviour (back to the maths series list). */
+function backToCAFolderOrSeries(){
+  if (isCATest(state.test)){
+    if (!state.caFolderOpen) state.caFolderOpen = {};
+    state.caFolderOpen[state.test.month] = true;
+    state.seriesOpen = false;
+  } else {
+    state.seriesOpen = true;
+  }
+}
 function renderCAMonths(){
   var wrap = $('caSeriesList');
   if (!wrap) return;
@@ -2200,46 +2228,36 @@ function renderCAMonths(){
     var attempted = 0;
     tests.forEach(function(t){ var rec = (store.tests_ca || {})[t.id]; if (rec && rec.attempts > 0) attempted++; });
     var pct = tests.length ? Math.round((attempted / tests.length) * 100) : 0;
-    html += '<div class="series-card anim" style="--d:.16s" data-ca-month="' + esc(m.month) + '" role="button" tabindex="0" aria-label="Open ' + esc(m.month_en) + ' current affairs tests">' +
-      '<div class="sc-ico ca-ico"><svg class="i i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><rect x="7" y="13" width="3" height="3" rx="0.5" fill="currentColor"/><rect x="14" y="13" width="3" height="3" rx="0.5" fill="currentColor"/></svg></div>' +
+    var open = isCAFolderOpen(m.month);
+    html += '<div class="ca-folder anim' + (open ? ' open' : '') + '" style="--d:.16s" data-ca-folder="' + esc(m.month) + '">' +
+      '<div class="ca-folder-head" role="button" tabindex="0" data-ca-month="' + esc(m.month) + '" aria-expanded="' + (open ? 'true' : 'false') + '" aria-label="' + esc(m.month_en) + ' current affairs tests folder">' +
+      '<div class="sc-ico ca-ico"><svg class="i i-lg ca-ico-closed" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor"/></svg><svg class="i i-lg ca-ico-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" fill="currentColor"/></svg></div>' +
       '<div class="fc-body">' +
       '<div class="fc-title">Monthly Current Affairs</div>' +
       '<div class="fc-sub">' + esc(m.month_en) + (m.month_hi ? ' • ' + esc(m.month_hi) : '') + '</div>' +
       '<div class="fc-progress"><div class="fc-bar" style="width:' + pct + '%"></div></div>' +
       '<div class="fc-prog-txt">' + attempted + '/' + tests.length + ' Tests • ' + totalQ + ' Questions</div>' +
       '</div>' +
-      '<svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg></div>';
+      '<svg class="i sc-chev ca-chev" aria-hidden="true"><use href="#i-chev-r"/></svg></div>' +
+      '<div class="ca-folder-body">' + renderCATestCards(m.month) + '</div>' +
+      '</div>';
   });
   wrap.innerHTML = html;
   wrap.querySelectorAll('[data-ca-month]').forEach(function(el){
     el.addEventListener('click', function(){ goTestsCA(this.getAttribute('data-ca-month')); });
     el.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); } });
   });
+  wireCAListButtons(wrap);
 }
-function goTestsCA(monthKey){
-  state.navTab = 'tests';
-  if (state.view === 'list' && !state.seriesOpen){
-    window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, homeRoot:true, homeGuard:false}, '', '#view-list');
-    state.routeDepth++;
-    state.homeGuard = false;
-  }
-  state.seriesOpen = true;
-  state.caOpen = monthKey;
-  renderHome();
-  showView('list');
-  var lb = $('listBody'), cs = $('caTestSeries');
-  if (lb && cs) lb.scrollTop = cs.offsetTop || 0;
-}
-function renderCAList(){
-  var list = $('caTestList');
-  if (!list) return;
-  var monthKey = state.caOpen;
+function goTestsCA(monthKey){ toggleCAFolder(monthKey); }
+/* Returns the test-card HTML for one CA month (no heading — the folder header already names the month). */
+function renderCATestCards(monthKey){
   var month = (CABANK || []).filter(function(m){ return m.month === monthKey; })[0];
-  if (!month){ list.innerHTML = ''; return; }
+  if (!month) return '';
   var tests = CA_TESTS.filter(function(t){ return t.month === monthKey; });
   var store = storeGet();
   var inProg = getInProgress();
-  var html = '<div class="chapter-group"><h2>' + esc(month.month_en) + (month.month_hi ? ' <span>(' + esc(month.month_hi) + ')</span>' : '') + '</h2><div class="ca-month-sub">' + tests.length + ' tests • ' + (month.questions || []).length + ' questions</div>';
+  var html = '';
   tests.forEach(function(t){
     var rec = (store.tests_ca || {})[t.id];
     var hasResume = !!(inProg && inProg.testId === t.id);
@@ -2265,9 +2283,11 @@ function renderCAList(){
       '<button class="tc-start" data-ca-start="' + t.id + '">' + (hasResume ? 'Resume' : (rec && rec.attempts > 0 ? 'Re-attempt' : 'Start Test')) + '</button></div></div>' +
       footHtml + barHtml + '</div>';
   });
-  html += '</div>';
-  list.innerHTML = html;
-  list.querySelectorAll('[data-ca-start]').forEach(function(b){
+  return html;
+}
+/* Wires the buttons inside a rendered CA test list (called with the #caSeriesList wrap). */
+function wireCAListButtons(root){
+  root.querySelectorAll('[data-ca-start]').forEach(function(b){
     b.addEventListener('click', function(){
       var t = findTestById(this.getAttribute('data-ca-start'));
       var p = getInProgress();
@@ -2275,13 +2295,13 @@ function renderCAList(){
       openInstructions(t);
     });
   });
-  list.querySelectorAll('[data-ca-sol]').forEach(function(b){
+  root.querySelectorAll('[data-ca-sol]').forEach(function(b){
     b.addEventListener('click', function(){ openSolutionsSaved(findTestById(this.getAttribute('data-ca-sol'))); });
   });
-  list.querySelectorAll('[data-ca-analysis]').forEach(function(b){
+  root.querySelectorAll('[data-ca-analysis]').forEach(function(b){
     b.addEventListener('click', function(){ openAnalysis(findTestById(this.getAttribute('data-ca-analysis'))); });
   });
-  list.querySelectorAll('[data-ca-reattempt]').forEach(function(b){
+  root.querySelectorAll('[data-ca-reattempt]').forEach(function(b){
     b.addEventListener('click', function(){ openInstructions(findTestById(this.getAttribute('data-ca-reattempt'))); });
   });
 }
@@ -2456,13 +2476,13 @@ var state = {
   savedQuizMode: false,
   lastResult: null,
   seriesOpen: false,
-  caOpen: null,
+  caFolderOpen: {},
   savedSeries: 'maths',
   listFilter: 'all',
   sqSolOpen: false
 };
 
-var APP_VERSION = 26; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 27; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -2568,7 +2588,6 @@ window.addEventListener('popstate', function(e){
   if (state.view === 'list' && state.seriesOpen && e.state && e.state.appView === 'list'){
     /* series khuli hai aur back daba: pehle series band karo, home par hi raho */
     state.seriesOpen = false;
-    state.caOpen = null;
     state.navTab = 'home';
     state.routeDepth = (e.state.routeDepth != null) ? e.state.routeDepth : Math.max(0, state.routeDepth - 1);
     state.homeGuard = !!e.state.homeGuard;
@@ -2916,8 +2935,7 @@ $('declCheckbox').addEventListener('change', function(){
   $('beginBtn').disabled = !this.checked;
 });
 $('instBackBtn').addEventListener('click', function(){
-  state.caOpen = isCATest(state.test) ? state.test.month : null;
-  state.seriesOpen = true;
+  backToCAFolderOrSeries();
   renderHome();
   appBack('list');
 });
@@ -3696,14 +3714,12 @@ function syncBottomNav(){
 function goHome(){
   state.navTab = 'home';
   state.seriesOpen = false;
-  state.caOpen = null;
   renderHome();
   showView('list');
   var lb = $('listBody'); if (lb) lb.scrollTop = 0;
 }
 function goTests(){
   state.navTab = 'tests';
-  state.caOpen = null;
   if (state.view === 'list' && !state.seriesOpen){
     /* series kholna bhi ek back-step hai: entry push karo taaki back se series band ho */
     window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, homeRoot:true, homeGuard:false}, '', '#view-list');
@@ -3799,8 +3815,8 @@ function renderResult(stats, prevBest){
 }
 $('btnViewSol').addEventListener('click', function(){ openSolutions(0); });
 $('resGoSolTop').addEventListener('click', function(){ openSolutions(0); });
-$('btnBackList').addEventListener('click', function(){ state.caOpen = isCATest(state.test) ? state.test.month : null; state.seriesOpen = true; renderHome(); showView('list'); });
-$('resGoTests').addEventListener('click', function(){ state.caOpen = isCATest(state.test) ? state.test.month : null; state.seriesOpen = true; renderHome(); showView('list'); });
+$('btnBackList').addEventListener('click', function(){ backToCAFolderOrSeries(); renderHome(); showView('list'); });
+$('resGoTests').addEventListener('click', function(){ backToCAFolderOrSeries(); renderHome(); showView('list'); });
 $('btnReattempt').addEventListener('click', function(){ startTest(); });
 $('resReattemptTop').addEventListener('click', function(){ startTest(); });
 
@@ -4457,12 +4473,9 @@ function renderHome(){
   syncResumeCard();
   renderCAMonths();
   var open = !!state.seriesOpen;
-  var caOpen = !!state.caOpen;
   var hs = $('homeSections'); if (hs) hs.style.display = open ? 'none' : '';
-  var ts = $('testSeries'); if (ts) ts.style.display = (open && !caOpen) ? '' : 'none';
-  var cs = $('caTestSeries'); if (cs) cs.style.display = caOpen ? '' : 'none';
-  if (open && !caOpen) renderList();
-  if (caOpen) renderCAList();
+  var ts = $('testSeries'); if (ts) ts.style.display = open ? '' : 'none';
+  if (open) renderList();
   renderFeatCards();
 }
 /* v23: "Prepare Smarter" cards are live, animated, real-data cards.
@@ -4893,7 +4906,6 @@ function closeMenu(){ $('sideMenu').classList.remove('open'); $('menuBackdrop').
   on('savedStartQuizBtn', 'click', function(){ if (state.savedSeries === 'ca') startSavedQuizCA(0); else startSavedQuiz(0); });
   on('savedCardMaths', 'click', function(){ state.savedSeries = 'maths'; renderSavedList(); });
   on('savedCardCA', 'click', function(){ state.savedSeries = 'ca'; renderSavedList(); });
-  on('caBackBtn', 'click', function(){ goHome(); });
   on('sqPrev', 'click', function(){ if (sq.idx > 0){ sq.idx--; renderSavedQuiz(); } });
   on('sqNext', 'click', function(){
     if (sq.idx === sq.items.length - 1) finishSavedQuiz();
