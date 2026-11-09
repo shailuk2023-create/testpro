@@ -392,6 +392,9 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .video-btn:hover{background:#b91c1c}
 .video-btn:disabled{background:#d1d5db;color:#6b7280;cursor:not-allowed}
 .video-btn-sm{padding:7px 12px;font-size:13px}
+/* v21 TESTING: inline video player (YouTube-style, 16:9) */
+.inline-video-wrap{margin-top:14px;position:relative;width:100%;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000}
+.inline-video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .sol-toggle-row{margin-top:10px}
 .sol-toggle-link{color:#0891b2;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
 .sol-toggle-link:hover{color:#0e7490}
@@ -1694,7 +1697,10 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       </div>
       <div class="pause-overlay hidden" id="pauseOverlay">
         <h2>Test Paused</h2>
-        <button class="btn btn-teal" id="resumeBtn" style="padding:12px 32px;font-size:16px">Resume Test</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+          <button class="btn btn-teal" id="resumeBtn" style="padding:12px 32px;font-size:16px">Resume Test</button>
+          <button class="btn btn-light" id="pauseExitBtn" style="padding:12px 32px;font-size:16px">Exit Test</button>
+        </div>
       </div>
     </div>
     <aside class="palette" id="paletteDrawer">
@@ -1797,6 +1803,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="sol-actions-row" id="solActionsRow" style="margin-top:14px">
           <button class="video-btn video-btn-sm" id="videoBtn">▶ See Video Solution</button>
         </div>
+        <div id="inlineVideoWrap" class="inline-video-wrap hidden"></div>
       </div>
       <div class="sol-bottom">
         <button class="btn btn-light" id="solPrev">Previous</button>
@@ -2122,7 +2129,8 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 20; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 21; /* version.txt se match kare - har release par bump karo */
+var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
   if (state.view !== name){
@@ -2143,6 +2151,7 @@ function showView(name){
   setView(name);
 }
 function setView(name){
+  if (name !== 'solutions' && typeof closeInlineVideo === 'function') closeInlineVideo();
   ['onboarding','list','instructions','test','result','solutions','settings','saved'].forEach(function(v){
     var el = $('view-' + v);
     if (el) el.classList.toggle('active', v === name);
@@ -2991,6 +3000,7 @@ $('reportBtn').addEventListener('click', function(){
 });
 $('pauseBtn').addEventListener('click', togglePause);
 $('resumeBtn').addEventListener('click', togglePause);
+$('pauseExitBtn').addEventListener('click', exitTestAndSave);
 function togglePause(){
   if (state.view !== 'test') return;
   state.paused = !state.paused;
@@ -3515,7 +3525,35 @@ function openAttemptPicker(){
     });
   });
 }
+/* v21 TESTING: inline video player. YouTube video ko app ke andar hi
+   (youtube-nocookie embed, YouTube jaisa player) chalata hai, solution wale
+   timestamp se seedha. NOTE: YouTube apne player ke andar apne ads khud
+   lagata hai - app unhe block/remove nahi karta aur na kar sakta hai.
+   Poora feature hatana ho to VIDEO_INLINE_TEST = false kar do. */
+function closeInlineVideo(){
+  var w = $('inlineVideoWrap');
+  if (w){ w.innerHTML = ''; w.classList.add('hidden'); }
+  var vb = $('videoBtn');
+  if (vb) vb.textContent = '▶ See Video Solution';
+}
+function toggleInlineVideo(url){
+  var w = $('inlineVideoWrap');
+  if (!w){ window.open(url, '_blank'); return; }
+  if (w.querySelector('iframe')){ closeInlineVideo(); return; }
+  var m = url.match(/[?&]v=([\w-]{11})/) || url.match(/youtu\.be\/([\w-]{11})/);
+  if (!m){ window.open(url, '_blank'); return; }
+  var tm = url.match(/[?&]t=(\d+)/);
+  var start = tm ? parseInt(tm[1], 10) : 0;
+  w.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + m[1] +
+    '?start=' + start + '&autoplay=1&rel=0" title="Video solution" frameborder="0" ' +
+    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+    'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  w.classList.remove('hidden');
+  var vb = $('videoBtn');
+  if (vb) vb.textContent = '✕ Hide Video';
+}
 function renderSolution(keepOpen){
+  closeInlineVideo();
   var t = state.test, i = state.solIdx, q = t.questions[i], st = state.qStates[i];
   var savedQuizMode = state.savedQuizMode;
   var re = savedQuizMode ? st.selected : st.reattempt;
@@ -3635,7 +3673,10 @@ function renderSolution(keepOpen){
   var vb = $('videoBtn');
   if (q.video){
     vb.disabled = false;
-    vb.onclick = function(){ window.open(q.video, '_blank'); };
+    vb.onclick = function(){
+      if (!VIDEO_INLINE_TEST){ window.open(q.video, '_blank'); return; }
+      toggleInlineVideo(q.video);
+    };
   } else {
     vb.disabled = true;
     vb.onclick = null;
