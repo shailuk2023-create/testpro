@@ -1411,9 +1411,34 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 .settings-v2 .set-card label:not(.set-row){display:block;font-weight:600;font-size:13.5px;color:var(--text-strong);margin-top:10px}
 .settings-v2 .set-card input[type=text],.settings-v2 .set-card input[type=number],.settings-v2 .set-card select{width:100%;box-sizing:border-box}
 
+
+/* ================= v38: register gate (app locked until auth) ================= */
+body.fb-gated > div:not(#fbModal){display:none!important}
+body.fb-gated .fb-modal-x{display:none!important}
+body.fb-gated::before{content:'TESTPRO';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;font-size:22px;letter-spacing:1px;z-index:1}
 </style>
 </head>
 <body>
+<script>/* v38 register gate: hide the app until Firebase auth resolves. The
+Firebase module removes the gate on register/login, or opens the register
+window when logged out. If the module never runs (offline first visit), this
+fallback opens the register window with the internet note. */
+try{document.body.classList.add('fb-gated');}catch(e){}
+setTimeout(function(){
+  try{
+    if(window.__fbSync) return;
+    var m=document.getElementById('fbModal');
+    if(m){ m.classList.add('open'); m.setAttribute('aria-hidden','false');
+      var n=document.getElementById('fbModalNote');
+      if(n) n.textContent='Login ke liye internet chahiye — internet on karke dobara try karo.';
+      var rn=document.getElementById('fbRegNote');
+      if(rn) rn.textContent='Register karne ke liye internet chahiye — internet on karke dobara try karo.';
+      var re=document.getElementById('fbRegErr');
+      if(re){ re.textContent='Register karne ke liye internet chahiye — internet on karke dobara try karo.'; re.hidden=false; }
+      var er=document.getElementById('fbAuthErr');
+      if(er){ er.textContent='Login ke liye internet chahiye — internet on karke dobara try karo.'; er.hidden=false; } }
+  }catch(e){}
+},1500);</script>
 <script id="tp-history-shim">
 /* Safe history: sandboxed/srcdoc previews reject URL-bearing pushState/replaceState; fall back to state-only. */
 (function(){
@@ -1521,7 +1546,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <div id="view-list" class="view active">
   <div class="list-wrap">
     <aside class="sidebar" aria-label="Main navigation">
-      <div class="brand"><svg class="logo-mark" viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg><span class="bw">TEST<b>PRO</b></span></div>
       <nav>
         <a href="#" id="navHome" class="active" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
         <a href="#" id="navTests" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg><span>Tests</span></a>
@@ -1535,14 +1559,12 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <div class="list-main">
       <div class="list-topbar">
         <button class="icon-btn mob-only" id="homeMenuBtn" title="Menu" aria-label="Open menu"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
-        <div class="brand-mini mob-brand"><svg class="logo-mark" viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg><span>TEST<b>PRO</b></span></div>
         <div class="search desk-only"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input id="searchInput" type="text" placeholder="Search tests / chapters…" autocomplete="off" aria-label="Search tests or chapters"></div>
         <div class="tb-actions">
           <button class="icon-btn mob-only" id="homeSearchIcon" title="Search" aria-label="Search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
           <button class="icon-btn" id="darkToggle" title="Dark mode" aria-label="Dark mode"><svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg><svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg></button>
           <button class="icon-btn" id="fsBtnHome" title="Full screen" aria-label="Full screen"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg></button>
           <span class="sync-pill" id="syncStatus" title="Sync status">● Offline</span>
-          <button class="fb-login-btn" id="fbLoginBtn" title="Google se login"><span class="fb-login-txt">Login</span><svg class="fb-login-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></button>
           <div class="avatar" id="avatarInitial" title="Profile" role="button" tabindex="0">S</div>
         </div>
       </div>
@@ -1793,8 +1815,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <h3>Sync</h3>
       <div class="set-sync-row"><span>Status</span><b class="sync-pill" id="setSyncStatus">● Offline</b></div>
       <div class="set-sync-row"><span>Last synced</span><b id="setLastSync">Abhi tak sync nahi hua</b></div>
-      <button class="btn btn-teal" id="setSyncNowBtn" style="margin-top:6px">Sync Now</button>
-      <p class="set-sync-note">Sync Now dabane par is device ka data upload hoga aur doosre device ka data download hoga.</p>
+      <p class="set-sync-note">Sync apne aap hota hai — internet on hote hi is device ka data upload aur doosre device ka data download ho jata hai.</p>
     </div>
     <h2 class="set-sec-title">Preferences</h2>
     <div class="card set-card">
@@ -2850,7 +2871,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 37; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 38; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5488,7 +5509,49 @@ attachSwipe($('solScroll'),
   <div class="fb-modal-backdrop" id="fbModalBackdrop"></div>
   <div class="fb-modal-card" role="document">
     <button class="fb-modal-x" id="fbModalClose" aria-label="Band karein"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>
-    <div id="fbModalLoggedOut">
+    <div id="fbModalRegister">
+      <div class="fb-modal-badge"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></div>
+      <h3>Pehle register karein</h3>
+      <p class="fb-modal-sub">Ek baar register karo — phir har device par login hoga.</p>
+      <div id="fbRegMain">
+        <button class="fb-google-btn" id="fbRegGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se register karein</button>
+        <div class="fb-divider"><span>ya apne details se</span></div>
+        <label>Naam
+          <input id="fbRegName" type="text" placeholder="Aapka naam" autocomplete="name">
+        </label>
+        <label>Email
+          <input id="fbRegEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
+        </label>
+        <label>Password
+          <input id="fbRegPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
+        </label>
+        <label>Confirm password
+          <input id="fbRegPassword2" type="password" placeholder="Password dobara likho" autocomplete="new-password">
+        </label>
+        <p class="fb-auth-err" id="fbRegErr" hidden></p>
+        <button class="fb-email-btn" id="fbRegBtn">Register karein</button>
+        <div class="fb-auth-links" style="justify-content:center;margin-top:4px">
+          <a href="#" id="fbRegToLogin">Pehle se account hai? Login karein</a>
+        </div>
+      </div>
+      <div id="fbPwSetWrap" hidden>
+        <div class="fb-modal-user">
+          <div class="fb-modal-avatar" id="fbPwSetAvatar">S</div>
+          <div class="fb-modal-userinfo"><b id="fbPwSetName">Student</b><span id="fbPwSetEmail"></span></div>
+        </div>
+        <p class="fb-modal-sub">Ab ek password set karo — phir Google ya ID-password, dono se login hoga.</p>
+        <label>Password
+          <input id="fbPwSetPw" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
+        </label>
+        <label>Confirm password
+          <input id="fbPwSetPw2" type="password" placeholder="Password dobara likho" autocomplete="new-password">
+        </label>
+        <p class="fb-auth-err" id="fbPwSetErr" hidden></p>
+        <button class="fb-email-btn" id="fbPwSetBtn">Password set karein</button>
+      </div>
+      <p class="fb-modal-note" id="fbRegNote">Register karne ke liye pehli baar internet chahiye.</p>
+    </div>
+    <div id="fbModalLoggedOut" hidden>
       <div class="fb-modal-badge"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></div>
       <h3>Apna progress har device par</h3>
       <p class="fb-modal-sub">Ek baar login karo — phir phone ya kisi bhi device se wahi progress.</p>
@@ -5512,8 +5575,11 @@ attachSwipe($('solScroll'),
           <a href="#" id="fbAuthToggle">Naya account banao</a>
           <a href="#" id="fbForgotLink">Password bhool gaye?</a>
         </div>
+        <div class="fb-auth-links" style="justify-content:center;margin-top:4px">
+          <a href="#" id="fbLoginToReg">Naya account banao? Register karein</a>
+        </div>
       </div>
-      <p class="fb-modal-note" id="fbModalNote">Login sirf sync ke liye hai — app bina login ke bhi poori tarah chalega.</p>
+      <p class="fb-modal-note" id="fbModalNote">Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.</p>
     </div>
     <div id="fbModalLoggedIn" hidden>
       <div class="fb-modal-user">
@@ -5583,12 +5649,22 @@ function setStatus(s){
   for (var i = 0; i < authListeners.length; i++){ try { authListeners[i](s); } catch(e){} }
 }
 
-/* ---------------- login modal ---------------- */
+/* ---------------- login modal (v38: register-first gate) ---------------- */
+var fbGated = true; /* v38: register gate — app stays hidden until register/login */
+var fbModalView = 'register'; /* register | login | account */
+var pwStepActive = false; /* true while a new Google user still has to set a password */
+function showFbView(v){
+  fbModalView = v;
+  var r = $('fbModalRegister'), lo = $('fbModalLoggedOut'), li = $('fbModalLoggedIn');
+  if (r) r.hidden = (v !== 'register');
+  if (lo) lo.hidden = (v !== 'login');
+  if (li) li.hidden = (v !== 'account');
+}
 function updateModalView(){
   var u = fb && fb.user;
-  var lo = $('fbModalLoggedOut'), li = $('fbModalLoggedIn');
-  if (lo) lo.hidden = !!u;
-  if (li) li.hidden = !u;
+  if (u && !pwStepActive) showFbView('account');
+  else if (u && pwStepActive) showFbView('register');
+  else showFbView(fbModalView === 'account' ? 'register' : fbModalView);
   if (u){
     var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Student');
     var nm = $('fbModalName'); if (nm) nm.textContent = name;
@@ -5602,35 +5678,90 @@ function updateModalView(){
 function openFbModal(){
   var m = $('fbModal'); if (!m) return;
   updateModalView();
+  var x = $('fbModalClose'); if (x) x.hidden = fbGated;
   m.classList.remove('closing');
   m.classList.add('open');
   m.setAttribute('aria-hidden', 'false');
 }
-function closeFbModal(){
+function closeFbModal(force){
+  if (fbGated && !force) return; /* v38: non-dismissable while logged out */
   var m = $('fbModal'); if (!m) return;
   if (!m.classList.contains('open')) return;
   m.classList.add('closing');
   setTimeout(function(){
+    /* v38: the modal may have been re-opened (e.g. logout -> gate) while
+       the close animation ran — only close it if it is still closing. */
+    if (!m.classList.contains('closing')) return;
     m.classList.remove('open', 'closing');
     m.setAttribute('aria-hidden', 'true');
   }, 180);
 }
+function resetPwStep(){
+  pwStepActive = false;
+  var main = $('fbRegMain'); if (main) main.hidden = false;
+  var pw = $('fbPwSetWrap'); if (pw) pw.hidden = true;
+}
+/* v38 register gate: enter the app only after register/login; show the
+   register window (non-dismissable) while logged out. */
+function enterApp(){
+  fbGated = false;
+  resetPwStep();
+  try { document.body.classList.remove('fb-gated'); } catch(e){}
+  closeFbModal(true);
+}
+function redirectErrorText(e){
+  var code = (e && e.code) || '';
+  var msg = (e && e.message) || '';
+  if (code === 'auth/unauthorized-domain' || msg.indexOf('unauthorized-domain') !== -1){
+    if (window.location.hostname !== 'shailuk2023-create.github.io')
+      return 'Is link se login nahi hoga — Pages wale link se kholo: shailuk2023-create.github.io/testpro/';
+    return 'Login abhi allowed nahi hai — thodi der baad try karo';
+  }
+  if (code === 'auth/network-request-failed') return 'Internet nahi hai — connection check karke dobara try karo';
+  return 'Login mein kuch galat hua — dobara try karo';
+}
+function showGate(offline, err){
+  fbGated = true;
+  try { document.body.classList.add('fb-gated'); } catch(e){}
+  if (offline){
+    var note = $('fbModalNote');
+    if (note) note.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.';
+    var rn = $('fbRegNote');
+    if (rn) rn.textContent = 'Register karne ke liye internet chahiye — internet on karke dobara try karo.';
+  }
+  if (err){
+    var txt = redirectErrorText(err);
+    var re = $('fbRegErr');
+    if (re){ re.textContent = txt; re.hidden = false; }
+    var el = $('fbAuthErr');
+    if (el){ el.textContent = txt; el.hidden = false; }
+  }
+  openFbModal();
+}
+function showPwStep(user){
+  fbGated = true;
+  pwStepActive = true;
+  try { document.body.classList.add('fb-gated'); } catch(e){}
+  var name = user.displayName || (user.email ? user.email.split('@')[0] : 'Student');
+  var nm = $('fbPwSetName'); if (nm) nm.textContent = name;
+  var em = $('fbPwSetEmail'); if (em) em.textContent = user.email || '';
+  var av = $('fbPwSetAvatar'); if (av) av.textContent = name.charAt(0).toUpperCase();
+  var main = $('fbRegMain'); if (main) main.hidden = true;
+  var pw = $('fbPwSetWrap'); if (pw) pw.hidden = false;
+  showFbView('register');
+  openFbModal();
+}
 function updateHeader(){
-  var b = $('fbLoginBtn'); if (!b) return;
+  /* v38: header login button removed — only the avatar + sync pill remain */
   var u = fb && fb.user;
-  var txt = b.querySelector('.fb-login-txt');
-  if (u){
-    var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Student');
-    if (txt) txt.textContent = name.charAt(0).toUpperCase();
-    b.classList.add('is-user');
-    b.title = name + ' — account kholo';
-    var av = $('avatarInitial');
-    if (av) av.textContent = name.charAt(0).toUpperCase();
-  } else {
-    if (txt) txt.textContent = 'Login';
-    b.classList.remove('is-user');
-    b.title = 'Google se login';
-    try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+  var av = $('avatarInitial');
+  if (av){
+    if (u){
+      var name = u.displayName || (u.email ? u.email.split('@')[0] : 'Student');
+      av.textContent = name.charAt(0).toUpperCase();
+    } else {
+      try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+    }
   }
   updatePill();
 }
@@ -5652,17 +5783,37 @@ function updateSettingsAccount(){
 }
 
 /* ---------------- auth ---------------- */
-function signIn(){
+function signIn(entry){
+  /* v38: remember register-vs-login across the Google redirect (sessionStorage
+     survives a same-tab redirect; getAdditionalUserInfo().isNewUser covers
+     the PWA case where the redirect returns in the browser instead). */
+  try { sessionStorage.setItem('fbAuthEntry', entry || 'login'); } catch(e){}
   if (!fb || !F){
     setStatus('offline');
     var note = $('fbModalNote');
     if (note) note.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.';
+    var rn = $('fbRegNote');
+    if (rn) rn.textContent = 'Register karne ke liye internet chahiye — internet on karke dobara try karo.';
     var se = $('setAuthErr');
     if (se){ se.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.'; se.hidden = false; }
     return;
   }
-  try { F.signInWithRedirect(fb.auth, new F.GoogleAuthProvider()); }
-  catch(e){ setStatus('offline'); }
+  try {
+    /* v38: signInWithRedirect returns a promise — a bare try/catch cannot
+       catch its async rejection, so attach a .catch (unhandled rejections
+       crash the flow and leave a dead button). */
+    var pr = F.signInWithRedirect(fb.auth, new F.GoogleAuthProvider());
+    if (pr && typeof pr.catch === 'function') pr.catch(function(e){ signInFailed(e); });
+  } catch(e){ signInFailed(e); }
+}
+function signInFailed(e){
+  setStatus('offline');
+  var txt = redirectErrorText(e);
+  var el = $('fbAuthErr');
+  if (el){ el.textContent = txt; el.hidden = false; }
+  var re = $('fbRegErr');
+  if (re){ re.textContent = txt; re.hidden = false; }
+  openFbModal();
 }
 function signOut(){
   if (!fb || !F){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); return; }
@@ -5673,9 +5824,9 @@ function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 function emailErrorText(code){
   var map = {
     'auth/invalid-email': 'Sahi email ID likho',
-    'auth/user-not-found': 'Is email se koi account nahi mila',
+    'auth/user-not-found': 'Account nahi bana hai — pehle register karo',
     'auth/wrong-password': 'Galat password — dobara try karo',
-    'auth/invalid-credential': 'Email ya password galat hai',
+    'auth/invalid-credential': 'Email ya password galat hai — account nahi banaya hai to pehle register karo',
     'auth/email-already-in-use': 'Ye email pehle se use mein hai — login karo',
     'auth/weak-password': 'Password kamzor hai — kam se kam 6 akshar',
     'auth/network-request-failed': 'Internet nahi hai — connection check karo',
@@ -5714,7 +5865,16 @@ async function submitEmailAuth(which){
     if (mode === 'signup') await F.createUserWithEmailAndPassword(fb.auth, email, pw);
     else await F.signInWithEmailAndPassword(fb.auth, email, pw);
     if (which === 'modal') closeFbModal();
-  } catch(e){ showErr(x.err, emailErrorText(e && e.code)); }
+  } catch(e){
+    var code = e && e.code;
+    if (code === 'auth/user-not-found' && which === 'modal'){
+      /* v38: no account exists — take the user to the register window */
+      showFbView('register');
+      var re = $('fbRegErr');
+      if (re) showErr(re, 'Is email se account nahi bana hai — yahin se register karo');
+      if (x.err){ x.err.textContent = ''; x.err.hidden = true; }
+    } else showErr(x.err, emailErrorText(code));
+  }
   finally { if (x.btn) x.btn.disabled = false; }
 }
 function toggleEmailMode(which, ev){
@@ -5791,7 +5951,7 @@ function shadowOf(store){
   };
 }
 function diffAndPush(){
-  if (!fb || !F || !fb.user) return Promise.resolve(false);
+  if (!fb || !F || !fb.user || !fb.db) return Promise.resolve(false);
   if (pushRunning) return pushRunning;
   var store = storeLocal();
   var cur = shadowOf(store);
@@ -5862,7 +6022,7 @@ function pushNow(){
   return diffAndPush();
 }
 async function pullAndMerge(){
-  if (!fb || !F || !fb.user) return false;
+  if (!fb || !F || !fb.user || !fb.db){ if (fb && fb.user) setStatus('offline'); return false; }
   try {
     var uid = fb.user.uid;
     var aSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/attempts'));
@@ -5934,17 +6094,77 @@ async function pullAndMerge(){
   } catch(e){ setStatus('offline'); return false; }
 }
 async function syncNow(){
-  if (!fb || !fb.user){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); return false; }
+  if (!fb || !fb.user || !fb.db){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); return false; }
   setStatus('pending');
   return await pullAndMerge();
 }
 
+async function submitRegister(){
+  var nameEl = $('fbRegName'), emEl = $('fbRegEmail'), pwEl = $('fbRegPassword'), pw2El = $('fbRegPassword2');
+  var errEl = $('fbRegErr'), btn = $('fbRegBtn');
+  var name = ((nameEl && nameEl.value) || '').trim();
+  var email = ((emEl && emEl.value) || '').trim();
+  var pw = (pwEl && pwEl.value) || '';
+  var pw2 = (pw2El && pw2El.value) || '';
+  if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
+  if (!name){ showErr(errEl, 'Apna naam likho'); return; }
+  if (!validEmail(email)){ showErr(errEl, 'Sahi email ID likho'); return; }
+  if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
+  if (pw !== pw2){ showErr(errEl, 'Dono password ek jaise likho'); return; }
+  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); setStatus('offline'); return; }
+  if (btn) btn.disabled = true;
+  try {
+    var cred = await F.createUserWithEmailAndPassword(fb.auth, email, pw);
+    try { await F.updateProfile(cred.user, {displayName: name}); } catch(e){}
+    /* onAuthStateChanged fires with the new user -> enterApp */
+  } catch(e){
+    var code = e && e.code;
+    if (code === 'auth/email-already-in-use'){
+      showFbView('login');
+      var le = $('fbAuthErr');
+      if (le) showErr(le, 'Is email se account pehle se hai — yahin se login karo');
+    } else showErr(errEl, emailErrorText(code));
+  } finally { if (btn) btn.disabled = false; }
+}
+async function submitPasswordSet(){
+  var pwEl = $('fbPwSetPw'), pw2El = $('fbPwSetPw2');
+  var errEl = $('fbPwSetErr'), btn = $('fbPwSetBtn');
+  var pw = (pwEl && pwEl.value) || '';
+  var pw2 = (pw2El && pw2El.value) || '';
+  if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
+  if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
+  if (pw !== pw2){ showErr(errEl, 'Dono password ek jaise likho'); return; }
+  if (!fb || !F || !fb.user){ showErr(errEl, 'Pehle Google se register karo'); return; }
+  if (btn) btn.disabled = true;
+  try {
+    await F.linkWithCredential(fb.user, F.EmailAuthProvider.credential(fb.user.email, pw));
+    enterApp();
+    setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge();
+  } catch(e){
+    var code = e && e.code;
+    if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use'){
+      showFbView('login');
+      var le = $('fbAuthErr');
+      if (le) showErr(le, 'Is email se account pehle se hai — yahin se login karo');
+      try { if (fb && F){ var so = F.signOut(fb.auth); if (so && so.catch) so.catch(function(){}); } } catch(e2){}
+    }
+    else if (code === 'auth/requires-recent-login')
+      showErr(errEl, 'Security ke liye dobara Google se login karke try karo');
+    else showErr(errEl, emailErrorText(code));
+  } finally { if (btn) btn.disabled = false; }
+}
+
 /* ---------------- wiring + boot ---------------- */
 function wireModal(){
-  var b = $('fbLoginBtn'); if (b) b.addEventListener('click', openFbModal);
-  var x = $('fbModalClose'); if (x) x.addEventListener('click', closeFbModal);
-  var bd = $('fbModalBackdrop'); if (bd) bd.addEventListener('click', closeFbModal);
-  var g = $('fbGoogleBtn'); if (g) g.addEventListener('click', signIn);
+  /* v38: header login button wiring removed (button gone) */
+  var x = $('fbModalClose'); if (x) x.addEventListener('click', function(){ closeFbModal(); });
+  var bd = $('fbModalBackdrop'); if (bd) bd.addEventListener('click', function(){ closeFbModal(); });
+  var g = $('fbGoogleBtn'); if (g) g.addEventListener('click', function(){ signIn('login'); });
+  var r2l = $('fbRegToLogin'); if (r2l) r2l.addEventListener('click', function(e){ e.preventDefault(); showFbView('login'); });
+  var l2r = $('fbLoginToReg'); if (l2r) l2r.addEventListener('click', function(e){ e.preventDefault(); showFbView('register'); });
+  var rgb = $('fbRegGoogleBtn'); if (rgb) rgb.addEventListener('click', function(){ signIn('register'); });
+  var rb = $('fbRegBtn'); if (rb) rb.addEventListener('click', submitRegister);
+  var psb = $('fbPwSetBtn'); if (psb) psb.addEventListener('click', submitPasswordSet);
   var lo = $('fbLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); closeFbModal(); });
   var eb = $('fbEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('modal'); });
   var tg = $('fbAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('modal', e); });
@@ -5952,13 +6172,13 @@ function wireModal(){
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeFbModal(); });
 }
 function wireSettings(){
-  var g = $('setGoogleBtn'); if (g) g.addEventListener('click', signIn);
+  var g = $('setGoogleBtn'); if (g) g.addEventListener('click', function(){ signIn('login'); });
   var eb = $('setEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('settings'); });
   var tg = $('setAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('settings', e); });
   var fg = $('setForgotLink'); if (fg) fg.addEventListener('click', function(e){ forgotPassword('settings', e); });
   var cp = $('setChangePwBtn'); if (cp) cp.addEventListener('click', changePassword);
   var lo = $('setLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); });
-  var sn = $('setSyncNowBtn'); if (sn) sn.addEventListener('click', function(){ syncNow(); });
+  /* v38: Sync Now wiring removed (button gone; sync is automatic) */
   var sv = $('view-settings');
   if (sv && window.MutationObserver){
     new MutationObserver(function(){
@@ -5985,12 +6205,14 @@ async function boot(){
   setStatus('offline');
   var mods;
   try {
-    mods = await Promise.all([
+    var importP = Promise.all([
       import(CDN + 'firebase-app.js'),
       import(CDN + 'firebase-auth.js'),
       import(CDN + 'firebase-firestore.js')
     ]);
-  } catch(e){ window.__fb = null; setStatus('offline'); return; }
+    var timeoutP = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('sdk-timeout')); }, 8000); });
+    mods = await Promise.race([importP, timeoutP]);
+  } catch(e){ window.__fb = null; setStatus('offline'); showGate(true); return; }
   try {
     var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
     F = {
@@ -6003,20 +6225,49 @@ async function boot(){
       signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
       sendPasswordResetEmail: authMod.sendPasswordResetEmail,
       updatePassword: authMod.updatePassword,
+      updateProfile: authMod.updateProfile,
+      linkWithCredential: authMod.linkWithCredential,
+      EmailAuthProvider: authMod.EmailAuthProvider,
+      getAdditionalUserInfo: authMod.getAdditionalUserInfo,
       collection: fsMod.collection, doc: fsMod.doc, setDoc: fsMod.setDoc,
       deleteDoc: fsMod.deleteDoc, getDocs: fsMod.getDocs, getDoc: fsMod.getDoc,
       query: fsMod.query, writeBatch: fsMod.writeBatch
     };
     var app = appMod.initializeApp(FIREBASE_CONFIG);
     var auth = authMod.getAuth(app);
-    var db = fsMod.initializeFirestore(app, {localCache: fsMod.persistentLocalCache({tabManager: fsMod.persistentMultipleTabManager()})});
+    var db = null;
+    try { db = fsMod.initializeFirestore(app, {localCache: fsMod.persistentLocalCache({tabManager: fsMod.persistentMultipleTabManager()})}); }
+    catch(e){ db = null; /* v38: auth still works without Firestore; sync stays offline */ }
     fb = {app: app, auth: auth, db: db, user: null};
     window.__fb = fb;
-    try { await F.getRedirectResult(auth); } catch(e){}
+    var redirectResult = null, redirectErr = null, authEntry = null;
+    try { redirectResult = await F.getRedirectResult(auth); } catch(e){ redirectErr = e; }
+    try { authEntry = sessionStorage.getItem('fbAuthEntry'); sessionStorage.removeItem('fbAuthEntry'); } catch(e){}
     F.onAuthStateChanged(auth, function(user){
+      /* v38: redirect signals apply to the FIRST auth-state firing after boot
+         only — a later sign-in must not re-trigger the password step. */
+      var rr = redirectResult, ae = authEntry, re = redirectErr;
+      redirectResult = null; authEntry = null; redirectErr = null;
       fb.user = user || null;
-      if (user){ setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
-      else { setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); }
+      if (user){
+        var needsPw = false;
+        try {
+          var info = (rr && F.getAdditionalUserInfo) ? F.getAdditionalUserInfo(rr) : null;
+          if (info && info.isNewUser) needsPw = true;
+        } catch(e){}
+        if (!needsPw && ae === 'register'){
+          var hasPw = (user.providerData || []).some(function(p){ return p.providerId === 'password'; });
+          if (!hasPw) needsPw = true;
+        }
+        if (needsPw){ showPwStep(user); updateHeader(); updateModalView(); updateSettingsAccount(); }
+        else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
+      }
+      else {
+        resetPwStep();
+        setStatus(navigator.onLine ? 'logged-out' : 'offline');
+        updateHeader(); updateModalView(); updateSettingsAccount();
+        showGate(!navigator.onLine, re);
+      }
     });
     window.addEventListener('online', function(){
       if (fb && fb.user) pushSoon();
@@ -6026,7 +6277,7 @@ async function boot(){
     document.addEventListener('visibilitychange', function(){
       if (!document.hidden && fb && fb.user && Date.now() - lastPullAt > 60000) pullAndMerge();
     });
-  } catch(e){ window.__fb = null; setStatus('offline'); }
+  } catch(e){ window.__fb = null; setStatus('offline'); showGate(true); }
 }
 boot();
 })();
