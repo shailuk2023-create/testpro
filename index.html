@@ -1286,6 +1286,70 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
   #fsBtn,#solFsBtn{display:inline-flex!important;align-items:center;justify-content:center;padding:6px!important;min-width:34px}
   #fsBtn .fs-txt,#solFsBtn .fs-txt{display:none}
 }
+
+/* ============ TESTPRO modern test cards (tcx) ============ */
+.test-card.tcx{--tc-accent:#94a3b8;--tc-bg:var(--surface);--tc-soft:rgba(148,163,184,.14);position:relative;overflow:hidden;background:var(--tc-bg);border:1px solid var(--border);border-left:1px solid var(--border);border-radius:20px;padding:18px 20px 16px 24px;margin-bottom:14px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px -16px rgba(15,23,42,.18)}
+.test-card.tcx::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tc-accent)}
+.test-card.tcx:hover{transform:translateY(-2px);border-color:var(--tc-accent);box-shadow:0 14px 30px -16px rgba(15,23,42,.28)}
+.test-card.tcx.tcx-new{--tc-accent:#00a8c4}
+.test-card.tcx.attempted-low{--tc-accent:#ef4444;--tc-bg:#fff6f6;--tc-soft:rgba(239,68,68,.12);border-left:1px solid var(--border)}
+.test-card.tcx.attempted-high{--tc-accent:#22c55e;--tc-bg:#f4fcf7;--tc-soft:rgba(34,197,94,.14);border-left:1px solid var(--border)}
+[data-theme="dark"] .test-card.tcx.attempted-low{--tc-bg:#2a1a20;border-left:1px solid var(--border)}
+[data-theme="dark"] .test-card.tcx.attempted-high{--tc-bg:#12261c;border-left:1px solid var(--border)}
+.tcx-top{display:flex;align-items:center;gap:14px}
+.tcx-ico{flex-shrink:0;width:50px;height:50px;border-radius:15px;display:grid;place-items:center;color:#fff;font-size:18px;font-weight:800;background:linear-gradient(135deg,#00b4d0,#0b6f94);box-shadow:0 10px 18px -10px rgba(0,120,160,.7)}
+.tcx-info{flex:1;min-width:0}
+.tcx-title{font-size:17px;font-weight:800;color:var(--text-strong);line-height:1.3;overflow-wrap:anywhere}
+.tcx-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tcx-chips span{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface3);border:1px solid var(--border);border-radius:99px;padding:3px 10px;line-height:1.4;white-space:nowrap}
+.tcx-chips .tcx-free{background:#16a34a;border-color:#16a34a;color:#fff;font-weight:800;letter-spacing:.5px;font-size:11px}
+.tcx-score{flex-shrink:0;width:68px;height:68px;border-radius:50%;padding:5px;background:conic-gradient(var(--tc-accent) calc(var(--p)*1%),rgba(148,163,184,.28) 0)}
+.tcx-ring{width:100%;height:100%;border-radius:50%;background:var(--tc-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.tcx-ring b{font-size:17px;font-weight:800;color:var(--tc-accent)}
+.tcx-ring small{font-size:10.5px;font-weight:600;color:var(--muted);margin-top:3px}
+.tcx-prog{display:flex;flex-direction:column;gap:7px}
+.tcx-bar{position:relative;height:8px;border-radius:99px;background:rgba(148,163,184,.28)}
+.tcx-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ef4444,#f87171);transition:width .8s ease}
+.test-card.tcx.attempted-high .tcx-bar i{background:linear-gradient(90deg,#22b06a,#2fcf84)}
+.tcx-bar u{position:absolute;top:-3px;left:85%;width:8px;height:14px;background:#facc15;border:1px solid #eab308;border-radius:3px;transform:translateX(-50%);text-decoration:none}
+.tcx-pmeta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.tcx-actions{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px dashed var(--border2)}
+.tcx-actions.att{justify-content:flex-end}
+.tcx-actions.new{justify-content:space-between}
+.tcx-links{display:flex;gap:6px}
+.tcx-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:10px;font-family:inherit;font-weight:700;font-size:13px;line-height:1;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:background .15s,transform .08s,box-shadow .15s}
+.tcx-btn svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tcx-btn:active{transform:scale(.97)}
+.tcx-btn.p{color:#fff;background:linear-gradient(135deg,#00b4d0,#0a7ea3);box-shadow:0 8px 16px -8px rgba(0,130,170,.7)}
+.tcx-btn.p:hover{box-shadow:0 10px 20px -8px rgba(0,130,170,.9)}
+.tcx-btn.p.r{background:linear-gradient(135deg,#f59e0b,#ea580c);box-shadow:0 8px 16px -8px rgba(234,88,12,.7)}
+.tcx-btn.o{color:#0a7ea3;background:var(--surface);border-color:rgba(0,150,181,.45)}
+.tcx-btn.o:hover{background:rgba(0,180,208,.1)}
+.tcx-btn.g{color:var(--muted2);background:transparent;padding:8px 10px}
+.tcx-btn.g:hover{background:var(--surface3)}
+[data-theme="dark"] .tcx-btn.o{color:#5eead4;border-color:rgba(45,212,191,.5);background:transparent}
+[data-theme="dark"] .tcx-btn.g{color:#cbd5e1}
+@media (max-width:560px){
+  .test-card.tcx{padding:14px 14px 14px 18px;border-radius:18px;gap:12px}
+  .test-card.tcx:hover{transform:none}
+  .tcx-ico{width:42px;height:42px;border-radius:13px;font-size:16px}
+  .tcx-top{gap:11px;align-items:flex-start}
+  .tcx-title{font-size:15.5px}
+  .tcx-chips{gap:5px;margin-top:7px}
+  .tcx-chips span{font-size:11.5px;padding:2px 8px}
+  .tcx-score{width:56px;height:56px;padding:4px}
+  .tcx-ring b{font-size:15px}
+  .tcx-ring small{font-size:9.5px}
+  .tcx-actions{padding-top:12px;gap:8px}
+  .tcx-actions.att{display:grid;grid-template-columns:1fr 1fr;justify-content:stretch}
+  .tcx-actions.att .tcx-btn.p{grid-column:1/-1;order:3;padding:10px 14px;font-size:13.5px}
+  .tcx-actions.att .tcx-btn.o{padding:9px 8px;font-size:12.5px}
+  .tcx-actions.new{flex-direction:column-reverse;align-items:stretch}
+  .tcx-actions.new .tcx-btn.p{padding:10px 14px;font-size:13.5px}
+  .tcx-links{justify-content:space-between}
+  .tcx-links .tcx-btn{flex:1}
+}
+
 </style>
 </head>
 <body>
@@ -2395,6 +2459,56 @@ function renderCAPage(){
     b.addEventListener('click', function(){ window.open(this.getAttribute('data-ca-watch'), '_blank'); });
   });
 }
+/* ===== Modern test card (shared by Maths + CA lists; mobile + PC) ===== */
+var TCX_ICO = {
+  sol:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>',
+  ana:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  re:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>',
+  play:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg>',
+  book:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>',
+  share:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>'
+};
+function tcxCard(o){
+  var t = o.t, rec = o.rec;
+  var att = !!(rec && rec.attempts > 0);
+  var pct = att ? Math.max(0, Math.min(100, Math.round((rec.best / t.marks) * 100))) : 0;
+  var hi = pct >= 85;
+  var cls = 'test-card tcx' + (att ? (hi ? ' attempted-high' : ' attempted-low') : ' tcx-new');
+  var h = '<div class="' + cls + '" data-test-id="' + t.id + '">';
+  h += '<div class="tcx-top"><div class="tcx-ico">' + t.num + '</div>' +
+       '<div class="tcx-info"><div class="tcx-title">' + esc(o.title) + '</div>' +
+       '<div class="tcx-chips"><span class="tcx-free">FREE</span><span>' + t.questions.length + ' Qs</span><span>' + fmtMins(t.secs) + ' mins</span><span>' + t.marks + ' Marks</span><span>EN \u00b7 \u0939\u093f\u0902</span></div></div>';
+  if (att){
+    h += '<div class="tcx-score" style="--p:' + pct + '" title="' + pct + '%"><div class="tcx-ring"><b>' + rec.best + '</b><small>/ ' + t.marks + '</small></div></div>';
+  }
+  h += '</div>';
+  if (att){
+    var dateTxt = (rec.last && rec.last.date) ? rec.last.date : '';
+    h += '<div class="tcx-prog"><div class="tcx-bar"><i style="width:' + pct + '%"></i><u title="85% target"></u></div>' +
+         '<div class="tcx-pmeta"><span>' + rec.attempts + ' attempt' + (rec.attempts > 1 ? 's' : '') + '</span>' +
+         '<span>' + (dateTxt ? 'Attempted on ' + dateTxt : 'Attempted') + '</span></div></div>';
+  }
+  var primary = o.hasResume ? 'Resume' : (att ? 'Re-attempt' : 'Start Test');
+  var pIco = o.hasResume ? TCX_ICO.play : (att ? TCX_ICO.re : TCX_ICO.play);
+  var primaryBtn = '<button type="button" class="tcx-btn p' + (o.hasResume ? ' r' : '') + '" ' + o.startAttr + '="' + t.id + '">' + pIco + '<span>' + primary + '</span></button>';
+  if (att){
+    h += '<div class="tcx-actions att">';
+    if (rec.last){
+      h += '<button type="button" class="tcx-btn o" ' + o.solAttr + '="' + t.id + '">' + TCX_ICO.sol + '<span>Solution</span></button>' +
+           '<button type="button" class="tcx-btn o" ' + o.anAttr + '="' + t.id + '">' + TCX_ICO.ana + '<span>Analysis</span></button>';
+    }
+    h += primaryBtn + '</div>';
+  } else {
+    h += '<div class="tcx-actions new">';
+    if (o.share){
+      h += '<div class="tcx-links"><button type="button" class="tcx-btn g" data-syll="' + t.id + '">' + TCX_ICO.book + '<span>Syllabus</span></button>' +
+           '<button type="button" class="tcx-btn g" data-share="' + t.id + '">' + TCX_ICO.share + '<span>Share</span></button></div>';
+    }
+    h += primaryBtn + '</div>';
+  }
+  return h + '</div>';
+}
+
 /* Returns the test-card HTML for one CA month (no heading — the folder header already names the month). */
 function renderCATestCards(monthKey){
   var month = (CABANK || []).filter(function(m){ return m.month === monthKey; })[0];
@@ -2406,27 +2520,7 @@ function renderCATestCards(monthKey){
   tests.forEach(function(t){
     var rec = (store.tests_ca || {})[t.id];
     var hasResume = !!(inProg && inProg.testId === t.id);
-    var bestHtml = '', cardCls = 'test-card', btnsHtml = '', footHtml = '', barHtml = '';
-    if (rec && rec.attempts > 0){
-      bestHtml = '<span class="best-badge">Best: ' + rec.best + ' / ' + t.marks + '</span><span class="attempts-badge">' + rec.attempts + ' attempt' + (rec.attempts > 1 ? 's' : '') + '</span>';
-      var pct = Math.round((rec.best / t.marks) * 100);
-      cardCls += pct >= 85 ? ' attempted-high' : ' attempted-low';
-      if (rec.last){
-        btnsHtml = '<div class="tc-btns"><button class="btn btn-outline" data-ca-sol="' + t.id + '">Solution</button><button class="btn btn-outline" data-ca-analysis="' + t.id + '">Analysis</button></div>';
-      }
-      var dateTxt = (rec.last && rec.last.date) ? 'Attempted on ' + rec.last.date : 'Attempted';
-      footHtml = '<div class="tc-foot"><span>' + dateTxt + '</span><button class="reatt" data-ca-reattempt="' + t.id + '">Reattempt →</button></div>';
-      barHtml = '<div class="tc-progress"><div class="bar" style="width:' + pct + '%;background:' + (pct >= 85 ? 'linear-gradient(90deg,#22b06a,#2fcf84)' : 'linear-gradient(90deg,#ef4444,#f87171)') + '"></div><span class="tc-target" title="85% target"></span></div>';
-    }
-    html += '<div class="' + cardCls + '" data-test-id="' + t.id + '">' +
-      '<div class="tc-row"><div class="tc-ico">' + t.num + '</div><div class="tc-main"><div class="tc-title"><span class="free-badge">FREE</span> ' + esc(t.nameEn) + '</div>' +
-      '<div class="tc-meta"><span><b>' + t.questions.length + '</b> Questions</span><span><b>' + t.marks + '</b> Marks</span><span><b>' + fmtMins(t.secs) + '</b> Mins</span></div>' +
-      '<div class="tc-meta-line">' + t.questions.length + ' Qs . ' + fmtMins(t.secs) + ' mins. ' + t.marks + ' Marks</div>' +
-      '<div class="tc-lang"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>English, Hindi</div></div>' +
-      '<div class="tc-right">' + bestHtml + btnsHtml +
-      '<button class="btn btn-teal" data-ca-start="' + t.id + '">' + (hasResume ? 'Resume' : (rec && rec.attempts > 0 ? 'Re-attempt' : 'Start Now')) + '</button>' +
-      '<button class="tc-start" data-ca-start="' + t.id + '">' + (hasResume ? 'Resume' : (rec && rec.attempts > 0 ? 'Re-attempt' : 'Start Test')) + '</button></div></div>' +
-      footHtml + barHtml + '</div>';
+    html += tcxCard({t:t, rec:rec, hasResume:hasResume, title:t.nameEn, startAttr:'data-ca-start', solAttr:'data-ca-sol', anAttr:'data-ca-analysis', reAttr:'data-ca-reattempt', share:false});
   });
   return html;
 }
@@ -2628,7 +2722,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 30; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 31; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -2980,30 +3074,7 @@ function renderList(){
       if (lf === 'notattempted' && (rec && rec.attempts > 0)) return;
       if (lf === 'high' && !(rec && rec.attempts > 0 && Math.round((rec.best / t.marks) * 100) >= 85)) return;
       shown++;
-      var bestHtml = '';
-      var cardCls = 'test-card';
-      var btnsHtml = '', footHtml = '', barHtml = '';
-      if (rec && rec.attempts > 0){
-        bestHtml = '<span class="best-badge">Best: ' + rec.best + ' / ' + t.marks + '</span><span class="attempts-badge">' + rec.attempts + ' attempt' + (rec.attempts > 1 ? 's' : '') + '</span>';
-        var pct = Math.round((rec.best / t.marks) * 100);
-        cardCls += pct >= 85 ? ' attempted-high' : ' attempted-low';
-        if (rec.last){
-          btnsHtml = '<div class="tc-btns"><button class="btn btn-outline" data-sol="' + t.id + '">Solution</button><button class="btn btn-outline" data-analysis="' + t.id + '">Analysis</button></div>';
-        }
-        var dateTxt = (rec.last && rec.last.date) ? 'Attempted on ' + rec.last.date : 'Attempted';
-        footHtml = '<div class="tc-foot"><span>' + dateTxt + '</span><button class="reatt" data-reattempt="' + t.id + '">Reattempt →</button></div>';
-        barHtml = '<div class="tc-progress"><div class="bar" style="width:' + pct + '%;background:' + (pct >= 85 ? 'linear-gradient(90deg,#22b06a,#2fcf84)' : 'linear-gradient(90deg,#ef4444,#f87171)') + '"></div><span class="tc-target" title="85% target"></span></div>';
-      }
-      var shareRow = '<div class="tc-share-row"><span class="tc-syll" data-syll="' + t.id + '">Syllabus</span><span class="tc-langs">English, Hindi</span><button class="tc-share" data-share="' + t.id + '">↗ Share</button></div>';
-      groupHtml += '<div class="' + cardCls + '" data-test-id="' + t.id + '">' +
-        '<div class="tc-row"><div class="tc-ico">' + t.num + '</div><div class="tc-main"><div class="tc-title"><span class="free-badge">FREE</span> Test ' + t.num + ' — ' + esc(t.nameEn) + (t.parts > 1 ? ' (Part ' + t.part + '/' + t.parts + ')' : '') + '</div>' +
-        '<div class="tc-meta"><span><b>' + t.questions.length + '</b> Questions</span><span><b>' + t.marks + '</b> Marks</span><span><b>' + fmtMins(t.secs) + '</b> Mins</span></div>' +
-        '<div class="tc-meta-line">' + t.questions.length + ' Qs . ' + fmtMins(t.secs) + ' mins. ' + t.marks + ' Marks</div>' +
-        '<div class="tc-lang"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>English, Hindi</div></div>' +
-        '<div class="tc-right">' + bestHtml + btnsHtml +
-        '<button class="btn btn-teal" data-start="' + t.id + '">' + (hasResume ? 'Resume' : (rec && rec.attempts > 0 ? 'Re-attempt' : 'Start Now')) + '</button>' +
-        '<button class="tc-start" data-start="' + t.id + '">' + (hasResume ? 'Resume' : (rec && rec.attempts > 0 ? 'Re-attempt' : 'Start Test')) + '</button></div></div>' +
-        footHtml + barHtml + shareRow + '</div>';
+      groupHtml += tcxCard({t:t, rec:rec, hasResume:hasResume, title:'Test ' + t.num + ' — ' + t.nameEn + (t.parts > 1 ? ' (Part ' + t.part + '/' + t.parts + ')' : ''), startAttr:'data-start', solAttr:'data-sol', anAttr:'data-analysis', reAttr:'data-reattempt', share:true});
     });
     if (groupHtml){
       html += '<div class="chapter-group"><h2>Chapter ' + ch.chapter + ' — ' + esc(ch.name_en) + (ch.name_hi ? ' <span>(' + esc(ch.name_hi) + ')</span>' : '') + '</h2>' + groupHtml + '</div>';
