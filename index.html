@@ -2122,6 +2122,7 @@ var state = {
   sqSolOpen: false
 };
 
+var APP_VERSION = 20; /* version.txt se match kare - har release par bump karo */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
   if (state.view !== name){
@@ -2156,19 +2157,51 @@ function appBack(fallback){
   } else if (fallback){
     showView(fallback);
   } else if (state.view === 'list' && !state.seriesOpen){
-    confirmExitFromHome();
+    exitHomeBack();
   }
 }
 function pushHomeBackGuard(){
   window.history.pushState({appView:'list', routeDepth:0, homeRoot:true, homeGuard:true}, '', '#view-list');
   state.homeGuard = true;
 }
-function confirmExitFromHome(){
-  if (window.confirm('Kya aap app se bahar nikalna chahte hain?')){
+/* v20: Home par back = silent double-back exit. Koi message/dialog nahi.
+   Pehli back: current entry ko guard se replace kar do (stack nahi badhta),
+   app home par hi rehta hai. Dusri back: peeche koi entry nahi bachti,
+   browser/PWA khud app band kar deta hai. In-app back button se bhi yahi
+   hota hai - dusri baar 2 second ke andar dabao to history.back() se exit. */
+var _lastHomeBackAt = 0;
+function exitHomeBack(){
+  var now = Date.now();
+  if (now - _lastHomeBackAt < 2000){
+    _lastHomeBackAt = 0;
     window.history.back();
   } else {
-    pushHomeBackGuard();
+    _lastHomeBackAt = now;
+    window.history.replaceState({appView:'list', routeDepth:0, homeRoot:true, homeGuard:true}, '', '#view-list');
+    state.homeGuard = true;
   }
+}
+
+/* v20: online update check. Sirf home (list) par, test ke beech me kabhi
+   nahi - naya version mile to SW update + reload. Offline ho to chupchaap
+   kuch nahi karta (fetch fail = ignore). Har 10 min me ek baar se zyada nahi. */
+var _lastUpdateCheckAt = 0;
+function checkAppUpdate(){
+  if (!navigator.onLine) return;
+  var now = Date.now();
+  if (now - _lastUpdateCheckAt < 10 * 60 * 1000) return;
+  _lastUpdateCheckAt = now;
+  if (state.view !== 'list' || state.inTest || state.seriesOpen) return;
+  if (typeof fetch !== 'function') return;
+  fetch('version.txt', {cache: 'no-store'}).then(function (r){ return r.text(); }).then(function (t){
+    var v = parseInt((t || '').trim(), 10);
+    if (v && v > APP_VERSION){
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+        navigator.serviceWorker.getRegistration().then(function (reg){ if (reg) reg.update(); }).catch(function(){});
+      }
+      setTimeout(function(){ window.location.reload(); }, 300);
+    }
+  }).catch(function(){});
 }
 function closeOverlayForBack(){
   var modal = document.querySelector('.modal-overlay.show');
@@ -2190,8 +2223,20 @@ window.addEventListener('popstate', function(e){
     openModal('modalBackChoice');
     return;
   }
+  if (state.view === 'list' && state.seriesOpen && e.state && e.state.appView === 'list'){
+    /* series khuli hai aur back daba: pehle series band karo, home par hi raho */
+    state.seriesOpen = false;
+    state.navTab = 'home';
+    state.routeDepth = (e.state.routeDepth != null) ? e.state.routeDepth : Math.max(0, state.routeDepth - 1);
+    state.homeGuard = !!e.state.homeGuard;
+    _viewAt[state.routeDepth] = 'list';
+    renderHome();
+    syncPaletteToggle();
+    syncBottomNav();
+    return;
+  }
   if (state.view === 'list' && !state.seriesOpen && state.homeGuard){
-    confirmExitFromHome();
+    exitHomeBack();
     return;
   }
   var name = e.state && e.state.appView;
@@ -3309,6 +3354,12 @@ function goHome(){
 }
 function goTests(){
   state.navTab = 'tests';
+  if (state.view === 'list' && !state.seriesOpen){
+    /* series kholna bhi ek back-step hai: entry push karo taaki back se series band ho */
+    window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, homeRoot:true, homeGuard:false}, '', '#view-list');
+    state.routeDepth++;
+    state.homeGuard = false;
+  }
   state.seriesOpen = true;
   renderHome();
   showView('list');
@@ -3804,6 +3855,7 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
     _showView(name);
     syncPaletteToggle();
     syncBottomNav();
+    checkAppUpdate();
   };
   var _st0 = storeGet();
   if (_st0.dark === undefined && isMobile()){ _st0.dark = true; storeSet(_st0); }
@@ -3823,6 +3875,8 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
     pushHomeBackGuard();
     applyProfile();
     renderList();
+    window.addEventListener('online', checkAppUpdate);
+    checkAppUpdate();
   } else {
     state.view = 'onboarding';
     state.routeDepth = 0;
