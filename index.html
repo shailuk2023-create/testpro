@@ -1204,16 +1204,6 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 })();
 </script>
 <script>
-/* PWA: service worker for offline use + home-screen install (site only; skipped on file://). */
-(function(){
-  if (!('serviceWorker' in navigator)) return;
-  if (location.protocol.indexOf('http') !== 0) return;
-  window.addEventListener('load', function(){
-    try { navigator.serviceWorker.register('sw.js').catch(function(){}); } catch (e) {}
-  });
-})();
-</script>
-<script>
 (function(){function s(){document.documentElement.style.setProperty('--app-h',Math.round(window.innerHeight)+'px');}
 s();window.addEventListener('resize',s);window.addEventListener('orientationchange',function(){setTimeout(s,150);});})();
 </script>
