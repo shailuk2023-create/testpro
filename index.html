@@ -3063,7 +3063,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 40; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 41; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6412,7 +6412,7 @@ function diffAndPush(){
   if (cur.profile && profChanged){
     var pd = deepCopy(cur.profile);
     pd.updatedAt = Date.now();
-    ops.push({type: 'set', path: 'users/' + uid + '/profile', data: pd, merge: true});
+    ops.push({type: 'set', path: 'users/' + uid + '/profile/data', data: pd, merge: true});
     if (store._fbMeta == null) store._fbMeta = {};
     store._fbMeta.profileUpdatedAt = pd.updatedAt;
     try { localStorage.setItem('super1000_v1', JSON.stringify(store)); } catch(e){}
@@ -6460,7 +6460,7 @@ async function pullAndMerge(){
     var uid = fb.user.uid;
     var aSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/attempts'));
     var sSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/saved'));
-    var pSnap = await F.getDoc(F.doc(fb.db, 'users/' + uid + '/profile'));
+    var pSnap = await F.getDoc(F.doc(fb.db, 'users/' + uid + '/profile/data'));
     var cloudAttempts = {};
     aSnap.forEach(function(d){ var data = d.data(); if (data && data.testId && data.ts) cloudAttempts[d.id] = {testId: data.testId, at: data}; });
     var cloudSaved = [];
