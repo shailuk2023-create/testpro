@@ -1473,6 +1473,7 @@ body.fb-gated::before{content:none!important}
 .au-tab{position:relative;z-index:1;background:none;border:none;padding:10px;font-family:inherit;font-weight:800;font-size:14px;color:var(--muted);cursor:pointer;border-radius:12px;transition:color .25s}
 #fbModal[data-view="register"] .au-tab[data-au-tab="register"],#fbModal[data-view="login"] .au-tab[data-au-tab="login"]{color:#fff}
 #fbModal[data-view="account"] .au-tabs,#fbModal[data-step="pw"] .au-tabs{display:none}
+#fbModal[data-step="link"] .au-tabs{display:none}
 #fbModal .au-x{display:none!important}
 #fbModal #fbModalRegister:not([hidden]),#fbModal #fbModalLoggedOut:not([hidden]),#fbModal #fbModalLoggedIn:not([hidden]){animation:auPanel .4s ease both}
 
@@ -3063,7 +3064,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 41; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 42; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5793,6 +5794,19 @@ attachSwipe($('solScroll'),
           <p class="fb-auth-err" id="fbPwSetErr" hidden></p>
           <button class="fb-email-btn" id="fbPwSetBtn">Password set karein</button>
         </div>
+        <div id="fbLinkWrap" hidden>
+          <div class="fb-modal-user">
+            <div class="fb-modal-avatar" id="fbLinkAvatar">G</div>
+            <div class="fb-modal-userinfo"><b>Google link karo</b><span id="fbLinkEmail"></span></div>
+            <span class="au-verified" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          </div>
+          <p class="fb-modal-sub au-pwsub">Is email par pehle se ID-password account hai. Apna wahi password ek baar daalo — link hote hi aage se Google se turant login hoga.</p>
+          <label class="au-f"><span class="au-lb">Password</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbLinkPw" type="password" placeholder="Apna wahi password daalo" autocomplete="current-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+          </label>
+          <p class="fb-auth-err" id="fbLinkErr" hidden></p>
+          <button class="fb-email-btn" id="fbLinkBtn">Google link karo</button>
+        </div>
         <p class="fb-modal-note" id="fbRegNote">Register karne ke liye pehli baar internet chahiye.</p>
       </div>
 
@@ -5846,10 +5860,11 @@ attachSwipe($('solScroll'),
         li = document.getElementById('fbModalLoggedIn'), pw = document.getElementById('fbPwSetWrap');
     var v = (r && !r.hidden) ? 'register' : (lo && !lo.hidden ? 'login' : (li && !li.hidden ? 'account' : 'register'));
     m.setAttribute('data-view', v);
-    m.setAttribute('data-step', (v === 'register' && pw && !pw.hidden) ? 'pw' : '1');
+    var lk = document.getElementById('fbLinkWrap');
+    m.setAttribute('data-step', (v === 'register' && pw && !pw.hidden) ? 'pw' : (v === 'register' && lk && !lk.hidden) ? 'link' : '1');
   }
   var mo = new MutationObserver(sync);
-  ['fbModalRegister','fbModalLoggedOut','fbModalLoggedIn','fbPwSetWrap'].forEach(function(id){
+  ['fbModalRegister','fbModalLoggedOut','fbModalLoggedIn','fbPwSetWrap','fbLinkWrap'].forEach(function(id){
     var e = document.getElementById(id); if (e) mo.observe(e, {attributes:true, attributeFilter:['hidden']});
   });
   sync();
@@ -5979,6 +5994,9 @@ var fbSignOutRequested = false; /* v40: set by signOut() — the null firing tha
 var fbGateNetScheduled = false; /* v40: the 4s gate safety net (null firing with a pending redirect) runs once */
 var fbModalView = 'register'; /* register | login | account */
 var pwStepActive = false; /* true while a new Google user still has to set a password */
+var fbPendingGoogleCred = null, fbPendingGoogleEmail = null; /* v42: Google credential captured from the account-exists error — lets a password account link Google (memory only, never logged or persisted) */
+var fbLinkStepActive = false; /* v42: true while the Google-link step is shown */
+var fbLinkingInProgress = false; /* v42: true while submitGoogleLink() signs in + links — the auth listener must not enter the app before linkWithCredential finishes */
 function showFbView(v){
   fbModalView = v;
   var r = $('fbModalRegister'), lo = $('fbModalLoggedOut'), li = $('fbModalLoggedIn');
@@ -6025,6 +6043,7 @@ function closeFbModal(force){
 }
 function resetPwStep(){
   pwStepActive = false;
+  clearLinkStep(); /* v42: no modal reset may leave a stale link step behind */
   var main = $('fbRegMain'); if (main) main.hidden = false;
   var pw = $('fbPwSetWrap'); if (pw) pw.hidden = true;
 }
@@ -6085,7 +6104,7 @@ function redirectErrorText(e){
     return 'Login abhi allowed nahi hai — thodi der baad try karo';
   }
   if (code === 'auth/account-exists-with-different-credential')
-    return 'Is email ka account pehle se hai — Google se nahi, ID-password se login karo';
+    return 'Is email ka account pehle se hai — dobara Google dabao ya ID-password se login karo';
   if (code === 'auth/network-request-failed') return 'Internet nahi hai — connection check karke dobara try karo';
   return 'Login mein kuch galat hua — dobara try karo';
 }
@@ -6100,6 +6119,13 @@ function showGate(offline, err){
     if (rn) rn.textContent = 'Register karne ke liye internet chahiye — internet on karke dobara try karo.';
   }
   if (err){
+    /* v42: a password account whose Google sign-in hit account-exists gets
+       the one-time link step (password proves ownership, then Google links)
+       instead of the dead-end message. The step shows whenever the email is
+       known; if the pending credential itself is gone the submit asks the
+       user to tap Google again. Only when even the email is unknown does it
+       fall through to the neutral fallback text below. */
+    if (err.code === 'auth/account-exists-with-different-credential' && captureLinkCred(err)){ showLinkStep(); return; }
     if (err.code === 'auth/account-exists-with-different-credential') showFbView('login');
     var txt = redirectErrorText(err);
     var re = $('fbRegErr');
@@ -6119,6 +6145,44 @@ function showPwStep(user){
   var av = $('fbPwSetAvatar'); if (av) av.textContent = name.charAt(0).toUpperCase();
   var main = $('fbRegMain'); if (main) main.hidden = true;
   var pw = $('fbPwSetWrap'); if (pw) pw.hidden = false;
+  showFbView('register');
+  openFbModal();
+}
+
+/* ---------------- v42 Google link ----------------
+   A password-provider account (e.g. h299341k@gmail.com) fails EVERY Google
+   sign-in with auth/account-exists-with-different-credential — v41 only
+   showed a dead-end message and Google could never work for it. The error
+   carries the pending Google credential (.credential) + .email: capture it,
+   ask for the account's own password once (proves ownership), sign in with
+   email+password, then linkWithCredential — after that Google logs straight
+   in. The credential is kept in memory only, never logged or persisted. */
+function captureLinkCred(e){
+  if (!e || e.code !== 'auth/account-exists-with-different-credential') return false;
+  var cred = null;
+  try { if (F && F.GoogleAuthProvider && F.GoogleAuthProvider.credentialFromError) cred = F.GoogleAuthProvider.credentialFromError(e); } catch(err){}
+  if (!cred && e.credential) cred = e.credential;
+  /* v42: keep the email even when the credential itself is missing (e.g.
+     the page was reloaded mid-flow) — the link step still shows with the
+     known email and the submit reports 'Dobara Google button dabao' instead
+     of dying silently. Only when even the email is unknown do we give up. */
+  fbPendingGoogleCred = cred;
+  fbPendingGoogleEmail = e.email || (e.customData && e.customData.email) || null;
+  return !!fbPendingGoogleEmail;
+}
+function clearLinkStep(){
+  fbPendingGoogleCred = null; fbPendingGoogleEmail = null; fbLinkStepActive = false;
+  var w = $('fbLinkWrap'); if (w) w.hidden = true;
+  var p = $('fbLinkPw'); if (p) p.value = '';
+  var er = $('fbLinkErr'); if (er){ er.textContent = ''; er.hidden = true; }
+}
+function showLinkStep(){
+  fbLinkStepActive = true;
+  var em = $('fbLinkEmail'); if (em) em.textContent = fbPendingGoogleEmail || '';
+  var av = $('fbLinkAvatar'); if (av) av.textContent = (fbPendingGoogleEmail || 'G').charAt(0).toUpperCase();
+  var main = $('fbRegMain'); if (main) main.hidden = true;
+  var pw = $('fbPwSetWrap'); if (pw) pw.hidden = true;
+  var w = $('fbLinkWrap'); if (w) w.hidden = false;
   showFbView('register');
   openFbModal();
 }
@@ -6203,6 +6267,8 @@ function signIn(entry){
 }
 function signInFailed(e){
   setStatus('offline');
+  /* v42: same one-time Google-link intercept as showGate (see above). */
+  if (e && e.code === 'auth/account-exists-with-different-credential' && captureLinkCred(e)){ showLinkStep(); return; }
   var txt = redirectErrorText(e);
   if (e && e.code === 'auth/account-exists-with-different-credential') showFbView('login');
   var el = $('fbAuthErr');
@@ -6591,6 +6657,55 @@ async function submitPasswordSet(){
     else showErr(errEl, emailErrorText(code));
   } finally { if (btn) btn.disabled = false; }
 }
+async function submitGoogleLink(){
+  var pwEl = $('fbLinkPw');
+  var errEl = $('fbLinkErr'), btn = $('fbLinkBtn');
+  var pw = (pwEl && pwEl.value) || '';
+  if (errEl){ errEl.textContent = ''; errEl.hidden = true; }
+  if (!pw){ showErr(errEl, 'Password daalo'); return; }
+  if (!fbPendingGoogleCred || !fbPendingGoogleEmail){
+    /* v42: the page was reloaded mid-flow (pending credential lives in
+       memory only) — send the user back to the login view; one more Google
+       tap restarts the link flow. Clear FIRST so the message survives, and
+       show it on the login view's error line (visible) as well as the link
+       step's (kept for the flow state). */
+    clearLinkStep();
+    showFbView('login');
+    var le = $('fbAuthErr');
+    if (le) showErr(le, 'Dobara Google button dabao');
+    showErr(errEl, 'Dobara Google button dabao');
+    openFbModal();
+    return;
+  }
+  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); return; }
+  if (btn) btn.disabled = true;
+  fbLinkingInProgress = true;
+  try {
+    var cred = await F.signInWithEmailAndPassword(fb.auth, fbPendingGoogleEmail, pw);
+    var user = cred && cred.user;
+    if (!user) throw {code: 'auth/user-not-found'};
+    await F.linkWithCredential(user, fbPendingGoogleCred);
+    fbPendingGoogleCred = null; fbPendingGoogleEmail = null; fbLinkStepActive = false;
+    enterApp();
+    setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge();
+  } catch(e){
+    var code = e && e.code;
+    if (code === 'auth/wrong-password' || code === 'auth/invalid-credential')
+      showErr(errEl, 'Galat password — wahi password daalo jo ID-password login me use karte ho');
+    else if (code === 'auth/user-not-found'){
+      clearLinkStep();
+      showFbView('login');
+      var le = $('fbAuthErr');
+      if (le) showErr(le, 'Is email se account nahi mila — pehle register karo');
+      openFbModal();
+    }
+    else if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use')
+      showErr(errEl, 'Ye Google account kisi aur ID se linked hai');
+    else if (code === 'auth/network-request-failed')
+      showErr(errEl, 'Internet nahi hai — connection check karo');
+    else showErr(errEl, emailErrorText(code));
+  } finally { fbLinkingInProgress = false; if (btn) btn.disabled = false; }
+}
 
 /* ---------------- wiring + boot ---------------- */
 function wireModal(){
@@ -6605,6 +6720,7 @@ function wireModal(){
   var rgb = $('fbRegGoogleBtn'); if (rgb) rgb.addEventListener('click', function(){ signIn('register'); });
   var rb = $('fbRegBtn'); if (rb) rb.addEventListener('click', submitRegister);
   var psb = $('fbPwSetBtn'); if (psb) psb.addEventListener('click', submitPasswordSet);
+  var lb = $('fbLinkBtn'); if (lb) lb.addEventListener('click', submitGoogleLink);
   var lo = $('fbLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); closeFbModal(); });
   var eb = $('fbEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('modal'); });
   var tg = $('fbAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('modal', e); });
@@ -6721,6 +6837,7 @@ async function boot(){
           if (info && info.isNewUser) needsPw = true;
         } catch(e){}
         if (needsPw){ showPwStep(user); updateHeader(); updateModalView(); updateSettingsAccount(); }
+        else if (fbLinkingInProgress){ /* v42: Google link in flight — submitGoogleLink() enters after linkWithCredential; do NOT flip the modal to the account view or enter early */ updateHeader(); updateSettingsAccount(); }
         else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
       }
       else {
