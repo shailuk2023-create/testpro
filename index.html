@@ -1474,6 +1474,10 @@ body.fb-gated::before{content:none!important}
 #fbModal[data-view="register"] .au-tab[data-au-tab="register"],#fbModal[data-view="login"] .au-tab[data-au-tab="login"]{color:#fff}
 #fbModal[data-view="account"] .au-tabs,#fbModal[data-step="pw"] .au-tabs{display:none}
 #fbModal[data-step="link"] .au-tabs{display:none}
+#fbModal[data-auth-loading="1"] .au-tabs,#fbModal[data-auth-loading="1"] #fbSkipBtn,#fbModal[data-auth-loading="1"] #fbModalRegister,#fbModal[data-auth-loading="1"] #fbModalLoggedOut,#fbModal[data-auth-loading="1"] #fbModalLoggedIn{display:none}
+.fb-auth-loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:34px 0 26px;text-align:center}
+.fb-auth-loading p{margin:0;font-size:14px;color:var(--muted)}
+.fb-auth-spin{width:26px;height:26px;border-radius:50%;border:3px solid var(--border);border-top-color:#00c2cb;animation:auSpinner .8s linear infinite}
 #fbModal .au-x{display:none!important}
 #fbModal #fbModalRegister:not([hidden]),#fbModal #fbModalLoggedOut:not([hidden]),#fbModal #fbModalLoggedIn:not([hidden]){animation:auPanel .4s ease both}
 
@@ -3064,7 +3068,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 42; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 43; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5749,6 +5753,10 @@ attachSwipe($('solScroll'),
         <button type="button" class="au-tab" data-au-tab="login" role="tab">Login</button>
       </div>
 
+      <div id="fbAuthLoadingWrap" hidden>
+        <div class="fb-auth-loading"><span class="fb-auth-spin" aria-hidden="true"></span><p>Login check ho raha hai…</p></div>
+      </div>
+
       <div id="fbModalRegister">
         <div class="au-head">
           <div class="au-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
@@ -5949,6 +5957,64 @@ function $(id){ return document.getElementById(id); }
 function deepCopy(o){ return JSON.parse(JSON.stringify(o)); }
 function storeLocal(){ try { return (window.storeGet ? window.storeGet() : {tests:{}}); } catch(e){ return {tests:{}}; } }
 function saveLocal(d){ try { if (window.storeSet) window.storeSet(d); } catch(e){} }
+/* ---------------- v43 UID-owned local store ----------------
+   THE DATA-BLEED FIX. The local store (one localStorage key
+   `super1000_v1`) used to carry NO uid: pullAndMerge() merged cloud
+   data into whatever store was lying around, then pushNow() pushed the
+   union to the CURRENT user's cloud paths — so user B logging in after
+   user A on the same device saw (and uploaded) A's data. The fix has
+   two halves: (a) the store is stamped with its owner's UID
+   (_fbMeta.uid) on every successful pull/push; (b) every sync entry
+   point discards a store stamped with ANOTHER uid BEFORE anything
+   reads it or pushes from it. A store with NO owner recorded
+   (guest/Skip progress, or a pre-v43 store) is KEPT and merged, then
+   tagged — logging in after a Skip session keeps that progress.
+   All Firestore paths were ALREADY uid-scoped (the attempts and saved
+   collections, and the 4-segment profile document); the bleed was in
+   the LOCAL store, never in the queries. */
+function freshStoreFor(dark){
+  /* A brand-new device's store shape: every key the app expects, so
+     renderHome/applyProfile/shadowOf never see a half-built store. The
+     default profile is the same one a first-run device gets; the v40
+     guard (never push the profile before the first pull) still applies
+     because shadow is null after a discard. */
+  return {tests: {}, tests_ca: {}, saved: [], saved_ca: [],
+    profile: {name: 'Student', exam: 'RRB NTPC', target: 91},
+    dark: (dark === undefined ? false : !!dark)};
+}
+function storeOwnerUid(){
+  try { var s = storeLocal(); return (s && s._fbMeta && s._fbMeta.uid) || null; } catch(e){ return null; }
+}
+function tagStoreUid(uid){
+  /* Stamp the local store with its owner's UID. Writes straight to
+     localStorage (NOT via storeSet) so the pushSoon hook does not fire
+     while a pull/push is mid-flight. */
+  if (!uid) return;
+  try {
+    var s = storeLocal();
+    if (!s._fbMeta) s._fbMeta = {};
+    if (s._fbMeta.uid !== uid){
+      s._fbMeta.uid = uid;
+      try { localStorage.setItem('super1000_v1', JSON.stringify(s)); } catch(e){}
+    }
+  } catch(e){}
+}
+function discardForeignStore(uid){
+  /* UID ownership guard (the backstop): if this device's local store is
+     tagged with ANOTHER UID, throw it away BEFORE anything reads it or
+     pushes from it. The discarded data is NEVER pushed to the new user —
+     it still lives in the old owner's cloud account. Returns true when
+     a foreign store was discarded. No owner recorded -> keep (see above). */
+  var owner = storeOwnerUid();
+  if (owner && uid && owner !== uid){
+    var dark = null;
+    try { dark = storeLocal().dark; } catch(e){}
+    try { localStorage.setItem('super1000_v1', JSON.stringify(freshStoreFor(dark))); } catch(e){}
+    shadow = null; lastPullAt = 0; lastSyncAt = 0; lastSyncError = '';
+    return true;
+  }
+  return false;
+}
 function fmtLastSync(){
   if (!lastSyncAt) return 'Abhi tak sync nahi hua';
   try { return new Date(lastSyncAt).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
@@ -5997,6 +6063,9 @@ var pwStepActive = false; /* true while a new Google user still has to set a pas
 var fbPendingGoogleCred = null, fbPendingGoogleEmail = null; /* v42: Google credential captured from the account-exists error — lets a password account link Google (memory only, never logged or persisted) */
 var fbLinkStepActive = false; /* v42: true while the Google-link step is shown */
 var fbLinkingInProgress = false; /* v42: true while submitGoogleLink() signs in + links — the auth listener must not enter the app before linkWithCredential finishes */
+var fbAuthLoading = true; /* v43: spec isAuthLoading — true until the FIRST auth-state settlement (first user firing, or a null firing that decides the gate). While true the gate shows a loading state, never the login/register form. */
+var fbSdkReady = false; /* v43: Firebase SDK loaded (distinct from the auth check settling — buttons enable only when BOTH are true) */
+var fbLastUid = null; /* v43: UID seen on the last user firing in this boot (UID-change guard) */
 function showFbView(v){
   fbModalView = v;
   var r = $('fbModalRegister'), lo = $('fbModalLoggedOut'), li = $('fbModalLoggedIn');
@@ -6044,7 +6113,11 @@ function closeFbModal(force){
 function resetPwStep(){
   pwStepActive = false;
   clearLinkStep(); /* v42: no modal reset may leave a stale link step behind */
-  var main = $('fbRegMain'); if (main) main.hidden = false;
+  /* v43: the null firing calls resetPwStep() BEFORE the redirect-pending
+     check, so on a redirect return it ran while fbAuthLoading was still
+     true — and un-hid the login form under the loading spinner. The loading
+     state owns the form's visibility until settlement. */
+  var main = $('fbRegMain'); if (main) main.hidden = !!fbAuthLoading;
   var pw = $('fbPwSetWrap'); if (pw) pw.hidden = true;
 }
 /* v38 register gate: enter the app only after register/login; show the
@@ -6095,6 +6168,37 @@ function setAuthReadyUI(ready, failed){
     else if (b.dataset.loading === '1'){ setBtnLabel(b, b.dataset.origLabel); delete b.dataset.loading; }
   });
 }
+/* ---------------- v43 explicit auth-loading gate ----------------
+   Spec's isAuthLoading, mapped to this app: there is no router and no
+   /login page — the "route guard" IS the register gate modal, and the
+   "redirect to /login" IS showGate() opening it. fbAuthLoading starts
+   true and clears ONLY on the first auth-state settlement (first user
+   firing, a null firing that decides the gate, the 4s redirect safety
+   net, or the SDK-load failure catch). While it is true the gate shows
+   a loading spinner, never the login/register form, and the auth
+   buttons stay disabled — so the app can never "redirect" to login
+   before the session is actually known (the v40 login-window-reappears
+   class of bug). This ADDS to the v40 guards (fbAuthedOnce transient-
+   null guard, fbSignOutRequested, 4s safety net); it replaces none. */
+function setAuthLoadingUI(on){
+  fbAuthLoading = !!on;
+  var m = $('fbModal');
+  if (m){ if (on) m.setAttribute('data-auth-loading', '1'); else m.removeAttribute('data-auth-loading'); }
+  var w = $('fbAuthLoadingWrap'); if (w) w.hidden = !on;
+  /* v43: hide the register/login form itself via the hidden attribute, not
+     CSS alone — the CSS rule above hides it visually in a real browser, but
+     the form must also be inert/hidden in the DOM (screen readers, tests,
+     and any code that reads .hidden). Restored on settle; the pw/link steps
+     hide it again afterwards if they are the ones showing. */
+  var main = $('fbRegMain'); if (main) main.hidden = !!on;
+  /* Auth buttons stay dead while the session is unknown — even after the
+     SDK is ready — and come back exactly when the check settles. */
+  if (on) setAuthReadyUI(false);
+  else if (fbSdkReady) setAuthReadyUI(true);
+}
+function settleAuthLoading(){
+  if (fbAuthLoading) setAuthLoadingUI(false);
+}
 function redirectErrorText(e){
   var code = (e && e.code) || '';
   var msg = (e && e.message) || '';
@@ -6112,6 +6216,12 @@ function showGate(offline, err){
   if (window.__fbSkipped) return; /* v39: user chose Skip this session — never re-gate */
   fbGated = true;
   try { document.body.classList.add('fb-gated'); } catch(e){}
+  /* v43: while the first auth check is still running, show the loading
+     state, never the login/register form. Settlement happens in the auth
+     listener / safety net / boot catch, and those callers clear the flag
+     before showGate — so this branch is the defensive backstop for any
+     other path that opens the gate early. */
+  if (fbAuthLoading){ setAuthLoadingUI(true); openFbModal(); return; }
   if (offline){
     var note = $('fbModalNote');
     if (note) note.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.';
@@ -6277,13 +6387,67 @@ function signInFailed(e){
   if (re){ re.textContent = txt; re.hidden = false; }
   openFbModal();
 }
-function signOut(){
-  try { window.__fbSkipped = false; } catch(e){} /* v39: logout brings the gate back */
-  if (!fb || !F){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); return; }
+/* ---------------- v43 centralized logout ----------------
+   The ONLY way out (spec's logoutUser service, mapped to this app).
+   The old signOut() only called F.signOut() and left the whole local
+   world behind — that is the data bleed. Order matters:
+   (a) Best-effort FLUSH while still authed, so no synced-able data is
+       lost (diffAndPush is a no-op when there is nothing to push).
+   (b) await F.signOut (fbSignOutRequested so the following null firing
+       is treated as a real logout, per v40).
+   (c) WIPE the local world — fresh store for NOBODY (theme `dark`
+       preserved: the head theme script reads it before first paint),
+       sessionStorage cleared (fbAuthEntry must not survive logout),
+       and ALL in-memory auth/sync state reset (shadow, lastPullAt,
+       lastSyncAt, lastSyncError, fbAuthedOnce, fbLastUid, the v42 link
+       state, retry timers, pending push timer). Logging in with ID "B"
+       afterwards cannot see a single artifact of ID "A".
+   (d) OFFLINE RULE: if the flush in (a) FAILED (offline / push error),
+       the store is NOT wiped — it stays tagged with its owner's UID
+       (see the UID guard), so the owner's data survives for their
+       return, and the next login is still protected.
+   (e) Re-render home + re-gate. Every step is guarded so a failure in
+       one cannot leave the app half-logged-out.
+   NOTE on the spec's "detach EVERY onSnapshot listener": there are NO
+   onSnapshot listeners anywhere in this app — sync is pull-based
+   (pullAndMerge on login/online/visibility/pagehide + debounced push),
+   so there is nothing to detach. authListeners is a STATUS-callback
+   list (setStatus notifiers), not Firestore listeners; it is left
+   alone. */
+async function logoutUser(){
+  var hadUser = !!(fb && fb.user);
+  var flushed = false;
+  try { if (hadUser && fb.db) flushed = await diffAndPush(); } catch(e){ flushed = false; }
   fbSignOutRequested = true; /* v40: the null firing that follows is a real logout, not a transient */
-  F.signOut(fb.auth).then(function(){ /* onAuthStateChanged fires */ })
-    .catch(function(){ fbSignOutRequested = false; setStatus('logged-out'); updateHeader(); updateModalView(); updateSettingsAccount(); });
+  try { window.__fbSkipped = false; } catch(e){} /* v39: logout brings the gate back */
+  try { if (fb && F) await F.signOut(fb.auth); } catch(e){}
+  try { if (fb) fb.user = null; } catch(e){}
+  if (flushed || !hadUser){
+    var dark = null;
+    try { dark = storeLocal().dark; } catch(e){}
+    try { localStorage.setItem('super1000_v1', JSON.stringify(freshStoreFor(dark))); } catch(e){}
+    try { sessionStorage.clear(); } catch(e){}
+    shadow = null; lastPullAt = 0; lastSyncAt = 0; lastSyncError = '';
+    fbAuthedOnce = false; fbLastUid = null; fbLinkingInProgress = false;
+    if (pushTimer){ try { clearTimeout(pushTimer); } catch(e){} pushTimer = null; }
+    pushRunning = null;
+    try { clearRetry('pull'); clearRetry('push'); } catch(e){}
+    try { resetPwStep(); } catch(e){} /* also clears the v42 link step */
+  } else {
+    /* (d) Flush failed: keep the tagged store for its owner (see above).
+       Still reset the session state so the next login starts clean. */
+    fbAuthedOnce = false; fbLastUid = null;
+    try { clearRetry('pull'); clearRetry('push'); } catch(e){}
+    try { resetPwStep(); } catch(e){}
+  }
+  try { clearLinkStep(); } catch(e){} /* v43: explicit — the v42 link step is reset here too, not only via resetPwStep() */
+  try { setStatus(navigator.onLine ? 'logged-out' : 'offline'); } catch(e){}
+  try { if (window.renderHome) window.renderHome(); } catch(e){}
+  try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+  try { updateHeader(); updateModalView(); updateSettingsAccount(); } catch(e){}
+  try { showGate(!navigator.onLine, null); } catch(e){}
 }
+function signOut(){ return logoutUser(); }
 function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 function emailErrorText(code){
   var map = {
@@ -6437,6 +6601,10 @@ function shadowOf(store){
 function diffAndPush(){
   if (!fb || !F || !fb.user) return Promise.resolve(false);
   if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); scheduleRetry('push', function(){ diffAndPush(); }, 10000); return Promise.resolve(false); }
+  /* v43: UID ownership guard — a foreign local store is discarded BEFORE
+     anything is read from it or pushed from it (see the store helpers).
+     The discarded data is never pushed to the current user. */
+  discardForeignStore(fb.user.uid);
   if (pushRunning) return pushRunning;
   var store = storeLocal();
   /* v40: legacy attempts without ts never pushed before — give them a
@@ -6497,6 +6665,7 @@ function diffAndPush(){
         await batch.commit();
       }
       shadow = cur;
+      tagStoreUid(uid); /* v43: stamp the store with its owner's UID on every successful push */
       lastSyncAt = Date.now();
       lastSyncError = '';
       clearRetry('push');
@@ -6522,6 +6691,9 @@ function pushNow(){
 async function pullAndMerge(){
   if (!fb || !F || !fb.user){ if (fb && fb.user) setStatus('offline'); return false; }
   if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
+  /* v43: UID ownership guard (see diffAndPush) — discard a foreign local
+     store before the cloud data is merged into it. */
+  discardForeignStore(fb.user.uid);
   try {
     var uid = fb.user.uid;
     var aSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/attempts'));
@@ -6577,6 +6749,10 @@ async function pullAndMerge(){
     }
     if (!store._fbMigrated){ store._fbMigrated = true; changed = true; }
     if (changed) saveLocal(store);
+    /* v43: tag the local store with its owner's UID on EVERY successful
+       pull — even when nothing changed — or the guard above can never
+       tell a foreign store from a fresh one. */
+    tagStoreUid(uid);
     lastPullAt = Date.now();
     clearRetry('pull');
     var pushed = await pushNow();
@@ -6744,7 +6920,7 @@ function wireSettings(){
 }
 function installBridge(){
   window.__fbSync = {
-    signIn: signIn, signOut: signOut, skipAuth: skipAuth,
+    signIn: signIn, signOut: signOut, logoutUser: logoutUser, isAuthLoading: function(){ return fbAuthLoading; }, skipAuth: skipAuth,
     pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge,
     openModal: openFbModal, closeModal: closeFbModal,
     syncNow: syncNow,
@@ -6757,6 +6933,11 @@ function installBridge(){
 async function boot(){
   installBridge();
   wireModal();
+  /* v43: open the gate in its loading state at once — while fbAuthLoading is
+     true showGate() shows the spinner, never the login form. Without this
+     the modal stays shut until the first auth firing and the loading phase
+     is invisible (blank gated screen). */
+  showGate(false, null);
   wireSettings();
   updateHeader();
   setStatus('offline');
@@ -6769,7 +6950,7 @@ async function boot(){
     ]);
     var timeoutP = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('sdk-timeout')); }, 8000); });
     mods = await Promise.race([importP, timeoutP]);
-  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); showGate(true); return; }
+  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading(); showGate(true); return; }
   try {
     var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
     F = {
@@ -6802,7 +6983,8 @@ async function boot(){
     if (!db) setSyncError('Firestore nahi khula — sync band hai');
     fb = {app: app, auth: auth, db: db, user: null};
     window.__fb = fb;
-    setAuthReadyUI(true); /* v39: SDK ready — auth buttons become tappable */
+    fbSdkReady = true; /* v43: SDK loaded — buttons still stay disabled until the first auth check settles (setAuthLoadingUI) */
+    if (!fbAuthLoading) setAuthReadyUI(true); /* v39: SDK ready — auth buttons become tappable */
     /* v40: the 1500ms gate fallback may have written internet-note errors
        while the script was still parsing (slow phone) — clear them now that
        the SDK is live, or they linger into the password step. */
@@ -6824,6 +7006,14 @@ async function boot(){
       if (user){
         redirectResult = null; authEntry = null; redirectErr = null;
         fbAuthedOnce = true;
+        fbAuthLoading = false; setAuthLoadingUI(false); /* v43: first auth settlement — the guard may now decide (direct assignment: the harness reads the listener slice for it) */
+        /* v43: UID ownership guard — a store tagged with another UID is
+           discarded BEFORE anything merges into it or pushes from it
+           (the pull/push entry guards are the backstop; this one fires
+           first). No owner recorded (guest/Skip progress) -> kept, and
+           the pull that follows tags it with this UID. */
+        discardForeignStore(user.uid);
+        fbLastUid = user.uid;
         /* v40: the password step is for a FIRST-TIME Google account only
            (isNewUser). The register window is the gate's default, so every
            Google tap from a fresh boot carried ae === 'register' — the old
@@ -6865,10 +7055,11 @@ async function boot(){
           if (!fbGateNetScheduled){
             fbGateNetScheduled = true;
             setTimeout(function(){
-              if (!fb.user && !window.__fbSkipped) showGate(!navigator.onLine, null);
+              if (!fb.user && !window.__fbSkipped){ fbAuthLoading = false; setAuthLoadingUI(false); showGate(!navigator.onLine, null); }
             }, 4000);
           }
         } else {
+          fbAuthLoading = false; setAuthLoadingUI(false); /* v43: no user and no redirect pending — the session is known */
           showGate(!navigator.onLine, re);
         }
       }
@@ -6888,7 +7079,7 @@ async function boot(){
          debounce alone can lose a just-submitted attempt. */
       if (fb && fb.user && fb.db){ try { diffAndPush(); } catch(e){} }
     });
-  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); showGate(true); }
+  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading(); showGate(true); }
 }
 boot();
 })();
