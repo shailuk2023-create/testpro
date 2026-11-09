@@ -12,6 +12,7 @@
 <script defer src="https://progressier.app/XI0kRddwFU4ZoDYaXp2f/script.js"></script>
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script>/* v40: apply the saved theme before first paint — no light->dark flash on boot */try{var _v40s=JSON.parse(localStorage.getItem('super1000_v1')||'{}');var _v40d=_v40s.dark;if(_v40d===undefined)_v40d=(window.innerWidth<900||(typeof navigator!=='undefined'&&navigator.maxTouchPoints>0));document.documentElement.setAttribute('data-theme',_v40d?'dark':'light');}catch(e){}</script>
 <title>TESTPRO — Railway Super 1000 Maths</title>
 <style>
 /* ================= THEME VARIABLES ================= */
@@ -74,20 +75,6 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 .icon-btn{background:var(--surface3);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;font-size:17px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .icon-btn:hover{background:var(--hover)}
 /* ---------- ONBOARDING ---------- */
-#view-onboarding{min-height:100vh;background:linear-gradient(160deg,#0096b5 0%,#0b7196 55%,#0e6f8f 100%);display:none;align-items:center;justify-content:center;padding:24px 16px}
-#view-onboarding.active{display:flex}
-.ob-wrap{max-width:440px;width:100%;background:var(--surface);border-radius:16px;padding:28px 24px 24px;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.28);animation:fadeIn .35s ease}
-.ob-logo{width:190px;max-width:80%;height:auto;border-radius:8px}
-.ob-illus{margin:10px auto 4px;width:220px;max-width:100%}
-.ob-illus svg{width:100%;height:auto;animation:floaty 3.2s ease-in-out infinite}
-.ob-wrap h1{font-size:23px;font-weight:800;color:var(--text-strong);margin:6px 0}
-.ob-sub{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:20px}
-.ob-form{text-align:left}
-.ob-form label{display:block;font-size:13.5px;font-weight:700;color:var(--muted2);margin-bottom:12px}
-.ob-form input{width:100%;margin-top:5px;border:1px solid var(--border2);border-radius:8px;padding:11px 12px;font-size:15px;background:var(--surface);outline:none}
-.ob-form input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,150,181,.18)}
-.ob-error{color:#dc2626;font-size:13px;min-height:18px;margin-bottom:6px}
-.ob-start{width:100%;padding:13px;font-size:16px;border-radius:8px}
 /* ---------- HOME HERO + SLIDER ---------- */
 .hero{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(120deg,#0096b5,#0b7196);border-radius:14px;padding:22px 24px;color:#fff;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,150,181,.25)}
 .hero h2{font-size:23px;font-weight:800;line-height:1.3}
@@ -551,13 +538,11 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
   .hero-stats{grid-template-columns:1fr 1fr}
   .hero-stats .hstat:last-child{grid-column:1/3}
   .slide p{display:none}
-  .ob-wrap{padding:22px 16px}
 }
 
 /* ============ TESTPRO mobile redesign + saved + folder home ============ */
 .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:300;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:90vw;text-align:center}
 [data-theme="dark"] .toast{background:#e2e8f0;color:#0f172a}
-.ob-logo-svg{width:190px;max-width:80%;height:auto}
 .logo-mark{height:28px;width:auto;flex-shrink:0}
 .mob-only{display:none!important}
 #pauseBtnMob,#langIconBtn,#starBtn{display:none}
@@ -763,7 +748,6 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 #starBtn.on{color:#f472b6!important}
 #starBtn.on .ico{fill:#f472b6}
 #solPaletteToggleBtn{padding:4px 6px;line-height:0}
-.ob-wrap h1{margin-bottom:18px}
 .tc-start{display:none}
 /* --- attempts --- */
 .attempt-btn{background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:700;white-space:nowrap}
@@ -1405,9 +1389,6 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 .settings-v2 .set-card h3{display:flex;align-items:center;gap:8px}
 .set-sec-title{font-size:17px;margin:18px 2px 10px;color:var(--text-strong)}
 .set-acct-status{margin:6px 2px 0;padding:10px 12px;border-radius:12px;background:linear-gradient(120deg,var(--surface3),var(--surface2));border:1px solid var(--border);font-size:13.5px;font-weight:600;color:var(--text-strong);word-break:break-word}
-.set-sync-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 2px;font-size:13.5px;color:var(--muted)}
-.set-sync-row b{color:var(--text-strong);text-align:right;word-break:break-word}
-.set-sync-note{font-size:12px;color:var(--muted);margin:8px 2px 0}
 .settings-v2 .set-card label:not(.set-row){display:block;font-weight:600;font-size:13.5px;color:var(--text-strong);margin-top:10px}
 .settings-v2 .set-card input[type=text],.settings-v2 .set-card input[type=number],.settings-v2 .set-card select{width:100%;box-sizing:border-box}
 
@@ -1577,13 +1558,6 @@ body.fb-gated::before{content:none!important}
 }
 
 /* ---- onboarding (profile setup) matches the new look ---- */
-#view-onboarding{position:relative;overflow:hidden;background:linear-gradient(160deg,#06202e 0%,#0a3550 50%,#14194a 100%)}
-#view-onboarding::before,#view-onboarding::after{content:"";position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none}
-#view-onboarding::before{width:380px;height:380px;left:-110px;top:-90px;background:#00b4d0;animation:auDrift1 16s ease-in-out infinite}
-#view-onboarding::after{width:340px;height:340px;right:-90px;bottom:-100px;background:#7e55a3;animation:auDrift2 19s ease-in-out infinite}
-.ob-wrap{position:relative;z-index:1;border-radius:28px;padding:30px 26px 26px;box-shadow:0 36px 80px -24px rgba(0,0,0,.65)}
-.ob-form input{border-radius:14px;border-width:1.5px;padding:13px 14px;background:var(--input-bg);color:var(--text)}
-.ob-start{border-radius:14px;border:none;background:linear-gradient(135deg,#00b4d0,#0a7ea3 60%,#4f46e5);box-shadow:0 14px 26px -12px rgba(0,150,181,.8)}
 
 /* ---- Settings page ---- */
 .settings-wrap.settings-v2{max-width:860px}
@@ -1604,12 +1578,6 @@ body.fb-gated::before{content:none!important}
 .set-chips:empty{display:none}
 .set-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .set-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:#86efac}
-.set-hero-sync{flex-shrink:0;display:flex;align-items:center;background:rgba(0,0,0,.24);padding:9px 14px;border-radius:99px;font-size:12.5px;white-space:nowrap}
-.set-hero-sync .sd{display:none}
-.set-hero-sync b{font-weight:700}
-.set-hero-sync[data-st="synced"] b{color:#86efac}
-.set-hero-sync[data-st="pending"] b{color:#fde68a}
-.set-hero-sync[data-st="offline"] b,.set-hero-sync[data-st="logged-out"] b{color:#fecaca}
 .settings-v2 .set-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
 .settings-v2 .set-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:20px;margin:0;box-shadow:0 1px 2px rgba(15,23,42,.04),0 16px 30px -24px rgba(15,23,42,.4);transition:box-shadow .2s,transform .2s}
 .settings-v2 .set-card:hover{box-shadow:0 1px 2px rgba(15,23,42,.05),0 22px 38px -22px rgba(15,23,42,.45)}
@@ -1629,8 +1597,6 @@ body.fb-gated::before{content:none!important}
 .settings-v2 .fb-logout-btn{border-radius:14px;margin-top:14px;background:transparent;color:#ef4444;border:1.5px solid rgba(239,68,68,.45);box-shadow:none;transition:background .2s,color .2s}
 .settings-v2 .fb-logout-btn:hover{background:#ef4444;color:#fff}
 .settings-v2 #setChangePwBtn{width:100%;border:none;border-radius:14px;padding:13px 16px;font-size:14.5px;background:linear-gradient(135deg,#00b4d0,#0a7ea3);color:#fff;box-shadow:0 12px 22px -12px rgba(0,150,181,.8)}
-.settings-v2 .set-sync-row{padding:11px 12px;border-radius:14px;background:var(--surface2);border:1px solid var(--border);margin-bottom:8px}
-.settings-v2 .set-sync-note{margin:12px 2px 0;line-height:1.55}
 .settings-v2 .set-row{display:flex!important;align-items:center;justify-content:space-between;gap:14px;margin-top:14px!important;padding:12px 14px;border:1px solid var(--border);border-radius:16px;background:var(--surface2);cursor:pointer}
 .set-row-t b{display:block;font-size:14px;color:var(--text-strong)}
 .set-row-t small{font-size:12px;font-weight:500;color:var(--muted)}
@@ -1651,7 +1617,6 @@ body.fb-gated::before{content:none!important}
   .set-avatar{width:68px;height:68px}
   .set-avatar b{font-size:28px}
   .settings-v2 .set-hero h2{font-size:20px}
-  .set-hero-sync{width:100%;justify-content:center}
 }
 
 </style>
@@ -1662,9 +1627,16 @@ Firebase module removes the gate on register/login, or opens the register
 window when logged out. If the module never runs (offline first visit), this
 fallback opens the register window with the internet note. */
 try{document.body.classList.add('fb-gated');}catch(e){}
-setTimeout(function(){
+/* v40: the fallback must not fire while the document is still parsing —
+   on a slow phone the 6 MB file can take >1500 ms to parse, so the old
+   timer could open the register window before boot() ran, and enterApp()
+   then closed it again (modal flicker). Defer while parsing; never open
+   the modal once the gate is already lifted. */
+function fbGateFallback(){
   try{
     if(window.__fbSync) return;
+    if(!document.body.classList.contains('fb-gated')) return;
+    if(document.readyState === 'loading'){ setTimeout(fbGateFallback,500); return; }
     var m=document.getElementById('fbModal');
     if(m){ m.classList.add('open'); m.setAttribute('aria-hidden','false');
       var n=document.getElementById('fbModalNote');
@@ -1683,7 +1655,8 @@ setTimeout(function(){
         m.classList.remove('open','closing'); m.setAttribute('aria-hidden','true');
       }); }
   }catch(e){}
-},1500);</script>
+}
+setTimeout(fbGateFallback,1500);</script>
 <script id="tp-history-shim">
 /* Safe history: sandboxed/srcdoc previews reject URL-bearing pushState/replaceState; fall back to state-only. */
 (function(){
@@ -1750,42 +1723,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
 <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></symbol>
 </defs></svg>
-<div id="view-onboarding" class="view">
-  <div class="ob-wrap">
-    <svg class="ob-logo-svg" viewBox="120 110 770 700" role="img" aria-label="TESTPRO logo"><use href="#tpLogoArt"/></svg>
-    <div class="ob-illus">
-      <svg viewBox="0 0 220 120" fill="none" aria-hidden="true">
-        <circle cx="110" cy="60" r="56" fill="#e0f2fe"/>
-        <rect x="28" y="66" width="72" height="38" rx="5" fill="#0096b5"/>
-        <path d="M64 66v38" stroke="#ffffff" stroke-width="2.5"/>
-        <path d="M36 76h20M36 86h20M72 76h20M72 86h20" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-        <path d="M132 26l44 16-44 16-44-16 44-16z" fill="#1f2937"/>
-        <path d="M150 52v20c0 9-18 9-18 0V52l18 8z" fill="#334155"/>
-        <path d="M176 42v14" stroke="#facc15" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="176" cy="60" r="3" fill="#facc15"/>
-        <rect x="146" y="82" width="11" height="22" rx="2" fill="#25ad5e"/>
-        <rect x="162" y="72" width="11" height="32" rx="2" fill="#facc15"/>
-        <rect x="178" y="60" width="11" height="44" rx="2" fill="#0096b5"/>
-        <path d="M22 30l3 6 6 1-4.5 4.5L28 48l-6-3-6 3 1.5-6.5L13 37l6-1 3-6z" fill="#facc15"/>
-        <circle cx="196" cy="26" r="4" fill="#25ad5e"/>
-      </svg>
-    </div>
-    <h1>Welcome to TESTPRO</h1>
-        <div class="ob-form">
-      <label>Your name
-        <input id="obName" type="text" placeholder="e.g. Rahul Kumar" autocomplete="off">
-      </label>
-      <label>Exam
-        <input id="obExam" type="text" value="RRB NTPC" autocomplete="off">
-      </label>
-      <label>Target score (out of 100)
-        <input id="obTarget" type="number" value="91" min="1" max="100">
-      </label>
-      <div class="ob-error" id="obError"></div>
-      <button class="btn btn-teal ob-start" id="obStartBtn">Start Learning →</button>
-    </div>
-  </div>
-</div>
 
 <!-- ================= HOME / TEST LIST ================= -->
 <div id="view-list" class="view active">
@@ -2038,7 +1975,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <p id="setHeroEmail">Login nahi hai</p>
           <div class="set-chips" id="setHeroChips"></div>
         </div>
-        <div class="set-hero-sync" data-st="offline"><span class="sd"></span><b id="setHeroSync">● Offline</b></div>
       </div>
     </div>
 
@@ -2069,13 +2005,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <button class="btn btn-teal" id="setChangePwBtn" style="margin-top:10px">Password badlo</button>
         </div>
         <button class="fb-logout-btn" id="setLogoutBtn" hidden>Logout</button>
-      </section>
-
-      <section class="card set-card set-sync">
-        <h3><span class="set-ic ic-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5z"/><path d="M9.5 13.5l2 2 3.5-3.5"/></svg></span>Sync</h3>
-        <div class="set-sync-row"><span>Status</span><b class="sync-pill" id="setSyncStatus">● Offline</b></div>
-        <div class="set-sync-row"><span>Last synced</span><b id="setLastSync">Abhi tak sync nahi hua</b></div>
-        <p class="set-sync-note">Sync apne aap hota hai — internet on hote hi is device ka data upload aur doosre device ka data download ho jata hai.</p>
       </section>
 
       <section class="card set-card">
@@ -3134,7 +3063,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 39; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 40; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3156,8 +3085,9 @@ function showView(name){
   setView(name);
 }
 function setView(name){
+  if (name === 'onboarding') name = 'list'; /* v40: onboarding removed — stale history entries land on HOME */
   if (name !== 'solutions' && typeof closeInlineVideo === 'function') closeInlineVideo();
-  ['onboarding','list','instructions','test','result','solutions','settings','saved'].forEach(function(v){
+  ['list','instructions','test','result','solutions','settings','saved'].forEach(function(v){
     var el = $('view-' + v);
     if (el) el.classList.toggle('active', v === name);
   });
@@ -4306,6 +4236,9 @@ function submitTest(auto){
   state.attemptNo = at.no;
   testsMap[state.test.id] = rec;
   storeSet(store);
+  /* v40 sync: push this attempt to Firestore immediately — the 1500 ms
+     debounce alone loses it if the app is closed right after submit. */
+  try { if (window.__fbSync && window.__fbSync.pushNow) window.__fbSync.pushNow(); } catch(e){}
   renderResult(stats, prevBest);
   showView('result');
 }
@@ -4339,27 +4272,6 @@ function applyProfile(){
   var sub = $('homeSub'); if (sub) sub.textContent = (p.exam || 'RRB NTPC') + ' • Target score ' + (p.target != null ? p.target : 91) + ' / 100';
   var labels = document.querySelectorAll('.user-name-label');
   for (var i = 0; i < labels.length; i++) labels[i].textContent = name;
-}
-function startOnboarding(){
-  var name = ($('obName').value || '').trim();
-  if (!name){ $('obError').textContent = 'Please enter your name to continue.'; $('obName').focus(); return; }
-  var store = storeGet();
-  store.profile = {name: name, exam: $('obExam').value || 'RRB NTPC', target: parseInt($('obTarget').value, 10) || 91};
-  storeSet(store);
-  applyProfile();
-  renderList();
-  renderHome();
-  state.routeDepth = 0;
-  state.homeGuard = false;
-  setView('list');
-  window.history.replaceState(
-    {appView:'list', routeDepth:0, homeRoot:true, homeGuard:false},
-    '',
-    window.location.pathname + window.location.search + '#view-list'
-  );
-  pushHomeBackGuard();
-  syncPaletteToggle();
-  syncBottomNav();
 }
 /* ---- home slider ---- */
 var slideIdx = 0, slideTimer = null;
@@ -4459,8 +4371,6 @@ function saveSettings(){
   showView('list');
 }
 (function wireV2(){
-  var ob = $('obStartBtn'); if (ob) ob.addEventListener('click', startOnboarding);
-  var obn = $('obName'); if (obn) obn.addEventListener('keydown', function(e){ if (e.key === 'Enter') startOnboarding(); });
   var dt = $('darkToggle'); if (dt) dt.addEventListener('click', toggleDark);
   var sdt = $('setDarkToggle'); if (sdt) sdt.addEventListener('change', toggleDark);
   var ss = $('setSaveBtn'); if (ss) ss.addEventListener('click', saveSettings);
@@ -5083,33 +4993,23 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   if (_st0.dark === undefined && isMobile()){ _st0.dark = true; storeSet(_st0); }
   applyTheme();
   initSlider();
-  var store = storeGet();
-  if (store.profile && store.profile.name){
-    state.view = 'list';
-    state.routeDepth = 0;
-    state.homeGuard = false;
-    setView('list');
-    window.history.replaceState(
-      {appView:'list', routeDepth:0, homeRoot:true, homeGuard:false},
-      '',
-      window.location.pathname + window.location.search + '#view-list'
-    );
-    pushHomeBackGuard();
-    applyProfile();
-    renderList();
-    window.addEventListener('online', checkAppUpdate);
-    checkAppUpdate();
-  } else {
-    state.view = 'onboarding';
-    state.routeDepth = 0;
-    state.homeGuard = false;
-    setView('onboarding');
-    window.history.replaceState(
-      {appView:'onboarding', routeDepth:0, homeRoot:false, homeGuard:false},
-      '',
-      window.location.pathname + window.location.search + '#view-onboarding'
-    );
-  }
+  /* v40: onboarding removed — boot always lands on HOME. The profile shows
+     defaults (Student / RRB NTPC / 91) until the user sets it in Settings
+     or the cloud profile arrives via sync. */
+  state.view = 'list';
+  state.routeDepth = 0;
+  state.homeGuard = false;
+  setView('list');
+  window.history.replaceState(
+    {appView:'list', routeDepth:0, homeRoot:true, homeGuard:false},
+    '',
+    window.location.pathname + window.location.search + '#view-list'
+  );
+  pushHomeBackGuard();
+  applyProfile();
+  renderList();
+  window.addEventListener('online', checkAppUpdate);
+  checkAppUpdate();
   syncPaletteToggle();
   syncBottomNav();
 })();
@@ -6023,9 +5923,12 @@ var pushRunning = null;
 var status = 'offline';
 var lastSyncAt = 0;
 var lastPullAt = 0;
+var lastSyncError = '';
+var retryTimers = {pull: null, push: null};
+var retryCount = {pull: 0, push: 0};
 var authListeners = [];
 var emailMode = {modal: 'login', settings: 'login'};
-var STATUS_TEXT = {'logged-out': '○ Logged out', 'synced': '● Synced', 'pending': '● Syncing…', 'offline': '● Offline'};
+var STATUS_TEXT = {'logged-out': '○ Logged out', 'synced': '● Synced', 'pending': '● Syncing…', 'offline': '● Offline', 'error': '● Sync error'};
 
 function $(id){ return document.getElementById(id); }
 function deepCopy(o){ return JSON.parse(JSON.stringify(o)); }
@@ -6037,7 +5940,7 @@ function fmtLastSync(){
   catch(e){ return 'Abhi tak sync nahi hua'; }
 }
 function updatePill(){
-  var p = $('syncStatus'); if (p) p.textContent = STATUS_TEXT[status] || status;
+  var p = $('syncStatus'); if (p){ p.textContent = STATUS_TEXT[status] || status; if (status === 'error' && lastSyncError){ try { p.title = lastSyncError; } catch(e){} } }
   var m = $('fbModalSyncState'); if (m) m.textContent = STATUS_TEXT[status] || status;
   var s = $('setSyncStatus'); if (s) s.textContent = STATUS_TEXT[status] || status;
     var hs = $('setHeroSync'); if (hs){ hs.textContent = STATUS_TEXT[status] || status; if (hs.parentNode) hs.parentNode.setAttribute('data-st', status); }
@@ -6048,9 +5951,32 @@ function setStatus(s){
   status = s; updatePill();
   for (var i = 0; i < authListeners.length; i++){ try { authListeners[i](s); } catch(e){} }
 }
+/* v40: sync failures are surfaced (never swallowed) and retried a
+   bounded number of times — a single network blip must not leave a
+   device stale forever. */
+function setSyncError(msg){
+  lastSyncError = msg || 'sync failed';
+  setStatus('error');
+}
+function scheduleRetry(kind, fn, ms){
+  if (retryTimers[kind]) return;
+  if ((retryCount[kind] || 0) >= 3) return; /* give up after 3 — the error stays visible */
+  retryCount[kind] = (retryCount[kind] || 0) + 1;
+  retryTimers[kind] = setTimeout(function(){
+    retryTimers[kind] = null;
+    if (fb && fb.user && navigator.onLine){ try { fn(); } catch(e){} }
+  }, ms);
+}
+function clearRetry(kind){
+  if (retryTimers[kind]){ clearTimeout(retryTimers[kind]); retryTimers[kind] = null; }
+  retryCount[kind] = 0;
+}
 
 /* ---------------- login modal (v38: register-first gate) ---------------- */
 var fbGated = true; /* v38: register gate — app stays hidden until register/login */
+var fbAuthedOnce = false; /* v40: a user was seen in this boot (guards transient null firings) */
+var fbSignOutRequested = false; /* v40: set by signOut() — the null firing that follows is a real logout */
+var fbGateNetScheduled = false; /* v40: the 4s gate safety net (null firing with a pending redirect) runs once */
 var fbModalView = 'register'; /* register | login | account */
 var pwStepActive = false; /* true while a new Google user still has to set a password */
 function showFbView(v){
@@ -6288,8 +6214,9 @@ function signInFailed(e){
 function signOut(){
   try { window.__fbSkipped = false; } catch(e){} /* v39: logout brings the gate back */
   if (!fb || !F){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); updateHeader(); updateModalView(); updateSettingsAccount(); return; }
+  fbSignOutRequested = true; /* v40: the null firing that follows is a real logout, not a transient */
   F.signOut(fb.auth).then(function(){ /* onAuthStateChanged fires */ })
-    .catch(function(){ setStatus('logged-out'); updateHeader(); updateModalView(); updateSettingsAccount(); });
+    .catch(function(){ fbSignOutRequested = false; setStatus('logged-out'); updateHeader(); updateModalView(); updateSettingsAccount(); });
 }
 function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 function emailErrorText(code){
@@ -6383,6 +6310,26 @@ async function changePassword(){
   } catch(e){ showErr(errEl, emailErrorText(e && e.code)); }
 }
 
+/* v40: Firestore init with fallback — if the offline-persistent init
+   throws (IndexedDB unavailable in some webviews), fall back to plain
+   (in-memory) Firestore so sync still works; Auth is unaffected
+   either way. ensureDb() re-tries lazily on every sync attempt. */
+function initDb(app){
+  try {
+    if (F && F.initializeFirestore && F.persistentLocalCache && F.persistentMultipleTabManager){
+      var db = F.initializeFirestore(app, {localCache: F.persistentLocalCache({tabManager: F.persistentMultipleTabManager()})});
+      if (db) return db;
+    }
+  } catch(e1){}
+  try { return (F && F.getFirestore) ? F.getFirestore(app) : null; } catch(e2){ return null; }
+}
+function ensureDb(){
+  if (fb && fb.db) return true;
+  if (!fb || !fb.app || !F) return false;
+  try { fb.db = initDb(fb.app); } catch(e){ fb.db = null; }
+  return !!fb.db;
+}
+
 /* ---------------- sync engine ---------------- */
 function attemptDocId(testId, at){ return testId + '_' + at.no + '_' + at.ts; }
 function savedDocId(key){ return String(key).replace(/:/g, '_'); }
@@ -6422,9 +6369,17 @@ function shadowOf(store){
   };
 }
 function diffAndPush(){
-  if (!fb || !F || !fb.user || !fb.db) return Promise.resolve(false);
+  if (!fb || !F || !fb.user) return Promise.resolve(false);
+  if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); scheduleRetry('push', function(){ diffAndPush(); }, 10000); return Promise.resolve(false); }
   if (pushRunning) return pushRunning;
   var store = storeLocal();
+  /* v40: legacy attempts without ts never pushed before — give them a
+     deterministic ts so they sync too (same doc id on every device).
+     Written straight to localStorage (not via storeSet) so the push
+     hook does not re-trigger while this push is running. */
+  if (ensureAttemptTs(store)){
+    try { localStorage.setItem('super1000_v1', JSON.stringify(store)); } catch(e){}
+  }
   var cur = shadowOf(store);
   var ops = [];
   var uid = fb.user.uid;
@@ -6450,7 +6405,10 @@ function diffAndPush(){
   Object.keys(oldSaved).forEach(function(k){
     if (!curSaved[k]) ops.push({type: 'delete', path: 'users/' + uid + '/saved/' + savedDocId(k)});
   });
-  var profChanged = !shadow || JSON.stringify(shadow.profile) !== JSON.stringify(cur.profile);
+  /* v40: NEVER push the profile before the first successful pull —
+     a fresh device's default profile would otherwise overwrite the
+     cloud profile (last-write-wins on a single doc). */
+  var profChanged = shadow && JSON.stringify(shadow.profile) !== JSON.stringify(cur.profile);
   if (cur.profile && profChanged){
     var pd = deepCopy(cur.profile);
     pd.updatedAt = Date.now();
@@ -6474,10 +6432,13 @@ function diffAndPush(){
       }
       shadow = cur;
       lastSyncAt = Date.now();
+      lastSyncError = '';
+      clearRetry('push');
       setStatus(navigator.onLine ? 'synced' : 'offline');
       return true;
     } catch(e){
-      setStatus('offline');
+      setSyncError((e && e.code) || (e && e.message) || 'push failed');
+      scheduleRetry('push', function(){ diffAndPush(); }, 10000);
       return false;
     } finally { pushRunning = null; }
   })();
@@ -6493,7 +6454,8 @@ function pushNow(){
   return diffAndPush();
 }
 async function pullAndMerge(){
-  if (!fb || !F || !fb.user || !fb.db){ if (fb && fb.user) setStatus('offline'); return false; }
+  if (!fb || !F || !fb.user){ if (fb && fb.user) setStatus('offline'); return false; }
+  if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
   try {
     var uid = fb.user.uid;
     var aSnap = await F.getDocs(F.collection(fb.db, 'users/' + uid + '/attempts'));
@@ -6541,7 +6503,7 @@ async function pullAndMerge(){
       }
     });
     var localProfAt = (store._fbMeta && store._fbMeta.profileUpdatedAt) || 0;
-    if (cloudProfile && cloudProfile.updatedAt && cloudProfile.updatedAt > localProfAt){
+    if (cloudProfile && (localProfAt === 0 || (cloudProfile.updatedAt && cloudProfile.updatedAt > localProfAt))){
       store.profile = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target};
       if (!store._fbMeta) store._fbMeta = {};
       store._fbMeta.profileUpdatedAt = cloudProfile.updatedAt;
@@ -6550,22 +6512,27 @@ async function pullAndMerge(){
     if (!store._fbMigrated){ store._fbMigrated = true; changed = true; }
     if (changed) saveLocal(store);
     lastPullAt = Date.now();
-    await pushNow();
-    lastSyncAt = Date.now();
-    setStatus(navigator.onLine ? 'synced' : 'offline');
+    clearRetry('pull');
+    var pushed = await pushNow();
+    if (pushed){
+      lastSyncAt = Date.now();
+      lastSyncError = '';
+      setStatus(navigator.onLine ? 'synced' : 'offline');
+    } else if (!lastSyncError){
+      setSyncError('push failed');
+    }
     try {
       if (window.state && window.state.view !== 'test' && window.state.view !== 'instructions' && window.renderHome) window.renderHome();
     } catch(e){}
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
-    if (window.state && window.state.view === 'onboarding'){
-      try { var st2 = storeLocal(); if (st2.profile && st2.profile.name && window.goHome) window.goHome(); } catch(e){}
-    }
+    /* v40: dead post-login branch removed — destination is HOME now. */
     updateHeader(); updateModalView(); updateSettingsAccount();
     return true;
-  } catch(e){ setStatus('offline'); return false; }
+  } catch(e){ setSyncError((e && e.code) || (e && e.message) || 'pull failed'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
 }
 async function syncNow(){
-  if (!fb || !fb.user || !fb.db){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); return false; }
+  if (!fb || !fb.user){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); return false; }
+  if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); return false; }
   setStatus('pending');
   return await pullAndMerge();
 }
@@ -6617,7 +6584,7 @@ async function submitPasswordSet(){
       showFbView('login');
       var le = $('fbAuthErr');
       if (le) showErr(le, 'Is email se account pehle se hai — yahin se login karo');
-      try { if (fb && F){ var so = F.signOut(fb.auth); if (so && so.catch) so.catch(function(){}); } } catch(e2){}
+      try { if (fb && F){ fbSignOutRequested = true; var so = F.signOut(fb.auth); if (so && so.catch) so.catch(function(){}); } } catch(e2){}
     }
     else if (code === 'auth/requires-recent-login')
       showErr(errEl, 'Security ke liye dobara Google se login karke try karo');
@@ -6666,6 +6633,7 @@ function installBridge(){
     openModal: openFbModal, closeModal: closeFbModal,
     syncNow: syncNow,
     status: function(){ return status; },
+    lastError: function(){ return lastSyncError; },
     lastSync: function(){ return lastSyncAt; },
     onAuthChange: function(fn){ if (typeof fn === 'function') authListeners.push(fn); }
   };
@@ -6702,54 +6670,106 @@ async function boot(){
       linkWithCredential: authMod.linkWithCredential,
       EmailAuthProvider: authMod.EmailAuthProvider,
       getAdditionalUserInfo: authMod.getAdditionalUserInfo,
+      initializeFirestore: fsMod.initializeFirestore,
+      persistentLocalCache: fsMod.persistentLocalCache,
+      persistentMultipleTabManager: fsMod.persistentMultipleTabManager,
+      getFirestore: fsMod.getFirestore,
       collection: fsMod.collection, doc: fsMod.doc, setDoc: fsMod.setDoc,
       deleteDoc: fsMod.deleteDoc, getDocs: fsMod.getDocs, getDoc: fsMod.getDoc,
       query: fsMod.query, writeBatch: fsMod.writeBatch
     };
     var app = appMod.initializeApp(FIREBASE_CONFIG);
     var auth = authMod.getAuth(app);
-    var db = null;
-    try { db = fsMod.initializeFirestore(app, {localCache: fsMod.persistentLocalCache({tabManager: fsMod.persistentMultipleTabManager()})}); }
-    catch(e){ db = null; /* v38: auth still works without Firestore; sync stays offline */ }
+    /* v40: persistent Firestore first, plain (in-memory) fallback when
+       IndexedDB is unavailable — sync must not silently die. */
+    var db = initDb(app);
+    if (!db) setSyncError('Firestore nahi khula — sync band hai');
     fb = {app: app, auth: auth, db: db, user: null};
     window.__fb = fb;
     setAuthReadyUI(true); /* v39: SDK ready — auth buttons become tappable */
+    /* v40: the 1500ms gate fallback may have written internet-note errors
+       while the script was still parsing (slow phone) — clear them now that
+       the SDK is live, or they linger into the password step. */
+    ['fbRegErr', 'fbAuthErr'].forEach(function(id){
+      var el = $(id); if (el){ el.textContent = ''; el.hidden = true; }
+    });
+    var rn2 = $('fbRegNote'); if (rn2) rn2.textContent = 'Register karne ke liye pehli baar internet chahiye.';
+    var mn2 = $('fbModalNote'); if (mn2) mn2.textContent = 'Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.';
     var redirectResult = null, redirectErr = null, authEntry = null;
     try { redirectResult = await F.getRedirectResult(auth); } catch(e){ redirectErr = e; }
     try { authEntry = sessionStorage.getItem('fbAuthEntry'); sessionStorage.removeItem('fbAuthEntry'); } catch(e){}
     F.onAuthStateChanged(auth, function(user){
-      /* v38: redirect signals apply to the FIRST auth-state firing after boot
-         only — a later sign-in must not re-trigger the password step. */
-      var rr = redirectResult, ae = authEntry, re = redirectErr;
-      redirectResult = null; authEntry = null; redirectErr = null;
+      /* v40: redirect signals are consumed ONLY on a firing that carries a
+         user. The SDK often fires null first while restoring state; the old
+         code consumed them on that first (null) firing and destroyed
+         isNewUser before the user firing arrived. */
+      var rr = redirectResult, re = redirectErr;
       fb.user = user || null;
       if (user){
+        redirectResult = null; authEntry = null; redirectErr = null;
+        fbAuthedOnce = true;
+        /* v40: the password step is for a FIRST-TIME Google account only
+           (isNewUser). The register window is the gate's default, so every
+           Google tap from a fresh boot carried ae === 'register' — the old
+           ae check trapped EVERY existing Google user without a linked
+           password in the password step, and the login window came back
+           after Google select instead of entering the app. A registered
+           user auto-logs-in, whichever button they tapped. */
         var needsPw = false;
         try {
           var info = (rr && F.getAdditionalUserInfo) ? F.getAdditionalUserInfo(rr) : null;
           if (info && info.isNewUser) needsPw = true;
         } catch(e){}
-        if (!needsPw && ae === 'register'){
-          var hasPw = (user.providerData || []).some(function(p){ return p.providerId === 'password'; });
-          if (!hasPw) needsPw = true;
-        }
         if (needsPw){ showPwStep(user); updateHeader(); updateModalView(); updateSettingsAccount(); }
         else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
       }
       else {
+        /* v40: a null firing AFTER a user was seen is a transient restore
+           glitch, not a logout — do NOT re-open the login window (the
+           window "came back by itself" after Google select). Only a real
+           sign-out (signOut() sets fbSignOutRequested) re-gates. This also
+           preserves the password step across a transient null (the old
+           null branch called resetPwStep() unconditionally). */
+        if (fbAuthedOnce && !fbSignOutRequested){
+          setStatus(navigator.onLine ? 'logged-out' : 'offline');
+          updateHeader(); updateModalView(); updateSettingsAccount();
+          return;
+        }
+        fbSignOutRequested = false;
         resetPwStep();
         setStatus(navigator.onLine ? 'logged-out' : 'offline');
         updateHeader(); updateModalView(); updateSettingsAccount();
-        showGate(!navigator.onLine, re);
+        /* v40: a null firing while a redirect result is pending means the
+           SDK has not delivered the signed-in user yet — do NOT pop the
+           login window open (it visibly "came back" after Google select).
+           The user firing that follows enters the app. Safety net: if no
+           user arrives within 4s, show the gate then. */
+        if (rr){
+          if (!fbGateNetScheduled){
+            fbGateNetScheduled = true;
+            setTimeout(function(){
+              if (!fb.user && !window.__fbSkipped) showGate(!navigator.onLine, null);
+            }, 4000);
+          }
+        } else {
+          showGate(!navigator.onLine, re);
+        }
       }
     });
     window.addEventListener('online', function(){
-      if (fb && fb.user) pushSoon();
+      /* v40: coming back online must PULL (not just push) — otherwise a
+         device that logged in while offline stays stale forever. */
+      if (fb && fb.user) pullAndMerge();
       else setStatus(navigator.onLine ? 'logged-out' : 'offline');
     });
     window.addEventListener('offline', function(){ setStatus('offline'); });
     document.addEventListener('visibilitychange', function(){
       if (!document.hidden && fb && fb.user && Date.now() - lastPullAt > 60000) pullAndMerge();
+    });
+    window.addEventListener('pagehide', function(){
+      /* v40: best-effort flush when the app/tab closes — the 1500 ms
+         debounce alone can lose a just-submitted attempt. */
+      if (fb && fb.user && fb.db){ try { diffAndPush(); } catch(e){} }
     });
   } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); showGate(true); }
 }
