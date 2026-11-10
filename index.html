@@ -2527,7 +2527,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="sol-toggle-row"><span class="sol-toggle-link" id="solToggleBtn">View Solution</span></div>
         <div class="sol-actions-row" id="solActionsRow" style="margin-top:14px">
           <button class="video-btn video-btn-sm" id="videoBtn">▶ See Video Solution</button>
-          <label class="adfree-toggle" title="Play videos without ads"><input type="checkbox" id="adFreeToggle" checked> Ad-free player</label>
+          <label class="adfree-toggle" title="Play videos without ads"><input type="checkbox" id="adFreeToggle"> Ad-free player</label>
         </div>
         <div id="inlineVideoWrap" class="inline-video-wrap hidden"></div>
         <div id="inlineVideoSpeeds" class="inline-video-speeds hidden">
@@ -3312,7 +3312,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 56; /* must match version.txt - bump on every release */
+var APP_VERSION = 57; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -4785,6 +4785,10 @@ function openAttemptPicker(){
    Piped embed has no YouTube ads; if it does not load in 8s the player
    falls back to the YouTube embed automatically. Speed pills need the
    YouTube player (no YT API on Piped) and stay disabled while Piped plays.
+   v57: default is OFF (YouTube) - piped.video's embed currently renders the
+   full Piped site instead of the player (its load event fires for the site
+   shell, so the watchdog cannot catch it); the toggle stays opt-in, and a
+   Piped open shows a one-tap "Play on YouTube" escape link.
    Poora feature hatana ho to VIDEO_INLINE_TEST = false kar do. */
 var inlineVideoPlayer = null;        /* YT.Player instance, ya null */
 var inlineVideoApiState = 'idle';    /* idle | loading | ready | failed */
@@ -4818,7 +4822,7 @@ function openVideoUrl(url){
   window.open(isAdFreePlayer() ? pipedWatchUrl(url) : url, '_blank');
 }
 function isAdFreePlayer(){
-  try { var s = storeGet(); return s.adFree !== false; } catch(e){ return true; }
+  try { var s = storeGet(); return s.adFree === true; } catch(e){ return false; }
 }
 function setAdFreePlayer(on){
   try { var s = storeGet(); s.adFree = !!on; storeSet(s); } catch(e){}
@@ -4838,6 +4842,17 @@ function showInlineVideoNote(msg){
   if (!n) return;
   if (msg){ n.textContent = msg; n.classList.remove('hidden'); }
   else { n.textContent = ''; n.classList.add('hidden'); }
+}
+/* v57: Piped can render its full site instead of the player (its load event
+   fires for the site shell, so the watchdog cannot catch it). Show a one-tap
+   escape so the user is never stranded on the Piped site. */
+function showPipedEscapeNote(){
+  var n = $('inlineVideoNote');
+  if (!n) return;
+  n.innerHTML = 'Ad-free player (Piped) &mdash; video not playing? <a href="#" id="inlineVideoYTLink">Play on YouTube</a>';
+  n.classList.remove('hidden');
+  var yl = $('inlineVideoYTLink');
+  if (yl) yl.addEventListener('click', function(ev){ ev.preventDefault(); swapInlineVideoToYouTube(); });
 }
 function swapInlineVideoToYouTube(){
   if (inlineVideoFallbackDone || !inlineVideoCurrent) return;
@@ -4972,6 +4987,7 @@ function toggleInlineVideo(url){
     if (fr){
       fr.addEventListener('load', function(){ clearInlineVideoFallbackTimer(); });
       inlineVideoFallbackTimer = setTimeout(swapInlineVideoToYouTube, inlineVideoFallbackMs);
+      showPipedEscapeNote();
     }
   } else if (window.YT && window.YT.Player) createInlineVideoPlayer();
   else loadInlineVideoApi();
