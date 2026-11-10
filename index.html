@@ -1995,8 +1995,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <section class="card set-card set-account">
         <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>Account</h3>
         <p class="set-acct-status" id="setAccountStatus">Login nahi hai</p>
-        <button class="fb-google-btn" id="setGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
-        <div class="fb-divider"><span>ya ID-password se</span></div>
         <div id="setEmailForm">
           <label>Email
             <input id="setEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
@@ -3076,7 +3074,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 46; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 47; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5772,8 +5770,6 @@ attachSwipe($('solScroll'),
           <p class="fb-modal-sub"><span class="t-reg">Pehli baar? 1 minute mein register karo — phir har device par login.</span><span class="t-pw">Google se ho gaya — ab ek password rakho.</span></p>
         </div>
         <div id="fbRegMain">
-          <button class="fb-google-btn" id="fbRegGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se register karein</button>
-          <div class="fb-divider"><span>ya apne details se</span></div>
           <label class="au-f"><span class="au-lb">Naam</span>
             <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input id="fbRegName" type="text" placeholder="Aapka naam" autocomplete="name"></span>
           </label>
@@ -5831,10 +5827,8 @@ attachSwipe($('solScroll'),
         <div class="au-head">
           <div class="au-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg></div>
           <h3>Wapas aaye? Login karein</h3>
-          <p class="fb-modal-sub">Google ya ID-password se — kisi bhi device par apna progress kholo.</p>
+          <p class="fb-modal-sub">ID-password se — kisi bhi device par apna progress kholo.</p>
         </div>
-        <button class="fb-google-btn" id="fbGoogleBtn"><svg class="fb-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Google se login karein</button>
-        <div class="fb-divider"><span>ya ID-password se</span></div>
         <div id="fbEmailForm">
           <label class="au-f"><span class="au-lb">Email</span>
             <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
@@ -6153,7 +6147,7 @@ function skipAuth(){
 /* v39: auth buttons must never be dead-tappable while Firebase loads.
    Until the SDK is ready they stay disabled with a visible loading
    label; on SDK failure the label says internet is needed instead. */
-var AUTH_BTN_IDS = ['fbRegGoogleBtn', 'fbGoogleBtn', 'fbRegBtn', 'fbEmailBtn', 'setEmailBtn'];
+var AUTH_BTN_IDS = ['fbRegBtn', 'fbEmailBtn', 'setEmailBtn'];
 function btnLabel(btn){
   if (!btn) return '';
   var t = '';
@@ -6343,7 +6337,6 @@ function updateSettingsAccount(){
       ? ('Logged in: ' + (u.displayName || (u.email ? u.email.split('@')[0] : 'Student')) + (u.email ? ' (' + u.email + ')' : ''))
       : 'Login nahi hai';
   }
-  var g = $('setGoogleBtn'); if (g) g.hidden = !!u;
   var ef = $('setEmailForm'); if (ef) ef.hidden = !!u;
   var cp = $('setChangePwWrap'); if (cp) cp.hidden = !u;
   var lo = $('setLogoutBtn'); if (lo) lo.hidden = !u;
@@ -6375,6 +6368,13 @@ function updateSettingsAccount(){
 }
 
 /* ---------------- auth ---------------- */
+/* v47: Google sign-in is TEMPORARILY DISABLED — the user reported it does
+   not work (v46 popup/redirect both tried). All three Google buttons
+   (modal register, modal login, Settings) were removed from the UI, so
+   nothing can start a Google sign-in any more. The functions below
+   (signIn / signInViaPopup / signInViaRedirect / getRedirectResult /
+   v42 link flow) are KEPT INTACT but unreachable, for restoration once
+   Google login works. Email + password is the only login now. */
 function signIn(entry){
   /* v38: remember register-vs-login across the Google redirect (sessionStorage
      survives a same-tab redirect; getAdditionalUserInfo().isNewUser covers
@@ -6995,10 +6995,8 @@ function wireModal(){
   var sk = $('fbSkipBtn'); if (sk) sk.addEventListener('click', skipAuth);
   var x = $('fbModalClose'); if (x) x.addEventListener('click', function(){ closeFbModal(); });
   var bd = $('fbModalBackdrop'); if (bd) bd.addEventListener('click', function(){ closeFbModal(); });
-  var g = $('fbGoogleBtn'); if (g) g.addEventListener('click', function(){ signIn('login'); });
   var r2l = $('fbRegToLogin'); if (r2l) r2l.addEventListener('click', function(e){ e.preventDefault(); showFbView('login'); });
   var l2r = $('fbLoginToReg'); if (l2r) l2r.addEventListener('click', function(e){ e.preventDefault(); showFbView('register'); });
-  var rgb = $('fbRegGoogleBtn'); if (rgb) rgb.addEventListener('click', function(){ signIn('register'); });
   var rb = $('fbRegBtn'); if (rb) rb.addEventListener('click', submitRegister);
   var psb = $('fbPwSetBtn'); if (psb) psb.addEventListener('click', submitPasswordSet);
   var pss = $('fbPwSetSkipBtn'); if (pss) pss.addEventListener('click', function(e){ e.preventDefault(); skipPasswordSet(); });
@@ -7010,7 +7008,6 @@ function wireModal(){
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeFbModal(); });
 }
 function wireSettings(){
-  var g = $('setGoogleBtn'); if (g) g.addEventListener('click', function(){ signIn('login'); });
   var eb = $('setEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('settings'); });
   var tg = $('setAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('settings', e); });
   var fg = $('setForgotLink'); if (fg) fg.addEventListener('click', function(e){ forgotPassword('settings', e); });
