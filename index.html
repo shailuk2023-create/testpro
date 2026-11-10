@@ -1624,6 +1624,213 @@ body.fb-gated::before{content:none!important}
   .settings-v2 .set-hero h2{font-size:20px}
 }
 
+
+/* ================= v50: Leaderboard + Avatars ================= */
+.qa-gold .qa-ic{background:linear-gradient(135deg,#fde047,#f59e0b 55%,#ea580c);box-shadow:0 8px 16px -8px rgba(245,158,11,.9)}
+.qa-gold .qa-ic svg{filter:drop-shadow(0 1px 1px rgba(120,53,15,.4))}
+.avatar{background-size:cover;background-position:center}
+.set-avatar b,.set-avatar img{display:none!important}
+.set-av-face{display:block;width:100%;height:100%;border-radius:50%;background-color:#0b7196;background-size:cover;background-position:center;cursor:pointer}
+.set-av-edit{position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;border:2px solid #fff;background:linear-gradient(135deg,#fbbf24,#f97316);color:#fff;display:grid;place-items:center;padding:0;box-shadow:0 6px 14px -4px rgba(0,0,0,.5);transition:transform .15s}
+.set-av-edit:hover{transform:scale(1.1)}
+.set-av-edit svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.set-av-hint{font-size:12.5px;color:var(--muted);margin:-4px 0 12px;line-height:1.5}
+
+#view-leaderboard{min-height:100vh;background:var(--bg)}
+.lb-wrap{max-width:880px;margin:0 auto;padding:16px 16px 40px}
+.lb-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.lb-top .icon-btn{flex-shrink:0}
+.lb-top .icon-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lb-title{flex:1;min-width:0}
+.lb-title h1{font-size:23px;font-weight:800;color:var(--text-strong);line-height:1.15;display:flex;align-items:center;gap:8px}
+.lb-title h1 svg{width:24px;height:24px;fill:none;stroke:#f59e0b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lb-title p{font-size:13px;color:var(--muted);margin-top:2px}
+#lbRefresh.spin svg{animation:lbSpin .8s linear infinite}
+@keyframes lbSpin{to{transform:rotate(360deg)}}
+
+.lb-hero{position:relative;overflow:hidden;border-radius:26px;padding:20px;color:#fff;background:linear-gradient(135deg,#0b7196 0%,#0096b5 42%,#6d4bd8 100%);box-shadow:0 24px 44px -26px rgba(11,113,150,.9);margin-bottom:16px}
+.lb-hero-glow{position:absolute;right:-70px;top:-90px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(253,224,71,.45),transparent 70%);pointer-events:none}
+.lb-hero-main{position:relative;display:flex;align-items:center;gap:14px}
+.lb-hero-av{position:relative;flex-shrink:0;width:78px;height:78px;border-radius:50%;padding:3px;border:0;background:conic-gradient(from 0deg,#fde047,#f97316,#fde047);box-shadow:0 12px 26px -10px rgba(0,0,0,.6)}
+.lb-hero-av img{width:100%;height:100%;border-radius:50%;display:block;background:#fff}
+.lb-hero-av .pen{position:absolute;right:-3px;bottom:-3px;width:26px;height:26px;border-radius:50%;background:#fff;color:#0b7196;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.lb-hero-av .pen svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.lb-hero-txt{min-width:0;flex:1}
+.lb-hero-txt small{font-size:12px;opacity:.85;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.lb-hero-txt h2{font-size:21px;font-weight:800;line-height:1.2;overflow-wrap:anywhere;margin:2px 0 4px}
+.lb-hero-txt p{font-size:13.5px;opacity:.92;line-height:1.5}
+.lb-hero-rank{display:flex;align-items:baseline;gap:8px}
+.lb-hero-rank b{font-size:30px;font-weight:900;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+.lb-hero-rank span{font-size:13px;opacity:.9}
+.lb-ring{flex-shrink:0;width:78px;height:78px;border-radius:50%;background:conic-gradient(#fde047 calc(var(--p)*1%),rgba(255,255,255,.22) 0);display:grid;place-items:center}
+.lb-ring>div{width:62px;height:62px;border-radius:50%;background:#0b6a8d;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.lb-ring b{font-size:21px;font-weight:900}
+.lb-ring span{font-size:8.5px;opacity:.85;text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.lb-hero-stats{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.lb-hero-stats>div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:9px 6px;text-align:center;backdrop-filter:blur(4px)}
+.lb-hero-stats b{display:block;font-size:17px;font-weight:800}
+.lb-hero-stats span{font-size:11px;opacity:.88}
+.lb-hero.empty{display:flex;gap:14px;align-items:center}
+.lb-cta{margin-top:12px;border:0;border-radius:12px;padding:10px 16px;font-weight:800;font-size:14px;color:#0b4f6c;background:linear-gradient(135deg,#fde047,#fbbf24);box-shadow:0 10px 20px -10px rgba(0,0,0,.5)}
+
+.lb-seg{display:flex;gap:4px;background:var(--surface3);border:1px solid var(--border);border-radius:16px;padding:4px;margin-bottom:14px}
+.lb-seg button{flex:1;border:0;background:transparent;border-radius:12px;padding:11px 8px;font-size:14px;font-weight:700;color:var(--muted);transition:background .2s,color .2s,box-shadow .2s}
+.lb-seg button.on{background:var(--surface);color:var(--teal);box-shadow:0 4px 12px -4px rgba(15,23,42,.25)}
+[data-theme="dark"] .lb-seg button.on{color:#7dd3fc}
+
+.lb-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px;scrollbar-width:none}
+.lb-chips::-webkit-scrollbar{display:none}
+.lb-chip{flex-shrink:0;border:1px solid var(--border2);background:var(--surface);color:var(--muted2);border-radius:99px;padding:8px 15px;font-size:13px;font-weight:700;transition:all .18s}
+.lb-chip.on{background:linear-gradient(135deg,#00b4d0,#0a7ea3);color:#fff;border-color:transparent;box-shadow:0 8px 16px -8px rgba(10,126,163,.8)}
+
+.lb-note{margin-bottom:12px;padding:11px 14px;border-radius:14px;font-size:13px;line-height:1.5;background:var(--surface);border:1px solid var(--border);color:var(--muted2)}
+.lb-note.warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.4);color:var(--text)}
+.lb-note code{background:var(--surface3);padding:1px 6px;border-radius:6px;font-size:12px}
+
+/* podium */
+.lb-podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:8px;align-items:end;margin:10px 0 16px;padding:22px 8px 0;border-radius:24px;background:linear-gradient(180deg,rgba(253,224,71,.12),transparent 70%),var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.pd{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;animation:lbRise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*.08s)}
+@keyframes lbRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.pd-crown{width:34px;height:24px;margin-bottom:-6px;animation:lbFloat 2.6s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(245,158,11,.5));position:relative;z-index:2}
+.pd-crown svg{width:100%;height:100%}
+@keyframes lbFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}
+.pd-av{position:relative;margin-bottom:16px}
+.lb-av{width:var(--s);height:var(--s);border-radius:50%;object-fit:cover;display:block;background:#fff;flex-shrink:0}
+.lb-av.ring{padding:3px;background:conic-gradient(from 20deg,var(--rc1),var(--rc2),var(--rc1));box-shadow:0 10px 22px -10px var(--rc2)}
+.lb-av.r1{--rc1:#fde047;--rc2:#f59e0b}.lb-av.r2{--rc1:#f1f5f9;--rc2:#94a3b8}.lb-av.r3{--rc1:#fdba74;--rc2:#c2410c}
+.pd-av .lb-medal{position:absolute;left:50%;bottom:-16px;transform:translateX(-50%)}
+.pd-name{font-size:13.5px;font-weight:800;color:var(--text-strong);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd-name i,.lb-rn i,.tp-n i{font-style:normal;font-size:9.5px;font-weight:800;background:var(--teal);color:#fff;padding:1px 6px;border-radius:99px;vertical-align:middle;margin-left:3px}
+.pd-val{margin-top:2px;line-height:1.1}
+.pd-val b{font-size:19px;font-weight:900;color:var(--text-strong)}
+.pd-val small{font-size:11px;font-weight:700;color:var(--muted);margin-left:3px}
+.pd-sub{font-size:10.5px;color:var(--muted);margin:2px 0 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd-base{width:100%;display:grid;place-items:center;border-radius:14px 14px 0 0;font-weight:900;color:rgba(255,255,255,.95);font-size:26px}
+.pd.p1 .pd-base{height:62px;background:linear-gradient(180deg,#fbbf24,#d97706)}
+.pd.p2 .pd-base{height:44px;background:linear-gradient(180deg,#cbd5e1,#64748b)}
+.pd.p3 .pd-base{height:32px;background:linear-gradient(180deg,#fdba74,#b45309)}
+.pd.p1 .pd-name{font-size:15px}
+.pd.me .pd-name{color:var(--teal)}
+.pd.vacant{opacity:.45}
+.pd-empty{display:grid;place-items:center;width:60px;height:60px;border-radius:50%;border:2px dashed var(--border2);font-weight:800;color:var(--muted)}
+
+/* rows */
+.lb-list{display:flex;flex-direction:column;gap:8px}
+.lb-list.pinned{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border2)}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);animation:lbRise .4s ease both;animation-delay:calc(var(--i,0)*.035s);transition:transform .15s,border-color .15s}
+.lb-row:hover{transform:translateY(-1px);border-color:var(--teal)}
+.lb-row.me{border-color:var(--teal);background:linear-gradient(90deg,rgba(0,150,181,.12),var(--surface) 70%);box-shadow:0 0 0 1px var(--teal)}
+.lb-rk{width:28px;text-align:center;font-weight:900;font-size:15px;color:var(--muted)}
+.lb-rn{flex:1;min-width:0}
+.lb-rn b{display:block;font-size:14.5px;font-weight:800;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-rn small{font-size:11.5px;color:var(--muted)}
+.lb-rv{text-align:right;flex-shrink:0}
+.lb-rv b{font-size:17px;font-weight:900;color:var(--text-strong)}
+.lb-rv em{font-style:normal;font-size:11px;font-weight:700;color:var(--muted);margin-left:3px}
+.lb-pct{display:inline-block;margin-top:3px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;color:#047857;background:rgba(16,185,129,.14)}
+[data-theme="dark"] .lb-pct{color:#6ee7b7}
+
+/* medals */
+.lb-medal{display:inline-block;width:calc(var(--ms)*.8);height:var(--ms);filter:drop-shadow(0 4px 5px rgba(0,0,0,.28));flex-shrink:0}
+.lb-medal svg{width:100%;height:100%;display:block}
+
+/* series cards (inside the leaderboard) */
+.lb-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.lb-scard{text-align:left;border:1.5px solid var(--border);border-radius:22px;padding:14px;background:var(--surface);color:var(--text);box-shadow:var(--shadow);transition:transform .18s,border-color .18s,box-shadow .18s;display:flex;flex-direction:column;gap:12px}
+.lb-scard:hover{transform:translateY(-2px)}
+.lb-scard.on{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,150,181,.18),0 18px 30px -22px rgba(0,150,181,.9)}
+.sc-top{display:flex;gap:10px;align-items:center}
+.sc-top b{display:block;font-size:14.5px;font-weight:800;color:var(--text-strong)}
+.sc-top small{font-size:11.5px;color:var(--muted)}
+.sc-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;color:#fff;background:linear-gradient(135deg,#2dd4bf,#0891b2)}
+.lb-scard.ca .sc-ic{background:linear-gradient(135deg,#a78bfa,#6366f1)}
+.sc-ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sc-topper{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:linear-gradient(135deg,rgba(253,224,71,.22),rgba(245,158,11,.08));border:1px solid rgba(245,158,11,.35)}
+.sc-topper>div:nth-child(2){flex:1;min-width:0}
+.sc-topper small{display:block;font-size:9.5px;font-weight:900;letter-spacing:.1em;color:#b45309}
+[data-theme="dark"] .sc-topper small{color:#fcd34d}
+.sc-topper b{display:block;font-size:13.5px;font-weight:800;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-pts{text-align:right;line-height:1.1}
+.sc-pts b{font-size:17px;font-weight:900}
+.sc-pts small{font-size:10.5px;color:var(--muted);letter-spacing:0;font-weight:600;display:block}
+.sc-none{padding:14px 10px;border-radius:16px;border:1px dashed var(--border2);font-size:12.5px;color:var(--muted);text-align:center}
+.sc-me{font-size:12px;color:var(--muted2)}
+.sc-me b{color:var(--teal)}
+
+.lb-sec{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 10px}
+.lb-sec h3{font-size:16px;font-weight:800;color:var(--text-strong)}
+.lb-sec span{font-size:12px;font-weight:700;color:var(--muted);background:var(--surface3);padding:3px 10px;border-radius:99px}
+
+/* test cards (per-test top-3 inside the leaderboard) */
+.lb-tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.lb-tcard{border-radius:22px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);padding:14px 12px 12px;display:flex;flex-direction:column;gap:12px;animation:lbRise .4s ease both}
+.lb-tcard.none{opacity:.75}
+.lb-tcard header{display:flex;gap:10px;align-items:center;padding:0 2px}
+.tc-no{flex-shrink:0;min-width:40px;height:40px;padding:0 6px;border-radius:12px;display:grid;place-items:center;font-size:12.5px;font-weight:900;color:#fff;background:linear-gradient(135deg,#0096b5,#0b7196)}
+.lb-tcard h4{font-size:14px;font-weight:800;color:var(--text-strong);line-height:1.3}
+.lb-tcard header small{font-size:11.5px;color:var(--muted)}
+.tp-row{display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:6px;align-items:end;padding:14px 4px 10px;border-radius:18px;background:linear-gradient(180deg,rgba(253,224,71,.14),var(--surface2))}
+.tp-slot{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
+.tp-avw{position:relative;margin-bottom:14px}
+.tp-avw .lb-medal{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%)}
+.tp-crown{width:24px;height:17px;margin-bottom:-5px;position:relative;z-index:2;animation:lbFloat 2.6s ease-in-out infinite;filter:drop-shadow(0 3px 4px rgba(245,158,11,.5))}
+.tp-crown svg{width:100%;height:100%}
+.tp-n{font-size:12px;font-weight:800;color:var(--text-strong);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-s{font-size:11.5px;color:var(--muted2)}
+.tp-s b{font-size:14px;color:var(--text-strong);font-weight:900}
+.tp-a{font-size:10.5px;color:var(--muted)}
+.tp-slot.me .tp-n{color:var(--teal)}
+.tp-slot.vacant{opacity:.4}
+.tp-ph{width:44px;height:44px;border-radius:50%;border:2px dashed var(--border2);margin-bottom:14px}
+.tp-slot.vacant .lb-medal{margin-top:-28px;margin-bottom:6px}
+.lb-tcard footer{font-size:12.5px;color:var(--muted2);padding:0 4px}
+.lb-tcard footer b{color:var(--teal)}
+.tc-empty{padding:18px 10px;border-radius:16px;border:1px dashed var(--border2);text-align:center;font-size:12.5px;color:var(--muted)}
+.lb-more{display:block;width:100%;margin-top:14px;padding:12px;border-radius:14px;border:1.5px dashed var(--border2);background:transparent;color:var(--muted2);font-weight:700;font-size:13.5px}
+.lb-more:hover{border-color:var(--teal);color:var(--teal)}
+.lb-empty{text-align:center;padding:34px 18px;border-radius:22px;border:1px dashed var(--border2);background:var(--surface);color:var(--muted)}
+.lb-empty b{display:block;font-size:16px;color:var(--text-strong);margin-bottom:6px}
+.lb-skel i{display:block;height:72px;border-radius:20px;margin-bottom:12px;background:linear-gradient(100deg,var(--surface3) 30%,var(--surface2) 50%,var(--surface3) 70%);background-size:200% 100%;animation:lbShimmer 1.2s linear infinite}
+.lb-skel i:first-child{height:170px}
+@keyframes lbShimmer{to{background-position:-200% 0}}
+
+/* avatar picker grid (inline in Settings, id avatarGrid) */
+.av-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.av-opt{position:relative;aspect-ratio:1;border-radius:50%;border:3px solid transparent;padding:0;background:none;transition:transform .15s,border-color .15s}
+.av-opt img{width:100%;height:100%;border-radius:50%;display:block}
+.av-opt:hover{transform:scale(1.07)}
+.av-opt.sel{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,150,181,.25)}
+.av-opt.sel::after{content:"";position:absolute;right:-2px;bottom:-2px;width:20px;height:20px;border-radius:50%;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center/13px no-repeat;border:2px solid var(--surface)}
+
+/* series picker (Tests tab, id seriesPicker) */
+.sp-head{margin:2px 2px 12px}
+.sp-head h2{font-size:17px;font-weight:800;color:var(--text-strong)}
+.sp-head p{font-size:12.5px;color:var(--muted);margin-top:2px}
+#seriesPicker .series-card{margin-bottom:12px}
+#seriesBackBtn{margin-bottom:10px}
+/* v50 E23: series-picker topper line (filled by fillSeriesToppers from the
+   leaderboard entries for that series; "Abhi koi topper nahi" when empty). */
+.fc-topper{display:flex;align-items:baseline;gap:6px;margin-top:7px;font-size:12.5px;color:var(--muted)}
+.fc-topper-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;color:#b45309;background:#fef3c7;border-radius:4px;padding:2px 5px;flex-shrink:0}
+.fc-topper-nm{font-weight:700;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fc-topper-sc{margin-left:auto;font-weight:700;color:var(--text-strong);white-space:nowrap}
+
+@media(max-width:640px){
+  .lb-wrap{padding:12px 12px 100px}
+  .lb-hero{padding:16px;border-radius:22px}
+  .lb-hero-av,.lb-ring{width:66px;height:66px}
+  .lb-ring>div{width:52px;height:52px}
+  .lb-ring b{font-size:17px}
+  .lb-hero-txt h2{font-size:18px}
+  .lb-hero-stats b{font-size:15px}
+  .lb-sgrid{grid-template-columns:1fr}
+  .lb-podium{gap:4px;padding:20px 4px 0}
+  .pd-name{font-size:12px}.pd.p1 .pd-name{font-size:13px}
+  .pd-sub{display:none}
+  .av-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.pd,.lb-row,.lb-tcard,.pd-crown,.tp-crown,.lb-skel i{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -1716,6 +1923,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <!-- ================= ONBOARDING ================= -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a1 1 0 0 0-1 1c0 2.2 1.6 3.8 4 4M16 6h3a1 1 0 0 1 1 1c0 2.2-1.6 3.8 4 4"/><path d="M12 13.2V17M8.5 20.5h7M10 17h4"/></symbol>
 <symbol id="i-tests" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17.5" rx="2"/><path d="M9 8.5h6M9 12.5h6M9 16.5h4"/></symbol>
 <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.09a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></symbol>
 <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4.5L5 21V4.5a1 1 0 0 1 1-1z"/></symbol>
@@ -1744,7 +1952,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <nav>
         <a href="#" id="navHome" class="active" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
         <a href="#" id="navTests" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg><span>Tests</span></a>
-        <a href="#" id="navSettings" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
+        <a href="#" id="sbLeader" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg><span>Leaderboard</span></a>
         <a href="#" id="navSaved" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg><span>Saved Questions</span></a>
         <div class="nav-sec">Test Series</div>
         <a href="#" id="navSeries" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-calc"/></svg><span>Railway Super 1000+ Maths</span></a>
@@ -1904,7 +2112,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
                 <button class="qa-btn qa-teal" id="irTests" type="button"><span class="qa-ic"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg></span>Tests</button>
                 <button class="qa-btn qa-amber" id="irSaved" type="button"><span class="qa-ic"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg><span class="count-badge zero" id="irSavedCount">0</span></span>Saved</button>
                 <button class="qa-btn qa-indigo" id="irDark" type="button"><span class="qa-ic"><svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg><svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg></span>Dark Mode</button>
-                <button class="qa-btn qa-slate" id="irSettings" type="button"><span class="qa-ic"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></span>Settings</button>
+                <button class="qa-btn qa-gold" id="irLeader" type="button"><span class="qa-ic"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg></span>Leaderboard</button>
               </div>
             </div>
             <aside class="home-col">
@@ -1959,6 +2167,34 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           </section>
         </div>
         <div id="testSeries" style="display:none">
+          <div id="seriesPicker" style="display:none">
+            <div class="sp-head"><h2>Test Series chuno</h2><p>Maths ya Current Affairs — jis series ka test dena hai, us par tap karo.</p></div>
+            <div class="series-card" data-series="maths" role="button" tabindex="0" aria-label="Open Math Super 1000+ test series">
+              <svg class="sc-deco" viewBox="0 0 170 74" aria-hidden="true"><g fill="currentColor" font-weight="800" font-family="Segoe UI,system-ui,sans-serif"><text x="4" y="58" font-size="52">%</text><text x="56" y="36" font-size="34">÷</text><text x="96" y="64" font-size="46">√</text><text x="132" y="34" font-size="34">π</text></g></svg>
+              <div class="sc-ico"><svg class="i i-lg" aria-hidden="true"><use href="#i-calc"/></svg></div>
+              <div class="fc-body">
+                <div class="fc-title">Math Super 1000+</div>
+                <div class="fc-sub" id="spMathsSub">28 chapters • 43 tests • 1013 Questions</div>
+                <div class="fc-progress"><div class="fc-bar" id="spMathsBar" style="width:0%"></div></div>
+                <div class="fc-prog-txt" id="spMathsProg">0/43 Tests</div>
+                <div class="fc-topper" id="spMathsTopper"><span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">Abhi koi topper nahi</span></div>
+              </div>
+              <svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="series-card" data-series="ca" role="button" tabindex="0" aria-label="Open Monthly Current Affairs test series">
+              <div class="sc-ico ca-ico"><svg class="i i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-linecap="round" fill="none"/><rect x="7" y="13" width="3" height="3" rx="0.5" fill="currentColor"/><rect x="14" y="13" width="3" height="3" rx="0.5" fill="currentColor"/></svg></div>
+              <div class="fc-body">
+                <div class="fc-title">Monthly Current Affairs</div>
+                <div class="fc-sub" id="spCaSub">11 Months • 1343 Questions</div>
+                <div class="fc-progress"><div class="fc-bar" id="spCaBar" style="width:0%"></div></div>
+                <div class="fc-prog-txt" id="spCaProg">0/55 Tests</div>
+                <div class="fc-topper" id="spCaTopper"><span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">Abhi koi topper nahi</span></div>
+              </div>
+              <svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+          <div id="seriesTests">
+          <button class="ca-back" id="seriesBackBtn" type="button">← Series</button>
           <div class="tabs-row"><button class="tab active">Chapter Tests</button></div>
           <div class="chip-row" id="chipRow">
             <button class="chip active" data-filter="all">All</button>
@@ -1967,11 +2203,36 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
             <button class="chip" data-filter="high">85%+</button>
           </div>
           <div id="testList"></div>
+          </div>
         </div>
         <div id="caPages" style="display:none"></div>
        </div>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- ================= LEADERBOARD (v50) ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="lbGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a6"/><stop offset=".5" stop-color="#fbbf24"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+<linearGradient id="lbSilver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#cbd5e1"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+<linearGradient id="lbBronze" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fed7aa"/><stop offset=".5" stop-color="#ea8a3c"/><stop offset="1" stop-color="#9a3412"/></linearGradient>
+</defs></svg>
+<div id="view-leaderboard" class="view">
+  <div class="lb-wrap">
+    <div class="lb-top">
+      <button class="icon-btn" id="lbBack" type="button" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+      <div class="lb-title"><h1><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</h1><p>Compete karo, zyada padho, topper bano</p></div>
+      <button class="icon-btn" id="lbRefresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg></button>
+    </div>
+    <div id="lbHero"></div>
+    <div class="lb-seg" id="lbSeg" role="tablist">
+      <button type="button" role="tab" id="lbTabOverall" data-tab="overall" class="on">Overall Ranking</button>
+      <button type="button" role="tab" id="lbTabMaths" data-tab="maths">Maths</button>
+      <button type="button" role="tab" id="lbTabCa" data-tab="ca">Current Affairs</button>
+    </div>
+    <div id="lbBody"></div>
   </div>
 </div>
 
@@ -2043,6 +2304,12 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <span class="switch"><input type="checkbox" id="setDarkToggle"><span class="slider"></span></span>
         </label>
       </section>
+      <section class="card set-card">
+        <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>Avatar</h3>
+        <p class="set-av-hint">Apna avatar chuno — ye avatar Home, Settings aur Leaderboard, har jagah same dikhega.</p>
+        <div class="av-grid" id="avatarGrid"></div>
+      </section>
+
     </div>
 
     <div class="set-actions">
@@ -2410,7 +2677,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   <a href="#" id="smHome"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
   <a href="#" id="smTests"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg>Tests</a>
   <a href="#" id="smSaved"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved Questions</a>
-  <a href="#" id="smSettings"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+  <a href="#" id="smLeader"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</a>
 </div>
 <div class="menu-backdrop" id="menuBackdrop"></div>
 
@@ -2424,9 +2691,9 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
     Tests
   </button>
-  <button id="bnSettings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.09a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
-    Settings
+  <button id="navLeader">
+    <svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>
+    Leaderboard
   </button>
 </nav>
 <script>
@@ -3074,7 +3341,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 49; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 50; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3098,7 +3365,7 @@ function showView(name){
 function setView(name){
   if (name === 'onboarding') name = 'list'; /* v40: onboarding removed — stale history entries land on HOME */
   if (name !== 'solutions' && typeof closeInlineVideo === 'function') closeInlineVideo();
-  ['list','instructions','test','result','solutions','settings','saved'].forEach(function(v){
+  ['list','instructions','test','result','solutions','settings','saved','leaderboard'].forEach(function(v){
     var el = $('view-' + v);
     if (el) el.classList.toggle('active', v === name);
   });
@@ -3183,7 +3450,16 @@ window.addEventListener('popstate', function(e){
        Back steps one level: month -> months -> home. */
     state.caView = e.state.caView || null;
     state.caMonth = e.state.caMonth || null;
-    state.navTab = state.caView ? 'tests' : 'home';
+    if (!state.caView && e.state.seriesOpen){
+      /* v50 E24: CA months se back kisi series-open entry par land hua —
+         picker entry ho ya in-app back se chhooti stale series entry —
+         picker restore karo (series card par wapas), Home par nahi. */
+      state.seriesOpen = true;
+      state.seriesPicker = true;
+      state.navTab = 'tests';
+    } else {
+      state.navTab = state.caView ? 'tests' : 'home';
+    }
     state.routeDepth = (e.state.routeDepth != null) ? e.state.routeDepth : Math.max(0, state.routeDepth - 1);
     state.homeGuard = !!e.state.homeGuard;
     _viewAt[state.routeDepth] = 'list';
@@ -3192,12 +3468,20 @@ window.addEventListener('popstate', function(e){
     syncBottomNav();
     return;
   }
-  if (state.view === 'list' && state.seriesOpen && e.state && e.state.appView === 'list' && !e.state.seriesOpen && !e.state.caView){
-    /* series khuli hai aur back daba: pehle series band karo, home par hi raho.
-       (v29: sirf tab jab pop HOME entry par ho — test se wapas aane par e.state
-       series entry hoti hai, tab series band mat karo.) */
-    state.seriesOpen = false;
-    state.navTab = 'home';
+  if (state.view === 'list' && state.seriesOpen && e.state && e.state.appView === 'list' && !e.state.caView && (!e.state.seriesOpen || e.state.seriesPicker)){
+    /* series khuli hai aur back daba: picker entry par land hue to picker
+       par wapas jao; HOME entry par land hue to series band karke home jao.
+       (v29: test se wapas aane par e.state series entry hoti hai, tab
+       series band mat karo — generic branch series list restore karta hai.) */
+    if (e.state.seriesOpen && e.state.seriesPicker){
+      state.seriesOpen = true;
+      state.seriesPicker = true;
+      state.navTab = 'tests';
+    } else {
+      state.seriesOpen = false;
+      state.seriesPicker = false;
+      state.navTab = 'home';
+    }
     state.routeDepth = (e.state.routeDepth != null) ? e.state.routeDepth : Math.max(0, state.routeDepth - 1);
     state.homeGuard = !!e.state.homeGuard;
     _viewAt[state.routeDepth] = 'list';
@@ -4322,38 +4606,49 @@ function initSlider(){
 function syncBottomNav(){
   var nav = $('bottomNav');
   if (!nav) return;
-  nav.classList.toggle('show', state.view === 'list' || state.view === 'settings' || state.view === 'saved');
+  nav.classList.toggle('show', state.view === 'list' || state.view === 'settings' || state.view === 'saved' || state.view === 'leaderboard');
   var tab = state.navTab || (state.view === 'settings' ? 'settings' : 'home');
-  var home = $('bnHome'), tests = $('bnTests'), settings = $('bnSettings');
+  var home = $('bnHome'), tests = $('bnTests'), leader = $('navLeader');
   if (home) home.classList.toggle('active', tab === 'home');
   if (tests) tests.classList.toggle('active', tab === 'tests');
-  if (settings) settings.classList.toggle('active', tab === 'settings');
-  var nh = $('navHome'), ns = $('navSettings');
+  if (leader) leader.classList.toggle('active', tab === 'leaderboard');
+  var nh = $('navHome'), ns = $('sbLeader');
   if (nh) nh.classList.toggle('active', state.view === 'list' && tab !== 'tests');
-  if (ns) ns.classList.toggle('active', state.view === 'settings');
+  if (ns) ns.classList.toggle('active', state.view === 'leaderboard');
 }
 function goHome(){
   state.navTab = 'home';
   state.seriesOpen = false;
+  state.seriesPicker = false;
   state.caView = null;
   state.caMonth = null;
   renderHome();
   showView('list');
   var lb = $('listBody'); if (lb) lb.scrollTop = 0;
 }
-function goTests(){
+function goTests(picker){
   state.navTab = 'tests';
   state.caView = null;
   state.caMonth = null;
   if (state.view === 'list' && !state.seriesOpen){
     /* series kholna bhi ek back-step hai: entry push karo taaki back se series band ho */
-    window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, homeRoot:true, homeGuard:false}, '', '#view-list');
+    window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, seriesPicker: (picker === true), homeRoot:true, homeGuard:false}, '', '#view-list');
+    state.routeDepth++;
+    state.homeGuard = false;
+  } else if (state.view !== 'list'){
+    /* v50: dusri view (leaderboard/settings/saved) se Tests kholo to showView
+       history.back() se peeche jaata hai — popstate ki series-close branch
+       turant series band kar deti hai aur user picker ki jagah Home par
+       pahunchta hai. Isliye yahan khud series entry push karo aur setView
+       se seedha list par jao (showView ka back-step skip). */
+    window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, seriesPicker: (picker === true), homeRoot:true, homeGuard:false}, '', '#view-list');
     state.routeDepth++;
     state.homeGuard = false;
   }
   state.seriesOpen = true;
+  state.seriesPicker = (picker === true);
   renderHome();
-  showView('list');
+  if (state.view === 'list') showView('list'); else setView('list');
   var lb = $('listBody'), ts = $('testSeries');
   if (lb && ts) lb.scrollTop = ts.offsetTop || 0;
 }
@@ -4372,7 +4667,9 @@ function saveSettings(){
   var name = ($('setName').value || '').trim();
   if (!name){ $('setName').style.borderColor = '#dc2626'; $('setName').focus(); return; }
   var store = storeGet();
-  store.profile = {name: name, exam: $('setExam').value || 'RRB NTPC', target: parseInt($('setTarget').value, 10) || 91};
+  var _np = {name: name, exam: $('setExam').value || 'RRB NTPC', target: parseInt($('setTarget').value, 10) || 91};
+  if (store.profile && store.profile.avatar) _np.avatar = store.profile.avatar;
+  store.profile = _np;
   storeSet(store);
   state.lang = $('setLang').value || 'hi';
   applyProfile();
@@ -4387,11 +4684,9 @@ function saveSettings(){
   var ss = $('setSaveBtn'); if (ss) ss.addEventListener('click', saveSettings);
   var sb = $('setBackBtn'); if (sb) sb.addEventListener('click', function(){ appBack('list'); });
   var bh = $('bnHome'); if (bh) bh.addEventListener('click', goHome);
-  var bt = $('bnTests'); if (bt) bt.addEventListener('click', goTests);
-  var bs = $('bnSettings'); if (bs) bs.addEventListener('click', openSettings);
+  var bt = $('bnTests'); if (bt) bt.addEventListener('click', function(){ goTests(true); });
   var nh = $('navHome'); if (nh) nh.addEventListener('click', goHome);
-  var nt = $('navTests'); if (nt) nt.addEventListener('click', goTests);
-  var ns = $('navSettings'); if (ns) ns.addEventListener('click', openSettings);
+  var nt = $('navTests'); if (nt) nt.addEventListener('click', function(){ goTests(true); });
 })();
 </script>
 <script>
@@ -5090,6 +5385,7 @@ function renderHome(){
   var cp = $('caPages'); if (cp) cp.style.display = state.caView ? '' : 'none';
   if (open) renderList();
   if (state.caView) renderCAPage();
+  try { if (window.__lb && window.__lb.syncSeriesPicker) window.__lb.syncSeriesPicker(); } catch(e){}
   renderFeatCards();
 }
 /* v23: "Prepare Smarter" cards are live, animated, real-data cards.
@@ -5485,19 +5781,17 @@ function closeMenu(){ $('sideMenu').classList.remove('open'); $('menuBackdrop').
 (function wireMobile(){
   function on(id, ev, fn){ var el = $(id); if (el) el.addEventListener(ev, fn); }
   on('seriesFolder', 'click', goTests);
-  on('viewAllSeries', 'click', goTests);
-  on('irTests', 'click', goTests);
+  on('viewAllSeries', 'click', function(){ goTests(true); });
+  on('irTests', 'click', function(){ goTests(true); });
   on('irSaved', 'click', openSaved);
   on('irDark', 'click', toggleDark);
-  on('irSettings', 'click', openSettings);
   on('navSeries', 'click', goTests);
   on('navAttempted', 'click', function(){ state.listFilter = 'attempted'; goTests(); });
   on('navSaved', 'click', openSaved);
   on('slideSaved', 'click', openSaved);
   on('smHome', 'click', function(){ closeMenu(); goHome(); });
-  on('smTests', 'click', function(){ closeMenu(); goTests(); });
+  on('smTests', 'click', function(){ closeMenu(); goTests(true); });
   on('smSaved', 'click', function(){ closeMenu(); openSaved(); });
-  on('smSettings', 'click', function(){ closeMenu(); openSettings(); });
   on('homeMenuBtn', 'click', openMenu);
   on('menuBackdrop', 'click', closeMenu);
   on('avatarInitial', 'click', openSettings);
@@ -5938,6 +6232,757 @@ attachSwipe($('solScroll'),
 })();
 </script>
 
+
+<script id="tp-leaderboard">
+'use strict';
+/* ================= TESTPRO v50 — Leaderboard + Avatars =================
+   Port of the TESTPRO__17 (v46) leaderboard design onto the v49 master.
+   Firestore: collection 'leaderboard', doc id = uid, fields
+   {name, avatar, q, att, tn, avg, rating, t, u}.
+   rating = round1(0.6*avg + 0.4*vol), vol = min(100, q/totalPool*100);
+   q = correct+wrong across BEST attempt per test (v50 contract — the
+   reference summed ALL attempts; that is deliberately NOT copied).
+   att = total attempts (reference semantics). tn = tests with attempts.
+   avg = mean of best-attempt % per test.
+   Percentile (rank formula): pct = round(100 * (1 - (rank-1)/total)) on the
+   overall-rating rank; rank 1 -> 100; total <= 1 -> 100. Shown with class
+   lb-pct (not the reference's .lb-pill).
+   Publish: only when tn > 0, debounced 3500 ms, skip offline/guest; after a
+   permission-denied publish failure, no retry until forced (lbPublish(true)).
+   Fetch: orderBy('rating','desc'), limit 300. Cache: tp_lb_cache_v1.
+   Firestore fns come from this script's own dynamic import (reference
+   pattern) — the v49 F map is untouched.
+   Avatar picker is an INLINE grid #avatarGrid in Settings (not the
+   reference's bottom sheet); openPicker() = openSettings() + scroll to grid.
+   Public bridge: window.__lb (+ window.openLeaderboard for convenience).
+   DO NOT TOUCH preserved: v46 popup-first Google, v47 Google UI removal,
+   v48 email-link, v49 error messages, v42 link flow, v43 logoutUser/UID
+   guard/fbAuthLoading, v45 optimistic launch + setPersistence + pw-set
+   skip, QBANK/CABANK, all test/sync logic. */
+(function(){
+/* Local helpers — load-order safe: this script runs BEFORE the Firebase
+   script defines the global $; r1/r2/fmtN do not exist in v49. */
+function $(id){ return document.getElementById(id); }
+function r1(n){ return Math.round(n * 10) / 10; }
+function r2(n){ return Math.round(n * 100) / 100; }
+function fmtN(n){ n = r2(n); return String(n); }
+var FS_URL = 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+var LB_CACHE_KEY = 'tp_lb_cache_v1';
+var ICON = {
+  edit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>',
+  crown: '<svg viewBox="0 0 48 34" aria-hidden="true"><path d="M5 28 2 8l11 9L24 3l11 14 11-9-3 20z" fill="url(#lbGold)" stroke="#b45309" stroke-width="1.6" stroke-linejoin="round"/><rect x="5" y="28" width="38" height="4.5" rx="2" fill="url(#lbGold)" stroke="#b45309" stroke-width="1.4"/><circle cx="24" cy="3.5" r="2.4" fill="#fff7ae"/><circle cx="2" cy="8" r="2" fill="#fff7ae"/><circle cx="46" cy="8" r="2" fill="#fff7ae"/></svg>'
+};
+
+/* ============================ AVATARS (AVS generator) ============================ */
+/* Verbatim port from TESTPRO__17: 20 avatars (12 people configs + 8 animals),
+   skin tones, hair styles, turban/cap/beard variants, gradient backgrounds,
+   data-URI <img>. */
+var AVS = (function(){
+  function G(a, b){ return '<defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></linearGradient></defs><rect width="100" height="100" fill="url(#b)"/>'; }
+  function wrap(bg, inner){ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' + G(bg[0], bg[1]) + inner + '</svg>'; }
+  var SK = {a:['#ffdbb4','#f0c08f'], b:['#f1c27d','#d9a066'], c:['#e0ac69','#c68642'], d:['#c68642','#a66a2c'], e:['#8d5524','#6f3f15'], f:['#fbe0c8','#efc6a2']};
+  function stroke(d, col, w){ return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + (w || 2) + '" stroke-linecap="round" stroke-linejoin="round"/>'; }
+
+  function person(c){
+    var sk = c.skin, hc = c.hc || '#2d1b0e', o = '';
+    o += '<path d="M14 100C14 76 30 70 50 70C70 70 86 76 86 100Z" fill="' + c.shirt + '"/>';
+    if (c.hair === 'long') o += '<path d="M27 50C22 18 40 11 50 11C60 11 78 18 73 50L77 84C62 92 38 92 23 84Z" fill="' + hc + '"/>';
+    if (c.hair === 'ponytail') o += '<path d="M66 28C92 22 94 62 78 74C84 54 76 44 66 40Z" fill="' + hc + '"/>';
+    if (c.hair === 'bun') o += '<circle cx="50" cy="15" r="8.5" fill="' + hc + '"/>';
+    if (c.hair === 'curly'){
+      [[33,33,9],[41,25,9.5],[50,22,9.5],[59,25,9.5],[67,33,9],[29,43,8],[71,43,8]].forEach(function(k){ o += '<circle cx="' + k[0] + '" cy="' + k[1] + '" r="' + k[2] + '" fill="' + hc + '"/>'; });
+    }
+    o += '<rect x="43" y="58" width="14" height="18" rx="5" fill="' + sk[1] + '"/>';
+    o += '<path d="M41 71L50 83L59 71Z" fill="' + sk[1] + '"/>';
+    o += '<circle cx="31" cy="50" r="4.2" fill="' + sk[0] + '"/><circle cx="69" cy="50" r="4.2" fill="' + sk[0] + '"/>';
+    o += '<ellipse cx="50" cy="47" rx="19" ry="21" fill="' + sk[0] + '"/>';
+    if (c.beard) o += '<path d="M31 52C31 76 69 76 69 52C66 63 59 67 50 67C41 67 34 63 31 52Z" fill="' + c.beard + '"/>';
+    // front hair
+    var H = {
+      short: 'M30 46C28 24 42 18 50 18C60 18 72 24 70 46C66 36 60 31 50 31C40 31 34 36 30 46Z',
+      long: 'M31 44C33 26 44 23 50 23C58 23 67 27 69 44C62 34 56 31 50 31C44 31 37 34 31 44Z',
+      bun: 'M30 46C28 24 42 20 50 20C60 20 72 24 70 46C66 36 60 32 50 32C40 32 34 36 30 46Z',
+      curly: 'M32 42C36 32 44 30 50 30C57 30 64 32 68 42C62 36 56 35 50 35C44 35 38 36 32 42Z',
+      spiky: 'M30 45L31 24L39 33L43 15L50 31L57 15L61 33L69 24L70 45C64 37 36 37 30 45Z',
+      sidepart: 'M30 46C26 22 48 14 62 20C72 24 72 38 70 46C66 34 56 28 44 30C38 32 33 38 30 46Z',
+      ponytail: 'M30 46C28 24 42 18 50 18C60 18 72 24 70 46C66 36 60 31 50 31C40 31 34 36 30 46Z'
+    };
+    if (H[c.hair]) o += '<path d="' + H[c.hair] + '" fill="' + hc + '"/>';
+    if (c.turban){
+      o += '<path d="M27 46C22 12 78 12 73 46C65 36 35 36 27 46Z" fill="' + c.turban + '"/>';
+      o += stroke('M30 36C42 28 58 28 70 36M29 41C42 34 58 34 71 41', 'rgba(255,255,255,.35)', 1.6);
+    }
+    if (c.cap){
+      o += '<path d="M29 42C29 18 71 18 71 42Z" fill="' + c.cap + '"/>';
+      o += '<path d="M27 41Q50 35 73 41L87 46Q80 51 70 46L29 46Z" fill="' + c.cap2 + '"/>';
+      o += '<circle cx="50" cy="21" r="2.2" fill="' + c.cap2 + '"/>';
+    }
+    // brows + eyes
+    var bc = c.beard && !c.hair ? c.beard : hc;
+    o += stroke('M37 41.5Q41.5 39 46 41.2', bc, 2) + stroke('M54 41.2Q58.5 39 63 41.5', bc, 2);
+    var dot = function(x){ return '<ellipse cx="' + x + '" cy="48.5" rx="2.4" ry="2.9" fill="#1f2937"/><circle cx="' + (x + 0.8) + '" cy="47.4" r=".9" fill="#fff"/>'; };
+    var happy = function(x){ return stroke('M' + (x - 3.6) + ' 49.5Q' + x + ' 44.6 ' + (x + 3.6) + ' 49.5', '#1f2937', 2.2); };
+    if (c.eyes === 'happy') o += happy(42) + happy(58);
+    else if (c.eyes === 'wink') o += dot(42) + happy(58);
+    else o += dot(42) + dot(58);
+    if (c.glasses){
+      o += '<g fill="rgba(255,255,255,.22)" stroke="#1f2937" stroke-width="1.8"><circle cx="42" cy="48.5" r="6.6"/><circle cx="58" cy="48.5" r="6.6"/></g>';
+      o += stroke('M48.6 48H51.4M35.4 47.5L31.5 46.5M64.6 47.5L68.5 46.5', '#1f2937', 1.8);
+    }
+    if (c.blush) o += '<circle cx="36" cy="56" r="3.3" fill="#ff8fa3" opacity=".45"/><circle cx="64" cy="56" r="3.3" fill="#ff8fa3" opacity=".45"/>';
+    if (c.mouth === 'grin') o += '<path d="M42.5 56.4Q50 67 57.5 56.4Z" fill="#7f1d1d"/><path d="M44.2 57.3Q50 59.6 55.8 57.3L55 59.2Q50 61 45 59.2Z" fill="#fff"/>';
+    else o += stroke('M43 57.5Q50 64 57 57.5', '#9b2c2c', 2.2);
+    if (c.hp){
+      o += stroke('M29 47C28 16 72 16 71 47', '#1e293b', 4.5);
+      o += '<rect x="23.5" y="43" width="9" height="16" rx="4.2" fill="' + c.hp + '"/><rect x="67.5" y="43" width="9" height="16" rx="4.2" fill="' + c.hp + '"/>';
+    }
+    return o;
+  }
+
+  function eyeDots(xs, y, r, col){ return xs.map(function(x){ return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + (col || '#1f2937') + '"/><circle cx="' + (x + 1) + '" cy="' + (y - 1.2) + '" r="' + (r * 0.32) + '" fill="#fff"/>'; }).join(''); }
+
+  function cat(){
+    var m = '#fb923c', dk = '#c2410c', lt = '#ffedd5', o = '';
+    o += '<path d="M24 46L26 15L46 30Z" fill="' + m + '"/><path d="M76 46L74 15L54 30Z" fill="' + m + '"/>';
+    o += '<path d="M30 38L31 23L41 31Z" fill="#fda4af"/><path d="M70 38L69 23L59 31Z" fill="#fda4af"/>';
+    o += '<ellipse cx="50" cy="57" rx="27" ry="23" fill="' + m + '"/>';
+    o += stroke('M50 35V42M43 36L45 42.5M57 36L55 42.5', dk, 2.4);
+    o += '<ellipse cx="50" cy="65" rx="11.5" ry="8" fill="' + lt + '"/>';
+    o += '<ellipse cx="39" cy="54" rx="4.4" ry="5.2" fill="#fff"/><ellipse cx="61" cy="54" rx="4.4" ry="5.2" fill="#fff"/>';
+    o += '<ellipse cx="39" cy="54" rx="2.3" ry="4.4" fill="#065f46"/><ellipse cx="61" cy="54" rx="2.3" ry="4.4" fill="#065f46"/>';
+    o += '<circle cx="38.2" cy="52.3" r="1" fill="#fff"/><circle cx="60.2" cy="52.3" r="1" fill="#fff"/>';
+    o += '<path d="M46.5 60.5H53.5L50 64.5Z" fill="#f43f5e"/>';
+    o += stroke('M50 64.5V67.5M50 67.5Q46 71 43 67.8M50 67.5Q54 71 57 67.8', '#7c2d12', 1.6);
+    o += stroke('M30 63L15 59.5M30 67L15 69M70 63L85 59.5M70 67L85 69', '#fff', 1.4);
+    return o;
+  }
+  function fox(){
+    var o = '';
+    o += '<path d="M22 44L26 13L45 30Q50 29 55 30L74 13L78 44Q80 71 50 83Q20 71 22 44Z" fill="#f97316"/>';
+    o += '<path d="M28 34L29 21L38 29Z" fill="#7c2d12"/><path d="M72 34L71 21L62 29Z" fill="#7c2d12"/>';
+    o += '<path d="M29 55Q50 45 71 55Q67 75 50 83Q33 75 29 55Z" fill="#fff7ed"/>';
+    o += eyeDots([38, 62], 51, 3.3);
+    o += '<ellipse cx="50" cy="71" rx="4.4" ry="3.3" fill="#1f2937"/>';
+    o += stroke('M50 74Q46 79 42 76M50 74Q54 79 58 76', '#1f2937', 1.7);
+    return o;
+  }
+  function panda(){
+    var o = '';
+    o += '<circle cx="27" cy="31" r="10.5" fill="#1f2937"/><circle cx="73" cy="31" r="10.5" fill="#1f2937"/>';
+    o += '<ellipse cx="50" cy="56" rx="28" ry="25" fill="#fff"/>';
+    o += '<ellipse cx="37.5" cy="53" rx="7.5" ry="9.5" fill="#1f2937" transform="rotate(20 37.5 53)"/><ellipse cx="62.5" cy="53" rx="7.5" ry="9.5" fill="#1f2937" transform="rotate(-20 62.5 53)"/>';
+    o += '<circle cx="38.5" cy="52" r="3.1" fill="#fff"/><circle cx="61.5" cy="52" r="3.1" fill="#fff"/>';
+    o += '<circle cx="39" cy="52.4" r="1.7" fill="#1f2937"/><circle cx="61" cy="52.4" r="1.7" fill="#1f2937"/>';
+    o += '<ellipse cx="50" cy="64" rx="4.6" ry="3.2" fill="#1f2937"/>';
+    o += stroke('M50 67Q46 72 43 69M50 67Q54 72 57 69', '#1f2937', 1.8);
+    return o;
+  }
+  function bunny(){
+    var o = '';
+    o += '<g transform="rotate(-9 38 24)"><ellipse cx="38" cy="24" rx="7.5" ry="19" fill="#fff"/><ellipse cx="38" cy="26" rx="3.8" ry="13" fill="#fbcfe8"/></g>';
+    o += '<g transform="rotate(9 62 24)"><ellipse cx="62" cy="24" rx="7.5" ry="19" fill="#fff"/><ellipse cx="62" cy="26" rx="3.8" ry="13" fill="#fbcfe8"/></g>';
+    o += '<circle cx="50" cy="61" r="24" fill="#fff"/>';
+    o += '<circle cx="34" cy="67" r="4.6" fill="#fbcfe8"/><circle cx="66" cy="67" r="4.6" fill="#fbcfe8"/>';
+    o += eyeDots([41, 59], 59, 3);
+    o += '<path d="M47 65H53L50 68.2Z" fill="#f472b6"/>';
+    o += stroke('M50 68.2V70.5M50 70.5Q46.5 73.5 44 70.8M50 70.5Q53.5 73.5 56 70.8', '#9d174d', 1.5);
+    o += '<rect x="47.4" y="71.4" width="2.4" height="4.4" rx="1" fill="#fff" stroke="#d1d5db" stroke-width=".8"/><rect x="50.2" y="71.4" width="2.4" height="4.4" rx="1" fill="#fff" stroke="#d1d5db" stroke-width=".8"/>';
+    return o;
+  }
+  function robot(){
+    var o = '';
+    o += '<path d="M30 100C30 80 70 80 70 100Z" fill="#64748b"/><rect x="44" y="66" width="12" height="10" rx="2" fill="#94a3b8"/>';
+    o += stroke('M50 25V14', '#64748b', 3) + '<circle cx="50" cy="12" r="4.2" fill="#f43f5e"/>';
+    o += '<rect x="19" y="43" width="8" height="18" rx="3" fill="#94a3b8"/><rect x="73" y="43" width="8" height="18" rx="3" fill="#94a3b8"/>';
+    o += '<rect x="26" y="24" width="48" height="44" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>';
+    o += '<rect x="32" y="35" width="36" height="18" rx="9" fill="#0f172a"/>';
+    o += '<circle cx="42" cy="44" r="4.6" fill="#22d3ee"/><circle cx="58" cy="44" r="4.6" fill="#22d3ee"/><circle cx="43.2" cy="42.6" r="1.3" fill="#fff"/><circle cx="59.2" cy="42.6" r="1.3" fill="#fff"/>';
+    o += '<rect x="38" y="58" width="24" height="5.5" rx="2.7" fill="#94a3b8"/>' + stroke('M44 58V63.5M50 58V63.5M56 58V63.5', '#e2e8f0', 1.4);
+    return o;
+  }
+  function owl(){
+    var o = '';
+    o += '<path d="M26 38L23 15L43 28Z" fill="#92400e"/><path d="M74 38L77 15L57 28Z" fill="#92400e"/>';
+    o += '<ellipse cx="50" cy="58" rx="29" ry="31" fill="#92400e"/>';
+    o += '<ellipse cx="50" cy="73" rx="16" ry="17" fill="#fde68a"/>';
+    o += stroke('M44 67q3 3 6 0q3 3 6 0M42 75q4 3 8 0q4 3 8 0M45 83q5 3 10 0', '#d97706', 1.6);
+    o += '<circle cx="38" cy="50" r="12.5" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><circle cx="62" cy="50" r="12.5" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>';
+    o += '<circle cx="39" cy="50.5" r="6.2" fill="#1f2937"/><circle cx="61" cy="50.5" r="6.2" fill="#1f2937"/><circle cx="41" cy="48" r="2" fill="#fff"/><circle cx="63" cy="48" r="2" fill="#fff"/>';
+    o += '<path d="M45 57H55L50 67Z" fill="#f59e0b"/>';
+    return o;
+  }
+  function bear(){
+    var o = '';
+    o += '<circle cx="27" cy="32" r="10.5" fill="#92400e"/><circle cx="73" cy="32" r="10.5" fill="#92400e"/><circle cx="27" cy="32" r="5.2" fill="#e7b98a"/><circle cx="73" cy="32" r="5.2" fill="#e7b98a"/>';
+    o += '<ellipse cx="50" cy="56" rx="28" ry="26" fill="#b45309"/>';
+    o += '<ellipse cx="50" cy="65" rx="13" ry="10" fill="#fde68a"/>';
+    o += eyeDots([38.5, 61.5], 50, 3.1);
+    o += '<ellipse cx="50" cy="60.5" rx="4.6" ry="3.4" fill="#1f2937"/>';
+    o += stroke('M50 64V67M50 67Q46 71 43 68M50 67Q54 71 57 68', '#1f2937', 1.7);
+    return o;
+  }
+  function lion(){
+    var o = '';
+    for (var a = 0; a < 360; a += 30){
+      var r = a * Math.PI / 180;
+      o += '<circle cx="' + (50 + 27 * Math.cos(r)).toFixed(1) + '" cy="' + (55 + 27 * Math.sin(r)).toFixed(1) + '" r="10.5" fill="#c2410c"/>';
+    }
+    o += '<circle cx="50" cy="55" r="28" fill="#c2410c"/>';
+    o += '<circle cx="34" cy="36" r="5.5" fill="#f59e0b"/><circle cx="66" cy="36" r="5.5" fill="#f59e0b"/>';
+    o += '<circle cx="50" cy="56" r="22" fill="#fbbf24"/>';
+    o += '<ellipse cx="50" cy="65" rx="11.5" ry="8.5" fill="#fef3c7"/>';
+    o += eyeDots([40, 60], 52, 3);
+    o += '<path d="M46 60H54L50 64.4Z" fill="#7c2d12"/>';
+    o += stroke('M50 64.4V67M50 67Q46.5 70.5 43.5 67.5M50 67Q53.5 70.5 56.5 67.5', '#7c2d12', 1.6);
+    return o;
+  }
+
+  var P = [
+    [['#a5f3fc','#6366f1'], {skin:SK.b, hair:'short', hc:'#2d1b0e', shirt:'#0ea5e9', eyes:'dot', mouth:'smile', blush:1}],
+    [['#fbcfe8','#ec4899'], {skin:SK.f, hair:'long', hc:'#3b2314', shirt:'#be185d', eyes:'happy', mouth:'smile', blush:1}],
+    [['#bbf7d0','#14b8a6'], {skin:SK.c, hair:'sidepart', hc:'#111827', shirt:'#059669', eyes:'dot', mouth:'smile', glasses:1}],
+    [['#fde68a','#f97316'], {skin:SK.e, hair:'curly', hc:'#1f1109', shirt:'#d97706', eyes:'dot', mouth:'grin', blush:1}],
+    [['#ddd6fe','#8b5cf6'], {skin:SK.d, hair:'bun', hc:'#1f2937', shirt:'#6d28d9', eyes:'happy', mouth:'smile', blush:1}],
+    [['#fecaca','#f43f5e'], {skin:SK.a, hair:'spiky', hc:'#f59e0b', shirt:'#111827', eyes:'wink', mouth:'grin'}],
+    [['#99f6e4','#0ea5e9'], {skin:SK.d, hair:'short', hc:'#1f1f1f', beard:'#1f1f1f', shirt:'#0f766e', eyes:'dot', mouth:'smile'}],
+    [['#c7d2fe','#4f46e5'], {skin:SK.b, hair:'sidepart', hc:'#7c2d12', hp:'#6366f1', shirt:'#0f172a', eyes:'dot', mouth:'grin'}],
+    [['#fed7aa','#ef4444'], {skin:SK.c, hair:'short', hc:'#1f1f1f', cap:'#ef4444', cap2:'#b91c1c', shirt:'#e2e8f0', eyes:'dot', mouth:'smile'}],
+    [['#bae6fd','#2563eb'], {skin:SK.d, turban:'#f97316', beard:'#1f1f1f', shirt:'#1d4ed8', eyes:'dot', mouth:'smile'}],
+    [['#fbcfe8','#a855f7'], {skin:SK.a, hair:'ponytail', hc:'#78350f', glasses:1, shirt:'#f43f5e', eyes:'happy', mouth:'smile', blush:1}],
+    [['#e2e8f0','#64748b'], {skin:SK.e, beard:'#9ca3af', glasses:1, shirt:'#475569', eyes:'dot', mouth:'smile'}]
+  ];
+  var A = [
+    [['#fef3c7','#f59e0b'], cat], [['#fde68a','#0ea5e9'], fox], [['#a7f3d0','#10b981'], panda], [['#ddd6fe','#7c3aed'], bunny],
+    [['#bae6fd','#6366f1'], robot], [['#fecdd3','#8b5cf6'], owl], [['#fed7aa','#14b8a6'], bear], [['#fef9c3','#ef4444'], lion]
+  ];
+  var out = [];
+  P.forEach(function(p){ out.push(wrap(p[0], person(p[1]))); });
+  A.forEach(function(a){ out.push(wrap(a[0], a[1]())); });
+  return out;
+})();
+/*AV-END*/
+
+
+function avHash(s){ var h = 7; s = String(s); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+var _avUri = {};
+function avValid(id){ return typeof id === 'string' && /^av\d+$/.test(id) && !!AVS[parseInt(id.slice(2), 10) - 1]; }
+function avSrc(id){
+  if (!avValid(id)) id = 'av1';
+  if (!_avUri[id]) _avUri[id] = 'data:image/svg+xml,' + encodeURIComponent(AVS[parseInt(id.slice(2), 10) - 1]);
+  return _avUri[id];
+}
+function avFromName(name, seed){ return 'av' + ((avHash(seed || name || 'student') % AVS.length) + 1); }
+function myAvatarId(){
+  var s = storeGet(), p = s.profile || {};
+  if (avValid(p.avatar)) return p.avatar;
+  var seed = (s._fbMeta && s._fbMeta.uid) || p.name || 'student';
+  return avFromName(p.name, seed);
+}
+function setMyAvatar(id){
+  if (!avValid(id)) return;
+  var s = storeGet();
+  var p = s.profile || {name: 'Student', exam: 'RRB NTPC', target: 91};
+  p = {name: p.name, exam: p.exam, target: p.target, avatar: id};
+  s.profile = p;
+  storeSet(s);
+  applyAvatars();
+  syncAvatarGrid();
+  if (LB.state === 'ok' || LB.list.length) { lbUseLocalMe(); lbRender(); }
+}
+function applyAvatars(){
+  var css = 'url("' + avSrc(myAvatarId()) + '")';
+  var els = document.querySelectorAll('.avatar');
+  for (var i = 0; i < els.length; i++){
+    var el = els[i];
+    el.style.backgroundImage = css;
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.style.color = 'transparent';
+    el.style.fontSize = '0';
+  }
+  var sa = document.querySelector('.set-avatar');
+  if (sa){
+    var face = $('setAvFace');
+    if (!face){
+      face = document.createElement('span'); face.id = 'setAvFace'; face.className = 'set-av-face'; face.setAttribute('role', 'button'); face.setAttribute('tabindex', '0'); face.setAttribute('aria-label', 'Avatar badlo');
+      sa.insertBefore(face, sa.firstChild);
+      var ed = document.createElement('button'); ed.type = 'button'; ed.className = 'set-av-edit'; ed.id = 'setAvEdit'; ed.setAttribute('aria-label', 'Avatar badlo'); ed.innerHTML = ICON.edit;
+      sa.appendChild(ed);
+      face.addEventListener('click', openPicker); ed.addEventListener('click', openPicker);
+      face.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPicker(); } });
+    }
+    face.style.backgroundImage = css;
+  }
+  var li = $('lbMyAvImg'); if (li) li.src = avSrc(myAvatarId());
+}
+
+/* ---------- avatar grid (inline in Settings, id avatarGrid) ---------- */
+/* v50: the reference's bottom-sheet picker is NOT ported — the picker is an
+   inline grid in the Settings view. openPicker() below opens Settings and
+   scrolls to the grid, so every reference call site keeps working. */
+function buildAvatarGrid(){
+  var g = $('avatarGrid'); if (!g || g.children.length) return;
+  var h = '';
+  for (var i = 1; i <= AVS.length; i++) h += '<button type="button" class="av-opt" data-id="av' + i + '" aria-label="Avatar ' + i + '"><img src="' + avSrc('av' + i) + '" alt="" loading="lazy"></button>';
+  g.innerHTML = h;
+  g.addEventListener('click', function(e){
+    var t = e.target.closest('[data-id]'); if (!t) return;
+    setMyAvatar(t.getAttribute('data-id'));
+  });
+  syncAvatarGrid();
+}
+function syncAvatarGrid(){
+  var g = $('avatarGrid'); if (!g) return;
+  var cur = myAvatarId();
+  var o = g.querySelectorAll('.av-opt');
+  for (var i = 0; i < o.length; i++) o[i].classList.toggle('sel', o[i].getAttribute('data-id') === cur);
+}
+function openPicker(){
+  try { openSettings(); } catch(e){}
+  setTimeout(function(){ var g = $('avatarGrid'); if (g && g.scrollIntoView){ try { g.scrollIntoView({block: 'nearest'}); } catch(e){} } }, 60);
+}
+
+/* ============================ LEADERBOARD DATA ============================ */
+var LB = {tab: 'overall', metric: 'rating', series: 'maths', showEmpty: false, list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: ''};
+var fsP = null;
+function fsMod(){ return fsP || (fsP = import(FS_URL)); }
+function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, ms); })]); }
+function fbUser(){ var fb = window.__fb; return (fb && fb.user) || null; }
+function myUid(){ var u = fbUser(); if (u) return u.uid; var s = storeGet(); return (s._fbMeta && s._fbMeta.uid) || 'me'; }
+function myName(){
+  var s = storeGet(), p = s.profile || {}, n = (p.name || '').trim();
+  if (!n || n === 'Student'){ var u = fbUser(); if (u && u.displayName) n = u.displayName.trim(); }
+  return (n || 'Student').slice(0, 24);
+}
+function totalPool(){
+  var n = 0;
+  try { TESTS.forEach(function(t){ n += t.marks; }); CA_TESTS.forEach(function(t){ n += t.marks; }); } catch (e) {}
+  return n || 1;
+}
+function myEntry(){
+  var s = storeGet(), t = {}, q = 0, att = 0, tn = 0, sumPct = 0;
+  ['tests', 'tests_ca'].forEach(function(sec){
+    var map = s[sec] || {};
+    Object.keys(map).forEach(function(tid){
+      var hist = getAttempts(map[tid]);
+      if (!hist.length) return;
+      var best = null;
+      hist.forEach(function(a){ att++; if (!best || (a.score || 0) > (best.score || 0)) best = a; });
+      var ti = findTestById(tid);
+      var marks = ti ? ti.marks : ((best.correct || 0) + (best.wrong || 0) + (best.skipped || 0));
+      if (!marks) return;
+      /* v50 contract: q counts BEST attempt only (reference summed every
+         attempt — deliberately not copied). */
+      q += (best.correct || 0) + (best.wrong || 0);
+      t[tid] = [r2(best.score || 0), best.correct || 0, best.wrong || 0, marks, Math.round(best.timeTaken || 0)];
+      sumPct += Math.max(0, Math.min(100, (best.score || 0) / marks * 100));
+      tn++;
+    });
+  });
+  /* v50 E23: avg ko PEHLE round karo, phir usi rounded avg se rating
+     nikalo — warna displayed avg (95.6) aur rating (57.8 vs 57.9) mismatch
+     hota hai. (B31b pin: avg exactly 100 -> unchanged.) */
+  var avg = r1(tn ? sumPct / tn : 0);
+  var vol = Math.min(100, q / totalPool() * 100);
+  return {uid: myUid(), name: myName(), avatar: myAvatarId(), q: q, att: att, tn: tn, avg: avg, rating: r1(0.6 * avg + 0.4 * vol), t: t};
+}
+function cleanEntry(x, uid){
+  if (!x || typeof x !== 'object') return null;
+  var e = {uid: uid || x.uid, name: String(x.name || 'Student').slice(0, 24), avatar: avValid(x.avatar) ? x.avatar : avFromName(x.name, uid || x.uid),
+    q: +x.q || 0, att: +x.att || 0, tn: +x.tn || 0, avg: +x.avg || 0, rating: +x.rating || 0, t: (x.t && typeof x.t === 'object') ? x.t : {}};
+  return e.tn > 0 ? e : null;
+}
+async function lbPublish(force){
+  var fb = window.__fb;
+  if (!fb || !fb.user || !fb.db || !navigator.onLine) return false;
+  if (LB.pubErr === 'permission-denied' && !force) return false;
+  var e = myEntry();
+  if (!e.tn) return false;
+  var sig = JSON.stringify(e);
+  if (sig === LB.lastSig) return true;
+  try {
+    var m = await withTimeout(fsMod(), 10000);
+    var data = {name: e.name, avatar: e.avatar, q: e.q, att: e.att, tn: e.tn, avg: e.avg, rating: e.rating, t: e.t, u: Date.now()};
+    await withTimeout(m.setDoc(m.doc(fb.db, 'leaderboard', fb.user.uid), data), 10000);
+    LB.lastSig = sig; LB.pubErr = '';
+    return true;
+  } catch (err){ LB.pubErr = (err && err.code) || 'publish-failed'; return false; }
+}
+function lbSchedulePublish(){
+  if (LB.pubTimer) clearTimeout(LB.pubTimer);
+  LB.pubTimer = setTimeout(function(){ LB.pubTimer = null; lbPublish(); }, 3500);
+}
+async function lbFetch(){
+  var fb = window.__fb;
+  if (!fb || !fb.db || !fb.user) { var er = new Error('no-auth'); er.code = 'no-auth'; throw er; }
+  var m = await withTimeout(fsMod(), 10000);
+  var snap = await withTimeout(m.getDocs(m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('rating', 'desc'), m.limit(300))), 15000);
+  var out = [];
+  snap.forEach(function(d){ var e = cleanEntry(d.data(), d.id); if (e) out.push(e); });
+  return out;
+}
+function lbSaveCache(list){
+  try { localStorage.setItem(LB_CACHE_KEY, JSON.stringify({at: Date.now(), uid: myUid(), list: list.slice(0, 100)})); } catch (e) {}
+}
+function lbLoadCache(){
+  try { var c = JSON.parse(localStorage.getItem(LB_CACHE_KEY) || 'null'); if (c && c.list && c.list.length) return c; } catch (e) {}
+  return null;
+}
+function lbUseLocalMe(){
+  var me = myEntry(), uid = me.uid;
+  var list = LB.list.filter(function(e){ return e.uid !== uid; });
+  if (me.tn) list.push(me);
+  LB.list = list;
+}
+async function lbRefresh(){
+  if (LB.busy) return;
+  LB.busy = true; LB.err = '';
+  if (!LB.list.length){ var c = lbLoadCache(); if (c && c.uid === myUid()){ LB.list = c.list; LB.stale = true; LB.fetchedAt = c.at; lbUseLocalMe(); LB.state = 'ok'; } else LB.state = 'loading'; }
+  lbRender();
+  try {
+    await lbPublish(true);
+    var list = await lbFetch();
+    LB.list = list; LB.fetchedAt = Date.now(); LB.stale = false;
+    lbUseLocalMe();
+    lbSaveCache(LB.list);
+    LB.state = 'ok';
+  } catch (err){
+    var code = (err && err.code) || '';
+    if (!code && LB.pubErr) code = LB.pubErr;
+    LB.err = (code === 'permission-denied') ? 'rules' : (code === 'no-auth' ? 'auth' : 'net');
+    if (code) { try { console.warn('[leaderboard]', code, err && err.message); } catch (e) {} }
+    lbUseLocalMe();
+    LB.state = 'ok'; LB.stale = true;
+  }
+  LB.busy = false;
+  lbRender();
+}
+
+/* ============================ ANALYSIS ============================ */
+/* v50: percentile by OVERALL-RATING rank (contract formula):
+   pct = round(100 * (1 - (rank-1)/total)); rank 1 -> 100; total <= 1 -> 100.
+   The reference's pctOf/analyze (fraction-below + ties on q/avg) is NOT used. */
+function rankPct(list){
+  var arr = list.slice().sort(function(a, b){ return (b.rating - a.rating) || (b.q - a.q); });
+  var n = arr.length;
+  arr.forEach(function(e, i){ e.pct = n <= 1 ? 100 : Math.round(100 * (1 - i / n)); });
+}
+var METRICS = {
+  rating: {label: 'Overall', unit: 'pts', val: function(e){ return r1(e.rating).toFixed(1); }, cmp: function(a, b){ return (b.rating - a.rating) || (b.q - a.q); }},
+  q: {label: 'Questions', unit: 'Qs', val: function(e){ return String(e.q); }, cmp: function(a, b){ return (b.q - a.q) || (b.rating - a.rating); }},
+  avg: {label: 'Avg Score', unit: '%', val: function(e){ return r1(e.avg).toFixed(1); }, cmp: function(a, b){ return (b.avg - a.avg) || (b.tn - a.tn); }},
+  pct: {label: 'Percentile', unit: '%ile', val: function(e){ return String(e.pct); }, cmp: function(a, b){ return (b.pct - a.pct) || (b.rating - a.rating); }}
+};
+function sorted(list, metric){ return list.slice().sort(METRICS[metric].cmp); }
+function accOf(c, w){ return (c + w) > 0 ? c / (c + w) : 0; }
+function testBoard(tid){
+  var arr = [];
+  LB.list.forEach(function(e){ var r = e.t && e.t[tid]; if (r) arr.push({e: e, s: +r[0] || 0, c: +r[1] || 0, w: +r[2] || 0, m: +r[3] || 0, tm: +r[4] || 0}); });
+  arr.sort(function(a, b){ return (b.s - a.s) || (accOf(b.c, b.w) - accOf(a.c, a.w)) || (a.tm - b.tm); });
+  return arr;
+}
+function seriesTests(key){ return key === 'ca' ? CA_TESTS : TESTS; }
+function seriesBoard(key){
+  var ids = {}; seriesTests(key).forEach(function(t){ ids[t.id] = 1; });
+  var arr = [];
+  LB.list.forEach(function(e){
+    var s = 0, n = 0, c = 0, w = 0;
+    Object.keys(e.t || {}).forEach(function(tid){ if (ids[tid]){ var r = e.t[tid]; s += +r[0] || 0; c += +r[1] || 0; w += +r[2] || 0; n++; } });
+    if (n) arr.push({e: e, s: r2(s), n: n, c: c, w: w});
+  });
+  arr.sort(function(a, b){ return (b.s - a.s) || (b.n - a.n); });
+  return arr;
+}
+
+/* ============================ RENDER ============================ */
+function medal(rank, size){
+  var cls = rank === 1 ? 'g' : (rank === 2 ? 's' : 'b');
+  var gid = rank === 1 ? 'lbGold' : (rank === 2 ? 'lbSilver' : 'lbBronze');
+  var rib = rank === 1 ? '#ef4444' : (rank === 2 ? '#3b82f6' : '#f97316');
+  var ord = rank === 1 ? 'st' : (rank === 2 ? 'nd' : 'rd');
+  return '<span class="lb-medal ' + cls + '" style="--ms:' + (size || 30) + 'px" aria-label="Rank ' + rank + '"><svg viewBox="0 0 40 52" aria-hidden="true">' +
+    '<path d="M9 0h9l5 15-9 4z" fill="' + rib + '"/><path d="M31 0h-9l-5 15 9 4z" fill="' + rib + '" opacity=".78"/>' +
+    '<circle cx="20" cy="32" r="16.5" fill="url(#' + gid + ')" stroke="rgba(0,0,0,.18)" stroke-width="1.4"/>' +
+    '<circle cx="20" cy="32" r="12.2" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="1.3" stroke-dasharray="2.2 2.2"/>' +
+    '<text x="19" y="37.6" text-anchor="middle" font-size="15" font-weight="900" fill="rgba(60,30,0,.82)" font-family="Segoe UI,system-ui,sans-serif">' + rank + '<tspan font-size="7.5" dy="-5.5">' + ord + '</tspan></text></svg></span>';
+}
+function avImg(e, px, cls){ return '<img class="lb-av ' + (cls || '') + '" style="--s:' + px + 'px" src="' + avSrc(e.avatar) + '" alt="">'; }
+function isMe(e){ return e.uid === myUid(); }
+
+function lbRenderHero(sorted0){
+  var host = $('lbHero'); if (!host) return;
+  var me = null, rank = 0;
+  sorted0.forEach(function(e, i){ if (isMe(e)){ me = e; rank = i + 1; } });
+  var name = esc(myName());
+  if (!me){
+    host.innerHTML = '<div class="lb-hero empty"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Avatar badlo"><img id="lbMyAvImg" src="' + avSrc(myAvatarId()) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
+      '<div class="lb-hero-txt"><small>Welcome</small><h2>' + name + '</h2><p>Abhi koi test attempt nahi kiya. Ek test do aur leaderboard me apni jagah banao!</p>' +
+      (fbUser() ? '' : '<p style="margin-top:6px;opacity:.92">Login karo to dusre users se compete kar sako.</p>') +
+      '<button type="button" class="lb-cta" data-act="tests">Test shuru karo</button></div></div>';
+    return;
+  }
+  var total = sorted0.length;
+  host.innerHTML = '<div class="lb-hero"><span class="lb-hero-glow"></span>' +
+    '<div class="lb-hero-main"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Avatar badlo"><img id="lbMyAvImg" src="' + avSrc(me.avatar) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
+    '<div class="lb-hero-txt"><small>Aapki rank</small><h2>' + name + '</h2><div class="lb-hero-rank"><b>#' + rank + '</b><span>of ' + total + ' ' + (total === 1 ? 'player' : 'players') + '</span></div></div>' +
+    '<div class="lb-ring" style="--p:' + me.pct + '"><div><b>' + me.pct + '</b><span>percentile</span></div></div></div>' +
+    '<div class="lb-hero-stats"><div><b>' + me.q + '</b><span>Questions</span></div><div><b>' + r1(me.avg).toFixed(1) + '%</b><span>Avg score</span></div><div><b>' + me.tn + '</b><span>Tests</span></div><div><b>' + r1(me.rating).toFixed(1) + '</b><span>Rating</span></div></div></div>';
+}
+function metricChips(){
+  var h = '<div class="lb-chips" role="tablist" aria-label="Rank by">';
+  ['rating', 'q', 'avg', 'pct'].forEach(function(k){ h += '<button type="button" role="tab" class="lb-chip' + (LB.metric === k ? ' on' : '') + '" data-metric="' + k + '" aria-selected="' + (LB.metric === k) + '">' + METRICS[k].label + '</button>'; });
+  return h + '</div>';
+}
+function podium(top, metric){
+  var order = [1, 0, 2], h = '<div class="lb-podium">';
+  order.forEach(function(idx){
+    var e = top[idx], rank = idx + 1;
+    var rkCls = rank === 1 ? 'lb-rank-1' : (rank === 2 ? 'lb-rank-2' : 'lb-rank-3');
+    if (!e){ h += '<div class="pd p' + rank + ' ' + rkCls + ' vacant"><div class="pd-av"><span class="pd-empty">?</span></div><div class="pd-name">—</div><div class="pd-base"><b>' + rank + '</b></div></div>'; return; }
+    var big = rank === 1 ? 84 : 66;
+    h += '<div class="pd p' + rank + ' ' + rkCls + (isMe(e) ? ' me' : '') + '" style="--i:' + idx + '">' + (rank === 1 ? '<span class="pd-crown">' + ICON.crown + '</span>' : '') +
+      '<div class="pd-av">' + avImg(e, big, 'ring r' + rank) + medal(rank, rank === 1 ? 34 : 28) + '</div>' +
+      '<div class="pd-name">' + esc(e.name) + (isMe(e) ? ' <i>You</i>' : '') + '</div>' +
+      '<div class="pd-val"><b>' + METRICS[metric].val(e) + '</b><small>' + METRICS[metric].unit + '</small></div>' +
+      '<div class="pd-sub">' + e.q + ' Qs · ' + r1(e.avg).toFixed(1) + '% avg</div>' +
+      '<div class="pd-base"><b>' + rank + '</b></div></div>';
+  });
+  return h + '</div>';
+}
+function rowHTML(e, rank, metric, i){
+  return '<div class="lb-row' + (isMe(e) ? ' me' : '') + '" style="--i:' + Math.min(i, 14) + '"><span class="lb-rk">' + rank + '</span>' + avImg(e, 44) +
+    '<div class="lb-rn"><b>' + esc(e.name) + (isMe(e) ? ' <i>You</i>' : '') + '</b><small>' + e.q + ' Qs · ' + r1(e.avg).toFixed(1) + '% avg · ' + e.tn + ' tests</small></div>' +
+    '<div class="lb-rv"><b>' + METRICS[metric].val(e) + '<em>' + METRICS[metric].unit + '</em></b><span class="lb-pct">P' + e.pct + '</span></div></div>';
+}
+function renderOverall(){
+  var arr = sorted(LB.list, LB.metric);
+  var h = metricChips();
+  if (!arr.length) return h + '<div class="lb-empty"><b>Abhi leaderboard khali hai</b><p>Pehla test attempt karke sabse pehle apna naam yahan likhwao.</p></div>';
+  h += podium(arr.slice(0, 3), LB.metric);
+  h += '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
+  var rest = arr.slice(3, 100);
+  if (rest.length){
+    h += '<div class="lb-list">';
+    rest.forEach(function(e, i){ h += rowHTML(e, i + 4, LB.metric, i); });
+    h += '</div>';
+  }
+  var mi = -1; arr.forEach(function(e, i){ if (isMe(e)) mi = i; });
+  if (mi >= 100) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, LB.metric, 0) + '</div>';
+  return h;
+}
+function seriesCard(key, title, sub){
+  var b = seriesBoard(key), top = b[0], tests = seriesTests(key).length, myI = -1;
+  b.forEach(function(x, i){ if (isMe(x.e)) myI = i; });
+  var total = seriesTests(key).reduce(function(a, t){ return a + t.marks; }, 0);
+  /* On the Overall tab neither card is highlighted (no active series yet);
+     on a series tab the active one is. Tapping a card always switches to
+     that series' leaderboard tab. */
+  var on = (LB.tab !== 'overall' && LB.series === key);
+  return '<button type="button" class="lb-scard' + (on ? ' on' : '') + ' ' + key + '" data-series="' + key + '" aria-pressed="' + on + '">' +
+    '<div class="sc-top"><span class="sc-ic">' + (key === 'ca' ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>') + '</span><div><b>' + title + '</b><small>' + sub + ' · ' + tests + ' tests · ' + b.length + ' players</small></div></div>' +
+    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>' + fmtN(top.s) + '</b><small>/ ' + total + '</small></div></div>' : '<div class="sc-none">Abhi koi attempt nahi — pehle bano topper!</div>') +
+    '<div class="sc-me">' + (myI >= 0 ? 'Aapki rank <b>#' + (myI + 1) + '</b> · ' + fmtN(b[myI].s) + ' marks · ' + b[myI].n + '/' + tests + ' tests' : 'Aapne is series me abhi attempt nahi kiya') + '</div></button>';
+}
+function tcardSlot(x, rank){
+  if (!x) return '<div class="tp-slot vacant r' + rank + '"><div class="tp-ph"></div>' + medal(rank, 22) + '<div class="tp-n">—</div><div class="tp-s">&nbsp;</div></div>';
+  var acc = Math.round(accOf(x.c, x.w) * 1000) / 10;
+  return '<div class="tp-slot r' + rank + (isMe(x.e) ? ' me' : '') + '">' + (rank === 1 ? '<span class="tp-crown">' + ICON.crown + '</span>' : '') +
+    '<div class="tp-avw">' + avImg(x.e, rank === 1 ? 54 : 44, 'ring r' + rank) + medal(rank, rank === 1 ? 24 : 20) + '</div>' +
+    '<div class="tp-n">' + esc(x.e.name) + (isMe(x.e) ? ' <i>You</i>' : '') + '</div><div class="tp-s"><b>' + fmtN(x.s) + '</b>/' + x.m + '</div><div class="tp-a">' + acc + '% acc</div></div>';
+}
+function testCard(t){
+  var b = testBoard(t.id), myI = -1; b.forEach(function(x, i){ if (isMe(x.e)) myI = i; });
+  var title = (typeof testTitle === 'function') ? testTitle(t) : t.nameEn;
+  var foot;
+  if (myI >= 0){ var m = b[myI]; foot = 'Aapki rank <b>#' + (myI + 1) + '</b> of ' + b.length + ' · ' + fmtN(m.s) + '/' + m.m; }
+  else foot = 'Aapne ye test abhi attempt nahi kiya';
+  return '<article class="lb-tcard' + (b.length ? '' : ' none') + '"><header><span class="tc-no">' + (isCATest(t) ? 'CA' : 'T' + t.num) + '</span><div><h4>' + esc(title) + '</h4><small>' + t.questions.length + ' Qs · ' + b.length + ' ' + (b.length === 1 ? 'player' : 'players') + '</small></div></header>' +
+    (b.length ? '<div class="tp-row">' + tcardSlot(b[1], 2) + tcardSlot(b[0], 1) + tcardSlot(b[2], 3) + '</div>' : '<div class="tc-empty">Abhi koi attempt nahi — sabse pehle attempt karke topper bano!</div>') +
+    '<footer>' + foot + '</footer></article>';
+}
+function renderSeriesTab(){
+  var h = '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
+  var tests = seriesTests(LB.series), withP = [], without = [];
+  tests.forEach(function(t){ (testBoard(t.id).length ? withP : without).push(t); });
+  h += '<div class="lb-sec"><h3>' + (LB.series === 'ca' ? 'Current Affairs tests' : 'Maths tests') + '</h3><span>' + withP.length + ' active</span></div>';
+  h += '<div class="lb-tgrid">';
+  withP.forEach(function(t){ h += testCard(t); });
+  if (LB.showEmpty) without.forEach(function(t){ h += testCard(t); });
+  h += '</div>';
+  if (!withP.length) h += '<div class="lb-empty"><b>Is series me abhi kisi ne test nahi diya</b><p>Test attempt karo aur sabse pehle topper ban jao.</p></div>';
+  if (without.length) h += '<button type="button" class="lb-more" data-act="empty">' + (LB.showEmpty ? 'Khali tests chupao' : without.length + ' aur tests dikhao (abhi koi attempt nahi)') + '</button>';
+  return h;
+}
+function lbBanner(){
+  if (LB.err === 'rules') return '<div class="lb-note warn"><b>Leaderboard server se connect nahi hua.</b> Firestore rules me <code>leaderboard</code> collection ka read/write allow karna hoga. Tab tak sirf aapka apna data dikh raha hai.</div>';
+  if (LB.err === 'net') return '<div class="lb-note">Internet / server problem — purana ya sirf aapka data dikh raha hai. Refresh karke dobara try karo.</div>';
+  if (LB.err === 'auth') return '<div class="lb-note">Leaderboard me dusre users se compete karne ke liye login zaroori hai. Tab tak sirf aapka apna data dikh raha hai.</div>';
+  return '';
+}
+function skeleton(){ return '<div class="lb-skel"><i></i><i></i><i></i><i></i></div>'; }
+function lbRender(){
+  var body = $('lbBody'); if (!body) return;
+  var tabs = document.querySelectorAll('#lbSeg button');
+  for (var i = 0; i < tabs.length; i++){ var on = tabs[i].getAttribute('data-tab') === LB.tab; tabs[i].classList.toggle('on', on); tabs[i].setAttribute('aria-selected', on); }
+  var rf = $('lbRefresh'); if (rf) rf.classList.toggle('spin', !!LB.busy);
+  if (LB.state === 'loading' && !LB.list.length){ var hero = $('lbHero'); if (hero) hero.innerHTML = ''; body.innerHTML = skeleton(); return; }
+  rankPct(LB.list);
+  lbRenderHero(sorted(LB.list, 'rating'));
+  body.innerHTML = lbBanner() + (LB.tab === 'overall' ? renderOverall() : renderSeriesTab());
+  fillSeriesToppers(); /* v50 E23: picker toppers refresh with leaderboard data */
+}
+function openLeaderboard(){
+  state.navTab = 'leaderboard';
+  showView('leaderboard');
+  try { syncBottomNav(); } catch (e) {}
+  lbUseLocalMe();
+  if (LB.list.length) LB.state = 'ok';
+  lbRender();
+  lbRefresh();
+}
+function wireLeaderboard(){
+  var v = $('view-leaderboard'); if (!v) return;
+  v.addEventListener('click', function(e){
+    var t = e.target.closest('[data-tab],[data-metric],[data-series],[data-act],#lbMyAv,#lbBack,#lbRefresh'); if (!t) return;
+    if (t.id === 'lbBack'){ appBack('list'); return; }
+    if (t.id === 'lbRefresh'){ lbRefresh(); return; }
+    if (t.id === 'lbMyAv'){ openPicker(); return; }
+    if (t.hasAttribute('data-tab')){ var tab = t.getAttribute('data-tab'); LB.tab = tab; if (tab !== 'overall') LB.series = tab; lbRender(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-metric')){ LB.metric = t.getAttribute('data-metric'); lbRender(); return; }
+    if (t.hasAttribute('data-series')){ var k = t.getAttribute('data-series'); LB.tab = k; LB.series = k; LB.showEmpty = false; lbRender(); window.scrollTo(0, 0); return; }
+    var a = t.getAttribute('data-act');
+    if (a === 'tests') goTests();
+    else if (a === 'empty'){ LB.showEmpty = !LB.showEmpty; lbRender(); }
+  });
+  var ids = ['irLeader', 'navLeader', 'smLeader', 'sbLeader'];
+  ids.forEach(function(id){
+    var el = $(id); if (!el) return;
+    el.addEventListener('click', function(ev){ ev.preventDefault(); if (id === 'smLeader'){ try { closeMenu(); } catch (e) {} } openLeaderboard(); });
+  });
+  var pk = $('seriesPicker');
+  if (pk){
+    pk.addEventListener('click', function(e){
+      var t = e.target.closest('[data-series]'); if (!t) return;
+      openSeries(t.getAttribute('data-series'));
+    });
+    pk.addEventListener('keydown', function(e){
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var t = e.target.closest('[data-series]'); if (!t) return;
+      e.preventDefault(); openSeries(t.getAttribute('data-series'));
+    });
+  }
+  var bk = $('seriesBackBtn');
+  if (bk) bk.addEventListener('click', function(){ showSeriesPicker(); });
+}
+
+/* ============================ SERIES PICKER (Tests tab) ============================ */
+/* v50 E23: series-picker topper lines. Each series card shows its topper
+   (same seriesBoard data the leaderboard's own series cards use); no data
+   yet -> "Abhi koi topper nahi" (no crash, no fake name). Filled when the
+   picker is shown (syncSeriesPicker) AND whenever leaderboard data
+   refreshes (lbRender), so a picker already on screen updates too. */
+function fillSeriesToppers(){
+  [['maths', 'spMathsTopper'], ['ca', 'spCaTopper']].forEach(function(pair){
+    var el = $(pair[1]); if (!el) return;
+    var b = seriesBoard(pair[0]), top = b[0];
+    if (top) el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">' + esc(top.e.name) + '</span> <span class="fc-topper-sc">' + fmtN(top.s) + ' marks</span>';
+    else el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">Abhi koi topper nahi</span>';
+  });
+}
+function syncSeriesPicker(){
+  var pk = $('seriesPicker'), st = $('seriesTests');
+  if (!pk || !st) return;
+  var show = !!state.seriesOpen && !!state.seriesPicker && !state.caView;
+  pk.style.display = show ? '' : 'none';
+  st.style.display = show ? 'none' : '';
+  fillSeriesToppers();
+  if (!show) return;
+  var store = storeGet(), att = 0;
+  TESTS.forEach(function(t){ var rec = store.tests[t.id]; if (rec && rec.attempts > 0) att++; });
+  var pct = TESTS.length ? Math.round(att / TESTS.length * 100) : 0;
+  var ms = $('spMathsSub'); if (ms) ms.textContent = BANK.length + ' chapters • ' + TESTS.length + ' tests • ' + TOTAL_QS + ' Questions';
+  var mb = $('spMathsBar'); if (mb) mb.style.width = pct + '%';
+  var mp = $('spMathsProg'); if (mp) mp.textContent = att + '/' + TESTS.length + ' Tests';
+  var tot = (typeof caTotals === 'function') ? caTotals() : null;
+  if (tot){
+    var cs = $('spCaSub'); if (cs) cs.textContent = tot.months + ' Months • ' + tot.totalQ + ' Questions';
+    var cb = $('spCaBar'); if (cb) cb.style.width = tot.pct + '%';
+    var cp = $('spCaProg'); if (cp) cp.textContent = tot.attempted + '/' + tot.tests + ' Tests';
+  }
+}
+function showSeriesPicker(){
+  state.seriesPicker = true; state.seriesOpen = true; state.caView = null; state.caMonth = null;
+  renderHome(); showView('list');
+  var lb = $('listBody'), pk = $('seriesPicker'); if (lb && pk) lb.scrollTop = pk.offsetTop || 0;
+}
+function openSeries(key){
+  /* v50 E23: series kholna bhi ek back-step hai — entry push karo taaki back
+     (appBack ya browser back) picker entry par land kare, Home par nahi.
+     Picker entry ko goTests ne seriesPicker:true ke saath push kiya hai;
+     agar picker khula hi nahi tha (card seedha tap hua — seriesOpen false),
+     to pehle khud picker entry push karo, warna back ke neeche picker
+     entry hoti hi nahi aur user Home par pahunchta hai. Maths series
+     kholte waqt state.seriesOpen = true bhi set karo — pehle ye sirf
+     picker ke khula hone par bharosa karta tha, isliye seedha card tap
+     karne par series band rehti thi aur #seriesBackBtn chhupa rehta tha. */
+  if (!state.seriesPicker){
+    window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, seriesPicker:true, homeRoot:true, homeGuard:false}, '', '#view-list');
+    state.routeDepth++;
+    state.homeGuard = false;
+  }
+  if (key === 'ca'){ state.seriesPicker = false; state.seriesOpen = false; state.caView = null; state.caMonth = null; goCAMonths(); return; }
+  window.history.pushState({appView:'list', routeDepth: state.routeDepth + 1, seriesOpen:true, seriesPicker:false, homeRoot:true, homeGuard:false}, '', '#view-list');
+  state.routeDepth++;
+  state.homeGuard = false;
+  state.seriesOpen = true;
+  state.seriesPicker = false; state.caView = null; state.caMonth = null;
+  renderHome(); showView('list');
+  var lb = $('listBody'), ts = $('testSeries'); if (lb && ts) lb.scrollTop = ts.offsetTop || 0;
+}
+
+/* ============================ HOOKS ============================ */
+(function hooks(){
+  /* any local save (test submit via submitTest -> storeSet, profile/avatar
+     change) -> debounced publish. This is the "after a test is submitted"
+     hook; pullAndMerge has its own explicit call (patched in the Firebase
+     script) because it saves via saveLocal, not storeSet. */
+  var _ss = window.storeSet;
+  if (typeof _ss === 'function'){
+    window.storeSet = function(){ var r = _ss.apply(this, arguments); lbSchedulePublish(); return r; };
+  }
+  var _ap = window.applyProfile;
+  if (typeof _ap === 'function'){
+    window.applyProfile = function(){ var r = _ap.apply(this, arguments); applyAvatars(); return r; };
+  }
+  var _sv = window.setView;
+  if (typeof _sv === 'function'){
+    window.setView = function(name){
+      var r = _sv.apply(this, arguments);
+      var ns = $('navLeader'); if (ns) ns.classList.toggle('active', name === 'leaderboard');
+      if (name !== 'leaderboard' && state.navTab === 'leaderboard'){ state.navTab = (name === 'settings') ? 'settings' : 'home'; try { syncBottomNav(); } catch (e) {} }
+      return r;
+    };
+  }
+  var _os = window.openSettings;
+  if (typeof _os === 'function'){
+    window.openSettings = function(){ var r = _os.apply(this, arguments); syncAvatarGrid(); return r; };
+  }
+  var tries = 0, iv = setInterval(function(){
+    if (window.__fbSync && window.__fbSync.onAuthChange){
+      window.__fbSync.onAuthChange(function(st){ if (st === 'synced'){ applyAvatars(); lbSchedulePublish(); } });
+      clearInterval(iv);
+    } else if (++tries > 60) clearInterval(iv);
+  }, 500);
+})();
+
+/* ============================ INIT ============================ */
+buildAvatarGrid();
+applyAvatars();
+wireLeaderboard();
+window.__lb = {open: openLeaderboard, schedulePublish: lbSchedulePublish, applyAvatars: applyAvatars, syncSeriesPicker: syncSeriesPicker, setAvatar: setMyAvatar, myAvatarId: myAvatarId, refresh: lbRefresh, myEntry: myEntry};
+window.openLeaderboard = openLeaderboard;
+})();
+</script>
 
 <script>
 /* TESTPRO v37 — Firebase Auth + Firestore sync (project testpro777, user's own).
@@ -6981,7 +8026,7 @@ async function pullAndMerge(){
     });
     var localProfAt = (store._fbMeta && store._fbMeta.profileUpdatedAt) || 0;
     if (cloudProfile && (localProfAt === 0 || (cloudProfile.updatedAt && cloudProfile.updatedAt > localProfAt))){
-      store.profile = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target};
+      store.profile = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target, avatar: cloudProfile.avatar || (store.profile && store.profile.avatar)};
       if (!store._fbMeta) store._fbMeta = {};
       store._fbMeta.profileUpdatedAt = cloudProfile.updatedAt;
       changed = true;
@@ -7008,6 +8053,7 @@ async function pullAndMerge(){
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
     /* v40: dead post-login branch removed — destination is HOME now. */
     updateHeader(); updateModalView(); updateSettingsAccount();
+    try { if (window.__lb && window.__lb.schedulePublish) window.__lb.schedulePublish(); } catch(e){}
     return true;
   } catch(e){ setSyncError((e && e.code) || (e && e.message) || 'pull failed'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
 }
