@@ -1809,7 +1809,7 @@ body.fb-gated::before{content:none!important}
 #seriesPicker .series-card{margin-bottom:12px}
 #seriesBackBtn{margin-bottom:10px}
 /* v50 E23: series-picker topper line (filled by fillSeriesToppers from the
-   leaderboard entries for that series; "Abhi koi topper nahi" when empty). */
+   leaderboard entries for that series; hidden when empty — v51). */
 .fc-topper{display:flex;align-items:baseline;gap:6px;margin-top:7px;font-size:12.5px;color:var(--muted)}
 .fc-topper-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;color:#b45309;background:#fef3c7;border-radius:4px;padding:2px 5px;flex-shrink:0}
 .fc-topper-nm{font-weight:700;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2177,7 +2177,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
                 <div class="fc-sub" id="spMathsSub">28 chapters • 43 tests • 1013 Questions</div>
                 <div class="fc-progress"><div class="fc-bar" id="spMathsBar" style="width:0%"></div></div>
                 <div class="fc-prog-txt" id="spMathsProg">0/43 Tests</div>
-                <div class="fc-topper" id="spMathsTopper"><span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">Abhi koi topper nahi</span></div>
+                <div class="fc-topper" id="spMathsTopper" style="display:none"></div>
               </div>
               <svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg>
             </div>
@@ -2188,7 +2188,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
                 <div class="fc-sub" id="spCaSub">11 Months • 1343 Questions</div>
                 <div class="fc-progress"><div class="fc-bar" id="spCaBar" style="width:0%"></div></div>
                 <div class="fc-prog-txt" id="spCaProg">0/55 Tests</div>
-                <div class="fc-topper" id="spCaTopper"><span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">Abhi koi topper nahi</span></div>
+                <div class="fc-topper" id="spCaTopper" style="display:none"></div>
               </div>
               <svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg>
             </div>
@@ -3341,7 +3341,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 50; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 51; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6878,15 +6878,16 @@ function wireLeaderboard(){
 /* ============================ SERIES PICKER (Tests tab) ============================ */
 /* v50 E23: series-picker topper lines. Each series card shows its topper
    (same seriesBoard data the leaderboard's own series cards use); no data
-   yet -> "Abhi koi topper nahi" (no crash, no fake name). Filled when the
-   picker is shown (syncSeriesPicker) AND whenever leaderboard data
-   refreshes (lbRender), so a picker already on screen updates too. */
+   yet -> the whole .fc-topper line is hidden (v51: no placeholder text).
+   Filled when the picker is shown (syncSeriesPicker) AND whenever
+   leaderboard data refreshes (lbRender), so a picker already on screen
+   updates too. */
 function fillSeriesToppers(){
   [['maths', 'spMathsTopper'], ['ca', 'spCaTopper']].forEach(function(pair){
     var el = $(pair[1]); if (!el) return;
     var b = seriesBoard(pair[0]), top = b[0];
-    if (top) el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">' + esc(top.e.name) + '</span> <span class="fc-topper-sc">' + fmtN(top.s) + ' marks</span>';
-    else el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">Abhi koi topper nahi</span>';
+    if (top){ el.style.display = ''; el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">' + esc(top.e.name) + '</span> <span class="fc-topper-sc">' + fmtN(top.s) + ' marks</span>'; }
+    else { el.innerHTML = ''; el.style.display = 'none'; }
   });
 }
 function syncSeriesPicker(){
