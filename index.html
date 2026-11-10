@@ -3382,7 +3382,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 59; /* must match version.txt - bump on every release */
+var APP_VERSION = 60; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6297,9 +6297,9 @@ attachSwipe($('solScroll'),
    engine fallback over the per-test `t` map (see entryCoins).
    Publish: only when tn > 0, debounced 3500 ms, skip offline/guest; after a
    permission-denied publish failure, no retry until forced (lbPublish(true)).
-   Fetch: orderBy('coins','desc'), limit 300. Cache: tp_lb_cache_v1.
+   Fetch: orderBy('u','desc'), limit 300 (u = publish timestamp, present on every doc since v50); ranked client-side by derived coins. Cache: tp_lb_cache_v1.
    v59: ranking is by coins desc (rating stays in old docs but no longer
-   drives ranking); the realtime listener uses the same coins query.
+   drives ranking); the realtime listener uses the same u-ordered query, ranked client-side by derived coins.
    Firestore fns come from this script's own dynamic import (reference
    pattern) — the v49 F map is untouched.
    Avatar picker is an INLINE grid #avatarGrid in Settings (not the
@@ -6664,7 +6664,7 @@ function lbSchedulePublish(force){
   if (LB.pubTimer) clearTimeout(LB.pubTimer);
   LB.pubTimer = setTimeout(function(){ LB.pubTimer = null; lbPublish(!!force); }, 3500);
 }
-function lbQuery(m, fb){ return m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('coins', 'desc'), m.limit(300)); }
+function lbQuery(m, fb){ return m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('u', 'desc'), m.limit(300)); }
 async function lbFetch(){
   var fb = window.__fb;
   if (!fb || !fb.db || !fb.user) { var er = new Error('no-auth'); er.code = 'no-auth'; throw er; }
@@ -6672,7 +6672,7 @@ async function lbFetch(){
   var snap = await withTimeout(m.getDocs(lbQuery(m, fb)), 15000);
   var out = [];
   snap.forEach(function(d){ var e = cleanEntry(d.data(), d.id); if (e) out.push(e); });
-  return out;
+  return sortedByCoins(out);
 }
 function lbSaveCache(list){
   try { localStorage.setItem(LB_CACHE_KEY, JSON.stringify({at: Date.now(), uid: myUid(), list: list.slice(0, 100)})); } catch (e) {}
@@ -6716,7 +6716,7 @@ async function lbRefresh(){
 }
 
 /* ============================ REALTIME (v52) ============================ */
-/* Live listener on the SAME query the fetch uses (coins desc, limit 300).
+/* Live listener on the SAME query the fetch uses (u desc, limit 300; ranked client-side by derived coins).
    While the leaderboard view is open, any entry change re-renders the board
    without reopening or tapping refresh. The listener is owned by the view:
    setView('leaderboard') subscribes, leaving the view (or logout)
@@ -6728,7 +6728,7 @@ async function lbRefresh(){
 function lbSnapshotEntries(snap){
   var out = [];
   try { snap.forEach(function(d){ var e = cleanEntry(d.data(), d.id); if (e) out.push(e); }); } catch (e) {}
-  return out;
+  return sortedByCoins(out);
 }
 async function lbSubscribe(){
   if (LB.unsub || !window.__fb || !window.__fb.user || !window.__fb.db || !navigator.onLine) return false;
