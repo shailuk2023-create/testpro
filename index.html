@@ -3074,7 +3074,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 48; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 49; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6598,7 +6598,11 @@ function emailErrorText(code){
     'auth/requires-recent-login': 'Security ke liye dobara login karke try karo',
     'auth/operation-not-allowed': 'Email login abhi on nahi hai — Firebase console mein Email/Password enable karo',
     'auth/invalid-action-code': 'Link expire ho gaya — dobara link bhejo',
-    'auth/expired-action-code': 'Link expire ho gaya — dobara link bhejo'
+    'auth/expired-action-code': 'Link expire ho gaya — dobara link bhejo',
+    'auth/quota-exceeded': 'Email limit bhari hui hai — thodi der baad ek baar try karo',
+    'auth/internal-error': 'Server me kuch gadbad hui — dobara try karo',
+    'auth/invalid-continue-uri': 'Link wapas aane ka pata galat hai — dobara try karo',
+    'auth/unauthorized-continue-uri': 'Link wapas aane ka pata allowed nahi hai'
   };
   return map[code] || 'Kuch galat hua — dobara try karo';
 }
