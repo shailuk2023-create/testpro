@@ -2878,7 +2878,7 @@ function buildCATests(){
         parts: parts,
         questions: chunk,
         marks: chunk.length,
-        secs: chunk.length * 70,
+        secs: chunk.length * 36,
         series: 'ca'
       });
     }
@@ -3382,7 +3382,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 61; /* must match version.txt - bump on every release */
+var APP_VERSION = 62; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6624,7 +6624,27 @@ function myEntry(){
       /* v50 contract: q counts BEST attempt only (reference summed every
          attempt — deliberately not copied). */
       q += (best.correct || 0) + (best.wrong || 0);
-      t[tid] = [r2(best.score || 0), best.correct || 0, best.wrong || 0, marks, Math.round(best.timeTaken || 0)];
+      /* v62 re-attempt rule: the published t-map record carries the
+         attempt that MAXIMISES (coins x factor) — factor 1 for the
+         first attempt (no == 1, or no missing), 0.5 for re-attempts
+         (no >= 2) — plus the factor as an OPTIONAL 6th element
+         (default 1 for old 5-element docs), so the leaderboard
+         derivation (testCoinsFromEntry) applies the same halving as
+         the local path and the two totals agree. q / avg / acc above
+         still use the best-by-score attempt (v50 contract
+         unchanged). When the coin engine is absent, testCoins()
+         returns 0 and the record falls back to the best-by-score
+         attempt with factor 1. */
+      var win = best, winF = 1;
+      if (coinSys()){
+        var winCoins = -1;
+        hist.forEach(function(a){
+          var f = (a.no != null && +a.no >= 2) ? 0.5 : 1;
+          var c = testCoins([r2(a.score || 0), a.correct || 0, a.wrong || 0, marks, Math.round(a.timeTaken || 0), f], tid);
+          if (c > winCoins){ win = a; winF = f; winCoins = c; }
+        });
+      }
+      t[tid] = [r2(win.score || 0), win.correct || 0, win.wrong || 0, marks, Math.round(win.timeTaken || 0), winF];
       sumPct += Math.max(0, Math.min(100, (best.score || 0) / marks * 100));
       var _att = (best.correct || 0) + (best.wrong || 0);
       sumAcc += (best.accuracy != null ? +best.accuracy : (_att ? (best.correct || 0) / _att * 100 : 0));
@@ -6778,25 +6798,27 @@ function lbUnsubscribe(){
    Worker A); entries without them fall back to the CoinSystem engine
    over the per-test `t` map, and to 0 when the engine is absent.
    testCoinsFromEntry is called with the per-test `t`-map record
-   [score, correct, wrong, marks, timeTaken]; if that returns a
-   non-number, the {score, correct, wrong, marks, timeTaken} object
-   form is tried once, then 0. The formula itself is NEVER
-   reimplemented here. */
+   [score, correct, wrong, marks, timeTaken] AND the test id (v62:
+   the time-coins bands are series-dependent — 'ca-*' GK/CA vs
+   Maths — so the id is threaded through at every call site); if
+   that returns a non-number, the {score, correct, wrong, marks,
+   timeTaken} object form is tried once, then 0. The formula itself
+   is NEVER reimplemented here. */
 function coinSys(){ return window.CoinSystem || null; }
-function testCoins(rec){
+function testCoins(rec, testId){
   var CS = coinSys();
   if (!CS || typeof CS.testCoinsFromEntry !== 'function') return 0;
   var c;
-  try { c = CS.testCoinsFromEntry(rec); } catch (e) { c = NaN; }
+  try { c = CS.testCoinsFromEntry(rec, testId); } catch (e) { c = NaN; }
   if (typeof c !== 'number' || !isFinite(c)){
-    try { c = CS.testCoinsFromEntry({score: rec[0], correct: rec[1], wrong: rec[2], marks: rec[3], timeTaken: rec[4]}); } catch (e2) { c = NaN; }
+    try { c = CS.testCoinsFromEntry({score: rec[0], correct: rec[1], wrong: rec[2], marks: rec[3], timeTaken: rec[4]}, testId); } catch (e2) { c = NaN; }
   }
   return (typeof c === 'number' && isFinite(c)) ? Math.max(0, Math.round(c)) : 0;
 }
 function entryCoins(e){
   if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins));
   var sum = 0, ok = false;
-  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var c = testCoins(e.t[tid]); if (c){ sum += c; ok = true; } }); }
+  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var c = testCoins(e.t[tid], tid); if (c){ sum += c; ok = true; } }); }
   return ok ? sum : 0;
 }
 function entryAcc(e){
@@ -6826,7 +6848,7 @@ function seriesCoinsBoard(key){
   var arr = [];
   LB.list.forEach(function(e){
     var s = 0, n = 0, coins = 0;
-    Object.keys(e.t || {}).forEach(function(tid){ if (ids[tid]){ var r = e.t[tid]; s += +r[0] || 0; n++; coins += testCoins(r); } });
+    Object.keys(e.t || {}).forEach(function(tid){ if (ids[tid]){ var r = e.t[tid]; s += +r[0] || 0; n++; coins += testCoins(r, tid); } });
     if (n) arr.push({e: e, s: r2(s), n: n, coins: coins});
   });
   arr.sort(function(a, b){ return (b.coins - a.coins) || (b.s - a.s) || (b.n - a.n); });
@@ -6881,7 +6903,7 @@ function lbRenderHero(sorted0){
 }
 /* v59: one-line "How coins work" note, shown above the board on both tabs. */
 function lbCoinsNote(){
-  return '<div class="lb-note lb-coins-note"><b>🪙 How coins work:</b> coins reward your avg score (50%), accuracy (25%) and time efficiency (25%) — plus daily app opens, time spent in the app and solutions viewed.</div>';
+  return '<div class="lb-note lb-coins-note"><b>🪙 How coins work:</b> per test (best attempt only) — Score up to 1000, Accuracy up to 250 (100% = 250, 30% or less = 0), Time up to 250 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 1500 per test. Re-attempt coins are halved because answers have been seen — plus daily app opens, time spent in the app and solutions viewed.</div>';
 }
 function podium(top){
   var order = [1, 0, 2], h = '<div class="lb-podium">';
@@ -6908,7 +6930,7 @@ function coinBreakdownHTML(){
   if (!b) return '<div class="lb-breakdown" hidden><div class="lb-bd-note">Coin breakdown will appear once the coin engine loads.</div></div>';
   var row = function(lbl, v){ return '<div class="lb-bd-row"><span>' + lbl + '</span><b>🪙 ' + fmtN(v) + '</b></div>'; };
   return '<div class="lb-breakdown" hidden><div class="lb-bd-title">Your coin breakdown</div>' +
-    row('Score coins', b.score) + row('Accuracy coins', b.accuracy) + row('Time coins', b.time) + row('Engagement coins', b.engagement) +
+    row('Score coins · max 1000', b.score) + row('Accuracy coins · max 250', b.accuracy) + row('Time coins · max 250', b.time) + row('Engagement coins', b.engagement) +
     '<div class="lb-bd-row total"><span>Total</span><b>🪙 ' + fmtN(b.total) + '</b></div></div>';
 }
 function rowHTML(e, rank, i){
@@ -7139,17 +7161,35 @@ window.openLeaderboard = openLeaderboard;
 </script>
 <script id="tp-coins">
 'use strict';
-/* ================= TESTPRO v59 — Coin System (engine + data) =================
-   Formula (per test, BEST attempt only — re-attempts can only improve, never
-   add; anti-farming):
+/* ================= TESTPRO v62 — Coin System (engine + data) =================
+   Formula v62 (per test, BEST attempt only — re-attempts can only improve,
+   never add; anti-farming):
      scorePct = best.score / marks * 100; score coins = round(scorePct * 10)
-       (0-1000, the main factor, 50%).
+       (0-1000). UNCHANGED from v59.
      accPct = best attempt's accuracy field (computed correct/(correct+wrong)
-       * 100 when the field is missing); accuracy coins = round(accPct * 5)
-       (0-500, 25%).
-     allotted = marks * 70s; timeEff = max(0, 100 - timeTaken/allotted * 100);
-       time coins = round(timeEff * 5) (0-500, 25%).
-     Per-test coins = score + accuracy + time (max 2000). Negative scores
+       * 100 when the field is missing); accuracy coins: acc <= 30% -> 0,
+       acc = 100% -> 250, between -> round((acc - 30) / 70 * 250) (max 250).
+     time coins (max 250, capped): PER-QUESTION, attempted questions only
+       (skipped earn 0 — a skipped question is recorded with sel: null, see
+       submitTest). GK/CA series (test id starts with 'ca-'): <= 10s -> 10,
+       >= 30s -> 0, between -> round(10 * (30 - t) / 20). Maths (all other
+       tests): <= 30s -> 10, >= 50s -> 0, between -> round(10 * (50 - t) / 20).
+       Per-question times come from the best attempt's qs[].secs; when secs
+       is missing, the fallback is the average seconds per question
+       (timeTaken / marks) for each attempted question. Guards (whole test
+       -> 0 time coins): (a) RUSH — marks >= 25 AND timeTaken <= 150s AND
+       accPct < 50% (applies ONLY below 50% accuracy, so a fast + accurate
+       attempt keeps its time coins); (b) accPct < 30% (STRICT less-than,
+       any test, any time). Note: acc exactly 30% on a rushed >= 25Q test
+       is zeroed by guard (a) (30 < 50), NOT by guard (b).
+     Re-attempt rule: a test's coins are computed PER ATTEMPT, then
+       the test total = MAX over attempts of (coins x factor), factor
+       = 1 for the FIRST attempt (attempt record no == 1, or no
+       missing) and 0.5 for every re-attempt (no >= 2). The 50%
+       applies to the WHOLE per-attempt total (score + accuracy +
+       time). Engagement coins are NOT halved. Re-attempting can
+       never reduce a test's coins.
+     Per-test coins = score + accuracy + time (max 1500). Negative scores
      clamp to 0 score coins (the formula ranges start at 0).
    Engagement coins (daily caps, local calendar dates YYYY-MM-DD):
      open: +50 on the first open of the day; +100/day when the streak is
@@ -7339,17 +7379,73 @@ function mergeCoins(dst, src){
   }
   return changed;
 }
-function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride){
+/* v62: time coins for ONE question (seconds). isCA = GK/CA series
+   (test id starts with 'ca-'); everything else is Maths. */
+function coinTimePerQ(secs, isCA){
+  secs = +secs || 0;
+  if (isCA){
+    if (secs <= 10) return 10;
+    if (secs >= 30) return 0;
+    return Math.round(10 * (30 - secs) / 20);
+  }
+  if (secs <= 30) return 10;
+  if (secs >= 50) return 0;
+  return Math.round(10 * (50 - secs) / 20);
+}
+/* v62: time coins for one best attempt (max 250, capped).
+   qs: the best attempt's qs[] entries {sel, secs} — a question counts
+   only when attempted (sel != null; skipped attempts are recorded with
+   sel: null — see submitTest). Skipped questions earn 0 time coins.
+   When qs is absent, or a question's secs is missing, NaN or
+   non-finite, the fallback is the average seconds per question
+   (timeTaken / marks) for each attempted question. Guards (whole
+   test -> 0): (a) RUSH — marks >= 25
+   AND timeTaken <= 150s AND accPct < 50% (only below 50% accuracy, so
+   a fast + accurate attempt keeps its time coins); (b) accPct < 30%
+   (STRICT less-than, any test, any time). */
+function coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId){
+  if (accPct < 30) return 0;
+  if (marks >= 25 && (+timeTaken || 0) <= 150 && accPct < 50) return 0;
+  var isCA = (typeof testId === 'string' && testId.indexOf('ca-') === 0);
+  var attempted = (+correct || 0) + (+wrong || 0);
+  if (attempted <= 0) return 0;
+  var avgSecs = marks ? (+timeTaken || 0) / marks : 0;
+  var total = 0, i;
+  if (Array.isArray(qs) && qs.length){
+    qs.forEach(function(q){
+      if (!q || q.sel == null) return; /* skipped: 0 time coins */
+      var s = (q.secs != null && isFinite(+q.secs)) ? +q.secs : avgSecs;
+      total += coinTimePerQ(s, isCA);
+    });
+  } else {
+    for (i = 0; i < attempted; i++) total += coinTimePerQ(avgSecs, isCA);
+  }
+  return Math.min(250, total);
+}
+function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride, qs, testId){
   marks = +marks || 0;
   if (!marks) return {score: 0, accuracy: 0, time: 0, total: 0};
   var scoreC = Math.max(0, Math.round((+score || 0) / marks * 100 * 10));
   var att = (+correct || 0) + (+wrong || 0);
   var accPct = (accOverride != null && !isNaN(+accOverride)) ? +accOverride : (att > 0 ? (+correct || 0) / att * 100 : 0);
-  var accC = Math.max(0, Math.round(accPct * 5));
-  var allotted = marks * 70;
-  var timeEff = Math.max(0, 100 - (+timeTaken || 0) / allotted * 100);
-  var timeC = Math.round(timeEff * 5);
+  var accC = 0;
+  if (accPct > 30) accC = Math.min(250, Math.round((accPct - 30) / 70 * 250));
+  var timeC = coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId);
   return {score: scoreC, accuracy: accC, time: timeC, total: scoreC + accC + timeC};
+}
+/* v62 re-attempt rule: the FIRST attempt (attempt record no == 1, or no
+   missing) earns 100% of its test coins; every re-attempt (no >= 2)
+   earns 50% of its whole per-attempt total (score + accuracy + time),
+   because the answers have already been seen. The factor is applied
+   per part (rounded) and the total is the sum of the factored parts, so
+   breakdowns always add up to the total. Engagement coins are NOT
+   halved (only test coins). */
+function coinApplyFactor(parts, factor){
+  factor = (factor == null || isNaN(+factor)) ? 1 : +factor;
+  var s = Math.round((+parts.score || 0) * factor);
+  var a = Math.round((+parts.accuracy || 0) * factor);
+  var ti = Math.round((+parts.time || 0) * factor);
+  return {score: s, accuracy: a, time: ti, total: s + a + ti};
 }
 function coinBestAttempt(testId){
   var store = storeGet();
@@ -7362,17 +7458,48 @@ function coinBestAttempt(testId){
   return best;
 }
 function testCoinsDetail(testId){
-  var best = coinBestAttempt(testId);
-  if (!best) return null;
+  var store = storeGet();
+  var map = (String(testId).indexOf('ca-') === 0) ? (store.tests_ca || {}) : (store.tests || {});
+  var hist = [];
+  try { hist = getAttempts(map[testId]) || []; } catch (e){ hist = []; }
+  if (!hist.length) return null;
   var t = null;
   try { t = findTestById(testId); } catch (e){ t = null; }
-  var marks = t ? t.marks : ((+best.correct || 0) + (+best.wrong || 0) + (+best.skipped || 0));
-  return coinsFromParts(best.score || 0, best.correct || 0, best.wrong || 0, marks, best.timeTaken || 0, best.accuracy);
+  /* v62 re-attempt rule: coins are computed PER ATTEMPT (each with its
+     own factor — 1 for the first attempt, 0.5 for re-attempts) and the
+     test total is the MAX over attempts, NOT just the best-by-score
+     attempt's coins. Re-attempting can never reduce a test's coins. */
+  var best = null;
+  hist.forEach(function(a){
+    var marks = t ? t.marks : ((+a.correct || 0) + (+a.wrong || 0) + (+a.skipped || 0));
+    var raw = coinsFromParts(a.score || 0, a.correct || 0, a.wrong || 0, marks, a.timeTaken || 0, a.accuracy, a.qs, testId);
+    var f = (a.no != null && +a.no >= 2) ? 0.5 : 1;
+    var d = coinApplyFactor(raw, f);
+    if (!best || d.total > best.total) best = d;
+  });
+  return best;
 }
-function testCoinsFromEntry(entry){
-  if (!entry || !Array.isArray(entry) || entry.length < 5) return 0;
-  var parts = coinsFromParts(entry[0], entry[1], entry[2], entry[3], entry[4], null);
-  return parts.total;
+function testCoinsFromEntry(entry, testId){
+  var e = null, f = 1;
+  if (Array.isArray(entry) && entry.length >= 5){
+    e = {score: entry[0], correct: entry[1], wrong: entry[2], marks: entry[3], timeTaken: entry[4]};
+    if (entry.length >= 6 && entry[5] != null && !isNaN(+entry[5])) f = +entry[5];
+  } else if (entry && typeof entry === 'object'){
+    e = {score: entry.score, correct: entry.correct, wrong: entry.wrong, marks: entry.marks, timeTaken: entry.timeTaken};
+    if (entry.factor != null && !isNaN(+entry.factor)) f = +entry.factor;
+  }
+  if (!e) return 0;
+  /* No per-question times survive in the leaderboard t-map record, so
+     the fallback applies: average seconds per question (timeTaken /
+     marks) for each attempted question (correct + wrong); skipped
+     contribute 0. The optional testId selects the GK/CA (ca-*) vs
+     Maths per-question bands; callers that pass only the record keep
+     working (Maths bands by default). The optional factor (6th t-map
+     element, or entry.factor; default 1 for old 5-element docs) is
+     the v62 re-attempt factor — applied here through the same
+     coinApplyFactor as the local path, so both totals agree. */
+  var parts = coinsFromParts(e.score, e.correct, e.wrong, e.marks, e.timeTaken, null, null, testId);
+  return coinApplyFactor(parts, f).total;
 }
 function coinBreakdown(){
   var store = storeGet();
