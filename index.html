@@ -395,6 +395,9 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .sol-toggle-link{color:#0891b2;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
 .sol-toggle-link:hover{color:#0e7490}
 .video-note{font-size:12.5px;color:var(--muted)}
+.adfree-toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.adfree-toggle input{accent-color:#0b7297;width:16px;height:16px;cursor:pointer}
+#inlineVideoNote{margin-top:8px}
 .sol-card{margin-top:20px;max-width:820px;background:var(--sol-card-bg);border:1px solid var(--sol-card-border);border-radius:8px;padding:18px}
 .q-fig{margin:14px 0;max-width:820px}
 .q-fig img{max-width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:8px;background:#fff}
@@ -2524,6 +2527,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="sol-toggle-row"><span class="sol-toggle-link" id="solToggleBtn">View Solution</span></div>
         <div class="sol-actions-row" id="solActionsRow" style="margin-top:14px">
           <button class="video-btn video-btn-sm" id="videoBtn">▶ See Video Solution</button>
+          <label class="adfree-toggle" title="Play videos without ads"><input type="checkbox" id="adFreeToggle" checked> Ad-free player</label>
         </div>
         <div id="inlineVideoWrap" class="inline-video-wrap hidden"></div>
         <div id="inlineVideoSpeeds" class="inline-video-speeds hidden">
@@ -2533,6 +2537,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <button class="spd-btn" data-rate="1.75" disabled>1.75x</button>
           <button class="spd-btn" data-rate="2" disabled>2x</button>
         </div>
+        <div id="inlineVideoNote" class="video-note hidden"></div>
       </div>
       <div class="sol-bottom">
         <button class="btn btn-light" id="solPrev">Previous</button>
@@ -3015,7 +3020,7 @@ function renderCAPage(){
     b.addEventListener('click', function(){ appBack('list'); });
   });
   wrap.querySelectorAll('[data-ca-watch]').forEach(function(b){
-    b.addEventListener('click', function(){ window.open(this.getAttribute('data-ca-watch'), '_blank'); });
+    b.addEventListener('click', function(){ openVideoUrl(this.getAttribute('data-ca-watch')); });
   });
 }
 /* ===== Modern test card (shared by Maths + CA lists; mobile + PC) ===== */
@@ -3307,7 +3312,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 55; /* must match version.txt - bump on every release */
+var APP_VERSION = 56; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -4776,11 +4781,75 @@ function openAttemptPicker(){
      kar sakta; speed buttons + poster hi asal fix hain.
    - API load na ho to plain iframe phir bhi chalta hai (speed buttons disabled
      rehte hain, playback kabhi nahi toot-ta).
+   v56: optional ad-free player (Piped) - toggle next to the video button.
+   Piped embed has no YouTube ads; if it does not load in 8s the player
+   falls back to the YouTube embed automatically. Speed pills need the
+   YouTube player (no YT API on Piped) and stay disabled while Piped plays.
    Poora feature hatana ho to VIDEO_INLINE_TEST = false kar do. */
 var inlineVideoPlayer = null;        /* YT.Player instance, ya null */
 var inlineVideoApiState = 'idle';    /* idle | loading | ready | failed */
 var inlineVideoPendingRate = null;   /* speed tap hui par player ready nahi - onReady par lagao */
 var inlineVideoPosterTimer = null;   /* poster hide karne wala timeout */
+/* v56: optional ad-free player (Piped) with automatic YouTube fallback. */
+var inlineVideoFallbackMs = 8000;    /* Piped load timeout; tests may shorten it */
+var inlineVideoFallbackTimer = null; /* Piped load watchdog */
+var inlineVideoPiped = false;        /* current open uses the Piped embed */
+var inlineVideoFallbackDone = false; /* fallback already ran for this open */
+var inlineVideoCurrent = null;       /* {id, start, url} of the open video */
+function videoIdFromUrl(url){
+  var m = (url || '').match(/[?&]v=([\w-]{11})/) || (url || '').match(/youtu\.be\/([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function videoStartFromUrl(url){
+  var tm = (url || '').match(/[?&]t=(\d+)/);
+  return tm ? parseInt(tm[1], 10) : 0;
+}
+function youtubeEmbedUrl(id, start){
+  return 'https://www.youtube-nocookie.com/embed/' + id + '?start=' + start + '&autoplay=1&rel=0&enablejsapi=1&modestbranding=1';
+}
+function pipedEmbedUrl(id, start){
+  return 'https://piped.video/embed/' + id + '?start=' + start + '&autoplay=1';
+}
+function pipedWatchUrl(url){
+  var id = videoIdFromUrl(url);
+  return id ? 'https://piped.video/watch?v=' + id : url;
+}
+function openVideoUrl(url){
+  window.open(isAdFreePlayer() ? pipedWatchUrl(url) : url, '_blank');
+}
+function isAdFreePlayer(){
+  try { var s = storeGet(); return s.adFree !== false; } catch(e){ return true; }
+}
+function setAdFreePlayer(on){
+  try { var s = storeGet(); s.adFree = !!on; storeSet(s); } catch(e){}
+  syncAdFreeToggle();
+  var u = inlineVideoCurrent && inlineVideoCurrent.url;
+  if (u && $('inlineVideoFrame')){ closeInlineVideo(); toggleInlineVideo(u); }
+}
+function syncAdFreeToggle(){
+  var t = $('adFreeToggle');
+  if (t) t.checked = isAdFreePlayer();
+}
+function clearInlineVideoFallbackTimer(){
+  if (inlineVideoFallbackTimer){ clearTimeout(inlineVideoFallbackTimer); inlineVideoFallbackTimer = null; }
+}
+function showInlineVideoNote(msg){
+  var n = $('inlineVideoNote');
+  if (!n) return;
+  if (msg){ n.textContent = msg; n.classList.remove('hidden'); }
+  else { n.textContent = ''; n.classList.add('hidden'); }
+}
+function swapInlineVideoToYouTube(){
+  if (inlineVideoFallbackDone || !inlineVideoCurrent) return;
+  inlineVideoFallbackDone = true;
+  inlineVideoPiped = false;
+  var fr = $('inlineVideoFrame');
+  if (fr) fr.src = youtubeEmbedUrl(inlineVideoCurrent.id, inlineVideoCurrent.start);
+  showInlineVideoNote('Ad-free player unavailable \u2014 playing on YouTube');
+  setInlineSpeedButtons(false);
+  if (window.YT && window.YT.Player) createInlineVideoPlayer();
+  else loadInlineVideoApi();
+}
 function hideInlineVideoPoster(){
   if (inlineVideoPosterTimer){ clearTimeout(inlineVideoPosterTimer); inlineVideoPosterTimer = null; }
   var p = $('inlineVideoPoster'), b = $('inlineVideoPlay');
@@ -4842,6 +4911,11 @@ function closeInlineVideo(){
     inlineVideoPlayer = null;
   }
   inlineVideoPendingRate = null;
+  clearInlineVideoFallbackTimer();
+  inlineVideoPiped = false;
+  inlineVideoFallbackDone = false;
+  inlineVideoCurrent = null;
+  showInlineVideoNote('');
   var sp = $('inlineVideoSpeeds');
   if (sp) sp.classList.add('hidden');
   setInlineSpeedButtons(false);
@@ -4853,21 +4927,26 @@ function closeInlineVideo(){
 }
 function toggleInlineVideo(url){
   var w = $('inlineVideoWrap');
-  if (!w){ window.open(url, '_blank'); return; }
+  if (!w){ openVideoUrl(url); return; }
   if (w.querySelector('iframe')){ closeInlineVideo(); return; }
-  var m = url.match(/[?&]v=([\w-]{11})/) || url.match(/youtu\.be\/([\w-]{11})/);
-  if (!m){ window.open(url, '_blank'); return; }
-  var tm = url.match(/[?&]t=(\d+)/);
-  var start = tm ? parseInt(tm[1], 10) : 0;
+  var vid = videoIdFromUrl(url);
+  if (!vid){ openVideoUrl(url); return; }
+  var start = videoStartFromUrl(url);
   inlineVideoPlayer = null;
   inlineVideoPendingRate = null;
   markInlineSpeed(1);
   setInlineSpeedButtons(false);
-  w.innerHTML = '<iframe id="inlineVideoFrame" src="https://www.youtube-nocookie.com/embed/' + m[1] +
-    '?start=' + start + '&autoplay=1&rel=0&enablejsapi=1&modestbranding=1" title="Video solution" frameborder="0" ' +
+  clearInlineVideoFallbackTimer();
+  showInlineVideoNote('');
+  inlineVideoFallbackDone = false;
+  inlineVideoCurrent = {id: vid, start: start, url: url};
+  inlineVideoPiped = isAdFreePlayer();
+  var embedSrc = inlineVideoPiped ? pipedEmbedUrl(vid, start) : youtubeEmbedUrl(vid, start);
+  w.innerHTML = '<iframe id="inlineVideoFrame" src="' + embedSrc +
+    '" title="Video solution" frameborder="0" ' +
     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
     'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' +
-    '<img class="inline-video-poster" id="inlineVideoPoster" src="https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg" alt="Video thumbnail">' +
+    '<img class="inline-video-poster" id="inlineVideoPoster" src="https://i.ytimg.com/vi/' + vid + '/hqdefault.jpg" alt="Video thumbnail">' +
     '<span class="inline-video-play" id="inlineVideoPlay">▶</span>';
   w.classList.remove('hidden');
   var sp = $('inlineVideoSpeeds');
@@ -4888,13 +4967,26 @@ function toggleInlineVideo(url){
   if (p){ p.addEventListener('click', posterTap); p.onerror = function(){ p.style.display = 'none'; }; }
   if (pl) pl.addEventListener('click', posterTap);
   inlineVideoPosterTimer = setTimeout(hideInlineVideoPoster, 2500);
-  if (window.YT && window.YT.Player) createInlineVideoPlayer();
+  if (inlineVideoPiped){
+    var fr = $('inlineVideoFrame');
+    if (fr){
+      fr.addEventListener('load', function(){ clearInlineVideoFallbackTimer(); });
+      inlineVideoFallbackTimer = setTimeout(swapInlineVideoToYouTube, inlineVideoFallbackMs);
+    }
+  } else if (window.YT && window.YT.Player) createInlineVideoPlayer();
   else loadInlineVideoApi();
 }
 /* speed pills: ek baar boot par wire karo (static markup hai) */
 document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){
   b.addEventListener('click', function(){ setInlineVideoRate(parseFloat(b.getAttribute('data-rate'))); });
 });
+/* v56: ad-free player toggle (static markup, next to the video button) */
+(function(){
+  var t = $('adFreeToggle');
+  if (!t) return;
+  t.checked = isAdFreePlayer();
+  t.addEventListener('change', function(){ setAdFreePlayer(t.checked); });
+})();
 /* v23 Part C + v24: speed indicator - stopwatch-face icon next to the per-question
    time. WRONG answer = ALWAYS red sad, however fast it was (never green).
    Correct answers only: green happy <=45s, yellow neutral 46-60s, red sad >60s.
@@ -5037,13 +5129,14 @@ function renderSolution(keepOpen){
   if (q.video){
     vb.disabled = false;
     vb.onclick = function(){
-      if (!VIDEO_INLINE_TEST){ window.open(q.video, '_blank'); return; }
+      if (!VIDEO_INLINE_TEST){ openVideoUrl(q.video); return; }
       toggleInlineVideo(q.video);
     };
   } else {
     vb.disabled = true;
     vb.onclick = null;
   }
+  syncAdFreeToggle();
   if (state._lastSol !== i){ var sc = $('solScroll'); if (sc) sc.scrollTop = 0; state._lastSol = i; }
   renderSolPalette();
 }
