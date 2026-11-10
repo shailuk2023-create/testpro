@@ -3310,7 +3310,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 53; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 54; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -7069,16 +7069,125 @@ function tagStoreUid(uid){
     }
   } catch(e){}
 }
+/* ---------------- v54 orphan stash ----------------
+   The v43 UID guard discarded a foreign-tagged store outright, on the
+   assumption that its data "still lives in the old owner's cloud
+   account". That is FALSE when the data was never pushed: guest attempts
+   made on a foreign-tagged store, and attempts left unflushed by a
+   failed logout, exist ONLY in this device's local store — discarding
+   them deletes the only copy (Vishesh Kumar incident, 10 Nov 2026:
+   many guest Maths + CA attempts went to 0 on login; only the
+   re-published leaderboard aggregate survived). v54 STASHES the foreign
+   store under super1000_v1_orphan_<owner> instead of deleting it;
+   pullAndMerge restores it (union merge) the next time its OWNER logs
+   in, and the stash key is deleted only after the following push
+   succeeds. Attribution caveat (honest limit): guest attempts made on
+   another user's tagged store are preserved under THAT store's owner —
+   the app cannot know they were someone else's; the guarantee is no
+   silent deletion, not perfect attribution. */
+function orphanKey(owner){ return 'super1000_v1_orphan_' + owner; }
+function storeHasData(s){
+  if (!s) return false;
+  var n = 0;
+  ['tests', 'tests_ca'].forEach(function(sec){
+    var m = s[sec] || {};
+    Object.keys(m).forEach(function(tid){ n += ((m[tid] && m[tid].history) || []).length; });
+  });
+  n += (s.saved || []).length + (s.saved_ca || []).length;
+  return n > 0;
+}
+function mergeStoreData(dst, src){
+  /* Union-merge src into dst (attempts deduped by attemptDocId, saved by
+     key). Returns true when anything was added. Never deletes. */
+  if (!src) return false;
+  var changed = false;
+  ['tests', 'tests_ca'].forEach(function(sec){
+    var sMap = src[sec] || {};
+    if (!dst[sec]) dst[sec] = {};
+    Object.keys(sMap).forEach(function(tid){
+      var sHist = ((sMap[tid] || {}).history) || [];
+      if (!sHist.length) return;
+      var dRec = dst[sec][tid] || {best: 0, attempts: 0, history: []};
+      var dHist = dRec.history || [];
+      var added = false;
+      sHist.forEach(function(a){
+        if (!a || !a.ts) return;
+        var id = attemptDocId(tid, a);
+        var exists = dHist.some(function(x){ return x && x.ts && attemptDocId(tid, x) === id; });
+        if (!exists){ dHist.push(a); added = true; }
+      });
+      if (added){
+        dHist.sort(function(a, b){ return (a.no - b.no) || ((a.ts || 0) - (b.ts || 0)); });
+        dRec.history = dHist;
+        dRec.attempts = Math.max.apply(null, dHist.map(function(a){ return a.no || 0; }).concat([dRec.attempts || 0]));
+        dRec.best = Math.max.apply(null, dHist.map(function(a){ return a.score || 0; }).concat([dRec.best || 0]));
+        dRec.last = dHist[dHist.length - 1];
+        dst[sec][tid] = dRec;
+        changed = true;
+      }
+    });
+  });
+  ['saved', 'saved_ca'].forEach(function(k){
+    if (!Array.isArray(dst[k])) dst[k] = [];
+    (src[k] || []).forEach(function(key){
+      if (dst[k].indexOf(key) === -1){ dst[k].push(key); changed = true; }
+    });
+  });
+  /* profile: only the name matters for attribution — take the stash name
+     when the destination still has the default 'Student'. Exam/target
+     stay with the destination (cloud/local wins on the next pull). */
+  if (src.profile && src.profile.name && src.profile.name !== 'Student' &&
+      (!dst.profile || !dst.profile.name || dst.profile.name === 'Student')){
+    if (!dst.profile) dst.profile = {name: 'Student', exam: 'RRB NTPC', target: 91};
+    dst.profile.name = src.profile.name;
+    changed = true;
+  }
+  return changed;
+}
+function stashForeignStore(owner){
+  /* Preserve a foreign store under its owner's stash key (merged with any
+     stash already there, so nothing is ever overwritten away). Returns
+     true when something was stashed. Empty stores are not stashed. */
+  if (!owner) return false;
+  var cur = null;
+  try { cur = storeLocal(); } catch(e){ return false; }
+  if (!storeHasData(cur)) return false;
+  var prev = null;
+  try { prev = JSON.parse(localStorage.getItem(orphanKey(owner)) || 'null'); } catch(e){ prev = null; }
+  var stash = prev || {tests: {}, tests_ca: {}, saved: [], saved_ca: [], profile: {name: 'Student', exam: 'RRB NTPC', target: 91}};
+  mergeStoreData(stash, cur);
+  if (!stash._fbMeta) stash._fbMeta = {};
+  stash._fbMeta.uid = owner;
+  stash._fbStashedAt = Date.now();
+  try { localStorage.setItem(orphanKey(owner), JSON.stringify(stash)); } catch(e){ return false; }
+  return true;
+}
+function restoreOrphanStore(uid, store){
+  /* Merge this owner's stash back into the local store. Returns true when
+     a stash existed (caller: mark changed, and delete the stash key only
+     after the following push succeeds — a failed push keeps it for the
+     next login). */
+  if (!uid || !store) return false;
+  var raw = null;
+  try { raw = localStorage.getItem(orphanKey(uid)); } catch(e){ return false; }
+  if (!raw) return false;
+  var stash = null;
+  try { stash = JSON.parse(raw); } catch(e){ return false; }
+  if (!stash) return false;
+  return mergeStoreData(store, stash);
+}
 function discardForeignStore(uid){
   /* UID ownership guard (the backstop): if this device's local store is
-     tagged with ANOTHER UID, throw it away BEFORE anything reads it or
-     pushes from it. The discarded data is NEVER pushed to the new user —
-     it still lives in the old owner's cloud account. Returns true when
-     a foreign store was discarded. No owner recorded -> keep (see above). */
+     tagged with ANOTHER UID, it must NOT be read or pushed to the new
+     user — but v54 no longer throws it away (see the orphan stash above):
+     the foreign store is STASHED under its owner's key first, then the
+     local store is replaced with a fresh one. Returns true when a foreign
+     store was stashed/discarded. No owner recorded -> keep (see above). */
   var owner = storeOwnerUid();
   if (owner && uid && owner !== uid){
     var dark = null;
     try { dark = storeLocal().dark; } catch(e){}
+    try { stashForeignStore(owner); } catch(e){}
     try { localStorage.setItem('super1000_v1', JSON.stringify(freshStoreFor(dark))); } catch(e){}
     shadow = null; lastPullAt = 0; lastSyncAt = 0; lastSyncError = '';
     return true;
@@ -7331,7 +7440,15 @@ function showGate(offline, err){
    (no Settings password-set flow is added in this version). */
 function skipPasswordSet(){
   resetPwStep(); /* clears pwStepActive + the v42 link step */
-  enterApp(); /* modal closes, gate lifts, pull runs on the user firing */
+  enterApp(); /* modal closes, gate lifts */
+  /* v54: the user firing already happened (it routed to the pw step), so
+     NO pull ran on login yet — the old comment claiming otherwise was
+     wrong, and this was the ONLY enterApp path with no sync. Pull now
+     (like submitPasswordSet): a guest's local attempts must upload to
+     their Firebase account on login, not sit local-only until some later
+     trigger — and the store must be tagged with this UID at once, or a
+     later foreign login could discard it as someone else's. */
+  setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge();
 }
 function showPwStep(user, viaLink){
   fbGated = true;
@@ -7994,7 +8111,14 @@ async function pullAndMerge(){
     if (!store.tests_ca) store.tests_ca = {};
     if (!store.saved) store.saved = [];
     if (!store.saved_ca) store.saved_ca = [];
-    var changed = ensureAttemptTs(store);
+    /* v54: restore this owner's stashed data first (see discardForeignStore)
+       — a store stashed on an earlier foreign login merges back here, so a
+       wipe can never lose it. The stash key is deleted only after the push
+       below succeeds. */
+    var orphanRestored = false;
+    try { orphanRestored = restoreOrphanStore(uid, store); } catch(e){ orphanRestored = false; }
+    var changed = !!orphanRestored;
+    if (ensureAttemptTs(store)) changed = true;
     shadow = {attempts: cloudAttempts, saved: cloudSaved.slice(),
               profile: cloudProfile ? {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target} : null};
     Object.keys(cloudAttempts).forEach(function(id){
@@ -8041,6 +8165,9 @@ async function pullAndMerge(){
     clearRetry('pull');
     var pushed = await pushNow();
     if (pushed){
+      /* v54: the stashed data is now in the cloud — only now is it safe to
+         drop the stash. A failed push keeps it for the next login. */
+      if (orphanRestored){ try { localStorage.removeItem(orphanKey(uid)); } catch(e){} }
       lastSyncAt = Date.now();
       lastSyncError = '';
       setStatus(navigator.onLine ? 'synced' : 'offline');
