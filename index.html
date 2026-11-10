@@ -1631,7 +1631,15 @@ body.fb-gated::before{content:none!important}
 Firebase module removes the gate on register/login, or opens the register
 window when logged out. If the module never runs (offline first visit), this
 fallback opens the register window with the internet note. */
-try{document.body.classList.add('fb-gated');}catch(e){}
+/* v45: optimistic instant launch — if this device has a previous login (the
+   local store records its owner UID), do NOT add the gate: the cached
+   dashboard paints at once while the 6 MB file is still parsing, instead of
+   a "Logging in..." screen. boot() re-checks the same store and reconciles
+   (flag fbOptimisticLaunch + renderHome); no UID (fresh device, logged out,
+   guest) -> gate exactly as before. A corrupt/missing store also gates. */
+var _v45uid = null;
+try { var _v45s = JSON.parse(localStorage.getItem('super1000_v1') || '{}'); _v45uid = (_v45s && _v45s._fbMeta && _v45s._fbMeta.uid) || null; } catch(e){ _v45uid = null; }
+if (!_v45uid){ try{document.body.classList.add('fb-gated');}catch(e){} }
 /* v40: the fallback must not fire while the document is still parsing —
    on a slow phone the 6 MB file can take >1500 ms to parse, so the old
    timer could open the register window before boot() ran, and enterApp()
@@ -3068,7 +3076,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 44; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 45; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5801,6 +5809,7 @@ attachSwipe($('solScroll'),
           </label>
           <p class="fb-auth-err" id="fbPwSetErr" hidden></p>
           <button class="fb-email-btn" id="fbPwSetBtn">Password set karein</button>
+          <div class="fb-auth-links" style="justify-content:center;margin-top:10px"><a href="#" id="fbPwSetSkipBtn">Baad me — bina password ke aage badho</a></div>
         </div>
         <div id="fbLinkWrap" hidden>
           <div class="fb-modal-user">
@@ -6064,6 +6073,7 @@ var fbPendingGoogleCred = null, fbPendingGoogleEmail = null; /* v42: Google cred
 var fbLinkStepActive = false; /* v42: true while the Google-link step is shown */
 var fbLinkingInProgress = false; /* v42: true while submitGoogleLink() signs in + links — the auth listener must not enter the app before linkWithCredential finishes */
 var fbAuthLoading = true; /* v43: spec isAuthLoading — true until the FIRST auth-state settlement (first user firing, or a null firing that decides the gate). While true the gate shows a loading state, never the login/register form. */
+var fbOptimisticLaunch = false; /* v45: true when this boot showed the cached dashboard at once (local store records a previous login UID) instead of the loading modal. The auth listener confirms (user firing) or re-gates (null firing) afterwards; the flag is never cleared mid-boot and nothing except boot() reads it. */
 var fbSdkReady = false; /* v43: Firebase SDK loaded (distinct from the auth check settling — buttons enable only when BOTH are true) */
 var fbLastUid = null; /* v43: UID seen on the last user firing in this boot (UID-change guard) */
 function showFbView(v){
@@ -6244,6 +6254,15 @@ function showGate(offline, err){
     if (el){ el.textContent = txt; el.hidden = false; }
   }
   openFbModal();
+}
+/* v45: spec Scenario B — the password set is OPTIONAL for a brand-new Google
+   user. v39–v44 forced it: no skip existed and the modal-level Skip button
+   hides while pwStepActive. Skipping enters the app without linking a
+   password; Google keeps working, and a password can still be set later
+   (no Settings password-set flow is added in this version). */
+function skipPasswordSet(){
+  resetPwStep(); /* clears pwStepActive + the v42 link step */
+  enterApp(); /* modal closes, gate lifts, pull runs on the user firing */
 }
 function showPwStep(user){
   fbGated = true;
@@ -6896,6 +6915,7 @@ function wireModal(){
   var rgb = $('fbRegGoogleBtn'); if (rgb) rgb.addEventListener('click', function(){ signIn('register'); });
   var rb = $('fbRegBtn'); if (rb) rb.addEventListener('click', submitRegister);
   var psb = $('fbPwSetBtn'); if (psb) psb.addEventListener('click', submitPasswordSet);
+  var pss = $('fbPwSetSkipBtn'); if (pss) pss.addEventListener('click', function(e){ e.preventDefault(); skipPasswordSet(); });
   var lb = $('fbLinkBtn'); if (lb) lb.addEventListener('click', submitGoogleLink);
   var lo = $('fbLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); closeFbModal(); });
   var eb = $('fbEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('modal'); });
@@ -6920,7 +6940,7 @@ function wireSettings(){
 }
 function installBridge(){
   window.__fbSync = {
-    signIn: signIn, signOut: signOut, logoutUser: logoutUser, isAuthLoading: function(){ return fbAuthLoading; }, skipAuth: skipAuth,
+    signIn: signIn, signOut: signOut, logoutUser: logoutUser, isAuthLoading: function(){ return fbAuthLoading; }, isOptimisticLaunch: function(){ return fbOptimisticLaunch; }, skipAuth: skipAuth,
     pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge,
     openModal: openFbModal, closeModal: closeFbModal,
     syncNow: syncNow,
@@ -6933,11 +6953,24 @@ function installBridge(){
 async function boot(){
   installBridge();
   wireModal();
-  /* v43: open the gate in its loading state at once — while fbAuthLoading is
-     true showGate() shows the spinner, never the login form. Without this
-     the modal stays shut until the first auth firing and the loading phase
-     is invisible (blank gated screen). */
-  showGate(false, null);
+  /* v45: optimistic instant launch — a previous login is recorded in the
+     local store (storeOwnerUid, stamped on every successful pull/push). If
+     one exists, show the cached dashboard at once: no loading modal, no
+     gate, render from the local cache while the SDK imports and auth
+     settles in the background. The listener confirms (user firing ->
+     enterApp + pull) or re-gates (null firing -> showGate with the form)
+     afterwards. No UID -> v43 loading modal as before (the parse-time
+     snippet above already gated that case); boot() is the reconciler if
+     the two reads ever disagreed. */
+  fbOptimisticLaunch = !!storeOwnerUid();
+  if (fbOptimisticLaunch){
+    fbGated = false;
+    try { document.body.classList.remove('fb-gated'); } catch(e){}
+    try { if (window.renderHome) window.renderHome(); } catch(e){}
+    try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+  } else {
+    showGate(false, null);
+  }
   wireSettings();
   updateHeader();
   setStatus('offline');
@@ -6950,7 +6983,12 @@ async function boot(){
     ]);
     var timeoutP = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('sdk-timeout')); }, 8000); });
     mods = await Promise.race([importP, timeoutP]);
-  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading(); showGate(true); return; }
+  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading();
+    /* v45: on the optimistic path the cached dashboard is already showing —
+       an SDK failure (offline) must NOT yank the user to the login form;
+       stay in the app (local-only) and let the next online boot settle
+       auth. No UID -> v43 behaviour (login form with the internet note). */
+    if (!fbOptimisticLaunch) showGate(true); return; }
   try {
     var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
     F = {
@@ -6958,6 +6996,7 @@ async function boot(){
       signInWithRedirect: authMod.signInWithRedirect,
       getRedirectResult: authMod.getRedirectResult,
       signOut: authMod.signOut,
+      setPersistence: authMod.setPersistence, browserLocalPersistence: authMod.browserLocalPersistence,
       onAuthStateChanged: authMod.onAuthStateChanged,
       createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
       signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
@@ -6977,6 +7016,13 @@ async function boot(){
     };
     var app = appMod.initializeApp(FIREBASE_CONFIG);
     var auth = authMod.getAuth(app);
+    /* v45: explicit local persistence (spec: browserLocalPersistence /
+       IndexedDB). Firebase's default IS local, so this changes no
+       behaviour — it pins the contract so the cached session can never
+       silently stop persisting. A failure must never block boot (guarded;
+       the app falls back to the SDK default and warns once via the sync
+       status). */
+    try { if (F.setPersistence && F.browserLocalPersistence) await F.setPersistence(auth, F.browserLocalPersistence); } catch(e){ setSyncError('Login session save nahi hui — dobara login karna pad sakta hai'); }
     /* v40: persistent Firestore first, plain (in-memory) fallback when
        IndexedDB is unavailable — sync must not silently die. */
     var db = initDb(app);
@@ -7079,7 +7125,7 @@ async function boot(){
          debounce alone can lose a just-submitted attempt. */
       if (fb && fb.user && fb.db){ try { diffAndPush(); } catch(e){} }
     });
-  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading(); showGate(true); }
+  } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading(); if (!fbOptimisticLaunch) showGate(true); /* v45: same optimistic rule as the import catch above */ }
 }
 boot();
 })();
