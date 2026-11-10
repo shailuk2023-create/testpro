@@ -1830,13 +1830,11 @@ function fbGateFallback(){
     var m=document.getElementById('fbModal');
     if(m){ m.classList.add('open'); m.setAttribute('aria-hidden','false');
       var n=document.getElementById('fbModalNote');
-      if(n) n.textContent='Login ke liye internet chahiye — internet on karke dobara try karo.';
-      var rn=document.getElementById('fbRegNote');
-      if(rn) rn.textContent='Register karne ke liye internet chahiye — internet on karke dobara try karo.';
+      if(n) n.textContent='Internet is required to log in — turn on the internet and try again.';
       var re=document.getElementById('fbRegErr');
-      if(re){ re.textContent='Register karne ke liye internet chahiye — internet on karke dobara try karo.'; re.hidden=false; }
+      if(re){ re.textContent='Internet is required to register — turn on the internet and try again.'; re.hidden=false; }
       var er=document.getElementById('fbAuthErr');
-      if(er){ er.textContent='Login ke liye internet chahiye — internet on karke dobara try karo.'; er.hidden=false; }
+      if(er){ er.textContent='Internet is required to log in — turn on the internet and try again.'; er.hidden=false; }
       /* v39 Skip (Firebase script never ran — wire it here so it always works) */
       var sk=document.getElementById('fbSkipBtn');
       if(sk) sk.addEventListener('click',function(){
@@ -1947,9 +1945,9 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <span class="hx-blob b1"></span><span class="hx-blob b2"></span>
           <div class="hh-text">
             <span class="hx-eyebrow"><svg class="i i-sm" aria-hidden="true"><use href="#i-spark"/></svg>Railway Super 1000+ Maths</span>
-            <h2 id="homeGreeting">Namaste, Student</h2>
+            <h2 id="homeGreeting">Hello, Student</h2>
             <p id="homeSub">RRB NTPC • Target score 91 / 100</p>
-            <p class="hx-tag">Aaj ka practice, kal ka selection.</p>
+            <p class="hx-tag">Today's practice, tomorrow's selection.</p>
             <div class="hx-cta-row">
               <button class="hx-cta" id="heroCta" type="button">Start practising<svg class="i i-sm" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
               <button class="hx-ghost" id="heroSaved" type="button"><svg class="i i-sm" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved</button>
@@ -2057,7 +2055,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="resume-card anim" id="resumeCard" style="display:none">
           <span class="rc-ico"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span>
           <div class="rc-body">
-            <h3>Adhura Test — Resume karein?</h3>
+            <h3>Unfinished test — resume?</h3>
             <div id="resumeCardText" class="rc-text"></div>
           </div>
           <button class="btn btn-teal rc-btn" id="resumeCardBtn" type="button">Resume Test</button>
@@ -2138,7 +2136,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         </div>
         <div id="testSeries" style="display:none">
           <div id="seriesPicker" style="display:none">
-            <div class="sp-head"><h2>Test Series chuno</h2><p>Maths ya Current Affairs — jis series ka test dena hai, us par tap karo.</p></div>
+            <div class="sp-head"><h2>Choose a test series</h2></div>
             <div class="series-card" data-series="maths" role="button" tabindex="0" aria-label="Open Math Super 1000+ test series">
               <svg class="sc-deco" viewBox="0 0 170 74" aria-hidden="true"><g fill="currentColor" font-weight="800" font-family="Segoe UI,system-ui,sans-serif"><text x="4" y="58" font-size="52">%</text><text x="56" y="36" font-size="34">÷</text><text x="96" y="64" font-size="46">√</text><text x="132" y="34" font-size="34">π</text></g></svg>
               <div class="sc-ico"><svg class="i i-lg" aria-hidden="true"><use href="#i-calc"/></svg></div>
@@ -2193,7 +2191,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   <div class="lb-wrap">
     <div class="lb-top">
       <button class="icon-btn" id="lbBack" type="button" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
-      <div class="lb-title"><h1><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</h1><p>Compete karo, zyada padho, topper bano</p></div>
+      <div class="lb-title"><h1><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</h1></div>
       <button class="icon-btn" id="lbRefresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg></button>
     </div>
     <div id="lbHero"></div>
@@ -2215,7 +2213,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="set-avatar"><img id="setHeroPhoto" alt="" hidden><b id="setHeroAvatar">S</b></div>
         <div class="set-hero-txt">
           <h2 id="setHeroName">Student</h2>
-          <p id="setHeroEmail">Login nahi hai</p>
+          <p id="setHeroEmail">Not logged in</p>
           <div class="set-chips" id="setHeroChips"></div>
         </div>
       </div>
@@ -2224,26 +2222,26 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <div class="set-grid">
       <section class="card set-card set-account">
         <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>Account</h3>
-        <p class="set-acct-status" id="setAccountStatus">Login nahi hai</p>
+        <p class="set-acct-status" id="setAccountStatus">Not logged in</p>
         <div id="setEmailForm">
           <label>Email
-            <input id="setEmail" type="email" placeholder="aapki@email.com" autocomplete="email">
+            <input id="setEmail" type="email" placeholder="you@example.com" autocomplete="email">
           </label>
           <label>Password
-            <input id="setPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="current-password">
+            <input id="setPassword" type="password" placeholder="At least 6 characters" autocomplete="current-password">
           </label>
           <p class="fb-auth-err" id="setAuthErr" hidden></p>
-          <button class="fb-email-btn" id="setEmailBtn">Login karein</button>
+          <button class="fb-email-btn" id="setEmailBtn">Log in</button>
           <div class="fb-auth-links">
-            <a href="#" id="setAuthToggle">Naya account banao</a>
-            <a href="#" id="setForgotLink">Password bhool gaye?</a>
+            <a href="#" id="setAuthToggle">Create a new account</a>
+            <a href="#" id="setForgotLink">Forgot your password?</a>
           </div>
         </div>
         <div id="setChangePwWrap" hidden>
-          <label>Naya password
-            <input id="setNewPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password">
+          <label>New password
+            <input id="setNewPassword" type="password" placeholder="At least 6 characters" autocomplete="new-password">
           </label>
-          <button class="btn btn-teal" id="setChangePwBtn" style="margin-top:10px">Password badlo</button>
+          <button class="btn btn-teal" id="setChangePwBtn" style="margin-top:10px">Change password</button>
         </div>
         <button class="fb-logout-btn" id="setLogoutBtn" hidden>Logout</button>
       </section>
@@ -2269,13 +2267,12 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
             <option value="en">English</option>
           </select>
         </label>
-        <label class="set-row"><span class="set-row-t"><b>Dark mode</b><small>Raat mein aankhon ko aaram</small></span>
+        <label class="set-row"><span class="set-row-t"><b>Dark mode</b></span>
           <span class="switch"><input type="checkbox" id="setDarkToggle"><span class="slider"></span></span>
         </label>
       </section>
       <section class="card set-card">
         <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>Avatar</h3>
-        <p class="set-av-hint">Apna avatar chuno — ye avatar Home, Settings aur Leaderboard, har jagah same dikhega.</p>
         <div class="av-grid" id="avatarGrid"></div>
       </section>
 
@@ -2597,9 +2594,9 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 </div>
 <div class="modal-overlay" id="modalBackChoice">
   <div class="modal" style="max-width:460px">
-    <div class="m-head"><h3>Test se bahar jana hai?</h3><button data-close="modalBackChoice">✕</button></div>
+    <div class="m-head"><h3>Exit this test?</h3><button data-close="modalBackChoice">✕</button></div>
     <div class="m-body">
-      <p style="font-size:14px;color:var(--muted);line-height:1.6">Exit karne par aapka test save ho jayega — test dobara kholne par <b>Resume</b> dikhega aur wahin se, usi time se, jaari rakh sakte hain. Test poora discard nahi hoga.</p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6">Your test will be saved if you exit — reopen it and <b>Resume</b> will appear, so you can continue from where you left off, with the same time remaining. Nothing will be discarded.</p>
     </div>
     <div class="m-foot" style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-teal" id="backChoiceResumeBtn" data-close="modalBackChoice">Resume</button>
@@ -2613,12 +2610,12 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <div class="m-body">
       <p style="font-size:14px;color:var(--muted);line-height:1.6" id="reportQLabel"></p>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
-        <button class="btn btn-light rep-type" data-type="Question">Question galat hai</button>
-        <button class="btn btn-light rep-type" data-type="Option">Option galat hai</button>
-        <button class="btn btn-light rep-type" data-type="Solution">Solution galat hai</button>
-        <button class="btn btn-light rep-type" data-type="Answer key">Answer key galat hai</button>
+        <button class="btn btn-light rep-type" data-type="Question">Question is wrong</button>
+        <button class="btn btn-light rep-type" data-type="Option">Option is wrong</button>
+        <button class="btn btn-light rep-type" data-type="Solution">Solution is wrong</button>
+        <button class="btn btn-light rep-type" data-type="Answer key">Answer key is wrong</button>
       </div>
-      <textarea id="reportDetail" rows="2" placeholder="Kya galat hai? (optional — ek line me likh dein)" style="width:100%;margin-top:12px;padding:8px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit"></textarea>
+      <textarea id="reportDetail" rows="2" placeholder="What is wrong? (optional — one line is enough)" style="width:100%;margin-top:12px;padding:8px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit"></textarea>
     </div>
     <div class="m-foot" style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-grey" data-close="modalReport">Cancel</button>
@@ -3265,7 +3262,7 @@ function reportURL(type){
 function submitReport(type){
   window.open(reportURL(type), '_blank');
   closeModal('modalReport');
-  showToast('Report form khul gaya — Submit dabayein, kuchh bharna nahi hai');
+  showToast('The report form is open — just press Submit, nothing to fill in');
 }
 function showToast(msg){
   var el = $('reportToast');
@@ -3310,7 +3307,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 54; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 55; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3543,7 +3540,7 @@ function qTextHTML(q){
   var tbl = tblHTML(q);
   if (state.lang === 'hi') return mathRender(esc(q.q_hi || q.q_en || '') + tbl);
   if (state.lang === 'en') return mathRender(esc(q.q_en || q.q_hi || '') + tbl);
-  return '<span class="lang-tag">हिन्दी</span><br>' + mathRender(esc(q.q_hi || q.q_en || '')) +
+  return '<span class="lang-tag">Hindi</span><br>' + mathRender(esc(q.q_hi || q.q_en || '')) +
          '<br><br><span class="lang-tag">English</span><br>' + mathRender(esc(q.q_en || q.q_hi || '') + tbl);
 }
 function figHTML(q){
@@ -3564,11 +3561,11 @@ function caSolHTML(keyLines, relLines){
   var keyIco = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 12.5 19 4M15.5 7.5l2.5 2.5M13 10l2.5 2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   var docIco = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12h6M9 16h6M9 8h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   var out = '<div class="ca-sol">';
-  out += '<div class="ca-sol-sec"><div class="ca-sol-head">' + keyIco + 'मुख्य तथ्य</div><ul class="ca-sol-list">';
+  out += '<div class="ca-sol-sec"><div class="ca-sol-head">' + keyIco + 'Key Facts</div><ul class="ca-sol-list">';
   keyLines.forEach(function(ln){ out += '<li>' + caBoldHTML(ln) + '</li>'; });
   out += '</ul></div>';
   if (relLines.length){
-    out += '<div class="ca-sol-sec"><div class="ca-sol-head">' + docIco + 'संबंधित तथ्य</div><ul class="ca-sol-list">';
+    out += '<div class="ca-sol-sec"><div class="ca-sol-head">' + docIco + 'Related Facts</div><ul class="ca-sol-list">';
     relLines.forEach(function(ln){ out += '<li>' + caBoldHTML(ln) + '</li>'; });
     out += '</ul></div>';
   }
@@ -3787,7 +3784,7 @@ function instructionsHTML(t){
     t.questions.length + ' questions • ' + fmtMins(t.secs) + ' minutes.',
     '+1 for each correct answer, −0.33 for each wrong answer.',
     'No negative marking for unattempted questions.',
-    'Agar page refresh ho jaye to test wahin se resume ho jayega (Home par Resume Test dabayein).'
+    'If the page refreshes, your test resumes from where you left off (tap Resume Test on Home).'
   ];
 }
 function openInstructions(t){
@@ -4389,7 +4386,7 @@ function syncResumeCard(){
   var ans = 0;
   (p.qStates || []).forEach(function(s){ if (s && s.selected != null) ans++; });
   $('resumeCardText').textContent = testTitle(t) + ' • ' +
-    ans + '/' + t.questions.length + ' answered • ' + fmtMMSS(p.timeLeft || 0) + ' bacha hai';
+    ans + '/' + t.questions.length + ' answered • ' + fmtMMSS(p.timeLeft || 0) + ' left';
   card.style.display = '';
   if (!syncResumeCard._wired){
     syncResumeCard._wired = true;
@@ -4531,7 +4528,7 @@ function applyProfile(){
   var store = storeGet();
   var p = store.profile || {};
   var name = p.name || 'Student';
-  var g = $('homeGreeting'); if (g) g.textContent = 'Namaste, ' + name;
+  var g = $('homeGreeting'); if (g) g.textContent = 'Hello, ' + name;
   var av = $('avatarInitial'); if (av) av.textContent = name.charAt(0).toUpperCase();
   var sub = $('homeSub'); if (sub) sub.textContent = (p.exam || 'RRB NTPC') + ' • Target score ' + (p.target != null ? p.target : 91) + ' / 100';
   var labels = document.querySelectorAll('.user-name-label');
@@ -4673,7 +4670,7 @@ function renderResult(stats, prevBest){
   $('resBannerSub').textContent = stats.correct + ' correct • ' + stats.wrong + ' wrong • ' + stats.skipped + ' skipped' +
     (state.autoSubmitted ? ' • Auto-submitted when time expired.' : '');
   var note = '';
-  if (prevBest > 0 && stats.score > prevBest) note = '🎉 Nayi best score! Previous best was ' + prevBest + ' / ' + n + '.';
+  if (prevBest > 0 && stats.score > prevBest) note = '🎉 New best score! Previous best was ' + prevBest + ' / ' + n + '.';
   else if (prevBest > 0 && stats.score === prevBest) note = 'Best score maintained: ' + prevBest + ' / ' + n + '.';
   else if (prevBest > 0) note = 'Previous best: ' + prevBest + ' / ' + n + '. Keep practising!';
   else note = 'First attempt on this test — this score is now your best.';
@@ -5117,7 +5114,7 @@ function jumpToMatchingSolution(){
   if (state.savedQuizMode || solMatches(state.solIdx)) return;
   var n = solNeighbor(1); if (n < 0) n = solNeighbor(-1);
   if (n >= 0){ state.solIdx = n; state.solOpen = false; renderSolution(); }
-  else toast('Is filter me koi question nahi hai');
+  else toast('No question matches this filter');
 }
 function renderSolPalette(){
   var t = state.test;
@@ -5683,7 +5680,7 @@ function renderSavedQuiz(){
   $('sqSolCard').classList.toggle('hidden', !showSol);
   $('sqToggleBtn').textContent = showSol ? 'Hide Solution' : 'View Solution';
   $('sqCorrectOpt').textContent = optLetter(q.ans) + '. ' + ((state.lang === 'hi' ? (q.opts_hi && q.opts_hi[q.ans]) : (q.opts_en && q.opts_en[q.ans])) || (q.opts_en && q.opts_en[q.ans]) || '');
-  $('sqSolText').innerHTML = solHTML(q.sol, '<i>Is prashn ka likhit samadhan uplabdh nahi hai. Video solution dekhein.</i>');
+  $('sqSolText').innerHTML = solHTML(q.sol, '<i>No written solution is available for this question. Watch the video solution.</i>');
   $('sqPrev').style.visibility = sq.idx === 0 ? 'hidden' : '';
   $('sqNext').textContent = sq.idx === sq.items.length - 1 ? 'Finish' : 'Next';
 }
@@ -5789,7 +5786,7 @@ function closeMenu(){ $('sideMenu').classList.remove('open'); $('menuBackdrop').
     else { sq.idx++; renderSavedQuiz(); }
   });
   on('sqToggleBtn', 'click', function(){
-    if (sq.picks[sq.idx] == null){ toast('Pehle ek option chuno'); return; }
+    if (sq.picks[sq.idx] == null){ toast('Choose an option first'); return; }
     state.sqSolOpen = !state.sqSolOpen;
     renderSavedQuiz();
   });
@@ -5951,10 +5948,10 @@ attachSwipe($('solScroll'),
   <div class="au-shell">
     <aside class="au-hero">
       <div class="au-brand"><span class="au-logo"><svg viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg></span><b>TESTPRO</b></div>
-      <h2 class="au-headline">Test do. <em>Seekho.</em> Top karo.</h2>
-      <p class="au-lead">Mock tests, solutions aur analysis — sab ek jagah, har device par sync.</p>
+      <h2 class="au-headline">Take tests. <em>Learn.</em> Top the list.</h2>
+      <p class="au-lead">Mock tests, solutions and analysis — all in one place, synced on every device.</p>
       <div class="au-art">
-        <svg viewBox="0 0 360 310" role="img" aria-label="Test, score aur analysis ka illustration">
+        <svg viewBox="0 0 360 310" role="img" aria-label="Illustration of tests, scores and analysis">
           <defs>
             <linearGradient id="auG1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00c2cb"/><stop offset="1" stop-color="#0a7ea3"/></linearGradient>
             <linearGradient id="auG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
@@ -6006,54 +6003,53 @@ attachSwipe($('solScroll'),
         </svg>
       </div>
       <ul class="au-points">
-        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>Scores aur attempts sync</b><span>Har test ki history har device par</span></div></li>
-        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></span><div><b>Saved questions sync</b><span>Bookmark kiye questions kahin se bhi kholo</span></div></li>
-        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Offline chalega, auto-sync</b><span>Internet aate hi data sync ho jayega</span></div></li>
+        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>Scores and attempts sync</b><span>Every test's history, on every device</span></div></li>
+        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></span><div><b>Saved questions sync</b><span>Open bookmarked questions from anywhere</span></div></li>
+        <li><span class="au-pi"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Works offline, syncs automatically</b><span>Your data syncs as soon as you're back online</span></div></li>
       </ul>
     </aside>
 
     <div class="fb-modal-card" role="document">
-      <button class="fb-modal-x" id="fbModalClose" aria-label="Band karein"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>
+      <button class="fb-modal-x" id="fbModalClose" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button>
 
-      <button type="button" class="fb-skip-btn" id="fbSkipBtn">Skip karein — bina login ke enter karein</button>
-      <div class="au-tabs" role="tablist" aria-label="Register ya Login">
+      <button type="button" class="fb-skip-btn" id="fbSkipBtn">Skip — continue without logging in</button>
+      <div class="au-tabs" role="tablist" aria-label="Register or log in">
         <span class="au-tabpill" aria-hidden="true"></span>
         <button type="button" class="au-tab" data-au-tab="register" role="tab">Register</button>
         <button type="button" class="au-tab" data-au-tab="login" role="tab">Login</button>
       </div>
 
       <div id="fbAuthLoadingWrap" hidden>
-        <div class="fb-auth-loading"><span class="fb-auth-spin" aria-hidden="true"></span><p>Login check ho raha hai…</p></div>
+        <div class="fb-auth-loading"><span class="fb-auth-spin" aria-hidden="true"></span><p>Checking login…</p></div>
       </div>
 
       <div id="fbModalRegister">
         <div class="au-head">
           <div class="au-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
-          <h3><span class="t-reg">Apna account banao</span><span class="t-pw">Password set karein</span></h3>
-          <p class="fb-modal-sub"><span class="t-reg">Pehli baar? 1 minute mein register karo — phir har device par login.</span><span class="t-pw">Google se ho gaya — ab ek password rakho.</span></p>
+          <h3><span class="t-reg">Create your account</span><span class="t-pw">Set a password</span></h3>
+          <p class="fb-modal-sub"><span class="t-pw">Signed in with Google — now set a password.</span></p>
         </div>
         <div id="fbRegMain">
-          <label class="au-f"><span class="au-lb">Naam</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input id="fbRegName" type="text" placeholder="Aapka naam" autocomplete="name"></span>
+          <label class="au-f"><span class="au-lb">Name</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><input id="fbRegName" type="text" placeholder="Your name" autocomplete="name"></span>
           </label>
           <label class="au-f"><span class="au-lb">Email</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbRegEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbRegEmail" type="email" placeholder="you@example.com" autocomplete="email"></span>
           </label>
           <label class="au-f"><span class="au-lb">Password</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbRegPassword" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbRegPassword" type="password" placeholder="At least 6 characters" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Show password"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
             <span class="au-meter" data-for="fbRegPassword" data-l="0"><i></i><i></i><i></i><i></i><em>Password strength</em></span>
           </label>
           <label class="au-f"><span class="au-lb">Confirm password</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbRegPassword2" type="password" placeholder="Password dobara likho" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbRegPassword2" type="password" placeholder="Re-enter password" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Show password"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
           </label>
           <p class="fb-auth-err" id="fbRegErr" hidden></p>
-          <button class="fb-email-btn" id="fbRegBtn">Register karein</button>
+          <button class="fb-email-btn" id="fbRegBtn">Register</button>
           <div class="fb-auth-links au-x" style="justify-content:center;margin-top:4px">
-            <a href="#" id="fbRegToLogin">Pehle se account hai? Login karein</a>
+            <a href="#" id="fbRegToLogin">Already have an account? Log in</a>
           </div>
-          <div class="fb-divider"><span>ya</span></div>
-          <button class="fb-email-btn" id="fbRegLinkBtn">Link se register karein</button>
-          <p class="fb-modal-sub" style="text-align:center;margin:8px 0 0">Naam aur email likho — link email par aayega, us par click karte hi password set karoge.</p>
+          <div class="fb-divider"><span>or</span></div>
+          <button class="fb-email-btn" id="fbRegLinkBtn">Register with an email link</button>
         </div>
         <div id="fbPwSetWrap" hidden>
           <div class="fb-modal-user">
@@ -6061,77 +6057,76 @@ attachSwipe($('solScroll'),
             <div class="fb-modal-userinfo"><b id="fbPwSetName">Student</b><span id="fbPwSetEmail"></span></div>
             <span class="au-verified" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
           </div>
-          <p class="fb-modal-sub au-pwsub">Ab ek password set karo — phir Google ya ID-password, dono se login hoga.</p>
+          <p class="fb-modal-sub au-pwsub">Set a password — then you can log in with Google or email and password.</p>
           <label class="au-f"><span class="au-lb">Password</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPwSetPw" type="password" placeholder="Kam se kam 6 akshar" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPwSetPw" type="password" placeholder="At least 6 characters" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Show password"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
             <span class="au-meter" data-for="fbPwSetPw" data-l="0"><i></i><i></i><i></i><i></i><em>Password strength</em></span>
           </label>
           <label class="au-f"><span class="au-lb">Confirm password</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPwSetPw2" type="password" placeholder="Password dobara likho" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPwSetPw2" type="password" placeholder="Re-enter password" autocomplete="new-password"><button type="button" class="au-eye" data-eye aria-label="Show password"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
           </label>
           <p class="fb-auth-err" id="fbPwSetErr" hidden></p>
-          <button class="fb-email-btn" id="fbPwSetBtn">Password set karein</button>
-          <div class="fb-auth-links" style="justify-content:center;margin-top:10px"><a href="#" id="fbPwSetSkipBtn">Baad me — bina password ke aage badho</a></div>
+          <button class="fb-email-btn" id="fbPwSetBtn">Set a password</button>
+          <div class="fb-auth-links" style="justify-content:center;margin-top:10px"><a href="#" id="fbPwSetSkipBtn">Later — continue without a password</a></div>
         </div>
         <div id="fbLinkWrap" hidden>
           <div class="fb-modal-user">
             <div class="fb-modal-avatar" id="fbLinkAvatar">G</div>
-            <div class="fb-modal-userinfo"><b>Google link karo</b><span id="fbLinkEmail"></span></div>
+            <div class="fb-modal-userinfo"><b>Link Google</b><span id="fbLinkEmail"></span></div>
             <span class="au-verified" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
           </div>
-          <p class="fb-modal-sub au-pwsub">Is email par pehle se ID-password account hai. Apna wahi password ek baar daalo — link hote hi aage se Google se turant login hoga.</p>
+          <p class="fb-modal-sub au-pwsub">This email already has an email-password account. Enter that password once — after linking, you can log in with Google instantly.</p>
           <label class="au-f"><span class="au-lb">Password</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbLinkPw" type="password" placeholder="Apna wahi password daalo" autocomplete="current-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbLinkPw" type="password" placeholder="Enter your existing password" autocomplete="current-password"><button type="button" class="au-eye" data-eye aria-label="Show password"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
           </label>
           <p class="fb-auth-err" id="fbLinkErr" hidden></p>
-          <button class="fb-email-btn" id="fbLinkBtn">Google link karo</button>
+          <button class="fb-email-btn" id="fbLinkBtn">Link Google</button>
         </div>
         <div id="fbLinkPromptWrap" hidden>
           <div class="fb-modal-user">
             <div class="fb-modal-avatar">E</div>
-            <div class="fb-modal-userinfo"><b>Email link se login</b><span>Link jis email par manga tha, wahi email daalo</span></div>
+            <div class="fb-modal-userinfo"><b>Log in with an email link</b><span>Enter the email you requested the link for</span></div>
           </div>
           <label class="au-f"><span class="au-lb">Email</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbLinkPromptEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbLinkPromptEmail" type="email" placeholder="you@example.com" autocomplete="email"></span>
           </label>
           <p class="fb-auth-err" id="fbLinkPromptErr" hidden></p>
-          <button class="fb-email-btn" id="fbLinkPromptBtn">Link se login karo</button>
+          <button class="fb-email-btn" id="fbLinkPromptBtn">Log in with link</button>
         </div>
-        <p class="fb-modal-note" id="fbRegNote">Register karne ke liye pehli baar internet chahiye.</p>
       </div>
 
       <div id="fbModalLoggedOut" hidden>
         <div class="au-head">
           <div class="au-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg></div>
-          <h3>Wapas aaye? Login karein</h3>
-          <p class="fb-modal-sub">ID-password se — kisi bhi device par apna progress kholo.</p>
+          <h3>Welcome back? Log in</h3>
+          <p class="fb-modal-sub">With email and password — open your progress on any device.</p>
         </div>
         <div id="fbEmailForm">
           <label class="au-f"><span class="au-lb">Email</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbEmail" type="email" placeholder="you@example.com" autocomplete="email"></span>
           </label>
           <label class="au-f"><span class="au-lb">Password</span>
-            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPassword" type="password" placeholder="Aapka password" autocomplete="current-password"><button type="button" class="au-eye" data-eye aria-label="Password dikhao"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="fbPassword" type="password" placeholder="Your password" autocomplete="current-password"><button type="button" class="au-eye" data-eye aria-label="Show password"><svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.7A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></span>
           </label>
           <p class="fb-auth-err" id="fbAuthErr" hidden></p>
-          <button class="fb-email-btn" id="fbEmailBtn">Login karein</button>
+          <button class="fb-email-btn" id="fbEmailBtn">Log in</button>
           <div class="fb-auth-links">
-            <a href="#" id="fbAuthToggle" class="au-x">Naya account banao</a>
-            <a href="#" id="fbForgotLink">Password bhool gaye?</a>
+            <a href="#" id="fbAuthToggle" class="au-x">Create a new account</a>
+            <a href="#" id="fbForgotLink">Forgot your password?</a>
           </div>
           <div class="fb-auth-links au-x" style="justify-content:center;margin-top:4px">
-            <a href="#" id="fbLoginToReg">Naya account banao? Register karein</a>
+            <a href="#" id="fbLoginToReg">New here? Register</a>
           </div>
-          <div class="fb-divider"><span>ya</span></div>
+          <div class="fb-divider"><span>or</span></div>
           <div id="fbEmailLinkWrap">
-            <p class="fb-modal-sub" style="text-align:center;margin:2px 0 10px">Email link se login — password yaad nahi to link se andar aao</p>
+            <p class="fb-modal-sub" style="text-align:center;margin:2px 0 10px">Log in with an email link — no password needed</p>
             <label class="au-f"><span class="au-lb">Email</span>
-              <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbLinkSendEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+              <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbLinkSendEmail" type="email" placeholder="you@example.com" autocomplete="email"></span>
             </label>
-            <button class="fb-email-btn" id="fbLinkSendBtn">Link bhejo</button>
+            <button class="fb-email-btn" id="fbLinkSendBtn">Send link</button>
           </div>
         </div>
-        <p class="fb-modal-note" id="fbModalNote">Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.</p>
+        <p class="fb-modal-note" id="fbModalNote">Log in to open the app. Internet is required the first time.</p>
       </div>
 
       <div id="fbModalLoggedIn" hidden>
@@ -6142,7 +6137,7 @@ attachSwipe($('solScroll'),
         </div>
         <div class="fb-modal-sync"><span>Sync status</span><b id="fbModalSyncState">● Offline</b></div>
         <button class="fb-logout-btn" id="fbLogoutBtn">Logout</button>
-        <p class="fb-modal-note">Logout karne par is device ka data yahin rahega, sync band ho jayega.</p>
+        <p class="fb-modal-note">Logging out keeps this device's data here; syncing stops.</p>
       </div>
     </div>
   </div>
@@ -6180,11 +6175,11 @@ attachSwipe($('solScroll'),
         var show = inp.type === 'password';
         inp.type = show ? 'text' : 'password';
         eye.classList.toggle('on', show);
-        eye.setAttribute('aria-label', show ? 'Password chhupao' : 'Password dikhao');
+        eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
       }
     }
   });
-  var LBL = ['', 'Kamzor', 'Theek hai', 'Accha', 'Mazboot'];
+  var LBL = ['', 'Weak', 'OK', 'Good', 'Strong'];
   function level(p){
     if (!p) return 0; var s = 0;
     if (p.length >= 6) s++;
@@ -6473,9 +6468,9 @@ function applyAvatars(){
   if (sa){
     var face = $('setAvFace');
     if (!face){
-      face = document.createElement('span'); face.id = 'setAvFace'; face.className = 'set-av-face'; face.setAttribute('role', 'button'); face.setAttribute('tabindex', '0'); face.setAttribute('aria-label', 'Avatar badlo');
+      face = document.createElement('span'); face.id = 'setAvFace'; face.className = 'set-av-face'; face.setAttribute('role', 'button'); face.setAttribute('tabindex', '0'); face.setAttribute('aria-label', 'Change avatar');
       sa.insertBefore(face, sa.firstChild);
-      var ed = document.createElement('button'); ed.type = 'button'; ed.className = 'set-av-edit'; ed.id = 'setAvEdit'; ed.setAttribute('aria-label', 'Avatar badlo'); ed.innerHTML = ICON.edit;
+      var ed = document.createElement('button'); ed.type = 'button'; ed.className = 'set-av-edit'; ed.id = 'setAvEdit'; ed.setAttribute('aria-label', 'Change avatar'); ed.innerHTML = ICON.edit;
       sa.appendChild(ed);
       face.addEventListener('click', openPicker); ed.addEventListener('click', openPicker);
       face.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPicker(); } });
@@ -6731,16 +6726,16 @@ function lbRenderHero(sorted0){
   sorted0.forEach(function(e, i){ if (isMe(e)){ me = e; rank = i + 1; } });
   var name = esc(myName());
   if (!me){
-    host.innerHTML = '<div class="lb-hero empty"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Avatar badlo"><img id="lbMyAvImg" src="' + avSrc(myAvatarId()) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
-      '<div class="lb-hero-txt"><small>Welcome</small><h2>' + name + '</h2><p>Abhi koi test attempt nahi kiya. Ek test do aur leaderboard me apni jagah banao!</p>' +
-      (fbUser() ? '' : '<p style="margin-top:6px;opacity:.92">Login karo to dusre users se compete kar sako.</p>') +
-      '<button type="button" class="lb-cta" data-act="tests">Test shuru karo</button></div></div>';
+    host.innerHTML = '<div class="lb-hero empty"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Change avatar"><img id="lbMyAvImg" src="' + avSrc(myAvatarId()) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
+      '<div class="lb-hero-txt"><small>Welcome</small><h2>' + name + '</h2><p>You have not attempted any test yet. Take a test and claim your place on the leaderboard!</p>' +
+      (fbUser() ? '' : '<p style="margin-top:6px;opacity:.92">Log in to compete with other users.</p>') +
+      '<button type="button" class="lb-cta" data-act="tests">Start a test</button></div></div>';
     return;
   }
   var total = sorted0.length;
   host.innerHTML = '<div class="lb-hero"><span class="lb-hero-glow"></span>' +
-    '<div class="lb-hero-main"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Avatar badlo"><img id="lbMyAvImg" src="' + avSrc(me.avatar) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
-    '<div class="lb-hero-txt"><small>Aapki rank</small><h2>' + name + '</h2><div class="lb-hero-rank"><b>#' + rank + '</b><span>of ' + total + ' ' + (total === 1 ? 'player' : 'players') + '</span></div></div>' +
+    '<div class="lb-hero-main"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Change avatar"><img id="lbMyAvImg" src="' + avSrc(me.avatar) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
+    '<div class="lb-hero-txt"><small>Your rank</small><h2>' + name + '</h2><div class="lb-hero-rank"><b>#' + rank + '</b><span>of ' + total + ' ' + (total === 1 ? 'player' : 'players') + '</span></div></div>' +
     '<div class="lb-ring" style="--p:' + me.pct + '"><div><b>' + me.pct + '</b><span>percentile</span></div></div></div>' +
     '<div class="lb-hero-stats"><div><b>' + me.q + '</b><span>Questions</span></div><div><b>' + r1(me.avg).toFixed(1) + '%</b><span>Avg score</span></div><div><b>' + me.tn + '</b><span>Tests</span></div><div><b>' + r1(me.rating).toFixed(1) + '</b><span>Rating</span></div></div></div>';
 }
@@ -6773,7 +6768,7 @@ function rowHTML(e, rank, metric, i){
 function renderOverall(){
   var arr = sorted(LB.list, LB.metric);
   var h = metricChips();
-  if (!arr.length) return h + '<div class="lb-empty"><b>Abhi leaderboard khali hai</b><p>Pehla test attempt karke sabse pehle apna naam yahan likhwao.</p></div>';
+  if (!arr.length) return h + '<div class="lb-empty"><b>The leaderboard is empty</b><p>Be the first to attempt a test and put your name here.</p></div>';
   h += podium(arr.slice(0, 3), LB.metric);
   h += '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
   var rest = arr.slice(3, 100);
@@ -6796,21 +6791,21 @@ function seriesCard(key, title, sub){
   var on = (LB.tab === 'series' && LB.series === key);
   return '<button type="button" class="lb-scard' + (on ? ' on' : '') + ' ' + key + '" data-series="' + key + '" aria-pressed="' + on + '">' +
     '<div class="sc-top"><span class="sc-ic">' + (key === 'ca' ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>') + '</span><div><b>' + title + '</b><small>' + sub + ' · ' + tests + ' tests · ' + b.length + ' players</small></div></div>' +
-    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>' + fmtN(top.s) + '</b><small>/ ' + total + '</small></div></div>' : '<div class="sc-none">Abhi koi attempt nahi — pehle bano topper!</div>') +
-    '<div class="sc-me">' + (myI >= 0 ? 'Aapki rank <b>#' + (myI + 1) + '</b> · ' + fmtN(b[myI].s) + ' marks · ' + b[myI].n + '/' + tests + ' tests' : 'Aapne is series me abhi attempt nahi kiya') + '</div></button>';
+    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>' + fmtN(top.s) + '</b><small>/ ' + total + '</small></div></div>' : '<div class="sc-none">No attempts yet — be the first topper!</div>') +
+    '<div class="sc-me">' + (myI >= 0 ? 'Your rank <b>#' + (myI + 1) + '</b> · ' + fmtN(b[myI].s) + ' marks · ' + b[myI].n + '/' + tests + ' tests' : 'You have not attempted this series yet') + '</div></button>';
 }
 function renderSeriesTab(){
   /* v53: one "Test Series" tab, no per-test cards — it shows only the two
      series cards (each with its whole-series topper), i.e. who is on top
      of each WHOLE series. Per-test scores are deliberately not rendered. */
   var h = '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
-  if (!seriesBoard('maths').length && !seriesBoard('ca').length) h += '<div class="lb-empty"><b>Is series me abhi kisi ne test nahi diya</b><p>Test attempt karo aur sabse pehle topper ban jao.</p></div>';
+  if (!seriesBoard('maths').length && !seriesBoard('ca').length) h += '<div class="lb-empty"><b>No one has attempted a test in this series yet</b><p>Attempt a test and become the first topper.</p></div>';
   return h;
 }
 function lbBanner(){
-  if (LB.err === 'rules') return '<div class="lb-note warn"><b>Leaderboard server se connect nahi hua.</b> Firestore rules me <code>leaderboard</code> collection ka read/write allow karna hoga. Tab tak sirf aapka apna data dikh raha hai.</div>';
-  if (LB.err === 'net') return '<div class="lb-note">Internet / server problem — purana ya sirf aapka data dikh raha hai. Refresh karke dobara try karo.</div>';
-  if (LB.err === 'auth') return '<div class="lb-note">Leaderboard me dusre users se compete karne ke liye login zaroori hai. Tab tak sirf aapka apna data dikh raha hai.</div>';
+  if (LB.err === 'rules') return '<div class="lb-note warn"><b>Could not connect to the leaderboard server.</b> Allow read/write on the <code>leaderboard</code> collection in Firestore rules. Until then, only your own data is shown.</div>';
+  if (LB.err === 'net') return '<div class="lb-note">Internet or server issue — showing old data or only your own data. Refresh and try again.</div>';
+  if (LB.err === 'auth') return '<div class="lb-note">Log in to compete with other users on the leaderboard. Until then, only your own data is shown.</div>';
   return '';
 }
 function skeleton(){ return '<div class="lb-skel"><i></i><i></i><i></i><i></i></div>'; }
@@ -7195,9 +7190,9 @@ function discardForeignStore(uid){
   return false;
 }
 function fmtLastSync(){
-  if (!lastSyncAt) return 'Abhi tak sync nahi hua';
+  if (!lastSyncAt) return 'Not synced yet';
   try { return new Date(lastSyncAt).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}); }
-  catch(e){ return 'Abhi tak sync nahi hua'; }
+  catch(e){ return 'Not synced yet'; }
 }
 function updatePill(){
   var p = $('syncStatus'); if (p){ p.textContent = STATUS_TEXT[status] || status; if (status === 'error' && lastSyncError){ try { p.title = lastSyncError; } catch(e){} } }
@@ -7350,7 +7345,7 @@ function setAuthReadyUI(ready, failed){
     var b = $(id); if (!b) return;
     if (!b.dataset.origLabel) b.dataset.origLabel = btnLabel(b);
     b.disabled = !ready;
-    if (!ready){ setBtnLabel(b, failed ? 'Internet chahiye' : 'Taiyaar ho raha hai…'); b.dataset.loading = '1'; }
+    if (!ready){ setBtnLabel(b, failed ? 'Internet required' : 'Getting ready…'); b.dataset.loading = '1'; }
     else if (b.dataset.loading === '1'){ setBtnLabel(b, b.dataset.origLabel); delete b.dataset.loading; }
   });
 }
@@ -7390,15 +7385,15 @@ function redirectErrorText(e){
   var msg = (e && e.message) || '';
   if (code === 'auth/unauthorized-domain' || msg.indexOf('unauthorized-domain') !== -1){
     if (window.location.hostname !== 'shailuk2023-create.github.io')
-      return 'Is link se login nahi hoga — Pages wale link se kholo: shailuk2023-create.github.io/testpro/';
-    return 'Login abhi allowed nahi hai — thodi der baad try karo';
+      return 'This link cannot log you in — open the Pages link: shailuk2023-create.github.io/testpro/';
+    return 'Login is not allowed right now — try again in a bit';
   }
   if (code === 'auth/account-exists-with-different-credential')
-    return 'Is email ka account pehle se hai — dobara Google dabao ya ID-password se login karo';
-  if (code === 'auth/network-request-failed') return 'Internet nahi hai — connection check karke dobara try karo';
-  if (code === 'auth/operation-not-allowed') return 'Google login Firebase console mein on nahi hai — Authentication > Sign-in method > Google enable karo';
-  if (code === 'auth/operation-not-supported-in-this-environment') return 'Is tarah (file ya preview) se Google login nahi chalta — hosted https link se kholo';
-  return 'Login mein kuch galat hua — dobara try karo';
+    return 'An account already exists for this email — press Google again or log in with email and password';
+  if (code === 'auth/network-request-failed') return 'No internet — check your connection and try again';
+  if (code === 'auth/operation-not-allowed') return 'Google login is not enabled in the Firebase console — Authentication > Sign-in method > enable Google';
+  if (code === 'auth/operation-not-supported-in-this-environment') return 'Google login does not work from a file or preview — open the hosted https link';
+  return 'Something went wrong with the login — try again';
 }
 function showGate(offline, err){
   if (window.__fbSkipped) return; /* v39: user chose Skip this session — never re-gate */
@@ -7412,9 +7407,7 @@ function showGate(offline, err){
   if (fbAuthLoading){ setAuthLoadingUI(true); openFbModal(); return; }
   if (offline){
     var note = $('fbModalNote');
-    if (note) note.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.';
-    var rn = $('fbRegNote');
-    if (rn) rn.textContent = 'Register karne ke liye internet chahiye — internet on karke dobara try karo.';
+    if (note) note.textContent = 'Internet is required to log in — turn on the internet and try again.';
   }
   if (err){
     /* v42: a password account whose Google sign-in hit account-exists gets
@@ -7456,7 +7449,7 @@ function showPwStep(user, viaLink){
   /* v48: the pw-step subtitle names Google by default; an email-link user
      arrived via link, not Google — name the right path either way. */
   var tps = document.querySelector('#fbModalRegister .fb-modal-sub .t-pw');
-  if (tps) tps.textContent = viaLink ? 'Link se login ho gaya — ab ek password rakho.' : 'Google se ho gaya — ab ek password rakho.';
+  if (tps) tps.textContent = viaLink ? 'Logged in with the link — now set a password.' : 'Signed in with Google — now set a password.';
   var epw = $('fbLinkPromptWrap'); if (epw) epw.hidden = true; /* v48: the link prompt gives way to the pw step */
   try { document.body.classList.add('fb-gated'); } catch(e){}
   var name = user.displayName || (user.email ? user.email.split('@')[0] : 'Student');
@@ -7484,7 +7477,7 @@ function captureLinkCred(e){
   if (!cred && e.credential) cred = e.credential;
   /* v42: keep the email even when the credential itself is missing (e.g.
      the page was reloaded mid-flow) — the link step still shows with the
-     known email and the submit reports 'Dobara Google button dabao' instead
+     known email and the submit reports 'Press the Google button again' instead
      of dying silently. Only when even the email is unknown do we give up. */
   fbPendingGoogleCred = cred;
   fbPendingGoogleEmail = e.email || (e.customData && e.customData.email) || null;
@@ -7528,7 +7521,7 @@ function updateSettingsAccount(){
   if (st){
     st.textContent = u
       ? ('Logged in: ' + (u.displayName || (u.email ? u.email.split('@')[0] : 'Student')) + (u.email ? ' (' + u.email + ')' : ''))
-      : 'Login nahi hai';
+      : 'Not logged in';
   }
   var ef = $('setEmailForm'); if (ef) ef.hidden = !!u;
   var cp = $('setChangePwWrap'); if (cp) cp.hidden = !u;
@@ -7538,7 +7531,7 @@ function updateSettingsAccount(){
   if (hn){
     var hnm = u ? (u.displayName || (u.email ? u.email.split('@')[0] : 'Student')) : 'Guest';
     hn.textContent = hnm;
-    var he = $('setHeroEmail'); if (he) he.textContent = u ? (u.email || '') : 'Login nahi hai';
+    var he = $('setHeroEmail'); if (he) he.textContent = u ? (u.email || '') : 'Not logged in';
     var ha = $('setHeroAvatar'), hph = $('setHeroPhoto');
     if (ha) ha.textContent = hnm.charAt(0).toUpperCase();
     if (hph){
@@ -7576,11 +7569,9 @@ function signIn(entry){
   if (!fb || !F){
     setStatus('offline');
     var note = $('fbModalNote');
-    if (note) note.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.';
-    var rn = $('fbRegNote');
-    if (rn) rn.textContent = 'Register karne ke liye internet chahiye — internet on karke dobara try karo.';
+    if (note) note.textContent = 'Internet is required to log in — turn on the internet and try again.';
     var se = $('setAuthErr');
-    if (se){ se.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.'; se.hidden = false; }
+    if (se){ se.textContent = 'Internet is required to log in — turn on the internet and try again.'; se.hidden = false; }
     return;
   }
   var provider;
@@ -7749,24 +7740,24 @@ function signOut(){ return logoutUser(); }
 function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 function emailErrorText(code){
   var map = {
-    'auth/invalid-email': 'Sahi email ID likho',
-    'auth/user-not-found': 'Account nahi bana hai — pehle register karo',
-    'auth/wrong-password': 'Galat password — dobara try karo',
-    'auth/invalid-credential': 'Email ya password galat hai — account nahi banaya hai to pehle register karo',
-    'auth/email-already-in-use': 'Ye email pehle se use mein hai — login karo',
-    'auth/weak-password': 'Password kamzor hai — kam se kam 6 akshar',
-    'auth/network-request-failed': 'Internet nahi hai — connection check karo',
-    'auth/too-many-requests': 'Bahut baar try kar liya — thodi der baad try karo',
-    'auth/requires-recent-login': 'Security ke liye dobara login karke try karo',
-    'auth/operation-not-allowed': 'Email login abhi on nahi hai — Firebase console mein Email/Password enable karo',
-    'auth/invalid-action-code': 'Link expire ho gaya — dobara link bhejo',
-    'auth/expired-action-code': 'Link expire ho gaya — dobara link bhejo',
-    'auth/quota-exceeded': 'Email limit bhari hui hai — thodi der baad ek baar try karo',
-    'auth/internal-error': 'Server me kuch gadbad hui — dobara try karo',
-    'auth/invalid-continue-uri': 'Link wapas aane ka pata galat hai — dobara try karo',
-    'auth/unauthorized-continue-uri': 'Link wapas aane ka pata allowed nahi hai'
+    'auth/invalid-email': 'Enter a valid email address',
+    'auth/user-not-found': 'No account exists — please register first',
+    'auth/wrong-password': 'Wrong password — try again',
+    'auth/invalid-credential': 'Email or password is wrong — if you have not created an account, register first',
+    'auth/email-already-in-use': 'This email is already in use — please log in',
+    'auth/weak-password': 'Password is too weak — at least 6 characters',
+    'auth/network-request-failed': 'No internet — check your connection',
+    'auth/too-many-requests': 'Too many attempts — try again in a while',
+    'auth/requires-recent-login': 'For security, log in again and try',
+    'auth/operation-not-allowed': 'Email login is not enabled — enable Email/Password in the Firebase console',
+    'auth/invalid-action-code': 'This link has expired — request a new link',
+    'auth/expired-action-code': 'This link has expired — request a new link',
+    'auth/quota-exceeded': 'The email limit is reached — try once after a while',
+    'auth/internal-error': 'Something went wrong on the server — try again',
+    'auth/invalid-continue-uri': 'The link return address is wrong — try again',
+    'auth/unauthorized-continue-uri': 'The link return address is not allowed'
   };
-  return map[code] || 'Kuch galat hua — dobara try karo';
+  return map[code] || 'Something went wrong — try again';
 }
 function errEls(which){
   return {
@@ -7789,9 +7780,9 @@ async function submitEmailAuth(which){
   var pw = (x.pw && x.pw.value) || '';
   var mode = emailMode[which];
   if (x.err){ x.err.textContent = ''; x.err.hidden = true; x.err.classList.remove('ok'); }
-  if (!validEmail(email)){ showErr(x.err, 'Sahi email ID likho'); return; }
-  if (pw.length < 6){ showErr(x.err, 'Password kam se kam 6 akshar ka ho'); return; }
-  if (!fb || !F){ showErr(x.err, 'Internet nahi hai — connection check karo'); setStatus('offline'); return; }
+  if (!validEmail(email)){ showErr(x.err, 'Enter a valid email address'); return; }
+  if (pw.length < 6){ showErr(x.err, 'Password must be at least 6 characters'); return; }
+  if (!fb || !F){ showErr(x.err, 'No internet — check your connection'); setStatus('offline'); return; }
   if (x.btn) x.btn.disabled = true;
   try {
     if (mode === 'signup') await F.createUserWithEmailAndPassword(fb.auth, email, pw);
@@ -7803,7 +7794,7 @@ async function submitEmailAuth(which){
       /* v38: no account exists — take the user to the register window */
       showFbView('register');
       var re = $('fbRegErr');
-      if (re) showErr(re, 'Is email se account nahi bana hai — yahin se register karo');
+      if (re) showErr(re, 'No account exists for this email — register here');
       if (x.err){ x.err.textContent = ''; x.err.hidden = true; }
     } else showErr(x.err, emailErrorText(code));
   }
@@ -7814,8 +7805,8 @@ function toggleEmailMode(which, ev){
   emailMode[which] = (emailMode[which] === 'login') ? 'signup' : 'login';
   var mode = emailMode[which];
   var x = errEls(which);
-  if (x.btn) x.btn.textContent = (mode === 'signup') ? 'Account banao' : 'Login karein';
-  if (x.tog) x.tog.textContent = (mode === 'signup') ? 'Pehle se account hai? Login karo' : 'Naya account banao';
+  if (x.btn) x.btn.textContent = (mode === 'signup') ? 'Create account' : 'Log in';
+  if (x.tog) x.tog.textContent = (mode === 'signup') ? 'Already have an account? Log in' : 'Create a new account';
   if (x.err){ x.err.textContent = ''; x.err.hidden = true; }
 }
 async function forgotPassword(which, ev){
@@ -7823,11 +7814,11 @@ async function forgotPassword(which, ev){
   var x = errEls(which);
   var email = ((x.em && x.em.value) || '').trim();
   if (x.err){ x.err.textContent = ''; x.err.hidden = true; x.err.classList.remove('ok'); }
-  if (!validEmail(email)){ showErr(x.err, 'Pehle sahi email ID likho'); return; }
-  if (!fb || !F){ showErr(x.err, 'Internet nahi hai — connection check karo'); return; }
+  if (!validEmail(email)){ showErr(x.err, 'Enter a valid email address first'); return; }
+  if (!fb || !F){ showErr(x.err, 'No internet — check your connection'); return; }
   try {
     await F.sendPasswordResetEmail(fb.auth, email);
-    showErr(x.err, 'Reset link email par bhej diya — inbox check karo', true);
+    showErr(x.err, 'Reset link sent to your email — check your inbox', true);
   } catch(e){ showErr(x.err, emailErrorText(e && e.code)); }
 }
 /* ---------------- v48 email-link sign-in ----------------
@@ -7850,15 +7841,15 @@ async function sendEmailLink(which){
   var name = '';
   if (which === 'register') name = (( $('fbRegName') && $('fbRegName').value) || '').trim();
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
-  if (which === 'register' && !name){ showErr(errEl, 'Apna naam likho'); return; }
-  if (!validEmail(email)){ showErr(errEl, 'Sahi email ID likho'); return; }
-  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); setStatus('offline'); return; }
+  if (which === 'register' && !name){ showErr(errEl, 'Enter your name'); return; }
+  if (!validEmail(email)){ showErr(errEl, 'Enter a valid email address'); return; }
+  if (!fb || !F){ showErr(errEl, 'No internet — check your connection'); setStatus('offline'); return; }
   if (btn) btn.disabled = true;
   try {
     try { localStorage.setItem('emailForSignIn', email); } catch(e){}
     try { if (name) localStorage.setItem('nameForSignIn', name); else localStorage.removeItem('nameForSignIn'); } catch(e){}
     await F.sendSignInLinkToEmail(fb.auth, email, {url: FB_LINK_URL, handleCodeInApp: true});
-    showErr(errEl, 'Link bhej diya — email check karo, us par click karte hi andar aa jaoge', true);
+    showErr(errEl, 'Link sent — check your email; click it to log in', true);
   } catch(e){ showErr(errEl, emailErrorText(e && e.code)); }
   finally { if (btn) btn.disabled = false; }
 }
@@ -7903,8 +7894,8 @@ async function submitEmailLinkPrompt(){
   var emEl = $('fbLinkPromptEmail'), errEl = $('fbLinkPromptErr'), btn = $('fbLinkPromptBtn');
   var email = ((emEl && emEl.value) || '').trim();
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; }
-  if (!validEmail(email)){ showErr(errEl, 'Sahi email ID likho'); return; }
-  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); return; }
+  if (!validEmail(email)){ showErr(errEl, 'Enter a valid email address'); return; }
+  if (!fb || !F){ showErr(errEl, 'No internet — check your connection'); return; }
   if (btn) btn.disabled = true;
   try {
     var cred = await F.signInWithEmailLink(fb.auth, email, window.location.href);
@@ -7932,12 +7923,12 @@ async function changePassword(){
   var errEl = $('setAuthErr');
   var pw = (pwEl && pwEl.value) || '';
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
-  if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
-  if (!fb || !F || !fb.user){ showErr(errEl, 'Pehle login karo'); return; }
+  if (pw.length < 6){ showErr(errEl, 'Password must be at least 6 characters'); return; }
+  if (!fb || !F || !fb.user){ showErr(errEl, 'Please log in first'); return; }
   try {
     await F.updatePassword(fb.user, pw);
     if (pwEl) pwEl.value = '';
-    showErr(errEl, 'Password badal gaya', true);
+    showErr(errEl, 'Password changed', true);
   } catch(e){ showErr(errEl, emailErrorText(e && e.code)); }
 }
 
@@ -8001,7 +7992,7 @@ function shadowOf(store){
 }
 function diffAndPush(){
   if (!fb || !F || !fb.user) return Promise.resolve(false);
-  if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); scheduleRetry('push', function(){ diffAndPush(); }, 10000); return Promise.resolve(false); }
+  if (!ensureDb()){ setSyncError('Firestore did not open — log in again to sync'); scheduleRetry('push', function(){ diffAndPush(); }, 10000); return Promise.resolve(false); }
   /* v43: UID ownership guard — a foreign local store is discarded BEFORE
      anything is read from it or pushed from it (see the store helpers).
      The discarded data is never pushed to the current user. */
@@ -8091,7 +8082,7 @@ function pushNow(){
 }
 async function pullAndMerge(){
   if (!fb || !F || !fb.user){ if (fb && fb.user) setStatus('offline'); return false; }
-  if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
+  if (!ensureDb()){ setSyncError('Firestore did not open — log in again to sync'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
   /* v43: UID ownership guard (see diffAndPush) — discard a foreign local
      store before the cloud data is merged into it. */
   discardForeignStore(fb.user.uid);
@@ -8186,7 +8177,7 @@ async function pullAndMerge(){
 }
 async function syncNow(){
   if (!fb || !fb.user){ setStatus(navigator.onLine ? 'logged-out' : 'offline'); return false; }
-  if (!ensureDb()){ setSyncError('Firestore nahi khula — sync ke liye dobara login karo'); return false; }
+  if (!ensureDb()){ setSyncError('Firestore did not open — log in again to sync'); return false; }
   setStatus('pending');
   return await pullAndMerge();
 }
@@ -8199,11 +8190,11 @@ async function submitRegister(){
   var pw = (pwEl && pwEl.value) || '';
   var pw2 = (pw2El && pw2El.value) || '';
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
-  if (!name){ showErr(errEl, 'Apna naam likho'); return; }
-  if (!validEmail(email)){ showErr(errEl, 'Sahi email ID likho'); return; }
-  if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
-  if (pw !== pw2){ showErr(errEl, 'Dono password ek jaise likho'); return; }
-  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); setStatus('offline'); return; }
+  if (!name){ showErr(errEl, 'Enter your name'); return; }
+  if (!validEmail(email)){ showErr(errEl, 'Enter a valid email address'); return; }
+  if (pw.length < 6){ showErr(errEl, 'Password must be at least 6 characters'); return; }
+  if (pw !== pw2){ showErr(errEl, 'Both passwords must match'); return; }
+  if (!fb || !F){ showErr(errEl, 'No internet — check your connection'); setStatus('offline'); return; }
   if (btn) btn.disabled = true;
   try {
     var cred = await F.createUserWithEmailAndPassword(fb.auth, email, pw);
@@ -8214,7 +8205,7 @@ async function submitRegister(){
     if (code === 'auth/email-already-in-use'){
       showFbView('login');
       var le = $('fbAuthErr');
-      if (le) showErr(le, 'Is email se account pehle se hai — yahin se login karo');
+      if (le) showErr(le, 'An account already exists for this email — log in here');
     } else showErr(errEl, emailErrorText(code));
   } finally { if (btn) btn.disabled = false; }
 }
@@ -8224,9 +8215,9 @@ async function submitPasswordSet(){
   var pw = (pwEl && pwEl.value) || '';
   var pw2 = (pw2El && pw2El.value) || '';
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
-  if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
-  if (pw !== pw2){ showErr(errEl, 'Dono password ek jaise likho'); return; }
-  if (!fb || !F || !fb.user){ showErr(errEl, 'Pehle login karo'); return; }
+  if (pw.length < 6){ showErr(errEl, 'Password must be at least 6 characters'); return; }
+  if (pw !== pw2){ showErr(errEl, 'Both passwords must match'); return; }
+  if (!fb || !F || !fb.user){ showErr(errEl, 'Please log in first'); return; }
   if (btn) btn.disabled = true;
   try {
     try {
@@ -8246,11 +8237,11 @@ async function submitPasswordSet(){
     if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use'){
       showFbView('login');
       var le = $('fbAuthErr');
-      if (le) showErr(le, 'Is email se account pehle se hai — yahin se login karo');
+      if (le) showErr(le, 'An account already exists for this email — log in here');
       try { if (fb && F){ fbSignOutRequested = true; var so = F.signOut(fb.auth); if (so && so.catch) so.catch(function(){}); } } catch(e2){}
     }
     else if (code === 'auth/requires-recent-login')
-      showErr(errEl, 'Security ke liye dobara login karke try karo');
+      showErr(errEl, 'For security, log in again and try');
     else showErr(errEl, emailErrorText(code));
   } finally { if (btn) btn.disabled = false; }
 }
@@ -8259,7 +8250,7 @@ async function submitGoogleLink(){
   var errEl = $('fbLinkErr'), btn = $('fbLinkBtn');
   var pw = (pwEl && pwEl.value) || '';
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; }
-  if (!pw){ showErr(errEl, 'Password daalo'); return; }
+  if (!pw){ showErr(errEl, 'Enter your password'); return; }
   if (!fbPendingGoogleCred || !fbPendingGoogleEmail){
     /* v42: the page was reloaded mid-flow (pending credential lives in
        memory only) — send the user back to the login view; one more Google
@@ -8269,12 +8260,12 @@ async function submitGoogleLink(){
     clearLinkStep();
     showFbView('login');
     var le = $('fbAuthErr');
-    if (le) showErr(le, 'Dobara Google button dabao');
-    showErr(errEl, 'Dobara Google button dabao');
+    if (le) showErr(le, 'Press the Google button again');
+    showErr(errEl, 'Press the Google button again');
     openFbModal();
     return;
   }
-  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); return; }
+  if (!fb || !F){ showErr(errEl, 'No internet — check your connection'); return; }
   if (btn) btn.disabled = true;
   fbLinkingInProgress = true;
   try {
@@ -8288,18 +8279,18 @@ async function submitGoogleLink(){
   } catch(e){
     var code = e && e.code;
     if (code === 'auth/wrong-password' || code === 'auth/invalid-credential')
-      showErr(errEl, 'Galat password — wahi password daalo jo ID-password login me use karte ho');
+      showErr(errEl, 'Wrong password — enter the password you use for email-password login');
     else if (code === 'auth/user-not-found'){
       clearLinkStep();
       showFbView('login');
       var le = $('fbAuthErr');
-      if (le) showErr(le, 'Is email se account nahi mila — pehle register karo');
+      if (le) showErr(le, 'No account found for this email — register first');
       openFbModal();
     }
     else if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use')
-      showErr(errEl, 'Ye Google account kisi aur ID se linked hai');
+      showErr(errEl, 'This Google account is linked to another ID');
     else if (code === 'auth/network-request-failed')
-      showErr(errEl, 'Internet nahi hai — connection check karo');
+      showErr(errEl, 'No internet — check your connection');
     else showErr(errEl, emailErrorText(code));
   } finally { fbLinkingInProgress = false; if (btn) btn.disabled = false; }
 }
@@ -8428,11 +8419,11 @@ async function boot(){
        silently stop persisting. A failure must never block boot (guarded;
        the app falls back to the SDK default and warns once via the sync
        status). */
-    try { if (F.setPersistence && F.browserLocalPersistence) await F.setPersistence(auth, F.browserLocalPersistence); } catch(e){ setSyncError('Login session save nahi hui — dobara login karna pad sakta hai'); }
+    try { if (F.setPersistence && F.browserLocalPersistence) await F.setPersistence(auth, F.browserLocalPersistence); } catch(e){ setSyncError('Login session could not be saved — you may need to log in again'); }
     /* v40: persistent Firestore first, plain (in-memory) fallback when
        IndexedDB is unavailable — sync must not silently die. */
     var db = initDb(app);
-    if (!db) setSyncError('Firestore nahi khula — sync band hai');
+    if (!db) setSyncError('Firestore did not open — sync is off');
     fb = {app: app, auth: auth, db: db, user: null};
     window.__fb = fb;
     fbSdkReady = true; /* v43: SDK loaded — buttons still stay disabled until the first auth check settles (setAuthLoadingUI) */
@@ -8443,8 +8434,7 @@ async function boot(){
     ['fbRegErr', 'fbAuthErr'].forEach(function(id){
       var el = $(id); if (el){ el.textContent = ''; el.hidden = true; }
     });
-    var rn2 = $('fbRegNote'); if (rn2) rn2.textContent = 'Register karne ke liye pehli baar internet chahiye.';
-    var mn2 = $('fbModalNote'); if (mn2) mn2.textContent = 'Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.';
+    var mn2 = $('fbModalNote'); if (mn2) mn2.textContent = 'Log in to open the app. Internet is required the first time.';
     var redirectResult = null, redirectErr = null, authEntry = null;
     try { redirectResult = await F.getRedirectResult(auth); } catch(e){ redirectErr = e; }
     try { authEntry = sessionStorage.getItem('fbAuthEntry'); sessionStorage.removeItem('fbAuthEntry'); } catch(e){}
