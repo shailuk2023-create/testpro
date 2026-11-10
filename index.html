@@ -1717,18 +1717,34 @@ body.fb-gated::before{content:none!important}
 /* rows */
 .lb-list{display:flex;flex-direction:column;gap:8px}
 .lb-list.pinned{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border2)}
-.lb-row{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);animation:lbRise .4s ease both;animation-delay:calc(var(--i,0)*.035s);transition:transform .15s,border-color .15s}
+.lb-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 14px 10px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);animation:lbRise .4s ease both;animation-delay:calc(var(--i,0)*.035s);transition:transform .15s,border-color .15s}
 .lb-row:hover{transform:translateY(-1px);border-color:var(--teal)}
 .lb-row.me{border-color:var(--teal);background:linear-gradient(90deg,rgba(0,150,181,.12),var(--surface) 70%);box-shadow:0 0 0 1px var(--teal)}
 .lb-rk{width:28px;text-align:center;font-weight:900;font-size:15px;color:var(--muted)}
 .lb-rn{flex:1;min-width:0}
 .lb-rn b{display:block;font-size:14.5px;font-weight:800;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-rn small{font-size:11.5px;color:var(--muted)}
-.lb-rv{text-align:right;flex-shrink:0}
+.lb-rv{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
 .lb-rv b{font-size:17px;font-weight:900;color:var(--text-strong)}
 .lb-rv em{font-style:normal;font-size:11px;font-weight:700;color:var(--muted);margin-left:3px}
-.lb-pct{display:inline-block;margin-top:3px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;color:#047857;background:rgba(16,185,129,.14)}
-[data-theme="dark"] .lb-pct{color:#6ee7b7}
+.lb-acc{display:inline-block;margin-top:3px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;color:#0369a1;background:rgba(14,165,233,.14)}
+[data-theme="dark"] .lb-acc{color:#7dd3fc}
+
+/* v59 coins */
+.lb-coins{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;min-width:82px;padding:8px 10px;border-radius:20px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.28)}
+.lb-coins .coin-ic{font-size:22px;line-height:1}
+.lb-coins b{font-size:21px;font-weight:900;color:#fde047}
+.lb-coins span{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;opacity:.92}
+.lb-coins-note{border-color:rgba(245,158,11,.45);background:linear-gradient(90deg,rgba(253,224,71,.14),var(--surface));color:var(--text)}
+.lb-coin-btn{flex-shrink:0;border:1px solid var(--border2);background:var(--surface3);color:var(--text-strong);border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800;cursor:pointer}
+.lb-coin-btn:hover{border-color:var(--teal)}
+.lb-breakdown{flex-basis:100%;margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--surface3);border:1px solid var(--border)}
+.lb-bd-title{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.lb-bd-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text);padding:3px 0}
+.lb-bd-row b{font-weight:900;color:var(--text-strong)}
+.lb-bd-row.total{border-top:1px dashed var(--border2);margin-top:4px;padding-top:7px}
+.lb-bd-note{font-size:12.5px;color:var(--muted)}
+@media(max-width:640px){.lb-coins{min-width:64px;padding:6px 8px}.lb-coins b{font-size:17px}.lb-coins .coin-ic{font-size:18px}}
 
 /* medals */
 .lb-medal{display:inline-block;width:calc(var(--ms)*.8);height:var(--ms);filter:drop-shadow(0 4px 5px rgba(0,0,0,.28));flex-shrink:0}
@@ -1801,6 +1817,65 @@ body.fb-gated::before{content:none!important}
 }
 @media(prefers-reduced-motion:reduce){.pd,.lb-row,.pd-crown,.lb-skel i{animation:none!important}}
 
+</style>
+<style id="coinAnimStyle">
+/* v59 Worker C — coin animation & celebration. CSS-only art: the gold coin
+   is a CSS circle (no external assets, no libraries). */
+.coin-ic{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;flex:0 0 auto;
+  background:radial-gradient(circle at 35% 30%,#fef08a 0%,#facc15 45%,#eab308 75%,#a16207 100%);
+  color:#713f12;font-size:15px;font-weight:900;line-height:1;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),inset 0 -2px 4px rgba(0,0,0,.28),0 2px 5px rgba(0,0,0,.25);
+  text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.coin-ic::before{content:"\20B9";font-size:14px}
+/* pop-in for coins / rows */
+@keyframes coinPop{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.25) rotate(8deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes coinFly{0%{transform:translateY(14px) scale(.4);opacity:0}55%{transform:translateY(-10px) scale(1.15);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes coinRowIn{from{transform:translateX(-14px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes coinCardIn{from{transform:translateY(16px) scale(.92);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes coinToastIn{from{transform:translate(-50%,16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes coinShine{0%{transform:translateX(-120%) skewX(-18deg)}100%{transform:translateX(240%) skewX(-18deg)}}
+.coin-pop{animation:coinPop .45s cubic-bezier(.34,1.56,.64,1) both}
+.coin-fly{animation:coinFly .6s cubic-bezier(.34,1.56,.64,1) both}
+/* ---- celebration overlay ---- */
+#coinCelebration{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:18px;
+  background:rgba(15,23,42,.55);backdrop-filter:blur(2px)}
+#coinCelebration[hidden]{display:none}
+.coin-celeb-card{position:relative;width:min(360px,94vw);border-radius:20px;padding:22px 20px 18px;text-align:center;
+  background:linear-gradient(160deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%);color:#451a03;
+  box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 0 0 1px rgba(180,83,9,.25);overflow:hidden;
+  animation:coinCardIn .35s cubic-bezier(.34,1.56,.64,1) both}
+.coin-celeb-card::after{content:"";position:absolute;top:0;bottom:0;width:34px;left:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:coinShine 1.6s ease .5s both;pointer-events:none}
+.coin-celeb-x{position:absolute;top:8px;right:10px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(69,26,3,.1);
+  color:#451a03;font-size:18px;line-height:1;cursor:pointer}
+.coin-celeb-coins{display:flex;justify-content:center;gap:6px;margin:2px 0 8px}
+.coin-celeb-coins .coin-ic{width:34px;height:34px;font-size:19px}
+.coin-celeb-coins .coin-ic::before{font-size:18px}
+.coin-celeb-coins .coin-ic:nth-child(2){animation-delay:.08s}
+.coin-celeb-coins .coin-ic:nth-child(3){animation-delay:.16s}
+.coin-celeb-title{margin:0 0 2px;font-size:20px;font-weight:900}
+.coin-celeb-sub{margin:0 0 12px;font-size:13px;opacity:.75}
+.coin-celeb-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.coin-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.75);border:1px solid rgba(180,83,9,.18);
+  border-radius:12px;padding:8px 12px;animation:coinRowIn .4s ease both}
+.coin-row:nth-child(2){animation-delay:.12s}.coin-row:nth-child(3){animation-delay:.24s}
+.coin-row .coin-lbl{flex:1;text-align:left;font-size:14px;font-weight:700}
+.coin-row .coin-val{font-size:16px;font-weight:900;color:#92400e}
+.coin-celeb-total{display:flex;align-items:center;justify-content:space-between;background:#451a03;color:#fde68a;
+  border-radius:12px;padding:10px 14px;font-size:15px;font-weight:700}
+.coin-celeb-total b{font-size:22px;font-weight:900;color:#facc15}
+.coin-celeb-btn{margin-top:14px;width:100%;border:none;border-radius:12px;padding:12px;font-size:16px;font-weight:800;cursor:pointer;
+  background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#451a03;box-shadow:0 4px 14px rgba(245,158,11,.45)}
+/* ---- daily toast ---- */
+#coinDailyToast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,0);z-index:2001;display:flex;align-items:center;gap:9px;
+  background:#451a03;color:#fef3c7;padding:11px 18px;border-radius:999px;font-size:15px;font-weight:800;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:92vw;cursor:pointer;animation:coinToastIn .35s ease both;white-space:nowrap}
+#coinDailyToast[hidden]{display:none}
+#coinDailyToast .coin-ic{width:24px;height:24px;font-size:13px}
+#coinDailyToast .coin-ic::before{font-size:12px}
+/* count-up targets: Worker B renders .coin-countup with data-coins */
+.coin-countup{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){.coin-pop,.coin-fly,.coin-row,.coin-celeb-card,.coin-celeb-card::after,#coinDailyToast{animation:none!important}}
 </style>
 </head>
 <body>
@@ -3307,7 +3382,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 58; /* must match version.txt - bump on every release */
+var APP_VERSION = 59; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -4923,6 +4998,9 @@ function renderSolution(keepOpen){
   var open = quizMode ? false : (keepOpen ? state.solOpen : true);
   state.solOpen = open;
   var reveal = !quizMode || open;
+  /* v59 coins: a revealed solution earns +5 (unique question per day,
+     cap +50/day). */
+  if (reveal){ try { if (window.CoinSystem) window.CoinSystem.awardEngagement('solution', (t.id || t.chapter || 'saved') + ':' + (q.n || '')); } catch(e){} }
   var showOrig = savedQuizMode ? false : (!state.reattemptMode || re != null);
   // badge + marks always show the ORIGINAL attempt (never changed by re-attempt)
   var status = solStatus(i);
@@ -5280,6 +5358,10 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   pushHomeBackGuard();
   applyProfile();
   renderList();
+  /* v59 coins: daily-open award (first open of the day; +50, +100 on a
+     7+ day streak). Deferred one tick so window.CoinSystem (defined in
+     the tp-coins script below) exists when it fires. */
+  setTimeout(function(){ try { if (window.CoinSystem) window.CoinSystem.awardEngagement('open'); } catch(e){} }, 0);
   window.addEventListener('online', checkAppUpdate);
   checkAppUpdate();
   syncPaletteToggle();
@@ -6202,18 +6284,22 @@ attachSwipe($('solScroll'),
 /* ================= TESTPRO v50 — Leaderboard + Avatars =================
    Port of the TESTPRO__17 (v46) leaderboard design onto the v49 master.
    Firestore: collection 'leaderboard', doc id = uid, fields
-   {name, avatar, q, att, tn, avg, rating, t, u}.
+   {name, avatar, q, att, tn, avg, rating, coins, acc, t, u} (v59:
+   coins = CoinSystem.total(), acc = mean best-attempt accuracy, 1 decimal).
    rating = round1(0.6*avg + 0.4*vol), vol = min(100, q/totalPool*100);
    q = correct+wrong across BEST attempt per test (v50 contract — the
    reference summed ALL attempts; that is deliberately NOT copied).
    att = total attempts (reference semantics). tn = tests with attempts.
    avg = mean of best-attempt % per test.
-   Percentile (rank formula): pct = round(100 * (1 - (rank-1)/total)) on the
-   overall-rating rank; rank 1 -> 100; total <= 1 -> 100. Shown with class
-   lb-pct (not the reference's .lb-pill).
+   v59 coins: the board ranks by `coins` (desc) and shows avg accuracy
+   (`acc`) in place of the old rating display; coin totals come from the
+   doc fields `coins`/`acc` (Worker A publishes them) with a CoinSystem
+   engine fallback over the per-test `t` map (see entryCoins).
    Publish: only when tn > 0, debounced 3500 ms, skip offline/guest; after a
    permission-denied publish failure, no retry until forced (lbPublish(true)).
-   Fetch: orderBy('rating','desc'), limit 300. Cache: tp_lb_cache_v1.
+   Fetch: orderBy('coins','desc'), limit 300. Cache: tp_lb_cache_v1.
+   v59: ranking is by coins desc (rating stays in old docs but no longer
+   drives ranking); the realtime listener uses the same coins query.
    Firestore fns come from this script's own dynamic import (reference
    pattern) — the v49 F map is untouched.
    Avatar picker is an INLINE grid #avatarGrid in Settings (not the
@@ -6507,7 +6593,7 @@ function openPicker(){
 }
 
 /* ============================ LEADERBOARD DATA ============================ */
-var LB = {tab: 'overall', metric: 'rating', series: 'maths', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false};
+var LB = {tab: 'overall', series: 'maths', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false};
 var fsP = null;
 function fsMod(){ return fsP || (fsP = import(FS_URL)); }
 function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, ms); })]); }
@@ -6524,7 +6610,7 @@ function totalPool(){
   return n || 1;
 }
 function myEntry(){
-  var s = storeGet(), t = {}, q = 0, att = 0, tn = 0, sumPct = 0;
+  var s = storeGet(), t = {}, q = 0, att = 0, tn = 0, sumPct = 0, sumAcc = 0;
   ['tests', 'tests_ca'].forEach(function(sec){
     var map = s[sec] || {};
     Object.keys(map).forEach(function(tid){
@@ -6540,6 +6626,8 @@ function myEntry(){
       q += (best.correct || 0) + (best.wrong || 0);
       t[tid] = [r2(best.score || 0), best.correct || 0, best.wrong || 0, marks, Math.round(best.timeTaken || 0)];
       sumPct += Math.max(0, Math.min(100, (best.score || 0) / marks * 100));
+      var _att = (best.correct || 0) + (best.wrong || 0);
+      sumAcc += (best.accuracy != null ? +best.accuracy : (_att ? (best.correct || 0) / _att * 100 : 0));
       tn++;
     });
   });
@@ -6548,12 +6636,12 @@ function myEntry(){
      hota hai. (B31b pin: avg exactly 100 -> unchanged.) */
   var avg = r1(tn ? sumPct / tn : 0);
   var vol = Math.min(100, q / totalPool() * 100);
-  return {uid: myUid(), name: myName(), avatar: myAvatarId(), q: q, att: att, tn: tn, avg: avg, rating: r1(0.6 * avg + 0.4 * vol), t: t};
+  return {uid: myUid(), name: myName(), avatar: myAvatarId(), q: q, att: att, tn: tn, avg: avg, rating: r1(0.6 * avg + 0.4 * vol), coins: (window.CoinSystem ? window.CoinSystem.total() : 0), acc: r1(tn ? sumAcc / tn : 0), t: t};
 }
 function cleanEntry(x, uid){
   if (!x || typeof x !== 'object') return null;
   var e = {uid: uid || x.uid, name: String(x.name || 'Student').slice(0, 24), avatar: avValid(x.avatar) ? x.avatar : avFromName(x.name, uid || x.uid),
-    q: +x.q || 0, att: +x.att || 0, tn: +x.tn || 0, avg: +x.avg || 0, rating: +x.rating || 0, t: (x.t && typeof x.t === 'object') ? x.t : {}};
+    q: +x.q || 0, att: +x.att || 0, tn: +x.tn || 0, avg: +x.avg || 0, rating: +x.rating || 0, coins: (x.coins == null ? undefined : (+x.coins || 0)), acc: (x.acc == null ? undefined : (+x.acc || 0)), t: (x.t && typeof x.t === 'object') ? x.t : {}};
   return e.tn > 0 ? e : null;
 }
 async function lbPublish(force){
@@ -6566,7 +6654,7 @@ async function lbPublish(force){
   if (sig === LB.lastSig) return true;
   try {
     var m = await withTimeout(fsMod(), 10000);
-    var data = {name: e.name, avatar: e.avatar, q: e.q, att: e.att, tn: e.tn, avg: e.avg, rating: e.rating, t: e.t, u: Date.now()};
+    var data = {name: e.name, avatar: e.avatar, q: e.q, att: e.att, tn: e.tn, avg: e.avg, rating: e.rating, coins: e.coins, acc: e.acc, t: e.t, u: Date.now()};
     await withTimeout(m.setDoc(m.doc(fb.db, 'leaderboard', fb.user.uid), data), 10000);
     LB.lastSig = sig; LB.pubErr = '';
     return true;
@@ -6576,7 +6664,7 @@ function lbSchedulePublish(force){
   if (LB.pubTimer) clearTimeout(LB.pubTimer);
   LB.pubTimer = setTimeout(function(){ LB.pubTimer = null; lbPublish(!!force); }, 3500);
 }
-function lbQuery(m, fb){ return m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('rating', 'desc'), m.limit(300)); }
+function lbQuery(m, fb){ return m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('coins', 'desc'), m.limit(300)); }
 async function lbFetch(){
   var fb = window.__fb;
   if (!fb || !fb.db || !fb.user) { var er = new Error('no-auth'); er.code = 'no-auth'; throw er; }
@@ -6595,6 +6683,10 @@ function lbLoadCache(){
 }
 function lbUseLocalMe(){
   var me = myEntry(), uid = me.uid;
+  /* v59 (render-side only): attach coin totals to the local entry so
+     the own row / hero render coins even before the publish path
+     (Worker A) writes coins into the doc. */
+  me.coins = entryCoins(me); me.acc = entryAcc(me);
   var list = LB.list.filter(function(e){ return e.uid !== uid; });
   if (me.tn) list.push(me);
   LB.list = list;
@@ -6624,7 +6716,7 @@ async function lbRefresh(){
 }
 
 /* ============================ REALTIME (v52) ============================ */
-/* Live listener on the SAME query the fetch uses (rating desc, limit 300).
+/* Live listener on the SAME query the fetch uses (coins desc, limit 300).
    While the leaderboard view is open, any entry change re-renders the board
    without reopening or tapping refresh. The listener is owned by the view:
    setView('leaderboard') subscribes, leaving the view (or logout)
@@ -6676,22 +6768,70 @@ function lbUnsubscribe(){
   LB.live = false;
 }
 
-/* ============================ ANALYSIS ============================ */
-/* v50: percentile by OVERALL-RATING rank (contract formula):
-   pct = round(100 * (1 - (rank-1)/total)); rank 1 -> 100; total <= 1 -> 100.
-   The reference's pctOf/analyze (fraction-below + ties on q/avg) is NOT used. */
-function rankPct(list){
-  var arr = list.slice().sort(function(a, b){ return (b.rating - a.rating) || (b.q - a.q); });
-  var n = arr.length;
-  arr.forEach(function(e, i){ e.pct = n <= 1 ? 100 : Math.round(100 * (1 - i / n)); });
+/* ============================ COINS (v59) ============================ */
+/* v59: the leaderboard ranks by COINS (desc), not rating; avg accuracy
+   is shown in the rows, podium and hero. The old rating-rank and
+   metric-table helpers are removed — nothing outside this view read
+   the old per-rank number (only the hero ring, the rows and the
+   metric chips used it, all rewritten here).
+   Coin totals come from the doc fields `coins`/`acc` (published by
+   Worker A); entries without them fall back to the CoinSystem engine
+   over the per-test `t` map, and to 0 when the engine is absent.
+   testCoinsFromEntry is called with the per-test `t`-map record
+   [score, correct, wrong, marks, timeTaken]; if that returns a
+   non-number, the {score, correct, wrong, marks, timeTaken} object
+   form is tried once, then 0. The formula itself is NEVER
+   reimplemented here. */
+function coinSys(){ return window.CoinSystem || null; }
+function testCoins(rec){
+  var CS = coinSys();
+  if (!CS || typeof CS.testCoinsFromEntry !== 'function') return 0;
+  var c;
+  try { c = CS.testCoinsFromEntry(rec); } catch (e) { c = NaN; }
+  if (typeof c !== 'number' || !isFinite(c)){
+    try { c = CS.testCoinsFromEntry({score: rec[0], correct: rec[1], wrong: rec[2], marks: rec[3], timeTaken: rec[4]}); } catch (e2) { c = NaN; }
+  }
+  return (typeof c === 'number' && isFinite(c)) ? Math.max(0, Math.round(c)) : 0;
 }
-var METRICS = {
-  rating: {label: 'Overall', unit: 'pts', val: function(e){ return r1(e.rating).toFixed(1); }, cmp: function(a, b){ return (b.rating - a.rating) || (b.q - a.q); }},
-  q: {label: 'Questions', unit: 'Qs', val: function(e){ return String(e.q); }, cmp: function(a, b){ return (b.q - a.q) || (b.rating - a.rating); }},
-  avg: {label: 'Avg Score', unit: '%', val: function(e){ return r1(e.avg).toFixed(1); }, cmp: function(a, b){ return (b.avg - a.avg) || (b.tn - a.tn); }},
-  pct: {label: 'Percentile', unit: '%ile', val: function(e){ return String(e.pct); }, cmp: function(a, b){ return (b.pct - a.pct) || (b.rating - a.rating); }}
-};
-function sorted(list, metric){ return list.slice().sort(METRICS[metric].cmp); }
+function entryCoins(e){
+  if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins));
+  var sum = 0, ok = false;
+  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var c = testCoins(e.t[tid]); if (c){ sum += c; ok = true; } }); }
+  return ok ? sum : 0;
+}
+function entryAcc(e){
+  if (e && typeof e.acc === 'number' && isFinite(e.acc)) return r1(e.acc);
+  var c = 0, w = 0;
+  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var r = e.t[tid]; c += +r[1] || 0; w += +r[2] || 0; }); }
+  return (c + w) ? r1(c / (c + w) * 100) : 0;
+}
+function sortedByCoins(list){ return list.slice().sort(function(a, b){ return (entryCoins(b) - entryCoins(a)) || (b.q - a.q); }); }
+function coinBreakdown(){
+  var CS = coinSys();
+  if (!CS || typeof CS.breakdown !== 'function') return null;
+  var b;
+  try { b = CS.breakdown(); } catch (e) { return null; }
+  if (!b || typeof b !== 'object') return null;
+  var num = function(v){ return (typeof v === 'number' && isFinite(v)) ? Math.round(v) : 0; };
+  return {score: num(b.score), accuracy: num(b.accuracy), time: num(b.time), engagement: num(b.engagement),
+    total: (typeof b.total === 'number' && isFinite(b.total)) ? Math.round(b.total) : (num(b.score) + num(b.accuracy) + num(b.time) + num(b.engagement))};
+}
+/* Per-series coin totals: sum of testCoins over that series' tests.
+   Sorted by coins desc (marks, then tests, as tiebreaks). The
+   marks-based seriesBoard is kept untouched — it still serves the
+   Tests-tab picker topper line (fillSeriesToppers), which is
+   outside the leaderboard view. */
+function seriesCoinsBoard(key){
+  var ids = {}; seriesTests(key).forEach(function(t){ ids[t.id] = 1; });
+  var arr = [];
+  LB.list.forEach(function(e){
+    var s = 0, n = 0, coins = 0;
+    Object.keys(e.t || {}).forEach(function(tid){ if (ids[tid]){ var r = e.t[tid]; s += +r[0] || 0; n++; coins += testCoins(r); } });
+    if (n) arr.push({e: e, s: r2(s), n: n, coins: coins});
+  });
+  arr.sort(function(a, b){ return (b.coins - a.coins) || (b.s - a.s) || (b.n - a.n); });
+  return arr;
+}
 function seriesTests(key){ return key === 'ca' ? CA_TESTS : TESTS; }
 function seriesBoard(key){
   var ids = {}; seriesTests(key).forEach(function(t){ ids[t.id] = 1; });
@@ -6736,15 +6876,14 @@ function lbRenderHero(sorted0){
   host.innerHTML = '<div class="lb-hero"><span class="lb-hero-glow"></span>' +
     '<div class="lb-hero-main"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Change avatar"><img id="lbMyAvImg" src="' + avSrc(me.avatar) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
     '<div class="lb-hero-txt"><small>Your rank</small><h2>' + name + '</h2><div class="lb-hero-rank"><b>#' + rank + '</b><span>of ' + total + ' ' + (total === 1 ? 'player' : 'players') + '</span></div></div>' +
-    '<div class="lb-ring" style="--p:' + me.pct + '"><div><b>' + me.pct + '</b><span>percentile</span></div></div></div>' +
-    '<div class="lb-hero-stats"><div><b>' + me.q + '</b><span>Questions</span></div><div><b>' + r1(me.avg).toFixed(1) + '%</b><span>Avg score</span></div><div><b>' + me.tn + '</b><span>Tests</span></div><div><b>' + r1(me.rating).toFixed(1) + '</b><span>Rating</span></div></div></div>';
+    '<div class="lb-coins"><span class="coin-ic" aria-hidden="true">🪙</span><b id="lbMyCoins" class="coin-countup" data-coins="' + entryCoins(me) + '">' + fmtN(entryCoins(me)) + '</b><span>coins</span></div></div>' +
+    '<div class="lb-hero-stats"><div><b>' + me.q + '</b><span>Questions</span></div><div><b>' + r1(me.avg).toFixed(1) + '%</b><span>Avg score</span></div><div><b>' + me.tn + '</b><span>Tests</span></div><div><b>' + entryAcc(me).toFixed(1) + '%</b><span>Avg accuracy</span></div></div></div>';
 }
-function metricChips(){
-  var h = '<div class="lb-chips" role="tablist" aria-label="Rank by">';
-  ['rating', 'q', 'avg', 'pct'].forEach(function(k){ h += '<button type="button" role="tab" class="lb-chip' + (LB.metric === k ? ' on' : '') + '" data-metric="' + k + '" aria-selected="' + (LB.metric === k) + '">' + METRICS[k].label + '</button>'; });
-  return h + '</div>';
+/* v59: one-line "How coins work" note, shown above the board on both tabs. */
+function lbCoinsNote(){
+  return '<div class="lb-note lb-coins-note"><b>🪙 How coins work:</b> coins reward your avg score (50%), accuracy (25%) and time efficiency (25%) — plus daily app opens, time spent in the app and solutions viewed.</div>';
 }
-function podium(top, metric){
+function podium(top){
   var order = [1, 0, 2], h = '<div class="lb-podium">';
   order.forEach(function(idx){
     var e = top[idx], rank = idx + 1;
@@ -6754,45 +6893,62 @@ function podium(top, metric){
     h += '<div class="pd p' + rank + ' ' + rkCls + (isMe(e) ? ' me' : '') + '" style="--i:' + idx + '">' + (rank === 1 ? '<span class="pd-crown">' + ICON.crown + '</span>' : '') +
       '<div class="pd-av">' + avImg(e, big, 'ring r' + rank) + medal(rank, rank === 1 ? 34 : 28) + '</div>' +
       '<div class="pd-name">' + esc(e.name) + (isMe(e) ? ' <i>You</i>' : '') + '</div>' +
-      '<div class="pd-val"><b>' + METRICS[metric].val(e) + '</b><small>' + METRICS[metric].unit + '</small></div>' +
-      '<div class="pd-sub">' + e.q + ' Qs · ' + r1(e.avg).toFixed(1) + '% avg</div>' +
+      '<div class="pd-val"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><small>coins</small></div>' +
+      '<div class="pd-sub">' + entryAcc(e).toFixed(1) + '% avg acc · ' + e.tn + ' tests</div>' +
       '<div class="pd-base"><b>' + rank + '</b></div></div>';
   });
   return h + '</div>';
 }
-function rowHTML(e, rank, metric, i){
-  return '<div class="lb-row' + (isMe(e) ? ' me' : '') + '" style="--i:' + Math.min(i, 14) + '"><span class="lb-rk">' + rank + '</span>' + avImg(e, 44) +
-    '<div class="lb-rn"><b>' + esc(e.name) + (isMe(e) ? ' <i>You</i>' : '') + '</b><small>' + e.q + ' Qs · ' + r1(e.avg).toFixed(1) + '% avg · ' + e.tn + ' tests</small></div>' +
-    '<div class="lb-rv"><b>' + METRICS[metric].val(e) + '<em>' + METRICS[metric].unit + '</em></b><span class="lb-pct">P' + e.pct + '</span></div></div>';
+/* v59: the OWN row carries a coin-breakdown toggle; the breakdown
+   itself comes from window.CoinSystem.breakdown() (Worker A) and is
+   NOT animated here (Worker C owns the count-up). When the engine
+   is absent the panel says so instead of showing numbers. */
+function coinBreakdownHTML(){
+  var b = coinBreakdown();
+  if (!b) return '<div class="lb-breakdown" hidden><div class="lb-bd-note">Coin breakdown will appear once the coin engine loads.</div></div>';
+  var row = function(lbl, v){ return '<div class="lb-bd-row"><span>' + lbl + '</span><b>🪙 ' + fmtN(v) + '</b></div>'; };
+  return '<div class="lb-breakdown" hidden><div class="lb-bd-title">Your coin breakdown</div>' +
+    row('Score coins', b.score) + row('Accuracy coins', b.accuracy) + row('Time coins', b.time) + row('Engagement coins', b.engagement) +
+    '<div class="lb-bd-row total"><span>Total</span><b>🪙 ' + fmtN(b.total) + '</b></div></div>';
+}
+function rowHTML(e, rank, i){
+  var me = isMe(e);
+  return '<div class="lb-row' + (me ? ' me' : '') + '" style="--i:' + Math.min(i, 14) + '"><span class="lb-rk">' + rank + '</span>' + avImg(e, 44) +
+    '<div class="lb-rn"><b>' + esc(e.name) + (me ? ' <i>You</i>' : '') + '</b><small>' + e.q + ' Qs · ' + entryAcc(e).toFixed(1) + '% avg acc · ' + e.tn + ' tests</small></div>' +
+    (me ? '<button type="button" class="lb-coin-btn" data-coin-toggle aria-label="Show coin breakdown" aria-expanded="false">🪙 Info</button>' : '') +
+    '<div class="lb-rv"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><em>coins</em><span class="lb-acc">' + entryAcc(e).toFixed(1) + '% avg acc</span></div>' +
+    (me ? coinBreakdownHTML() : '') + '</div>';
 }
 function renderOverall(){
-  var arr = sorted(LB.list, LB.metric);
-  var h = metricChips();
+  var arr = sortedByCoins(LB.list);
+  var h = '';
   if (!arr.length) return h + '<div class="lb-empty"><b>The leaderboard is empty</b><p>Be the first to attempt a test and put your name here.</p></div>';
-  h += podium(arr.slice(0, 3), LB.metric);
+  h += podium(arr.slice(0, 3));
   h += '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
   var rest = arr.slice(3, 100);
   if (rest.length){
     h += '<div class="lb-list">';
-    rest.forEach(function(e, i){ h += rowHTML(e, i + 4, LB.metric, i); });
+    rest.forEach(function(e, i){ h += rowHTML(e, i + 4, i); });
     h += '</div>';
   }
   var mi = -1; arr.forEach(function(e, i){ if (isMe(e)) mi = i; });
-  if (mi >= 100) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, LB.metric, 0) + '</div>';
+  if (mi >= 100) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, 0) + '</div>';
   return h;
 }
 function seriesCard(key, title, sub){
-  var b = seriesBoard(key), top = b[0], tests = seriesTests(key).length, myI = -1;
+  /* v59: series topper + own rank are BY COINS (per-series coin totals
+     from seriesCoinsBoard). The marks-based seriesBoard is untouched
+     and still serves the Tests-tab picker topper line. */
+  var b = seriesCoinsBoard(key), top = b[0], tests = seriesTests(key).length, myI = -1;
   b.forEach(function(x, i){ if (isMe(x.e)) myI = i; });
-  var total = seriesTests(key).reduce(function(a, t){ return a + t.marks; }, 0);
   /* On the Overall tab neither card is highlighted (no active series yet);
      on a series tab the active one is. Tapping a card always switches to
      that series' leaderboard tab. */
   var on = (LB.tab === 'series' && LB.series === key);
   return '<button type="button" class="lb-scard' + (on ? ' on' : '') + ' ' + key + '" data-series="' + key + '" aria-pressed="' + on + '">' +
     '<div class="sc-top"><span class="sc-ic">' + (key === 'ca' ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>') + '</span><div><b>' + title + '</b><small>' + sub + ' · ' + tests + ' tests · ' + b.length + ' players</small></div></div>' +
-    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>' + fmtN(top.s) + '</b><small>/ ' + total + '</small></div></div>' : '<div class="sc-none">No attempts yet — be the first topper!</div>') +
-    '<div class="sc-me">' + (myI >= 0 ? 'Your rank <b>#' + (myI + 1) + '</b> · ' + fmtN(b[myI].s) + ' marks · ' + b[myI].n + '/' + tests + ' tests' : 'You have not attempted this series yet') + '</div></button>';
+    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>🪙 ' + fmtN(top.coins) + '</b><small>coins</small></div></div>' : '<div class="sc-none">No attempts yet — be the first topper!</div>') +
+    '<div class="sc-me">' + (myI >= 0 ? 'Your rank <b>#' + (myI + 1) + '</b> · 🪙 ' + fmtN(b[myI].coins) + ' coins · ' + b[myI].n + '/' + tests + ' tests' : 'You have not attempted this series yet') + '</div></button>';
 }
 function renderSeriesTab(){
   /* v53: one "Test Series" tab, no per-test cards — it shows only the two
@@ -6815,9 +6971,8 @@ function lbRender(){
   for (var i = 0; i < tabs.length; i++){ var on = tabs[i].getAttribute('data-tab') === LB.tab; tabs[i].classList.toggle('on', on); tabs[i].setAttribute('aria-selected', on); }
   var rf = $('lbRefresh'); if (rf) rf.classList.toggle('spin', !!LB.busy);
   if (LB.state === 'loading' && !LB.list.length){ var hero = $('lbHero'); if (hero) hero.innerHTML = ''; body.innerHTML = skeleton(); return; }
-  rankPct(LB.list);
-  lbRenderHero(sorted(LB.list, 'rating'));
-  body.innerHTML = lbBanner() + (LB.tab === 'overall' ? renderOverall() : renderSeriesTab());
+  lbRenderHero(sortedByCoins(LB.list));
+  body.innerHTML = lbBanner() + lbCoinsNote() + (LB.tab === 'overall' ? renderOverall() : renderSeriesTab());
   fillSeriesToppers(); /* v50 E23: picker toppers refresh with leaderboard data */
 }
 function openLeaderboard(){
@@ -6832,12 +6987,16 @@ function openLeaderboard(){
 function wireLeaderboard(){
   var v = $('view-leaderboard'); if (!v) return;
   v.addEventListener('click', function(e){
-    var t = e.target.closest('[data-tab],[data-metric],[data-series],[data-act],#lbMyAv,#lbBack,#lbRefresh'); if (!t) return;
+    var t = e.target.closest('[data-tab],[data-series],[data-act],[data-coin-toggle],#lbMyAv,#lbBack,#lbRefresh'); if (!t) return;
     if (t.id === 'lbBack'){ appBack('list'); return; }
     if (t.id === 'lbRefresh'){ lbRefresh(); try { lbSubscribe(); } catch (e) {} return; }
     if (t.id === 'lbMyAv'){ openPicker(); return; }
     if (t.hasAttribute('data-tab')){ var tab = t.getAttribute('data-tab'); LB.tab = tab; if (tab !== 'overall') LB.series = tab; lbRender(); window.scrollTo(0, 0); return; }
-    if (t.hasAttribute('data-metric')){ LB.metric = t.getAttribute('data-metric'); lbRender(); return; }
+    if (t.hasAttribute('data-coin-toggle')){
+      var row = t.closest('.lb-row'), bd = row ? row.querySelector('.lb-breakdown') : null;
+      if (bd){ var open = bd.hidden; bd.hidden = !open; t.setAttribute('aria-expanded', String(open)); t.setAttribute('aria-label', open ? 'Hide coin breakdown' : 'Show coin breakdown'); }
+      return;
+    }
     if (t.hasAttribute('data-series')){ var k = t.getAttribute('data-series'); LB.tab = 'series'; LB.series = k; lbRender(); window.scrollTo(0, 0); return; }
     var a = t.getAttribute('data-act');
     if (a === 'tests') goTests();
@@ -6978,6 +7137,347 @@ window.__lb = {open: openLeaderboard, schedulePublish: lbSchedulePublish, applyA
 window.openLeaderboard = openLeaderboard;
 })();
 </script>
+<script id="tp-coins">
+'use strict';
+/* ================= TESTPRO v59 — Coin System (engine + data) =================
+   Formula (per test, BEST attempt only — re-attempts can only improve, never
+   add; anti-farming):
+     scorePct = best.score / marks * 100; score coins = round(scorePct * 10)
+       (0-1000, the main factor, 50%).
+     accPct = best attempt's accuracy field (computed correct/(correct+wrong)
+       * 100 when the field is missing); accuracy coins = round(accPct * 5)
+       (0-500, 25%).
+     allotted = marks * 70s; timeEff = max(0, 100 - timeTaken/allotted * 100);
+       time coins = round(timeEff * 5) (0-500, 25%).
+     Per-test coins = score + accuracy + time (max 2000). Negative scores
+     clamp to 0 score coins (the formula ranges start at 0).
+   Engagement coins (daily caps, local calendar dates YYYY-MM-DD):
+     open: +50 on the first open of the day; +100/day when the streak is
+       >= 7 consecutive days (lastOpenDate + streak tracked).
+     usage: +10 per 10 minutes of active use (visible tab), capped +100/day.
+     solution: +5 per solution viewed (unique question per day), capped
+       +50/day.
+   Total coins = sum(best-attempt test coins over all attempted tests, both
+   series) + lifetime engagement coins (store.coins.eng).
+   Storage: test coins are DERIVED from existing attempt history — no new
+   storage for them. Engagement lives in store.coins and rides the EXISTING
+   sync: it is pushed inside the users/{uid}/profile/data doc (merge:true)
+   and pulled back from the same doc — see shadowOf / diffAndPush /
+   pullAndMerge (v59 notes there). No new collection, no new doc, no new
+   sync path. The per-day ledger coins.days records which day each
+   engagement coin came from, so the cross-device merge (mergeCoins) can
+   keep different days' coins and never award the same day's open twice.
+   No CSS, no view rendering, no animation in this block
+   (Workers B/C own those). */
+function defaultCoins(){
+  return {eng: 0, lastOpenDate: '', streak: 0, day: '', usageSecs: 0, usageCoins: 0, solCoins: 0, solIds: [], days: {}};
+}
+function getCoins(store){
+  var c = (store && store.coins) || null;
+  if (!c || typeof c !== 'object'){ c = defaultCoins(); if (store) store.coins = c; return c; }
+  if (typeof c.eng !== 'number') c.eng = 0;
+  if (typeof c.lastOpenDate !== 'string') c.lastOpenDate = '';
+  if (typeof c.streak !== 'number') c.streak = 0;
+  if (typeof c.day !== 'string') c.day = '';
+  if (typeof c.usageSecs !== 'number') c.usageSecs = 0;
+  if (typeof c.usageCoins !== 'number') c.usageCoins = 0;
+  if (typeof c.solCoins !== 'number') c.solCoins = 0;
+  if (!Array.isArray(c.solIds)) c.solIds = [];
+  /* v59-A2 per-day ledger: {YYYY-MM-DD: {open, usage, usageSecs, sol,
+     solIds}} — the merge key for UID sync (see mergeCoins). Entries are
+     normalised to canonical values (usage/sol derived from usageSecs /
+     solIds, so a stored entry can never disagree with its own counters)
+     and pruned to the most recent 31 days; pruned days' coins stay in
+     `eng` (they move into the merge base), so pruning never loses coins. */
+  if (!c.days || typeof c.days !== 'object' || Array.isArray(c.days)) c.days = {};
+  Object.keys(c.days).forEach(function(k){
+    var e = coinDayEntry(c, k);
+    e.usage = Math.min(100, Math.floor(e.usageSecs / 600) * 10);
+    e.sol = Math.min(50, e.solIds.length * 5);
+  });
+  var _dk = Object.keys(c.days).sort();
+  while (_dk.length > 31) delete c.days[_dk.shift()];
+  return c;
+}
+function coinToday(d){
+  d = d || new Date();
+  var m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+}
+function coinYesterday(todayStr){
+  var d = new Date(todayStr + 'T12:00:00');
+  d.setDate(d.getDate() - 1);
+  return coinToday(d);
+}
+/* Per-day ledger entry for one date (created/normalised in place). */
+function coinDayEntry(c, dateStr){
+  if (!c.days || typeof c.days !== 'object') c.days = {};
+  var e = c.days[dateStr];
+  if (!e || typeof e !== 'object') e = c.days[dateStr] = {open: 0, usage: 0, usageSecs: 0, sol: 0, solIds: []};
+  if (typeof e.open !== 'number') e.open = 0;
+  if (typeof e.usage !== 'number') e.usage = 0;
+  if (typeof e.usageSecs !== 'number') e.usageSecs = 0;
+  if (typeof e.sol !== 'number') e.sol = 0;
+  if (!Array.isArray(e.solIds)) e.solIds = [];
+  return e;
+}
+/* Canonical per-day sum: usage/sol are DERIVED from usageSecs/solIds (not
+   trusted from the stored fields), so a raw cloud/stash entry whose fields
+   disagree with its counters can never double-count. */
+function coinDaysSum(days){
+  var s = 0;
+  Object.keys(days || {}).forEach(function(k){
+    var e = days[k] || {};
+    s += (+e.open || 0)
+      + Math.min(100, Math.floor((+e.usageSecs || 0) / 600) * 10)
+      + Math.min(50, (Array.isArray(e.solIds) ? e.solIds.length : 0) * 5);
+  });
+  return s;
+}
+/* Per-day ledger merge (cloud pull + orphan-stash restore), v59-A2.
+   The ledger `coins.days[YYYY-MM-DD] = {open, usage, usageSecs, sol,
+   solIds}` records WHICH day each engagement coin came from, so two
+   devices that earned on DIFFERENT days never lose each other's coins
+   (the old eng-max merge dropped one side: both devices' eng started
+   from the same base, so max kept only one day's award).
+   Rules, per date:
+     open   = MAX (the same day's open is ONE award — 50, or 100 on a 7+
+              day streak — never summed, so a second device opening the
+              same day adds nothing).
+     usage  = MAX of usageSecs, coins recomputed min(100, floor(secs/600)*10)
+              (usageSecs is a cumulative counter: summing it would
+              double-count minutes already synced on a later pull; the
+              daily cap bounds the divergent same-day loss).
+     sol    = UNION of solIds, coins = min(50, 5 * |union|) (a question
+              viewed on both devices counts once; different questions add).
+   Lifetime eng is then rebuilt as max(dstBase, srcBase) + sum(merged days),
+   where base = eng - sum(own days) is the pre-ledger / untracked part.
+   When either side has NO days ledger (a pre-A2 cloud doc), the merge
+   falls back to the old monotonic rule (eng = max, later counters win),
+   so old data is never corrupted by a ledger it does not have.
+   Streak-continuation fix (both paths): the boot open award fires before
+   auth settles, so a device can award today with a streak computed from a
+   local base that never saw the cloud's yesterday streak. If src's
+   lastOpenDate is exactly the day before dst's, today continues src's
+   streak: streak = src.streak + 1, and the open award is topped up to
+   the true amount (50 -> 100 when the true streak reaches 7).
+   Returns true when dst changed. */
+function mergeCoins(dst, src){
+  if (!src || typeof src !== 'object') return false;
+  if (!dst || typeof dst !== 'object') return false;
+  var changed = false;
+  var ledger = dst.days && typeof dst.days === 'object' && !Array.isArray(dst.days) &&
+               src.days && typeof src.days === 'object' && !Array.isArray(src.days);
+  if (ledger){
+    var mergedDays = {};
+    [dst.days, src.days].forEach(function(days){
+      Object.keys(days || {}).forEach(function(date){
+        var e = days[date] || {};
+        var m = mergedDays[date];
+        if (!m) m = mergedDays[date] = {open: 0, usage: 0, usageSecs: 0, sol: 0, solIds: []};
+        if ((+e.open || 0) > m.open) m.open = +e.open || 0;
+        if ((+e.usageSecs || 0) > m.usageSecs) m.usageSecs = +e.usageSecs || 0;
+        m.usage = Math.min(100, Math.floor(m.usageSecs / 600) * 10);
+        (Array.isArray(e.solIds) ? e.solIds : []).forEach(function(k){
+          if (m.solIds.indexOf(k) === -1) m.solIds.push(k);
+        });
+        m.sol = Math.min(50, m.solIds.length * 5);
+      });
+    });
+    var _mk = Object.keys(mergedDays).sort();
+    while (_mk.length > 31) delete mergedDays[_mk.shift()];
+    var mergedSum = coinDaysSum(mergedDays);
+    var dstBase = Math.max(0, (+dst.eng || 0) - coinDaysSum(dst.days));
+    var srcBase = Math.max(0, (+src.eng || 0) - coinDaysSum(src.days));
+    var newEng = Math.max(dstBase, srcBase) + mergedSum;
+    if (JSON.stringify(dst.days) !== JSON.stringify(mergedDays)){ dst.days = mergedDays; changed = true; }
+    if (newEng !== (+dst.eng || 0)){ dst.eng = newEng; changed = true; }
+    var latest = Object.keys(mergedDays).sort().pop() || '';
+    if (latest && (!dst.day || latest >= dst.day)){
+      var le = mergedDays[latest];
+      var _prevCounters = JSON.stringify([dst.day, dst.usageSecs, dst.usageCoins, dst.solCoins, dst.solIds]);
+      dst.day = latest; dst.usageSecs = le.usageSecs; dst.usageCoins = le.usage;
+      dst.solCoins = le.sol; dst.solIds = le.solIds.slice();
+      if (JSON.stringify([dst.day, dst.usageSecs, dst.usageCoins, dst.solCoins, dst.solIds]) !== _prevCounters) changed = true;
+    }
+  } else {
+    /* Legacy path (no days ledger on one/both sides): Worker A verbatim. */
+    if ((+src.eng || 0) > (+dst.eng || 0)){ dst.eng = +src.eng || 0; changed = true; }
+    if (src.day && (!dst.day || src.day > dst.day)){
+      dst.day = src.day; dst.usageSecs = +src.usageSecs || 0; dst.usageCoins = +src.usageCoins || 0;
+      dst.solCoins = +src.solCoins || 0; dst.solIds = (src.solIds || []).slice(); changed = true;
+    } else if (src.day && src.day === dst.day){
+      var before = JSON.stringify(dst.solIds || []);
+      (src.solIds || []).forEach(function(k){ if ((dst.solIds || []).indexOf(k) === -1) dst.solIds.push(k); });
+      if (JSON.stringify(dst.solIds || []) !== before) changed = true;
+      if ((+src.usageSecs || 0) > (+dst.usageSecs || 0)){ dst.usageSecs = +src.usageSecs || 0; changed = true; }
+      if ((+src.usageCoins || 0) > (+dst.usageCoins || 0)){ dst.usageCoins = +src.usageCoins || 0; changed = true; }
+      if ((+src.solCoins || 0) > (+dst.solCoins || 0)){ dst.solCoins = +src.solCoins || 0; changed = true; }
+    }
+  }
+  if (src.lastOpenDate && (!dst.lastOpenDate || src.lastOpenDate > dst.lastOpenDate)){
+    dst.lastOpenDate = src.lastOpenDate; dst.streak = +src.streak || 0; changed = true;
+  } else if (src.lastOpenDate && src.lastOpenDate === dst.lastOpenDate && (+src.streak || 0) > (+dst.streak || 0)){
+    dst.streak = +src.streak || 0; changed = true;
+  }
+  /* v59-A2 streak continuation (see header): src's yesterday continues
+     into dst's already-awarded today — top the streak and the open award
+     up to the true amount. */
+  if (dst.lastOpenDate && src.lastOpenDate && src.lastOpenDate === coinYesterday(dst.lastOpenDate)){
+    var trueStreak = (+src.streak || 0) + 1;
+    if (trueStreak > (+dst.streak || 0)){
+      var trueOpen = trueStreak >= 7 ? 100 : 50;
+      var recordedOpen = (ledger && dst.days[dst.lastOpenDate]) ? (+dst.days[dst.lastOpenDate].open || 0)
+        : ((+dst.streak || 0) >= 7 ? 100 : 50);
+      if (trueOpen > recordedOpen){
+        dst.eng = (+dst.eng || 0) + (trueOpen - recordedOpen);
+        if (ledger && dst.days[dst.lastOpenDate]) dst.days[dst.lastOpenDate].open = trueOpen;
+        changed = true;
+      }
+      dst.streak = trueStreak; changed = true;
+    }
+  }
+  return changed;
+}
+function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride){
+  marks = +marks || 0;
+  if (!marks) return {score: 0, accuracy: 0, time: 0, total: 0};
+  var scoreC = Math.max(0, Math.round((+score || 0) / marks * 100 * 10));
+  var att = (+correct || 0) + (+wrong || 0);
+  var accPct = (accOverride != null && !isNaN(+accOverride)) ? +accOverride : (att > 0 ? (+correct || 0) / att * 100 : 0);
+  var accC = Math.max(0, Math.round(accPct * 5));
+  var allotted = marks * 70;
+  var timeEff = Math.max(0, 100 - (+timeTaken || 0) / allotted * 100);
+  var timeC = Math.round(timeEff * 5);
+  return {score: scoreC, accuracy: accC, time: timeC, total: scoreC + accC + timeC};
+}
+function coinBestAttempt(testId){
+  var store = storeGet();
+  var map = (String(testId).indexOf('ca-') === 0) ? (store.tests_ca || {}) : (store.tests || {});
+  var hist = [];
+  try { hist = getAttempts(map[testId]) || []; } catch (e){ hist = []; }
+  if (!hist.length) return null;
+  var best = null;
+  hist.forEach(function(a){ if (!best || (+a.score || 0) > (+best.score || 0)) best = a; });
+  return best;
+}
+function testCoinsDetail(testId){
+  var best = coinBestAttempt(testId);
+  if (!best) return null;
+  var t = null;
+  try { t = findTestById(testId); } catch (e){ t = null; }
+  var marks = t ? t.marks : ((+best.correct || 0) + (+best.wrong || 0) + (+best.skipped || 0));
+  return coinsFromParts(best.score || 0, best.correct || 0, best.wrong || 0, marks, best.timeTaken || 0, best.accuracy);
+}
+function testCoinsFromEntry(entry){
+  if (!entry || !Array.isArray(entry) || entry.length < 5) return 0;
+  var parts = coinsFromParts(entry[0], entry[1], entry[2], entry[3], entry[4], null);
+  return parts.total;
+}
+function coinBreakdown(){
+  var store = storeGet();
+  var out = {score: 0, accuracy: 0, time: 0, engagement: 0};
+  ['tests', 'tests_ca'].forEach(function(sec){
+    var map = store[sec] || {};
+    Object.keys(map).forEach(function(tid){
+      var d = testCoinsDetail(tid);
+      if (d){ out.score += d.score; out.accuracy += d.accuracy; out.time += d.time; }
+    });
+  });
+  out.engagement = (getCoins(store).eng || 0);
+  return out;
+}
+function awardEngagement(type, key){
+  try {
+    var store = storeGet();
+    var c = getCoins(store);
+    var today = coinToday();
+    var dirty = false;
+    if (c.day !== today){ c.day = today; c.usageSecs = 0; c.usageCoins = 0; c.solCoins = 0; c.solIds = []; dirty = true; }
+    var awarded = 0, openAwarded = 0;
+    if (type === 'open'){
+      if (c.lastOpenDate !== today){
+        c.streak = (c.lastOpenDate === coinYesterday(today)) ? ((+c.streak || 0) + 1) : 1;
+        c.lastOpenDate = today;
+        awarded = c.streak >= 7 ? 100 : 50;
+        openAwarded = awarded;
+      }
+    } else if (type === 'usage'){
+      var secs = (typeof key === 'number' && key > 0) ? Math.floor(key) : 0;
+      if (secs > 0){
+        c.usageSecs = (+c.usageSecs || 0) + secs;
+        var earned = Math.min(100, Math.floor(c.usageSecs / 600) * 10);
+        awarded = Math.max(0, earned - (+c.usageCoins || 0));
+        c.usageCoins = earned;
+      }
+    } else if (type === 'solution'){
+      var qk = String(key == null ? '' : key);
+      if (qk && (c.solIds || []).indexOf(qk) === -1 && (+c.solCoins || 0) < 50){
+        c.solIds.push(qk); c.solCoins = (+c.solCoins || 0) + 5; awarded = 5;
+      }
+    } else { return 0; }
+    if (awarded > 0){ c.eng = (+c.eng || 0) + awarded; dirty = true; }
+    /* v59-A2: keep the per-day ledger in sync with the legacy counters, so
+       a later merge can tell which day each coin came from. The sync marks
+       the store dirty whenever the entry actually changed — including a
+       sub-bucket usage tick (60 s, awarded 0): the old code only persisted
+       when awarded > 0, so the 60 s interval re-read the old usageSecs
+       from localStorage on every tick and usage could never reach a bucket
+       (only a single >= 600 s flush ever paid). */
+    if (c.day === today){
+      var _prevDay = JSON.stringify(c.days[today] || null);
+      var _de = coinDayEntry(c, today);
+      if (openAwarded > 0) _de.open = openAwarded;
+      _de.usageSecs = +c.usageSecs || 0;
+      _de.usage = +c.usageCoins || 0;
+      _de.sol = +c.solCoins || 0;
+      _de.solIds = (c.solIds || []).slice();
+      if (JSON.stringify(c.days[today]) !== _prevDay) dirty = true;
+    }
+    if (dirty){ store.coins = c; storeSet(store); }
+    return awarded;
+  } catch (e){ return 0; }
+}
+window.CoinSystem = {
+  testCoins: function(testId){ var d = testCoinsDetail(testId); return d ? d.total : 0; },
+  testCoinsFromEntry: testCoinsFromEntry,
+  total: function(){ var b = coinBreakdown(); return b.score + b.accuracy + b.time + b.engagement; },
+  breakdown: coinBreakdown,
+  awardEngagement: awardEngagement
+};
+/* ---- Usage tracking: one 60 s interval that only credits while the tab is
+   visible, plus a flush on hide/pagehide so the seconds since the last tick
+   are never lost. The interval is unref()ed where Node exposes it (jsdom
+   harness) so it can never keep a test process alive; in a real browser
+   unref does not exist and the guard no-ops. No DOM polling. ---- */
+var __coinUsageStart = 0;
+function coinUsageFlush(){
+  if (!__coinUsageStart) return;
+  var secs = Math.floor((Date.now() - __coinUsageStart) / 1000);
+  __coinUsageStart = Date.now();
+  if (secs > 0) awardEngagement('usage', secs);
+}
+function coinStartUsageTracking(){
+  if (window.__coinUsageTimer) return;
+  __coinUsageStart = Date.now();
+  try {
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) coinUsageFlush();
+      else __coinUsageStart = Date.now();
+    });
+    window.addEventListener('pagehide', function(){ coinUsageFlush(); });
+  } catch (e){}
+  var t = setInterval(function(){
+    if (document.hidden) return;
+    awardEngagement('usage', 60);
+    __coinUsageStart = Date.now();
+  }, 60000);
+  try { if (t && typeof t.unref === 'function') t.unref(); } catch (e){}
+  window.__coinUsageTimer = t;
+}
+coinStartUsageTracking();
+</script>
+
 
 <script>
 /* TESTPRO v37 — Firebase Auth + Firestore sync (project testpro777, user's own).
@@ -7045,6 +7545,7 @@ function freshStoreFor(dark){
      because shadow is null after a discard. */
   return {tests: {}, tests_ca: {}, saved: [], saved_ca: [],
     profile: {name: 'Student', exam: 'RRB NTPC', target: 91},
+    coins: defaultCoins(),
     dark: (dark === undefined ? false : !!dark)};
 }
 function storeOwnerUid(){
@@ -7089,6 +7590,9 @@ function storeHasData(s){
     Object.keys(m).forEach(function(tid){ n += ((m[tid] && m[tid].history) || []).length; });
   });
   n += (s.saved || []).length + (s.saved_ca || []).length;
+  /* v59-A2 coins: engagement coins alone count as data (see above). */
+  if (s.coins && ((+s.coins.eng || 0) > 0 || s.coins.lastOpenDate ||
+      (s.coins.days && Object.keys(s.coins.days).length))) return true;
   return n > 0;
 }
 function mergeStoreData(dst, src){
@@ -7136,6 +7640,12 @@ function mergeStoreData(dst, src){
     if (!dst.profile) dst.profile = {name: 'Student', exam: 'RRB NTPC', target: 91};
     dst.profile.name = src.profile.name;
     changed = true;
+  }
+  /* v59 coins: stashed engagement coins merge back with the owner (same
+     monotonic merge as the cloud pull). */
+  if (src.coins){
+    if (!dst.coins) dst.coins = defaultCoins();
+    if (mergeCoins(dst.coins, src.coins)) changed = true;
   }
   return changed;
 }
@@ -7987,7 +8497,8 @@ function shadowOf(store){
   return {
     attempts: collectAttemptIds(store),
     saved: (store.saved || []).concat(store.saved_ca || []),
-    profile: store.profile ? deepCopy(store.profile) : null
+    profile: store.profile ? deepCopy(store.profile) : null,
+    coins: store.coins ? deepCopy(store.coins) : null
   };
 }
 function diffAndPush(){
@@ -8035,9 +8546,15 @@ function diffAndPush(){
      a fresh device's default profile would otherwise overwrite the
      cloud profile (last-write-wins on a single doc). */
   var profChanged = shadow && JSON.stringify(shadow.profile) !== JSON.stringify(cur.profile);
-  if (cur.profile && profChanged){
-    var pd = deepCopy(cur.profile);
+  /* v59 coins: engagement coins ride the profile doc — a coins-only
+     change must also trigger the profile push (same doc, merge:true,
+     no new sync path). The shadow-null guard still applies: before the
+     first pull, coinsChanged is falsy and nothing pushes. */
+  var coinsChanged = shadow && JSON.stringify(shadow.coins || null) !== JSON.stringify(cur.coins || null);
+  if ((cur.profile && profChanged) || coinsChanged){
+    var pd = deepCopy(cur.profile || {name: 'Student', exam: 'RRB NTPC', target: 91});
     pd.updatedAt = Date.now();
+    if (cur.coins) pd.coins = deepCopy(cur.coins);
     ops.push({type: 'set', path: 'users/' + uid + '/profile/data', data: pd, merge: true});
     if (store._fbMeta == null) store._fbMeta = {};
     store._fbMeta.profileUpdatedAt = pd.updatedAt;
@@ -8146,8 +8663,20 @@ async function pullAndMerge(){
       store._fbMeta.profileUpdatedAt = cloudProfile.updatedAt;
       changed = true;
     }
+    /* v59 coins: engagement coins ride the profile doc (same
+       users/{uid}/profile/data doc, merge:true push, same pull — no
+       new sync path). Monotonic merge: eng never decreases,
+       same-day solution ids union, later day-counters win. */
+    var _cloudCoins = (cloudProfile && cloudProfile.coins) || null;
+    if (_cloudCoins){
+      if (!store.coins) store.coins = defaultCoins();
+      if (mergeCoins(store.coins, _cloudCoins)) changed = true;
+    }
+    if (shadow) shadow.coins = deepCopy(_cloudCoins);
     if (!store._fbMigrated){ store._fbMigrated = true; changed = true; }
     if (changed) saveLocal(store);
+    /* v59-A2 coins: daily-open safety net after the pull (see 6g). */
+    try { if (window.CoinSystem) window.CoinSystem.awardEngagement('open'); } catch(e){}
     /* v43: tag the local store with its owner's UID on EVERY successful
        pull — even when nothing changed — or the guard above can never
        tell a foreign store from a fresh one. */
@@ -8562,5 +9091,268 @@ boot();
 })();
 </script>
 
+<script id="coinAnim">
+/* ================= TESTPRO v59 Worker C — coin animation & celebration =================
+   Animation layer ONLY. The coin engine is Worker A's window.CoinSystem
+   (testCoins / total / breakdown / awardEngagement); the leaderboard view
+   is Worker B's rendering. This script never changes scoring, attempts,
+   the engine, or the leaderboard markup — it only wraps submitTest /
+   setView (the same wrap pattern the leaderboard script uses) and animates.
+   If CoinSystem is absent (engine not integrated yet) every feature is a
+   silent no-op: the app works exactly as before. */
+(function(){
+'use strict';
+var CELEB_MS = 9000;   /* auto-dismiss the celebration so it can never block the result screen */
+var TOAST_MS = 4500;   /* daily toast lifetime */
+var COUNTUP_MS = 900;  /* leaderboard / total count-up duration */
+
+/* ---------- small helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function hasEngine(){ return !!(window.CoinSystem && typeof window.CoinSystem.testCoins === 'function'); }
+/* testCoins may return a number or {score, accuracy, time, total} — the
+   brief's "breakdown of what earned what" implies the object form. A bare
+   number is shown whole under Score (documented in NOTES). */
+function normCoins(v){
+  if (v && typeof v === 'object'){
+    var s = +v.score || 0, a = +v.accuracy || 0, t = +v.time || 0;
+    var tot = (v.total != null) ? (+v.total || 0) : (s + a + t);
+    return {score: s, accuracy: a, time: t, total: tot};
+  }
+  var n = +v || 0;
+  return {score: n, accuracy: 0, time: 0, total: n};
+}
+function safeTestCoins(testId){
+  /* Per-source breakdown first: Worker A's CoinSystem.testCoins() returns
+     only the bare TOTAL, but its testCoinsDetail() returns
+     {score, accuracy, time, total}. Prefer CoinSystem.testCoinsDetail when
+     the engine exposes it; else the engine's own top-level
+     window.testCoinsDetail (tp-coins is a classic script with no IIFE, so
+     its function declarations are window globals); else fall back to the
+     bare total (shown whole under Score). */
+  var detail = null;
+  try {
+    if (window.CoinSystem && typeof window.CoinSystem.testCoinsDetail === 'function') detail = window.CoinSystem.testCoinsDetail(testId);
+    else if (typeof window.testCoinsDetail === 'function') detail = window.testCoinsDetail(testId);
+  } catch (e){ detail = null; }
+  if (detail) return normCoins(detail);
+  if (!hasEngine()) return null;
+  try { return normCoins(window.CoinSystem.testCoins(testId)); } catch (e){ return null; }
+}
+function raf(cb){
+  if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(cb);
+  return setTimeout(function(){ cb(Date.now()); }, 16);
+}
+/* count a number up from 0 to target over COUNTUP_MS; onDone fires at the end */
+function countUp(el, target, done){
+  var t0 = null;
+  function step(ts){
+    if (t0 === null) t0 = ts;
+    var p = (ts - t0) / COUNTUP_MS;
+    if (p >= 1){ el.textContent = String(target); if (done) done(); return; }
+    el.textContent = String(Math.round(target * p));
+    raf(step);
+  }
+  el.textContent = '0';
+  raf(step);
+}
+
+/* ================= 1. post-test coin celebration ================= */
+var celebTimer = null;
+function buildCelebration(){
+  var ov = $('coinCelebration');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.id = 'coinCelebration';
+  ov.setAttribute('hidden', '');
+  ov.innerHTML =
+    '<div class="coin-celeb-card" role="dialog" aria-label="Coins earned">' +
+      '<button type="button" class="coin-celeb-x" id="coinCelebX" aria-label="Close">\u00d7</button>' +
+      '<div class="coin-celeb-coins"><span class="coin-ic coin-fly"></span><span class="coin-ic coin-fly"></span><span class="coin-ic coin-fly"></span></div>' +
+      '<h3 class="coin-celeb-title" id="coinCelebTitle">Coins earned!</h3>' +
+      '<p class="coin-celeb-sub" id="coinCelebSub">Nice work — here is what this test earned.</p>' +
+      '<div class="coin-celeb-rows">' +
+        '<div class="coin-row"><span class="coin-ic coin-pop"></span><span class="coin-lbl">Score</span><b class="coin-val" id="coinRowScore">+0</b></div>' +
+        '<div class="coin-row"><span class="coin-ic coin-pop"></span><span class="coin-lbl">Accuracy</span><b class="coin-val" id="coinRowAcc">+0</b></div>' +
+        '<div class="coin-row"><span class="coin-ic coin-pop"></span><span class="coin-lbl">Time</span><b class="coin-val" id="coinRowTime">+0</b></div>' +
+      '</div>' +
+      '<div class="coin-celeb-total"><span>Total earned</span><b id="coinCelebTotal">+0</b></div>' +
+      '<button type="button" class="coin-celeb-btn" id="coinCelebBtn">Collect</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  function hide(){ hideCelebration(); }
+  $('coinCelebX').addEventListener('click', hide);
+  $('coinCelebBtn').addEventListener('click', hide);
+  ov.addEventListener('click', function(e){ if (e.target === ov) hide(); });
+  return ov;
+}
+function hideCelebration(){
+  var ov = $('coinCelebration');
+  if (ov) ov.setAttribute('hidden', '');
+  if (celebTimer){ clearTimeout(celebTimer); celebTimer = null; }
+}
+function showCoinCelebration(delta){
+  var ov = buildCelebration();
+  var total = delta.score + delta.accuracy + delta.time;
+  $('coinCelebTitle').textContent = total > 0 ? 'Coins earned!' : 'No new coins yet';
+  $('coinCelebSub').textContent = total > 0
+    ? 'Nice work — here is what this test earned.'
+    : 'Beat your best score on this test to earn coins.';
+  /* re-trigger the row pop animations on every show (fresh nodes each time
+     would also work, but re-adding the class is cheaper) */
+  var rows = ov.querySelectorAll('.coin-row');
+  for (var i = 0; i < rows.length; i++){
+    rows[i].style.animation = 'none';
+    void rows[i].offsetWidth;
+    rows[i].style.animation = '';
+  }
+  $('coinRowScore').textContent = '+' + delta.score;
+  $('coinRowAcc').textContent = '+' + delta.accuracy;
+  $('coinRowTime').textContent = '+' + delta.time;
+  ov.removeAttribute('hidden');
+  countUp($('coinCelebTotal'), total, function(){ $('coinCelebTotal').textContent = '+' + total; });
+  if (celebTimer) clearTimeout(celebTimer);
+  celebTimer = setTimeout(hideCelebration, CELEB_MS);
+}
+/* Hook submitTest WITHOUT changing scoring: capture the old best's coins
+   BEFORE the original records the new attempt, then the new best AFTER.
+   Earned this test = max(0, newBest - oldBest) per source; a worse
+   re-attempt leaves the best unchanged, so every delta is 0 (+0 shown). */
+function wrapSubmitTest(){
+  if (typeof window.submitTest !== 'function' || window.submitTest._coinWrapped) return;
+  var orig = window.submitTest;
+  function wrapped(auto){
+    var tid = (window.state && window.state.test && window.state.test.id) || null;
+    var wasSubmitted = !!(window.state && window.state.submitted);
+    var oldCoins = tid ? safeTestCoins(tid) : null;
+    var r = orig.apply(this, arguments);
+    if (!wasSubmitted && tid && oldCoins && window.state && window.state.submitted){
+      var newCoins = safeTestCoins(tid);
+      if (newCoins){
+        showCoinCelebration({
+          score: Math.max(0, newCoins.score - oldCoins.score),
+          accuracy: Math.max(0, newCoins.accuracy - oldCoins.accuracy),
+          time: Math.max(0, newCoins.time - oldCoins.time)
+        });
+      }
+    }
+    return r;
+  }
+  wrapped._coinWrapped = true;
+  window.submitTest = wrapped;
+}
+
+/* ================= 2. daily-open toast ================= */
+var toastTimer = null;
+function showDailyToast(amount){
+  var t = $('coinDailyToast');
+  if (!t){
+    t = document.createElement('div');
+    t.id = 'coinDailyToast';
+    t.setAttribute('hidden', '');
+    t.innerHTML = '<span class="coin-ic coin-pop"></span><span id="coinDailyToastTxt"></span>';
+    document.body.appendChild(t);
+    t.addEventListener('click', hideDailyToast);
+  }
+  $('coinDailyToastTxt').textContent = '+' + amount + ' coins \u2014 Daily reward';
+  t.removeAttribute('hidden');
+  /* re-trigger the pop on the coin each time the toast shows */
+  var ic = t.querySelector('.coin-ic');
+  if (ic){ ic.style.animation = 'none'; void ic.offsetWidth; ic.style.animation = ''; }
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideDailyToast, TOAST_MS);
+}
+function hideDailyToast(){
+  var t = $('coinDailyToast');
+  if (t) t.setAttribute('hidden', '');
+  if (toastTimer){ clearTimeout(toastTimer); toastTimer = null; }
+}
+/* Awarded amount comes from the engine — never hardcoded (50 daily,
+   100 on a >=7-day streak, per the brief — the engine decides). Show the
+   toast ONLY when the award is > 0. Polls briefly for the engine because
+   Worker A's script may load after this one. */
+function tryDailyOpen(){
+  if (!window.CoinSystem || typeof window.CoinSystem.awardEngagement !== 'function') return false;
+  var amt = 0;
+  try { amt = window.CoinSystem.awardEngagement('open') || 0; } catch (e){ return false; }
+  if (amt > 0) showDailyToast(amt);
+  return amt > 0;
+}
+function scheduleDailyOpen(){
+  /* FIRST attempt is SYNCHRONOUS at load, not deferred: Worker A's own
+     boot hook awards the daily open on a setTimeout(..., 0) from init(),
+     which fires only after the whole document (incl. this script) has
+     run — so a synchronous call here always wins that race and the toast
+     shows the amount. If this script ever runs BEFORE the engine script
+     (integration order changed), the poll below is the fallback — but it
+     will usually lose to Worker A's hook, in which case the award was
+     already consumed silently and no toast shows (see NOTES). */
+  if (tryDailyOpen()) return;
+  if (hasEngine()) return; /* engine present but awarded 0 (already opened today) — stop polling */
+  var tries = 0;
+  (function tick(){
+    if (tryDailyOpen()) return;
+    if (hasEngine()) return;
+    if (++tries < 34) setTimeout(tick, 150); /* ~5 s of polling for a late-loading engine */
+  })();
+}
+
+/* ================= 3. leaderboard count-up ================= */
+function animateCoinCountup(el){
+  if (!el || el._coinAnimDone) return;
+  var target = Math.round(Number(el.getAttribute('data-coins')) || 0);
+  el._coinAnimDone = true;
+  countUp(el, target);
+}
+function runCoinCountups(root){
+  var scope = root || document;
+  var els = scope.querySelectorAll ? scope.querySelectorAll('.coin-countup') : [];
+  for (var i = 0; i < els.length; i++) animateCoinCountup(els[i]);
+}
+/* The leaderboard re-renders #lbBody / #lbHero innerHTML on every refresh,
+   so a one-time scan is not enough: observe the view for newly added
+   .coin-countup nodes (Worker B renders #lbMyCoins.coin-countup with
+   data-coins). The per-element _coinAnimDone flag prevents double runs. */
+function watchLeaderboard(){
+  var view = $('view-leaderboard');
+  if (!view) return;
+  if (typeof MutationObserver === 'function'){
+    var mo = new MutationObserver(function(){ runCoinCountups(view); });
+    mo.observe(view, {childList: true, subtree: true});
+  }
+  runCoinCountups(view);
+}
+function wrapSetView(){
+  if (typeof window.setView !== 'function' || window.setView._coinWrapped) return;
+  var orig = window.setView;
+  function wrapped(name){
+    var r = orig.apply(this, arguments);
+    if (name === 'leaderboard'){
+      /* lbRender runs synchronously inside openLeaderboard (after setView),
+         and again async after lbRefresh — the observer catches both, this
+         delayed scan is the belt-and-braces for the first render. */
+      setTimeout(function(){ runCoinCountups($('view-leaderboard') || document); }, 80);
+    }
+    return r;
+  }
+  wrapped._coinWrapped = true;
+  window.setView = wrapped;
+}
+
+/* ---------- boot ---------- */
+wrapSubmitTest();
+wrapSetView();
+watchLeaderboard();
+scheduleDailyOpen();
+window.CoinAnim = {
+  showCoinCelebration: showCoinCelebration,
+  hideCelebration: hideCelebration,
+  showDailyToast: showDailyToast,
+  hideDailyToast: hideDailyToast,
+  tryDailyOpen: tryDailyOpen,
+  runCoinCountups: runCoinCountups,
+  animateCoinCountup: animateCoinCountup
+};
+})();
+</script>
 </body>
 </html>
