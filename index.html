@@ -3341,7 +3341,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 51; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 52; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6543,7 +6543,7 @@ function openPicker(){
 }
 
 /* ============================ LEADERBOARD DATA ============================ */
-var LB = {tab: 'overall', metric: 'rating', series: 'maths', showEmpty: false, list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: ''};
+var LB = {tab: 'overall', metric: 'rating', series: 'maths', showEmpty: false, list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false};
 var fsP = null;
 function fsMod(){ return fsP || (fsP = import(FS_URL)); }
 function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, ms); })]); }
@@ -6608,15 +6608,16 @@ async function lbPublish(force){
     return true;
   } catch (err){ LB.pubErr = (err && err.code) || 'publish-failed'; return false; }
 }
-function lbSchedulePublish(){
+function lbSchedulePublish(force){
   if (LB.pubTimer) clearTimeout(LB.pubTimer);
-  LB.pubTimer = setTimeout(function(){ LB.pubTimer = null; lbPublish(); }, 3500);
+  LB.pubTimer = setTimeout(function(){ LB.pubTimer = null; lbPublish(!!force); }, 3500);
 }
+function lbQuery(m, fb){ return m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('rating', 'desc'), m.limit(300)); }
 async function lbFetch(){
   var fb = window.__fb;
   if (!fb || !fb.db || !fb.user) { var er = new Error('no-auth'); er.code = 'no-auth'; throw er; }
   var m = await withTimeout(fsMod(), 10000);
-  var snap = await withTimeout(m.getDocs(m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('rating', 'desc'), m.limit(300))), 15000);
+  var snap = await withTimeout(m.getDocs(lbQuery(m, fb)), 15000);
   var out = [];
   snap.forEach(function(d){ var e = cleanEntry(d.data(), d.id); if (e) out.push(e); });
   return out;
@@ -6656,6 +6657,59 @@ async function lbRefresh(){
   }
   LB.busy = false;
   lbRender();
+}
+
+/* ============================ REALTIME (v52) ============================ */
+/* Live listener on the SAME query the fetch uses (rating desc, limit 300).
+   While the leaderboard view is open, any entry change re-renders the board
+   without reopening or tapping refresh. The listener is owned by the view:
+   setView('leaderboard') subscribes, leaving the view (or logout)
+   unsubscribes — a different user logging in never keeps the old listener.
+   On listener error the board falls back to the one-time fetch (lbRefresh)
+   and shows the existing error notes (rules/net/auth) unchanged. If the
+   Firestore module has no onSnapshot (older mock / partial load), the
+   listener silently stays off and the fetch path carries on. */
+function lbSnapshotEntries(snap){
+  var out = [];
+  try { snap.forEach(function(d){ var e = cleanEntry(d.data(), d.id); if (e) out.push(e); }); } catch (e) {}
+  return out;
+}
+async function lbSubscribe(){
+  if (LB.unsub || !window.__fb || !window.__fb.user || !window.__fb.db || !navigator.onLine) return false;
+  try {
+    var m = await withTimeout(fsMod(), 10000);
+    if (!m || typeof m.onSnapshot !== 'function') return false;
+    if (LB.unsub) return true; /* subscribed while the module loaded */
+    if (state.view !== 'leaderboard') return false; /* left the view while loading */
+    var fb = window.__fb;
+    if (!fb.user || !fb.db) return false; /* logged out while loading */
+    var unsub = m.onSnapshot(lbQuery(m, fb), function(snap){
+      LB.list = lbSnapshotEntries(snap);
+      LB.fetchedAt = Date.now(); LB.stale = false; LB.err = ''; LB.state = 'ok';
+      lbUseLocalMe();
+      lbSaveCache(LB.list);
+      lbRender();
+    }, function(err){
+      /* Listener died (rules revoked, net drop, sign-out). Never show a
+         rules note for a plain logout: no user -> just detach quietly. */
+      LB.unsub = null; LB.live = false;
+      var fb2 = window.__fb;
+      if (!fb2 || !fb2.user) return;
+      var code = (err && err.code) || '';
+      LB.err = (code === 'permission-denied') ? 'rules' : (code === 'no-auth' ? 'auth' : 'net');
+      LB.state = 'ok'; LB.stale = true;
+      lbUseLocalMe();
+      lbRender();
+      lbRefresh(); /* fall back to the one-time fetch */
+    });
+    if (typeof unsub !== 'function') return false;
+    LB.unsub = unsub; LB.live = true;
+    return true;
+  } catch (e){ return false; }
+}
+function lbUnsubscribe(){
+  if (LB.unsub){ try { LB.unsub(); } catch (e) {} LB.unsub = null; }
+  LB.live = false;
 }
 
 /* ============================ ANALYSIS ============================ */
@@ -6845,7 +6899,7 @@ function wireLeaderboard(){
   v.addEventListener('click', function(e){
     var t = e.target.closest('[data-tab],[data-metric],[data-series],[data-act],#lbMyAv,#lbBack,#lbRefresh'); if (!t) return;
     if (t.id === 'lbBack'){ appBack('list'); return; }
-    if (t.id === 'lbRefresh'){ lbRefresh(); return; }
+    if (t.id === 'lbRefresh'){ lbRefresh(); try { lbSubscribe(); } catch (e) {} return; }
     if (t.id === 'lbMyAv'){ openPicker(); return; }
     if (t.hasAttribute('data-tab')){ var tab = t.getAttribute('data-tab'); LB.tab = tab; if (tab !== 'overall') LB.series = tab; lbRender(); window.scrollTo(0, 0); return; }
     if (t.hasAttribute('data-metric')){ LB.metric = t.getAttribute('data-metric'); lbRender(); return; }
@@ -6961,6 +7015,9 @@ function openSeries(key){
       var r = _sv.apply(this, arguments);
       var ns = $('navLeader'); if (ns) ns.classList.toggle('active', name === 'leaderboard');
       if (name !== 'leaderboard' && state.navTab === 'leaderboard'){ state.navTab = (name === 'settings') ? 'settings' : 'home'; try { syncBottomNav(); } catch (e) {} }
+      /* v52: the realtime listener is owned by the leaderboard view. */
+      if (name === 'leaderboard'){ try { lbSubscribe(); } catch (e) {} }
+      else { try { lbUnsubscribe(); } catch (e) {} }
       return r;
     };
   }
@@ -6970,7 +7027,10 @@ function openSeries(key){
   }
   var tries = 0, iv = setInterval(function(){
     if (window.__fbSync && window.__fbSync.onAuthChange){
-      window.__fbSync.onAuthChange(function(st){ if (st === 'synced'){ applyAvatars(); lbSchedulePublish(); } });
+      window.__fbSync.onAuthChange(function(st){
+        if (st === 'synced'){ applyAvatars(); lbSchedulePublish(); if (state.view === 'leaderboard'){ try { lbSubscribe(); } catch (e) {} } }
+        else if (st === 'logged-out'){ try { lbUnsubscribe(); } catch (e) {} }
+      });
       clearInterval(iv);
     } else if (++tries > 60) clearInterval(iv);
   }, 500);
@@ -6980,7 +7040,7 @@ function openSeries(key){
 buildAvatarGrid();
 applyAvatars();
 wireLeaderboard();
-window.__lb = {open: openLeaderboard, schedulePublish: lbSchedulePublish, applyAvatars: applyAvatars, syncSeriesPicker: syncSeriesPicker, setAvatar: setMyAvatar, myAvatarId: myAvatarId, refresh: lbRefresh, myEntry: myEntry};
+window.__lb = {open: openLeaderboard, schedulePublish: lbSchedulePublish, applyAvatars: applyAvatars, syncSeriesPicker: syncSeriesPicker, setAvatar: setMyAvatar, myAvatarId: myAvatarId, refresh: lbRefresh, myEntry: myEntry, subscribe: lbSubscribe, unsubscribe: lbUnsubscribe, live: function(){ return !!LB.live; }};
 window.openLeaderboard = openLeaderboard;
 })();
 </script>
@@ -8054,7 +8114,7 @@ async function pullAndMerge(){
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
     /* v40: dead post-login branch removed — destination is HOME now. */
     updateHeader(); updateModalView(); updateSettingsAccount();
-    try { if (window.__lb && window.__lb.schedulePublish) window.__lb.schedulePublish(); } catch(e){}
+    try { if (window.__lb && window.__lb.schedulePublish) window.__lb.schedulePublish(true); } catch(e){} /* v52: forced — retries a publish that earlier failed with permission-denied (rules pasted later); debounced, sig-deduped, tn>0-only */
     return true;
   } catch(e){ setSyncError((e && e.code) || (e && e.message) || 'pull failed'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
 }
