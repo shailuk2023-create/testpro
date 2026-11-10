@@ -3076,7 +3076,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 45; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 46; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6072,6 +6072,8 @@ var pwStepActive = false; /* true while a new Google user still has to set a pas
 var fbPendingGoogleCred = null, fbPendingGoogleEmail = null; /* v42: Google credential captured from the account-exists error — lets a password account link Google (memory only, never logged or persisted) */
 var fbLinkStepActive = false; /* v42: true while the Google-link step is shown */
 var fbLinkingInProgress = false; /* v42: true while submitGoogleLink() signs in + links — the auth listener must not enter the app before linkWithCredential finishes */
+var fbPopupInFlight = false; /* v46: true while a popup sign-in is running — the auth listener must not route (enterApp/showPwStep) before the popup promise resolves, or a brand-new popup user would skip the password step (the listener has no redirect result for a popup, so it cannot know isNewUser) */
+var fbPopupResult = null; /* v46: the popup UserCredential, stashed by signInViaPopup() when the auth listener has not fired yet — the listener reads isNewUser from it (rr) and routes after the UID guard */
 var fbAuthLoading = true; /* v43: spec isAuthLoading — true until the FIRST auth-state settlement (first user firing, or a null firing that decides the gate). While true the gate shows a loading state, never the login/register form. */
 var fbOptimisticLaunch = false; /* v45: true when this boot showed the cached dashboard at once (local store records a previous login UID) instead of the loading modal. The auth listener confirms (user firing) or re-gates (null firing) afterwards; the flag is never cleared mid-boot and nothing except boot() reads it. */
 var fbSdkReady = false; /* v43: Firebase SDK loaded (distinct from the auth check settling — buttons enable only when BOTH are true) */
@@ -6220,6 +6222,8 @@ function redirectErrorText(e){
   if (code === 'auth/account-exists-with-different-credential')
     return 'Is email ka account pehle se hai — dobara Google dabao ya ID-password se login karo';
   if (code === 'auth/network-request-failed') return 'Internet nahi hai — connection check karke dobara try karo';
+  if (code === 'auth/operation-not-allowed') return 'Google login Firebase console mein on nahi hai — Authentication > Sign-in method > Google enable karo';
+  if (code === 'auth/operation-not-supported-in-this-environment') return 'Is tarah (file ya preview) se Google login nahi chalta — hosted https link se kholo';
   return 'Login mein kuch galat hua — dobara try karo';
 }
 function showGate(offline, err){
@@ -6386,13 +6390,95 @@ function signIn(entry){
     if (se){ se.textContent = 'Login ke liye internet chahiye — internet on karke dobara try karo.'; se.hidden = false; }
     return;
   }
+  var provider;
+  try { provider = new F.GoogleAuthProvider(); } catch(e){ signInFailed(e); return; }
+  /* v46: popup-first in a normal browser tab (no full-page redirect — the
+     result comes back in the same session). The installed standalone PWA
+     (and any environment without the popup API) uses the redirect path —
+     popups are blocked/unreliable there. */
+  if (!F.signInWithPopup || isStandalonePwa()){ signInViaRedirect(provider); return; }
+  signInViaPopup(provider);
+}
+/* v46: is the app running as an installed standalone PWA? (Android
+   display-mode + iOS navigator.standalone.) In the PWA the Google flow
+   must use signInWithRedirect — a popup has no reliable window to return
+   to. */
+function isStandalonePwa(){
   try {
-    /* v38: signInWithRedirect returns a promise — a bare try/catch cannot
-       catch its async rejection, so attach a .catch (unhandled rejections
-       crash the flow and leave a dead button). */
-    var pr = F.signInWithRedirect(fb.auth, new F.GoogleAuthProvider());
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+    if (window.navigator && window.navigator.standalone === true) return true;
+  } catch(e){}
+  return false;
+}
+/* v46: the redirect path — unchanged from v37–v45. signInWithRedirect
+   returns a promise; a bare try/catch cannot catch its async rejection,
+   so attach a .catch (unhandled rejections crash the flow and leave a
+   dead button). The result returns through getRedirectResult + the auth
+   listener, exactly as before. */
+function signInViaRedirect(provider){
+  try {
+    var pr = F.signInWithRedirect(fb.auth, provider);
     if (pr && typeof pr.catch === 'function') pr.catch(function(e){ signInFailed(e); });
   } catch(e){ signInFailed(e); }
+}
+/* v46: popup-first Google sign-in. The popup promise resolves with the
+   UserCredential; the auth listener fires too, but a popup has NO redirect
+   result, so the listener cannot know isNewUser from rr alone. Both
+   orderings are handled (the SDK may notify listeners before or after
+   the popup promise resolves):
+   (a) Listener first: it takes the fbPopupInFlight no-op branch (UID guard
+       + loading settlement already ran), fbAuthedOnce is true — this
+       function routes directly via routePopupUser().
+   (b) Popup promise first: the listener has not fired (fbAuthedOnce
+       false) — stash the credential in fbPopupResult; the listener reads
+       isNewUser from it (rr) and routes after the UID guard. A 4s safety
+       net routes instead if the listener never fires (it always does in
+       the real SDK — the net only guards a stuck gate).
+   account-exists goes through signInFailed, which routes into the
+   EXISTING v42 link flow (captureLinkCred + showLinkStep) — never a
+   dead-end message. */
+function signInViaPopup(provider){
+  fbPopupResult = null; fbPopupInFlight = true; /* fresh attempt */
+  var p;
+  try { p = F.signInWithPopup(fb.auth, provider); }
+  catch(e){ fbPopupInFlight = false; signInViaRedirect(provider); return; }
+  if (!p || typeof p.then !== 'function'){ fbPopupInFlight = false; signInViaRedirect(provider); return; }
+  p.then(function(cred){
+    fbPopupInFlight = false;
+    var user = cred && cred.user;
+    if (!user){ signInFailed(new Error('popup-no-user')); return; }
+    fb.user = user;
+    if (fbAuthedOnce){
+      /* (a) the listener already fired for this user and will not fire
+         again — route here (the UID guard + loading settlement already
+         ran in the listener). */
+      routePopupUser(cred, user);
+    } else {
+      /* (b) the listener has not fired yet — stash the credential; it
+         reads isNewUser from fbPopupResult (rr) and routes after the UID
+         guard. */
+      fbPopupResult = cred;
+      setTimeout(function(){
+        if (fbPopupResult && fb.user){ var c = fbPopupResult; fbPopupResult = null; routePopupUser(c, fb.user); }
+      }, 4000);
+    }
+  }).catch(function(e){
+    fbPopupInFlight = false; fbPopupResult = null;
+    var c = e && e.code;
+    if (c === 'auth/popup-blocked'){ signInViaRedirect(provider); return; }
+    if (c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request'){ return; } /* user closed it — stay on the window, do NOT fall back to a redirect they did not ask for */
+    signInFailed(e); /* includes the v42 account-exists -> link-flow intercept */
+  });
+}
+/* v46: popup-user routing (case (a) above, and the 4s safety net — the
+   listener already fired). New user -> the v45 password step (skippable);
+   existing user -> enterApp + pull. Identical lines to the listener's
+   branches, kept as one function so the two orderings cannot drift apart. */
+function routePopupUser(cred, user){
+  var isNew = false;
+  try { var info = F.getAdditionalUserInfo ? F.getAdditionalUserInfo(cred) : null; isNew = !!(info && info.isNewUser); } catch(e){}
+  if (isNew){ showPwStep(user); updateHeader(); updateModalView(); updateSettingsAccount(); }
+  else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
 }
 function signInFailed(e){
   setStatus('offline');
@@ -6940,7 +7026,7 @@ function wireSettings(){
 }
 function installBridge(){
   window.__fbSync = {
-    signIn: signIn, signOut: signOut, logoutUser: logoutUser, isAuthLoading: function(){ return fbAuthLoading; }, isOptimisticLaunch: function(){ return fbOptimisticLaunch; }, skipAuth: skipAuth,
+    signIn: signIn, signOut: signOut, logoutUser: logoutUser, isAuthLoading: function(){ return fbAuthLoading; }, isOptimisticLaunch: function(){ return fbOptimisticLaunch; }, isStandalonePwa: isStandalonePwa, isPopupInFlight: function(){ return fbPopupInFlight; }, skipAuth: skipAuth,
     pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge,
     openModal: openFbModal, closeModal: closeFbModal,
     syncNow: syncNow,
@@ -6994,6 +7080,7 @@ async function boot(){
     F = {
       GoogleAuthProvider: authMod.GoogleAuthProvider,
       signInWithRedirect: authMod.signInWithRedirect,
+      signInWithPopup: authMod.signInWithPopup,
       getRedirectResult: authMod.getRedirectResult,
       signOut: authMod.signOut,
       setPersistence: authMod.setPersistence, browserLocalPersistence: authMod.browserLocalPersistence,
@@ -7047,10 +7134,10 @@ async function boot(){
          user. The SDK often fires null first while restoring state; the old
          code consumed them on that first (null) firing and destroyed
          isNewUser before the user firing arrived. */
-      var rr = redirectResult, re = redirectErr;
+      var rr = redirectResult || fbPopupResult, re = redirectErr; /* v46: a popup has no redirect result — the listener reads isNewUser from the stashed popup credential instead */
       fb.user = user || null;
       if (user){
-        redirectResult = null; authEntry = null; redirectErr = null;
+        redirectResult = null; authEntry = null; redirectErr = null; fbPopupResult = null;
         fbAuthedOnce = true;
         fbAuthLoading = false; setAuthLoadingUI(false); /* v43: first auth settlement — the guard may now decide (direct assignment: the harness reads the listener slice for it) */
         /* v43: UID ownership guard — a store tagged with another UID is
@@ -7074,6 +7161,7 @@ async function boot(){
         } catch(e){}
         if (needsPw){ showPwStep(user); updateHeader(); updateModalView(); updateSettingsAccount(); }
         else if (fbLinkingInProgress){ /* v42: Google link in flight — submitGoogleLink() enters after linkWithCredential; do NOT flip the modal to the account view or enter early */ updateHeader(); updateSettingsAccount(); }
+        else if (fbPopupInFlight){ /* v46: popup sign-in owns the routing — signInViaPopup() decides (showPwStep for a new user, enterApp otherwise) once the popup promise resolves with isNewUser; the listener must not enter early (it has no redirect result for a popup) */ updateHeader(); updateSettingsAccount(); }
         else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
       }
       else {
