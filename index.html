@@ -3074,7 +3074,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 47; /* version.txt se match kare - har release par bump karo */
+var APP_VERSION = 48; /* version.txt se match kare - har release par bump karo */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -5788,6 +5788,9 @@ attachSwipe($('solScroll'),
           <div class="fb-auth-links au-x" style="justify-content:center;margin-top:4px">
             <a href="#" id="fbRegToLogin">Pehle se account hai? Login karein</a>
           </div>
+          <div class="fb-divider"><span>ya</span></div>
+          <button class="fb-email-btn" id="fbRegLinkBtn">Link se register karein</button>
+          <p class="fb-modal-sub" style="text-align:center;margin:8px 0 0">Naam aur email likho — link email par aayega, us par click karte hi password set karoge.</p>
         </div>
         <div id="fbPwSetWrap" hidden>
           <div class="fb-modal-user">
@@ -5820,6 +5823,17 @@ attachSwipe($('solScroll'),
           <p class="fb-auth-err" id="fbLinkErr" hidden></p>
           <button class="fb-email-btn" id="fbLinkBtn">Google link karo</button>
         </div>
+        <div id="fbLinkPromptWrap" hidden>
+          <div class="fb-modal-user">
+            <div class="fb-modal-avatar">E</div>
+            <div class="fb-modal-userinfo"><b>Email link se login</b><span>Link jis email par manga tha, wahi email daalo</span></div>
+          </div>
+          <label class="au-f"><span class="au-lb">Email</span>
+            <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbLinkPromptEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+          </label>
+          <p class="fb-auth-err" id="fbLinkPromptErr" hidden></p>
+          <button class="fb-email-btn" id="fbLinkPromptBtn">Link se login karo</button>
+        </div>
         <p class="fb-modal-note" id="fbRegNote">Register karne ke liye pehli baar internet chahiye.</p>
       </div>
 
@@ -5844,6 +5858,14 @@ attachSwipe($('solScroll'),
           </div>
           <div class="fb-auth-links au-x" style="justify-content:center;margin-top:4px">
             <a href="#" id="fbLoginToReg">Naya account banao? Register karein</a>
+          </div>
+          <div class="fb-divider"><span>ya</span></div>
+          <div id="fbEmailLinkWrap">
+            <p class="fb-modal-sub" style="text-align:center;margin:2px 0 10px">Email link se login — password yaad nahi to link se andar aao</p>
+            <label class="au-f"><span class="au-lb">Email</span>
+              <span class="au-in"><svg class="au-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg><input id="fbLinkSendEmail" type="email" placeholder="aapki@email.com" autocomplete="email"></span>
+            </label>
+            <button class="fb-email-btn" id="fbLinkSendBtn">Link bhejo</button>
           </div>
         </div>
         <p class="fb-modal-note" id="fbModalNote">Login zaroori hai — login ke baad hi app khulega. Pehli baar login ke liye internet chahiye.</p>
@@ -6068,6 +6090,9 @@ var fbLinkStepActive = false; /* v42: true while the Google-link step is shown *
 var fbLinkingInProgress = false; /* v42: true while submitGoogleLink() signs in + links — the auth listener must not enter the app before linkWithCredential finishes */
 var fbPopupInFlight = false; /* v46: true while a popup sign-in is running — the auth listener must not route (enterApp/showPwStep) before the popup promise resolves, or a brand-new popup user would skip the password step (the listener has no redirect result for a popup, so it cannot know isNewUser) */
 var fbPopupResult = null; /* v46: the popup UserCredential, stashed by signInViaPopup() when the auth listener has not fired yet — the listener reads isNewUser from it (rr) and routes after the UID guard */
+var fbLinkResult = null; /* v48: the email-link UserCredential — the auth listener reads isNewUser from it (rr), like fbPopupResult for the popup; a link has no redirect result */
+var fbEmailLinkPromptActive = false; /* v48: the link-return email prompt is showing — the first null firing must not reset it or pop the login form */
+var fbEmailLinkBootErr = null; /* v48: a failed link completion at boot (expired/invalid link) — shown in the login view once the gate settles */
 var fbAuthLoading = true; /* v43: spec isAuthLoading — true until the FIRST auth-state settlement (first user firing, or a null firing that decides the gate). While true the gate shows a loading state, never the login/register form. */
 var fbOptimisticLaunch = false; /* v45: true when this boot showed the cached dashboard at once (local store records a previous login UID) instead of the loading modal. The auth listener confirms (user firing) or re-gates (null firing) afterwards; the flag is never cleared mid-boot and nothing except boot() reads it. */
 var fbSdkReady = false; /* v43: Firebase SDK loaded (distinct from the auth check settling — buttons enable only when BOTH are true) */
@@ -6129,6 +6154,7 @@ function resetPwStep(){
 /* v38 register gate: enter the app only after register/login; show the
    register window (non-dismissable) while logged out. */
 function enterApp(){
+  clearEmailLinkPrompt(); /* v48: the link-return prompt is done once the app is entered */
   fbGated = false;
   try { window.__fbSkipped = false; } catch(e){} /* v39: a real login supersedes Skip */
   resetPwStep();
@@ -6147,7 +6173,7 @@ function skipAuth(){
 /* v39: auth buttons must never be dead-tappable while Firebase loads.
    Until the SDK is ready they stay disabled with a visible loading
    label; on SDK failure the label says internet is needed instead. */
-var AUTH_BTN_IDS = ['fbRegBtn', 'fbEmailBtn', 'setEmailBtn'];
+var AUTH_BTN_IDS = ['fbRegBtn', 'fbEmailBtn', 'setEmailBtn', 'fbLinkSendBtn', 'fbRegLinkBtn', 'fbLinkPromptBtn'];
 function btnLabel(btn){
   if (!btn) return '';
   var t = '';
@@ -6262,9 +6288,14 @@ function skipPasswordSet(){
   resetPwStep(); /* clears pwStepActive + the v42 link step */
   enterApp(); /* modal closes, gate lifts, pull runs on the user firing */
 }
-function showPwStep(user){
+function showPwStep(user, viaLink){
   fbGated = true;
   pwStepActive = true;
+  /* v48: the pw-step subtitle names Google by default; an email-link user
+     arrived via link, not Google — name the right path either way. */
+  var tps = document.querySelector('#fbModalRegister .fb-modal-sub .t-pw');
+  if (tps) tps.textContent = viaLink ? 'Link se login ho gaya — ab ek password rakho.' : 'Google se ho gaya — ab ek password rakho.';
+  var epw = $('fbLinkPromptWrap'); if (epw) epw.hidden = true; /* v48: the link prompt gives way to the pw step */
   try { document.body.classList.add('fb-gated'); } catch(e){}
   var name = user.displayName || (user.email ? user.email.split('@')[0] : 'Student');
   var nm = $('fbPwSetName'); if (nm) nm.textContent = name;
@@ -6565,7 +6596,9 @@ function emailErrorText(code){
     'auth/network-request-failed': 'Internet nahi hai — connection check karo',
     'auth/too-many-requests': 'Bahut baar try kar liya — thodi der baad try karo',
     'auth/requires-recent-login': 'Security ke liye dobara login karke try karo',
-    'auth/operation-not-allowed': 'Email login abhi on nahi hai — Firebase console mein Email/Password enable karo'
+    'auth/operation-not-allowed': 'Email login abhi on nahi hai — Firebase console mein Email/Password enable karo',
+    'auth/invalid-action-code': 'Link expire ho gaya — dobara link bhejo',
+    'auth/expired-action-code': 'Link expire ho gaya — dobara link bhejo'
   };
   return map[code] || 'Kuch galat hua — dobara try karo';
 }
@@ -6630,6 +6663,103 @@ async function forgotPassword(which, ev){
     await F.sendPasswordResetEmail(fb.auth, email);
     showErr(x.err, 'Reset link email par bhej diya — inbox check karo', true);
   } catch(e){ showErr(x.err, emailErrorText(e && e.code)); }
+}
+/* ---------------- v48 email-link sign-in ----------------
+   Firebase Auth has NO 6-digit email OTP — the email LINK is the
+   Firebase-native email flow (sendSignInLinkToEmail / signInWithEmailLink).
+   The link lands on the Pages URL (the Firebase authorized domain; the
+   Space domain is NOT authorized, so the continue URL is pinned to Pages,
+   not window.location). handleCodeInApp means the app completes the
+   sign-in itself. The requesting email is stored in localStorage
+   ('emailForSignIn') so the return can complete without asking again;
+   the register name rides along as 'nameForSignIn' and is applied with
+   updateProfile after the link sign-in. A link opened on another
+   device/browser has no stored email — the prompt wrap asks for it. */
+var FB_LINK_URL = 'https://shailuk2023-create.github.io/testpro/';
+async function sendEmailLink(which){
+  var emEl = $(which === 'register' ? 'fbRegEmail' : 'fbLinkSendEmail');
+  var errEl = $(which === 'register' ? 'fbRegErr' : 'fbAuthErr');
+  var btn = $(which === 'register' ? 'fbRegLinkBtn' : 'fbLinkSendBtn');
+  var email = ((emEl && emEl.value) || '').trim();
+  var name = '';
+  if (which === 'register') name = (( $('fbRegName') && $('fbRegName').value) || '').trim();
+  if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
+  if (which === 'register' && !name){ showErr(errEl, 'Apna naam likho'); return; }
+  if (!validEmail(email)){ showErr(errEl, 'Sahi email ID likho'); return; }
+  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); setStatus('offline'); return; }
+  if (btn) btn.disabled = true;
+  try {
+    try { localStorage.setItem('emailForSignIn', email); } catch(e){}
+    try { if (name) localStorage.setItem('nameForSignIn', name); else localStorage.removeItem('nameForSignIn'); } catch(e){}
+    await F.sendSignInLinkToEmail(fb.auth, email, {url: FB_LINK_URL, handleCodeInApp: true});
+    showErr(errEl, 'Link bhej diya — email check karo, us par click karte hi andar aa jaoge', true);
+  } catch(e){ showErr(errEl, emailErrorText(e && e.code)); }
+  finally { if (btn) btn.disabled = false; }
+}
+function clearEmailLinkUrl(){
+  /* v48: the link URL still carries the (now used) oobCode — strip the
+     query string after a successful completion, or the next reload would
+     try to complete the same spent link and show an expired-link error. */
+  try { history.replaceState(null, '', window.location.pathname); } catch(e){}
+}
+async function applyPendingLinkName(user){
+  if (!user) return;
+  var nm = null;
+  try { nm = localStorage.getItem('nameForSignIn'); } catch(e){}
+  if (!nm) return;
+  if (user.displayName){ try { localStorage.removeItem('nameForSignIn'); } catch(e){} return; }
+  try {
+    if (F && F.updateProfile){ await F.updateProfile(user, {displayName: nm}); try { localStorage.removeItem('nameForSignIn'); } catch(e2){} }
+  } catch(e){}
+}
+function showEmailLinkPrompt(){
+  /* v48: link opened where the requesting email was never stored (another
+     device/browser) — ask for the email instead of failing. The prompt
+     owns the modal until submitted; the first null firing must not reset
+     it (guarded in the listener). Settle loading first: the session is
+     known (no user), the prompt IS the gate's content. */
+  fbEmailLinkPromptActive = true;
+  fbAuthLoading = false; setAuthLoadingUI(false);
+  var main = $('fbRegMain'); if (main) main.hidden = true;
+  var pw = $('fbPwSetWrap'); if (pw) pw.hidden = true;
+  var lk = $('fbLinkWrap'); if (lk) lk.hidden = true;
+  var w = $('fbLinkPromptWrap'); if (w) w.hidden = false;
+  showFbView('register');
+  openFbModal();
+}
+function clearEmailLinkPrompt(){
+  fbEmailLinkPromptActive = false;
+  var w = $('fbLinkPromptWrap'); if (w) w.hidden = true;
+  var p = $('fbLinkPromptEmail'); if (p) p.value = '';
+  var er = $('fbLinkPromptErr'); if (er){ er.textContent = ''; er.hidden = true; }
+}
+async function submitEmailLinkPrompt(){
+  var emEl = $('fbLinkPromptEmail'), errEl = $('fbLinkPromptErr'), btn = $('fbLinkPromptBtn');
+  var email = ((emEl && emEl.value) || '').trim();
+  if (errEl){ errEl.textContent = ''; errEl.hidden = true; }
+  if (!validEmail(email)){ showErr(errEl, 'Sahi email ID likho'); return; }
+  if (!fb || !F){ showErr(errEl, 'Internet nahi hai — connection check karo'); return; }
+  if (btn) btn.disabled = true;
+  try {
+    var cred = await F.signInWithEmailLink(fb.auth, email, window.location.href);
+    fbLinkResult = cred; /* v48: the listener reads isNewUser from this (rr), like fbPopupResult */
+    try { localStorage.removeItem('emailForSignIn'); } catch(e){}
+    await applyPendingLinkName(cred && cred.user);
+    clearEmailLinkUrl();
+    fbEmailLinkPromptActive = false;
+    /* the auth listener fires with the user and routes (new -> pw step,
+       existing -> enterApp). Safety net if it never fires: route here. */
+    setTimeout(function(){
+      if (fbLinkResult && fb.user){ var c = fbLinkResult; fbLinkResult = null; routeEmailLinkUser(c, fb.user); }
+    }, 4000);
+  } catch(e){ showErr(errEl, emailErrorText(e && e.code)); }
+  finally { if (btn) btn.disabled = false; }
+}
+function routeEmailLinkUser(cred, user){
+  var isNew = false;
+  try { var info = F.getAdditionalUserInfo ? F.getAdditionalUserInfo(cred) : null; isNew = !!(info && info.isNewUser); } catch(e){}
+  if (isNew){ showPwStep(user, true); updateHeader(); updateModalView(); updateSettingsAccount(); }
+  else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
 }
 async function changePassword(){
   var pwEl = $('setNewPassword');
@@ -6919,10 +7049,19 @@ async function submitPasswordSet(){
   if (errEl){ errEl.textContent = ''; errEl.hidden = true; errEl.classList.remove('ok'); }
   if (pw.length < 6){ showErr(errEl, 'Password kam se kam 6 akshar ka ho'); return; }
   if (pw !== pw2){ showErr(errEl, 'Dono password ek jaise likho'); return; }
-  if (!fb || !F || !fb.user){ showErr(errEl, 'Pehle Google se register karo'); return; }
+  if (!fb || !F || !fb.user){ showErr(errEl, 'Pehle login karo'); return; }
   if (btn) btn.disabled = true;
   try {
-    await F.linkWithCredential(fb.user, F.EmailAuthProvider.credential(fb.user.email, pw));
+    try {
+      await F.linkWithCredential(fb.user, F.EmailAuthProvider.credential(fb.user.email, pw));
+    } catch(e2){
+      /* v48: an email-link account ALREADY has the 'password' provider, so
+         linking an email credential throws provider-already-linked — set
+         the password with updatePassword instead. A Google account links
+         fine above, so this never triggers there. */
+      if (e2 && e2.code === 'auth/provider-already-linked' && F.updatePassword) await F.updatePassword(fb.user, pw);
+      else throw e2;
+    }
     enterApp();
     setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge();
   } catch(e){
@@ -6934,7 +7073,7 @@ async function submitPasswordSet(){
       try { if (fb && F){ fbSignOutRequested = true; var so = F.signOut(fb.auth); if (so && so.catch) so.catch(function(){}); } } catch(e2){}
     }
     else if (code === 'auth/requires-recent-login')
-      showErr(errEl, 'Security ke liye dobara Google se login karke try karo');
+      showErr(errEl, 'Security ke liye dobara login karke try karo');
     else showErr(errEl, emailErrorText(code));
   } finally { if (btn) btn.disabled = false; }
 }
@@ -7001,6 +7140,9 @@ function wireModal(){
   var psb = $('fbPwSetBtn'); if (psb) psb.addEventListener('click', submitPasswordSet);
   var pss = $('fbPwSetSkipBtn'); if (pss) pss.addEventListener('click', function(e){ e.preventDefault(); skipPasswordSet(); });
   var lb = $('fbLinkBtn'); if (lb) lb.addEventListener('click', submitGoogleLink);
+  var llb = $('fbLinkSendBtn'); if (llb) llb.addEventListener('click', function(){ sendEmailLink('login'); });
+  var rlb = $('fbRegLinkBtn'); if (rlb) rlb.addEventListener('click', function(){ sendEmailLink('register'); });
+  var lpb = $('fbLinkPromptBtn'); if (lpb) lpb.addEventListener('click', submitEmailLinkPrompt);
   var lo = $('fbLogoutBtn'); if (lo) lo.addEventListener('click', function(){ signOut(); closeFbModal(); });
   var eb = $('fbEmailBtn'); if (eb) eb.addEventListener('click', function(){ submitEmailAuth('modal'); });
   var tg = $('fbAuthToggle'); if (tg) tg.addEventListener('click', function(e){ toggleEmailMode('modal', e); });
@@ -7085,6 +7227,9 @@ async function boot(){
       createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
       signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
       sendPasswordResetEmail: authMod.sendPasswordResetEmail,
+      sendSignInLinkToEmail: authMod.sendSignInLinkToEmail,
+      signInWithEmailLink: authMod.signInWithEmailLink,
+      isSignInWithEmailLink: authMod.isSignInWithEmailLink,
       updatePassword: authMod.updatePassword,
       updateProfile: authMod.updateProfile,
       linkWithCredential: authMod.linkWithCredential,
@@ -7126,15 +7271,47 @@ async function boot(){
     var redirectResult = null, redirectErr = null, authEntry = null;
     try { redirectResult = await F.getRedirectResult(auth); } catch(e){ redirectErr = e; }
     try { authEntry = sessionStorage.getItem('fbAuthEntry'); sessionStorage.removeItem('fbAuthEntry'); } catch(e){}
+    /* v48: email-link return — the link lands on the Pages URL with
+       handleCodeInApp, so the app completes the sign-in itself. The auth
+       listener (registered below) fires with the user and routes by
+       isNewUser, reading it from fbLinkResult (rr) — a link has no
+       redirect result, same as the v46 popup. If the stored email is
+       missing (link opened on another device/browser), the prompt asks
+       for it instead of failing. */
+    if (F.isSignInWithEmailLink){
+      try {
+        if (F.isSignInWithEmailLink(auth, window.location.href)){
+          var storedLinkEmail = null, storedLinkName = null;
+          try { storedLinkEmail = localStorage.getItem('emailForSignIn'); storedLinkName = localStorage.getItem('nameForSignIn'); } catch(e){}
+          if (storedLinkEmail){
+            try {
+              var linkCred = await F.signInWithEmailLink(auth, storedLinkEmail, window.location.href);
+              fbLinkResult = linkCred;
+              try { localStorage.removeItem('emailForSignIn'); } catch(e2){}
+              if (storedLinkName) await applyPendingLinkName(linkCred && linkCred.user);
+              clearEmailLinkUrl();
+            } catch(e){
+              /* expired/invalid link — show it once the gate settles (the
+                 null firing opens the login view); stash the error here. */
+              fbEmailLinkBootErr = e;
+              fbModalView = 'login';
+            }
+          } else {
+            showEmailLinkPrompt();
+          }
+        }
+      } catch(e){}
+    }
     F.onAuthStateChanged(auth, function(user){
       /* v40: redirect signals are consumed ONLY on a firing that carries a
          user. The SDK often fires null first while restoring state; the old
          code consumed them on that first (null) firing and destroyed
          isNewUser before the user firing arrived. */
-      var rr = redirectResult || fbPopupResult, re = redirectErr; /* v46: a popup has no redirect result — the listener reads isNewUser from the stashed popup credential instead */
+      var rr = redirectResult || fbPopupResult || fbLinkResult, re = redirectErr; /* v46: a popup has no redirect result — the listener reads isNewUser from the stashed popup credential instead; v48: same for an email link (fbLinkResult) */
+      var viaEmailLink = !!fbLinkResult; /* v48: captured before the clearing line below nulls it — the pw step names the link, not Google */
       fb.user = user || null;
       if (user){
-        redirectResult = null; authEntry = null; redirectErr = null; fbPopupResult = null;
+        redirectResult = null; authEntry = null; redirectErr = null; fbPopupResult = null; fbLinkResult = null;
         fbAuthedOnce = true;
         fbAuthLoading = false; setAuthLoadingUI(false); /* v43: first auth settlement — the guard may now decide (direct assignment: the harness reads the listener slice for it) */
         /* v43: UID ownership guard — a store tagged with another UID is
@@ -7156,7 +7333,7 @@ async function boot(){
           var info = (rr && F.getAdditionalUserInfo) ? F.getAdditionalUserInfo(rr) : null;
           if (info && info.isNewUser) needsPw = true;
         } catch(e){}
-        if (needsPw){ showPwStep(user); updateHeader(); updateModalView(); updateSettingsAccount(); }
+        if (needsPw){ showPwStep(user, viaEmailLink); updateHeader(); updateModalView(); updateSettingsAccount(); }
         else if (fbLinkingInProgress){ /* v42: Google link in flight — submitGoogleLink() enters after linkWithCredential; do NOT flip the modal to the account view or enter early */ updateHeader(); updateSettingsAccount(); }
         else if (fbPopupInFlight){ /* v46: popup sign-in owns the routing — signInViaPopup() decides (showPwStep for a new user, enterApp otherwise) once the popup promise resolves with isNewUser; the listener must not enter early (it has no redirect result for a popup) */ updateHeader(); updateSettingsAccount(); }
         else { enterApp(); setStatus('pending'); updateHeader(); updateModalView(); updateSettingsAccount(); pullAndMerge(); }
@@ -7174,6 +7351,7 @@ async function boot(){
           return;
         }
         fbSignOutRequested = false;
+        if (fbEmailLinkPromptActive){ /* v48: the link-return email prompt owns the modal until the user submits the email — a first null firing must not reset it or pop the login form */ updateHeader(); updateModalView(); updateSettingsAccount(); return; }
         resetPwStep();
         setStatus(navigator.onLine ? 'logged-out' : 'offline');
         updateHeader(); updateModalView(); updateSettingsAccount();
@@ -7192,6 +7370,7 @@ async function boot(){
         } else {
           fbAuthLoading = false; setAuthLoadingUI(false); /* v43: no user and no redirect pending — the session is known */
           showGate(!navigator.onLine, re);
+          if (fbEmailLinkBootErr){ var _le = $('fbAuthErr'); if (_le) showErr(_le, emailErrorText(fbEmailLinkBootErr && fbEmailLinkBootErr.code)); fbEmailLinkBootErr = null; }
         }
       }
     });
