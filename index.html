@@ -13,6 +13,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>/* v40: apply the saved theme before first paint — no light->dark flash on boot */try{var _v40s=JSON.parse(localStorage.getItem('super1000_v1')||'{}');var _v40d=_v40s.dark;if(_v40d===undefined)_v40d=(window.innerWidth<900||(typeof navigator!=='undefined'&&navigator.maxTouchPoints>0));document.documentElement.setAttribute('data-theme',_v40d?'dark':'light');}catch(e){}</script>
+<script>/* v67-A: skel-on — enable first-paint skeleton placeholders (the controller script at the end of <body> hides them when data lands) */document.documentElement.classList.add('skel-on');</script>
 <title>TESTPRO — Railway Super 1000 Maths</title>
 <style>
 /* ================= THEME VARIABLES ================= */
@@ -1862,6 +1863,63 @@ body.fb-gated::before{content:none!important}
 }
 @media(prefers-reduced-motion:reduce){.pd,.lb-row,.pd-crown,.lb-skel i{animation:none!important}}
 
+/* v67-A: skeleton loaders (start) — first-paint shimmer placeholders.
+   Skeletons live in the initial HTML (display:none until <html> gets
+   .skel-on from the tiny head script), so they paint before any JS/data.
+   Each skeleton sits immediately before its real section; while the
+   skeleton is shown, the paired real section is hidden by the rules
+   below, so there is no layout jump and never a blank screen. */
+.skel-wrap{display:none}
+html.skel-on .skel-wrap{display:block}
+.skel-wrap.skel-hide{display:none!important}
+html.skel-on #skel-progress:not(.skel-hide)+[data-skel-for="skel-progress"],
+html.skel-on #skel-series:not(.skel-hide)+[data-skel-for="skel-series"],
+html.skel-on #skel-series:not(.skel-hide)~[data-skel-pair="skel-series"],
+html.skel-on #skel-feat:not(.skel-hide)+[data-skel-for="skel-feat"],
+html.skel-on #skel-testlist:not(.skel-hide)+[data-skel-for="skel-testlist"],
+html.skel-on #skel-calist:not(.skel-hide)+[data-skel-for="skel-calist"],
+html.skel-on #skel-lb:not(.skel-hide)+[data-skel-for="skel-lb"],
+html.skel-on #skel-lb:not(.skel-hide)~[data-skel-pair="skel-lb"]{display:none!important}
+.skel{position:relative;overflow:hidden;border-radius:10px;background:linear-gradient(100deg,var(--surface3) 30%,var(--surface2) 50%,var(--surface3) 70%);background-size:200% 100%;animation:skelShimmer 1.3s linear infinite}
+@keyframes skelShimmer{to{background-position:-200% 0}}
+[data-theme="dark"] .skel{background:linear-gradient(100deg,#1e293b 30%,#334155 50%,#1e293b 70%)}
+.skel-title{height:20px;width:180px;margin-bottom:12px}
+.skel-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.skel-tiles{display:grid;gap:10px}
+.skel-tile{height:62px}
+.skel-yp{margin-top:10px;display:grid;gap:8px}
+.skel-yp-row{height:41px}
+.skel-series-card{height:116px;margin-bottom:12px;border-radius:16px}
+.skel-feat-head{margin:26px 0 14px}
+.skel-feat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.skel-feat-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:12px 12px 20px;box-shadow:var(--shadow)}
+.skel-feat-art{height:132px;border-radius:14px;margin-bottom:16px}
+.skel-feat-line{height:16px;margin:0 8px 6px}
+.skel-feat-line.skel-w40{height:30px;width:40%}
+.skel-feat-line.skel-w80{width:80%;margin-bottom:0}
+.skel-test-row{display:flex;align-items:flex-start;gap:14px;min-height:128px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px}
+.skel-tc-ico{flex-shrink:0;width:48px;height:48px;border-radius:14px}
+.skel-tc-main{flex:1;min-width:0;display:grid;gap:10px;align-content:center}
+.skel-line{height:16px}
+.skel-line.skel-w60{width:60%}
+.skel-tc-btn{flex-shrink:0;width:74px;height:32px;border-radius:16px}
+.skel-ca-month{height:22px;width:220px;margin:6px 0 12px}
+@media (max-width:1099px){
+  .skel-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .skel-tile{height:104px}
+}
+@media (max-width:900px){
+  .skel-feat-grid{gap:12px}
+  .skel-feat-art{height:108px}
+}
+@media (max-width:560px){
+  .skel-panel{padding:16px;border-radius:14px}
+  .skel-series-card{height:108px}
+  .skel-test-row{min-height:116px;padding:12px 14px}
+  .skel-tc-ico{width:36px;height:36px;border-radius:11px}
+}
+@media (prefers-reduced-motion:reduce){.skel{animation:none!important}}
+/* v67-A: skeleton loaders (end) */
 </style>
 <style id="coinAnimStyle">
 /* v59 Worker C — coin animation & celebration. CSS-only art: the gold coin
@@ -1981,6 +2039,21 @@ function fbGateFallback(){
   }catch(e){}
 }
 setTimeout(fbGateFallback,1500);</script>
+<script>/* v67-C: non-blocking boot — net state known at parse time, long
+   before the Firebase script at the end of the file runs. The browser
+   already knows navigator.onLine; record it, reflect it as a body
+   class for styling hooks, and track 'online'/'offline' from here so
+   an offline boot never has to wait on the network to learn its state.
+   Sync-on-online itself lives in the Firebase module (installNetListeners
+   + scheduleSdkOnOnline) — this script only tracks state. */
+(function(){
+  function isOnline(){ try { return typeof navigator === 'undefined' || navigator.onLine !== false; } catch(e){ return true; } }
+  window.__net67 = { online: isOnline() };
+  function applyNetClass(){ try { document.body.classList.toggle('is-offline', !window.__net67.online); } catch(e){} }
+  window.addEventListener('online', function(){ window.__net67.online = true; applyNetClass(); });
+  window.addEventListener('offline', function(){ window.__net67.online = false; applyNetClass(); });
+  applyNetClass();
+})();</script>
 <script id="tp-history-shim">
 /* Safe history: sandboxed/srcdoc previews reject URL-bearing pushState/replaceState; fall back to state-only. */
 (function(){
@@ -2201,7 +2274,13 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           <div class="home-grid">
             <div class="home-col">
               <div class="sec-head anim" style="--d:.08s"><h2>My Test Series</h2><button class="link-btn" id="viewAllSeries" type="button">View All</button></div>
-              <div class="series-card anim" style="--d:.12s" id="seriesFolder" role="button" tabindex="0" aria-label="Open Math Super 1000+ test series">
+<!-- v67-A skel:series start -->
+<div id="skel-series" class="skel-wrap" aria-hidden="true">
+  <div class="skel skel-series-card"></div>
+  <div class="skel skel-series-card"></div>
+</div>
+<!-- v67-A skel:series end -->
+              <div class="series-card anim" style="--d:.12s" id="seriesFolder" data-skel-for="skel-series" role="button" tabindex="0" aria-label="Open Math Super 1000+ test series">
                 <svg class="sc-deco" viewBox="0 0 170 74" aria-hidden="true"><g fill="currentColor" font-weight="800" font-family="Segoe UI,system-ui,sans-serif"><text x="4" y="58" font-size="52">%</text><text x="56" y="36" font-size="34">÷</text><text x="96" y="64" font-size="46">√</text><text x="132" y="34" font-size="34">π</text></g></svg>
                 <div class="sc-ico"><svg class="i i-lg" aria-hidden="true"><use href="#i-calc"/></svg></div>
                 <div class="fc-body">
@@ -2212,7 +2291,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
                 </div>
                 <svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg>
               </div>
-              <div id="caSeriesList" style="margin-top:12px"></div>
+              <div id="caSeriesList" data-skel-pair="skel-series" style="margin-top:12px"></div>
               <div class="quick-grid anim" style="--d:.2s">
                 <button class="qa-btn qa-teal" id="irTests" type="button"><span class="qa-ic"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg></span>Tests</button>
                 <button class="qa-btn qa-amber" id="irSaved" type="button"><span class="qa-ic"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg><span class="count-badge zero" id="irSavedCount">0</span></span>Saved</button>
@@ -2221,7 +2300,24 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
               </div>
             </div>
             <aside class="home-col">
-              <div class="panel anim" style="--d:.16s">
+<!-- v67-A skel:progress start -->
+<div id="skel-progress" class="skel-wrap" aria-hidden="true">
+  <div class="skel-panel">
+    <div class="skel skel-title"></div>
+    <div class="skel-tiles">
+      <div class="skel skel-tile"></div>
+      <div class="skel skel-tile"></div>
+      <div class="skel skel-tile"></div>
+      <div class="skel skel-tile"></div>
+    </div>
+    <div class="skel-yp">
+      <div class="skel skel-yp-row"></div>
+      <div class="skel skel-yp-row"></div>
+    </div>
+  </div>
+</div>
+<!-- v67-A skel:progress end -->
+              <div class="panel anim" style="--d:.16s" data-skel-for="skel-progress">
                 <h3>Your Progress</h3>
                 <div class="stat-grid edu-stagger yp-total">
                   <div class="stat-tile"><span class="st-ico"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><div class="st-lbl">Tests Attempted</div><div class="st-val" id="homeStatAttempted">0</div></div>
@@ -2236,7 +2332,17 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
               </div>
             </aside>
           </div>
-          <section class="feat-sec" aria-label="Prepare smarter">
+<!-- v67-A skel:feat start -->
+<div id="skel-feat" class="skel-wrap" aria-hidden="true">
+  <div class="skel-feat-head"><div class="skel skel-title"></div></div>
+  <div class="skel-feat-grid">
+    <div class="skel-feat-card"><div class="skel skel-feat-art"></div><div class="skel skel-feat-line"></div><div class="skel skel-feat-line skel-w40"></div><div class="skel skel-feat-line skel-w80"></div></div>
+    <div class="skel-feat-card"><div class="skel skel-feat-art"></div><div class="skel skel-feat-line"></div><div class="skel skel-feat-line skel-w40"></div><div class="skel skel-feat-line skel-w80"></div></div>
+    <div class="skel-feat-card"><div class="skel skel-feat-art"></div><div class="skel skel-feat-line"></div><div class="skel skel-feat-line skel-w40"></div><div class="skel skel-feat-line skel-w80"></div></div>
+  </div>
+</div>
+<!-- v67-A skel:feat end -->
+          <section class="feat-sec" data-skel-for="skel-feat" aria-label="Prepare smarter">
             <div class="sec-head anim" style="--d:.24s"><h2>Prepare smarter</h2></div>
             <div class="feat-grid">
               <article class="feat-card anim" style="--d:.28s"><div class="feat-art fa-teal"><svg viewBox="0 0 160 96" aria-hidden="true" focusable="false">
@@ -2312,10 +2418,28 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
             <button class="chip" data-filter="not">Not Attempted</button>
             <button class="chip" data-filter="worst">Worst</button>
           </div>
-          <div id="testList"></div>
+<!-- v67-A skel:testlist start -->
+<div id="skel-testlist" class="skel-wrap" aria-hidden="true">
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+</div>
+<!-- v67-A skel:testlist end -->
+          <div id="testList" data-skel-for="skel-testlist"></div>
           </div>
         </div>
-        <div id="caPages" style="display:none"></div>
+<!-- v67-A skel:calist start -->
+<div id="skel-calist" class="skel-wrap" aria-hidden="true">
+  <div class="skel skel-ca-month"></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+  <div class="skel skel-ca-month"></div>
+  <div class="skel-test-row"><div class="skel skel-tc-ico"></div><div class="skel-tc-main"><div class="skel skel-line"></div><div class="skel skel-line skel-w60"></div></div><div class="skel skel-tc-btn"></div></div>
+</div>
+<!-- v67-A skel:calist end -->
+        <div id="caPages" data-skel-for="skel-calist" style="display:none"></div>
        </div>
       </div>
     </div>
@@ -2336,12 +2460,15 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <div class="lb-title"><h1><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</h1></div>
       <button class="icon-btn" id="lbRefresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg></button>
     </div>
-    <div id="lbHero"></div>
+<!-- v67-A skel:lb start -->
+<div id="skel-lb" class="skel-wrap" aria-hidden="true"><div class="lb-skel"><i></i><i></i><i></i><i></i><i></i></div></div>
+<!-- v67-A skel:lb end -->
+    <div id="lbHero" data-skel-for="skel-lb"></div>
     <div class="lb-seg" id="lbSeg" role="tablist">
       <button type="button" role="tab" id="lbTabOverall" data-tab="overall" class="on">Overall Ranking</button>
       <button type="button" role="tab" id="lbTabSeries" data-tab="series">Test Series</button>
     </div>
-    <div id="lbBody"></div>
+    <div id="lbBody" data-skel-pair="skel-lb"></div>
   </div>
 </div>
 
@@ -3469,7 +3596,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 66; /* must match version.txt - bump on every release */
+var APP_VERSION = 67; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -3532,10 +3659,135 @@ function exitHomeBack(){
   }
 }
 
-/* v20: online update check. Sirf home (list) par, test ke beech me kabhi
-   nahi - naya version mile to SW update + reload. Offline ho to chupchaap
-   kuch nahi karta (fetch fail = ignore). Har 10 min me ek baar se zyada nahi. */
+/* ===== v67-B BEGIN: non-blocking update check + update toast =====
+   Replaces the v20 forced-reload check.
+   NON-BLOCKING: checkAppUpdate() only *starts* a background fetch and
+   returns immediately — never awaited before first paint (init() calls
+   renderList() first, then this). version.txt fetch has a ~3.5s
+   AbortController timeout; slow / failed / offline fetch = silently keep
+   the cached version (no error, no hang, no blank screen).
+   New version found -> NO forced reload. We kick reg.update() so the
+   service worker (registered by the Progressier script — there is no
+   serviceWorker.register() in this file) re-fetches and caches the new
+   single-file app, then show a small dismissible bottom toast
+   "Naya version aa gaya — Refresh karo" with a Refresh button. Tapping
+   Refresh re-runs reg.update(), waits briefly for a waiting worker
+   (best-effort SKIP_WAITING), then reloads — so the NEXT open, even
+   fully offline, serves the NEW cached file. Only on home (list),
+   never mid-test. At most once per 10 min. Inline styles only on the
+   toast element itself (no skeleton CSS touched). */
 var _lastUpdateCheckAt = 0;
+var _v67UpdateTimeoutMs = 3500; /* version.txt fetch timeout */
+var _v67UpdateToastFor = 0; /* version number the toast is shown for (0 = hidden) */
+var _v67UpdateToastDismissedFor = 0; /* version the user manually dismissed this session */
+var _v67UpdateToastTimer = 0;
+function _v67KickSwUpdate(){
+  /* Ask the SW (Progressier-registered) to fetch + cache the newest file.
+     Returns a promise of the registration (or null). Never throws. */
+  try{
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+      return navigator.serviceWorker.getRegistration().then(function (reg){
+        if (!reg) return null;
+        try{ var p = reg.update(); if (p && p.catch) p.catch(function(){}); }catch(e){}
+        /* If a new worker is already waiting, ask it to activate now.
+           Best-effort: the SW may ignore unknown messages. */
+        try{ if (reg.waiting && reg.waiting.postMessage) reg.waiting.postMessage({type:'SKIP_WAITING'}); }catch(e){}
+        try{
+          reg.addEventListener('updatefound', function(){
+            var nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', function(){
+              if (nw.state === 'installed'){
+                try{ if (nw.postMessage) nw.postMessage({type:'SKIP_WAITING'}); }catch(e){}
+              }
+            });
+          });
+        }catch(e){}
+        return reg;
+      }).catch(function(){ return null; });
+    }
+  }catch(e){}
+  return null;
+}
+function _v67HideUpdateToast(manual){
+  var el = document.getElementById('v67UpdateToast');
+  if (el){ try{ el.remove(); }catch(e){ if (el.parentNode) el.parentNode.removeChild(el); } }
+  if (_v67UpdateToastTimer){ clearTimeout(_v67UpdateToastTimer); _v67UpdateToastTimer = 0; }
+  if (manual && _v67UpdateToastFor) _v67UpdateToastDismissedFor = _v67UpdateToastFor;
+  _v67UpdateToastFor = 0;
+}
+function _v67ShowUpdateToast(v){
+  if (_v67UpdateToastFor === v || _v67UpdateToastDismissedFor === v) return;
+  if (!document || !document.body || !document.createElement) return;
+  _v67HideUpdateToast(false);
+  _v67UpdateToastFor = v;
+  var el = document.createElement('div');
+  el.id = 'v67UpdateToast';
+  el.setAttribute('role', 'status');
+  /* Inline styles only: small bottom toast, never covers the main UI,
+     page behind it stays touchable (toast itself is the only hit area). */
+  el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:300;max-width:92vw;display:flex;align-items:center;gap:10px;background:#1f2937;color:#fff;padding:10px 12px 10px 16px;border-radius:24px;font-size:14px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:auto;';
+  var msg = document.createElement('span');
+  msg.textContent = 'Naya version aa gaya — Refresh karo';
+  var btn = document.createElement('button');
+  btn.id = 'v67UpdateRefreshBtn';
+  btn.type = 'button';
+  btn.textContent = 'Refresh';
+  btn.style.cssText = 'background:#00c2cb;color:#062a30;border:0;border-radius:16px;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;';
+  btn.addEventListener('click', function(){ _v67ReloadToNew(); });
+  var x = document.createElement('button');
+  x.type = 'button';
+  x.textContent = '\u2715';
+  x.setAttribute('aria-label', 'Band karo');
+  x.style.cssText = 'background:transparent;border:0;color:#fff;font-size:16px;cursor:pointer;padding:2px 6px;line-height:1;';
+  x.addEventListener('click', function(){ _v67HideUpdateToast(true); });
+  el.appendChild(msg);
+  el.appendChild(btn);
+  el.appendChild(x);
+  document.body.appendChild(el);
+  /* Auto-dismiss after 60s, but NOT a manual dismiss: the next periodic
+     check (10-min throttle) may show it again, so the user keeps a way
+     to refresh. */
+  _v67UpdateToastTimer = setTimeout(function(){ _v67HideUpdateToast(false); }, 60000);
+}
+function _v67ReloadToNew(){
+  var btn = document.getElementById('v67UpdateRefreshBtn');
+  if (btn){ btn.disabled = true; btn.textContent = 'Refresh ho raha hai\u2026'; }
+  var done = false;
+  function doReload(){ if (done) return; done = true; try{ window.location.reload(); }catch(e){} }
+  try{
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+      navigator.serviceWorker.getRegistration().then(function (reg){
+        if (!reg){ doReload(); return; }
+        try{ var p = reg.update(); if (p && p.catch) p.catch(function(){}); }catch(e){}
+        if (reg.waiting){
+          try{ if (reg.waiting.postMessage) reg.waiting.postMessage({type:'SKIP_WAITING'}); }catch(e){}
+          doReload();
+          return;
+        }
+        /* Wait briefly (max ~1.5s) for the new worker to finish
+           installing, then reload anyway — the SW serves the new file
+           on the next open even if this reload still gets the old one. */
+        var to = setTimeout(doReload, 1500);
+        try{
+          reg.addEventListener('updatefound', function(){
+            var nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', function(){
+              if (nw.state === 'installed'){
+                clearTimeout(to);
+                try{ if (reg.waiting && reg.waiting.postMessage) reg.waiting.postMessage({type:'SKIP_WAITING'}); }catch(e){}
+                doReload();
+              }
+            });
+          });
+        }catch(e){}
+      }).catch(function(){ doReload(); });
+      return;
+    }
+  }catch(e){}
+  doReload();
+}
 function checkAppUpdate(){
   if (!navigator.onLine) return;
   var now = Date.now();
@@ -3543,16 +3795,36 @@ function checkAppUpdate(){
   _lastUpdateCheckAt = now;
   if (state.view !== 'list' || state.inTest || state.seriesOpen) return;
   if (typeof fetch !== 'function') return;
-  fetch('version.txt', {cache: 'no-store'}).then(function (r){ return r.text(); }).then(function (t){
+  /* Fire-and-forget: this function returns immediately; nothing awaits
+     the fetch before first paint. A `settled` flag makes the timeout
+     work even where AbortController is unavailable. */
+  var settled = false, controller = null;
+  try{ if (typeof AbortController !== 'undefined') controller = new AbortController(); }catch(e){ controller = null; }
+  var timer = setTimeout(function(){
+    if (settled) return;
+    settled = true;
+    try{ if (controller) controller.abort(); }catch(e){}
+    /* Timed out: ignore any late response, cached version continues. */
+  }, _v67UpdateTimeoutMs);
+  var opts = {cache: 'no-store'};
+  if (controller) opts.signal = controller.signal;
+  fetch('version.txt', opts).then(function (r){ return r.text(); }).then(function (t){
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
     var v = parseInt((t || '').trim(), 10);
     if (v && v > APP_VERSION){
-      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration){
-        navigator.serviceWorker.getRegistration().then(function (reg){ if (reg) reg.update(); }).catch(function(){});
-      }
-      setTimeout(function(){ window.location.reload(); }, 300);
+      _v67KickSwUpdate();
+      _v67ShowUpdateToast(v);
     }
-  }).catch(function(){});
+  }).catch(function(){
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
+    /* Offline / failed / aborted: silent, cached version continues. */
+  });
 }
+/* ===== v67-B END ===== */
 function closeOverlayForBack(){
   var modal = document.querySelector('.modal-overlay.show');
   if (modal){ modal.classList.remove('show'); return true; }
@@ -5488,7 +5760,8 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
     _showView(name);
     syncPaletteToggle();
     syncBottomNav();
-    checkAppUpdate();
+    /* v67-FIX1 (#2): defer the version check past first paint. */
+    setTimeout(function(){ checkAppUpdate(); }, 0);
   };
   var _st0 = storeGet();
   if (_st0.dark === undefined && isMobile()){ _st0.dark = true; storeSet(_st0); }
@@ -5509,12 +5782,16 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   pushHomeBackGuard();
   applyProfile();
   renderList();
+  /* v67-C: cached shell painted — drop Worker A's boot skeletons if
+     present (guarded no-op when absent; Worker A owns the markup/CSS). */
+  try { if (window.__skel && typeof window.__skel.hide === 'function') window.__skel.hide('home'); } catch(e){}
   /* v59 coins: daily-open award (first open of the day; +50, +100 on a
      7+ day streak). Deferred one tick so window.CoinSystem (defined in
      the tp-coins script below) exists when it fires. */
   setTimeout(function(){ try { if (window.CoinSystem) window.CoinSystem.awardEngagement('open'); } catch(e){} }, 0);
   window.addEventListener('online', checkAppUpdate);
-  checkAppUpdate();
+  /* v67-FIX1 (#2): defer the version check past first paint. */
+  setTimeout(function(){ checkAppUpdate(); }, 0);
   syncPaletteToggle();
   syncBottomNav();
 })();
@@ -9148,6 +9425,64 @@ function installBridge(){
     onAuthChange: function(fn){ if (typeof fn === 'function') authListeners.push(fn); }
   };
 }
+/* ---------------- v67-C: non-blocking boot helpers ----------------
+   boot() used to (a) await the Firebase SDK import (up to 8 s) before
+   registering ANY online/offline listener, and (b) start that import
+   the moment the script parsed, before first paint. Both are fixed:
+   listeners are installed at the top of boot() (before any await), the
+   SDK import is deferred until after one painted frame, and an offline
+   boot skips the import entirely and re-arms it on the next 'online'. */
+var netListenersInstalled67 = false; /* v67-C: installNetListeners runs once */
+var sdkLoadStarted67 = false; /* v67-C: one loadSdk() flight at a time */
+var sdkOnlineRetryScheduled67 = false; /* v67-C: one pending online retry at most */
+function installNetListeners(){
+  if (netListenersInstalled67) return;
+  netListenersInstalled67 = true;
+  window.addEventListener('online', function(){
+    /* v40: coming back online must PULL (not just push) — otherwise a
+       device that logged in while offline stays stale forever. */
+    if (fb && fb.user) pullAndMerge();
+    else setStatus(navigator.onLine ? 'logged-out' : 'offline');
+  });
+  window.addEventListener('offline', function(){ setStatus('offline'); });
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden && fb && fb.user && Date.now() - lastPullAt > 60000) pullAndMerge();
+  });
+  window.addEventListener('pagehide', function(){
+    /* v40: best-effort flush when the app/tab closes — the 1500 ms
+       debounce alone can lose a just-submitted attempt. */
+    if (fb && fb.user && fb.db){ try { diffAndPush(); } catch(e){} }
+  });
+}
+function scheduleSdkOnOnline(){
+  /* v67-C: the SDK load was skipped (offline boot) or failed (CDN
+     unreachable) — retry it in the background on the next 'online'
+     event. Never a timer loop: only real connectivity changes re-arm. */
+  if (sdkOnlineRetryScheduled67) return;
+  sdkOnlineRetryScheduled67 = true;
+  window.addEventListener('online', function __fb67SdkRetry(){
+    window.removeEventListener('online', __fb67SdkRetry);
+    sdkOnlineRetryScheduled67 = false;
+    try { loadSdk(); } catch(e){}
+  });
+}
+/* v67-FIX1 (#4d): cached-data check — OFFLINE fast-path only. A user
+   with cached profile/attempts but NO stored UID (guest/Skip session, or
+   a pre-v43 store) must not be gated offline: the register modal needs
+   internet and would hang. "Cached" = a stored profile, any attempts, or
+   any saved questions. A fresh store ({tests:{}} with no profile) is NOT
+   cached, so fresh users still see the gate. The ONLINE gate is untouched. */
+function hasCachedUserData67(){
+  try{
+    var s = storeLocal();
+    if(!s) return false;
+    if(s.profile && (s.profile.name || s.profile.exam || s.profile.target != null)) return true;
+    var t = s.tests || {}, tc = s.tests_ca || {};
+    if(Object.keys(t).length || Object.keys(tc).length) return true;
+    if((s.saved && s.saved.length) || (s.saved_ca && s.saved_ca.length)) return true;
+    return false;
+  }catch(e){ return false; }
+}
 async function boot(){
   installBridge();
   wireModal();
@@ -9166,12 +9501,55 @@ async function boot(){
     try { document.body.classList.remove('fb-gated'); } catch(e){}
     try { if (window.renderHome) window.renderHome(); } catch(e){}
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+    /* v67-C: cached dashboard painted — drop Worker A's boot skeletons
+       if present (guarded no-op when absent). */
+    try { if (window.__skel && typeof window.__skel.hide === 'function') window.__skel.hide('home'); } catch(e){}
   } else {
     showGate(false, null);
   }
   wireSettings();
   updateHeader();
   setStatus('offline');
+  /* v67-C: net listeners FIRST — before any network wait — so an offline
+     boot still learns when connectivity returns (previously they were
+     registered only after the SDK import succeeded, i.e. never offline). */
+  installNetListeners();
+  /* v67-C: paint first — yield one frame so the cached shell paints and
+     touch stays live before any network work starts. boot() is async, so
+     this await never blocks parsing or rendering. */
+  await new Promise(function(res){ try { if (typeof requestAnimationFrame === 'function') requestAnimationFrame(function(){ setTimeout(res, 0); }); else setTimeout(res, 0); } catch(e){ setTimeout(res, 0); } });
+  /* v67-C: offline fast-path — skip the SDK import entirely when the
+     browser already knows it is offline (no 8 s import timeout, no
+     failed-import churn). The cached UI is already painted; the SDK
+     loads in the background on the next 'online' event. Behaviour on
+     this path mirrors the old import-failure catch exactly. */
+  if (typeof navigator !== 'undefined' && navigator.onLine === false){
+    window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading();
+    /* v67-FIX1 (#4d): offline + cached data but no stored UID — open the
+       cached UI ungated (mirror of the optimistic branch above) instead
+       of showGate(true): the register modal needs internet and would
+       hang. Fresh users with no cached data still get the gate. */
+    if (!fbOptimisticLaunch && !hasCachedUserData67()) showGate(true);
+    else if (!fbOptimisticLaunch){
+      fbGated = false;
+      try { document.body.classList.remove('fb-gated'); } catch(e){}
+      try { if (window.renderHome) window.renderHome(); } catch(e){}
+      try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+      try { closeFbModal(true); } catch(e){}
+    }
+    try { window.__fb67 = window.__fb67 || {}; window.__fb67.sdkSkippedOffline = true; } catch(e){}
+    scheduleSdkOnOnline();
+    return;
+  }
+  /* v67-C: SDK load runs in the background — never awaited by boot, so
+     nothing after this line can delay first paint or touch. */
+  loadSdk();
+  return;
+}
+async function loadSdk(){
+  if (sdkLoadStarted67) return;
+  sdkLoadStarted67 = true;
+  try { window.__fb67 = window.__fb67 || {}; window.__fb67.sdkSkippedOffline = false; } catch(e){}
   var mods;
   try {
     var importP = Promise.all([
@@ -9186,7 +9564,7 @@ async function boot(){
        an SDK failure (offline) must NOT yank the user to the login form;
        stay in the app (local-only) and let the next online boot settle
        auth. No UID -> v43 behaviour (login form with the internet note). */
-    if (!fbOptimisticLaunch) showGate(true); return; }
+    if (!fbOptimisticLaunch) showGate(true); sdkLoadStarted67 = false; scheduleSdkOnOnline(); return; }
   try {
     var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
     F = {
@@ -9346,21 +9724,9 @@ async function boot(){
         }
       }
     });
-    window.addEventListener('online', function(){
-      /* v40: coming back online must PULL (not just push) — otherwise a
-         device that logged in while offline stays stale forever. */
-      if (fb && fb.user) pullAndMerge();
-      else setStatus(navigator.onLine ? 'logged-out' : 'offline');
-    });
-    window.addEventListener('offline', function(){ setStatus('offline'); });
-    document.addEventListener('visibilitychange', function(){
-      if (!document.hidden && fb && fb.user && Date.now() - lastPullAt > 60000) pullAndMerge();
-    });
-    window.addEventListener('pagehide', function(){
-      /* v40: best-effort flush when the app/tab closes — the 1500 ms
-         debounce alone can lose a just-submitted attempt. */
-      if (fb && fb.user && fb.db){ try { diffAndPush(); } catch(e){} }
-    });
+    /* v67-C: net listeners moved to installNetListeners(), called at the top
+       of boot() — before any network wait — so offline boots get them too.
+       (Was: registered here, only after the SDK import succeeded.) */
   } catch(e){ window.__fb = null; setStatus('offline'); setAuthReadyUI(false, true); settleAuthLoading(); if (!fbOptimisticLaunch) showGate(true); /* v45: same optimistic rule as the import catch above */ }
 }
 boot();
@@ -9792,6 +10158,73 @@ window.CoinAnim = {
   animateCoinCountup: animateCoinCountup
 };
 })();
+</script>
+<script>
+/* v67-A: skeleton controller (start) — hides each first-paint skeleton when
+   its real content lands. It only observes DOM mutations; it never edits a
+   render function, the version check, Firebase/sync, or boot order. A 4s
+   fallback hides every skeleton, so a skeleton can never stick (and never
+   blank the screen) even if boot throws. */
+(function(){
+  var IDS=['skel-progress','skel-series','skel-feat','skel-testlist','skel-calist','skel-lb'];
+  var FALLBACK_MS=4000;
+  function $(id){return document.getElementById(id);}
+  function hide(id){
+    var s=$(id); if(!s)return false;
+    /* v67-FIX1 (#4a): REMOVE the skeleton node from the DOM instead of
+       merely hiding it, so [class*="skel"] / [id*="skel"] descendant
+       counts reach 0 once real content lands. Removing also un-hides
+       the paired real section (the CSS sibling rules only hide it
+       while the skeleton node exists). The 4s fallback (hideAll)
+       removes any skeleton still present, so one can never stick. */
+    if(s.parentNode){s.parentNode.removeChild(s);}else if(s.remove){s.remove();}
+    return true;
+  }
+  function anyVisible(){
+    for(var i=0;i<IDS.length;i++){var s=$(IDS[i]);if(s&&!s.classList.contains('skel-hide'))return true;}
+    return false;
+  }
+  function hideAll(){IDS.forEach(hide);document.documentElement.classList.remove('skel-on');}
+  window.__skel={
+    hide:function(id){hide(id);if(!anyVisible())document.documentElement.classList.remove('skel-on');},
+    hideAll:hideAll,
+    ids:IDS.slice(),
+    visible:function(){return IDS.filter(function(id){var s=$(id);return s&&!s.classList.contains('skel-hide');});}
+  };
+  function watch(el,opts,ids,ready){
+    if(!el)return;
+    if(ready(el)){ids.forEach(hide);return;}
+    if(typeof MutationObserver!=='function')return;
+    var mo=new MutationObserver(function(){
+      if(ready(el)){mo.disconnect();ids.forEach(hide);if(!anyVisible())document.documentElement.classList.remove('skel-on');}
+    });
+    mo.observe(el,opts);
+  }
+  /* Home: any render write inside #homeSections (stat values, fcBar text,
+     CA series cards injected) hides the home skeletons together. The CA
+     list skeleton (skel-calist) goes with them: its paired #caPages is
+     display:none until the CA view opens and is filled on demand, while
+     the same CA data is already on home as series cards — so on a home
+     boot its own watcher would never fire before the 4s fallback and
+     #view-list would keep 21 skel nodes (S1c). The #caPages watcher
+     below stays as a backstop. */
+  watch($('homeSections'),{childList:true,characterData:true,subtree:true},
+    ['skel-progress','skel-series','skel-feat','skel-calist'],function(){
+    var ca=$('caSeriesList');
+    if(ca&&ca.childElementCount>0)return true;
+    var st=$('homeStatAttempted');
+    if(st&&st.textContent.trim()!=='0')return true;
+    var fc=$('fcProgTxt');
+    if(fc&&fc.textContent.trim()!=='0/43 Tests')return true;
+    return false;
+  });
+  watch($('testList'),{childList:true},['skel-testlist'],function(el){return el.childElementCount>0;});
+  watch($('caPages'),{childList:true},['skel-calist'],function(el){return el.childElementCount>0;});
+  watch($('lbBody'),{childList:true},['skel-lb'],function(el){return el.childElementCount>0;});
+  watch($('lbHero'),{childList:true},['skel-lb'],function(el){return el.childElementCount>0;});
+  setTimeout(hideAll,FALLBACK_MS);
+})();
+/* v67-A: skeleton controller (end) */
 </script>
 </body>
 </html>
