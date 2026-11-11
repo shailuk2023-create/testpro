@@ -1735,6 +1735,21 @@ body.fb-gated::before{content:none!important}
 .lb-coins .coin-ic{font-size:22px;line-height:1}
 .lb-coins b{font-size:21px;font-weight:900;color:#fde047}
 .lb-coins span{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;opacity:.92}
+/* v63-C: series detail table */
+.lb-detail{margin-top:4px}
+.lb-detail-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.lb-detail-back{padding:8px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-strong);font-weight:700;cursor:pointer}
+.lb-detail-h b{font-size:16px}
+.lb-detail-h small{display:block;font-size:12px;color:var(--muted)}
+.lb-dtbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+.lb-dtbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.lb-dtbl th{text-align:left;padding:10px 12px;font-size:11px;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border)}
+.lb-dtbl td{padding:10px 12px;border-bottom:1px solid var(--border2)}
+.lb-dtbl tr:last-child td{border-bottom:none}
+.lb-dtbl tr.me td{background:rgba(0,150,181,.08);font-weight:700}
+.lb-dt-pl{display:flex;align-items:center;gap:8px}
+.lb-dt-pl b{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+.lb-dt-pl i{font-style:normal;color:var(--teal);font-weight:800;font-size:11px}
 .lb-coins-note{border-color:rgba(245,158,11,.45);background:linear-gradient(90deg,rgba(253,224,71,.14),var(--surface));color:var(--text)}
 .lb-coin-btn{flex-shrink:0;border:1px solid var(--border2);background:var(--surface3);color:var(--text-strong);border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800;cursor:pointer}
 .lb-coin-btn:hover{border-color:var(--teal)}
@@ -1751,6 +1766,20 @@ body.fb-gated::before{content:none!important}
 .lb-medal svg{width:100%;height:100%;display:block}
 
 /* series cards (inside the leaderboard) */
+/* v63-A: category toppers */
+.lb-cat{margin-bottom:18px}
+.lb-cat-h{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.lb-cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:560px){.lb-cat-grid{grid-template-columns:1fr}}
+.lb-cat-card{display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
+.lb-cat-ic{font-size:22px;flex-shrink:0}
+.lb-cat-tx{flex:1;min-width:0}
+.lb-cat-tx small{display:block;font-size:9.5px;font-weight:900;letter-spacing:.1em;color:#b45309}
+[data-theme="dark"] .lb-cat-tx small{color:#fcd34d}
+.lb-cat-tx b{display:block;font-size:13.5px;font-weight:800;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-cat-val{margin-left:auto;text-align:right;flex-shrink:0}
+.lb-cat-val b{font-size:15px;font-weight:900;color:var(--text-strong)}
+.lb-cat-val small{display:block;font-size:10px;color:var(--muted)}
 .lb-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
 .lb-scard{text-align:left;border:1.5px solid var(--border);border-radius:22px;padding:14px;background:var(--surface);color:var(--text);box-shadow:var(--shadow);transition:transform .18s,border-color .18s,box-shadow .18s;display:flex;flex-direction:column;gap:12px}
 .lb-scard:hover{transform:translateY(-2px)}
@@ -1761,6 +1790,12 @@ body.fb-gated::before{content:none!important}
 .sc-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;color:#fff;background:linear-gradient(135deg,#2dd4bf,#0891b2)}
 .lb-scard.ca .sc-ic{background:linear-gradient(135deg,#a78bfa,#6366f1)}
 .sc-ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* v63-B: series-card category toppers */
+.sc-cats{display:flex;flex-direction:column;gap:6px;margin-top:2px;padding-top:10px;border-top:1px dashed var(--border2)}
+.sc-cat-row{display:flex;align-items:baseline;gap:6px;font-size:12.5px}
+.sc-cat-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;color:#b45309;background:#fef3c7;border-radius:4px;padding:2px 5px;flex-shrink:0}
+.sc-cat-nm{font-weight:700;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-cat-vl{margin-left:auto;font-weight:700;color:var(--text-strong);white-space:nowrap}
 .sc-topper{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:linear-gradient(135deg,rgba(253,224,71,.22),rgba(245,158,11,.08));border:1px solid rgba(245,158,11,.35)}
 .sc-topper>div:nth-child(2){flex:1;min-width:0}
 .sc-topper small{display:block;font-size:9.5px;font-weight:900;letter-spacing:.1em;color:#b45309}
@@ -3382,7 +3417,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 62; /* must match version.txt - bump on every release */
+var APP_VERSION = 63; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6593,7 +6628,7 @@ function openPicker(){
 }
 
 /* ============================ LEADERBOARD DATA ============================ */
-var LB = {tab: 'overall', series: 'maths', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false};
+var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false};
 var fsP = null;
 function fsMod(){ return fsP || (fsP = import(FS_URL)); }
 function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, ms); })]); }
@@ -6828,6 +6863,81 @@ function entryAcc(e){
   return (c + w) ? r1(c / (c + w) * 100) : 0;
 }
 function sortedByCoins(list){ return list.slice().sort(function(a, b){ return (entryCoins(b) - entryCoins(a)) || (b.q - a.q); }); }
+/* v63-A: category toppers — helpers (Worker A). entryAvgSecs / seriesStats
+   derive from the per-test t-map records [score, correct, wrong, marks,
+   timeTaken]; values are kept raw here and rounded only at display. */
+function entryAvgSecs(e){
+  var secs = 0, marks = 0;
+  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var r = e.t[tid]; secs += +r[4] || 0; marks += +r[3] || 0; }); }
+  return marks ? secs / marks : 0;
+}
+function seriesStats(e, key){
+  var isCA = function(tid){ return tid.indexOf('ca-') === 0; };
+  var n = 0, scoreSum = 0, scoreN = 0, c = 0, w = 0, secs = 0, marks = 0;
+  if (e && e.t){ Object.keys(e.t).forEach(function(tid){
+    if (key === 'ca' ? !isCA(tid) : isCA(tid)) return;
+    var r = e.t[tid], m = +r[3] || 0;
+    n++;
+    if (m){ scoreSum += (+r[0] || 0) / m * 100; scoreN++; }
+    c += +r[1] || 0; w += +r[2] || 0; secs += +r[4] || 0; marks += m;
+  }); }
+  if (!n) return null;
+  return {n: n, avgScore: scoreN ? scoreSum / scoreN : 0, avgAcc: (c + w) ? c / (c + w) * 100 : 0, avgSecs: marks ? secs / marks : 0};
+}
+function overallCatToppers(list){
+  var best = {score: null, accuracy: null, time: null};
+  if (!list || !list.length) return best;
+  var pick = function(cur, e, val, lower){
+    if (!cur) return {e: e, val: val};
+    if (lower ? val < cur.val : val > cur.val) return {e: e, val: val};
+    if (val !== cur.val) return cur;
+    if ((e.tn || 0) !== (cur.e.tn || 0)) return (e.tn || 0) > (cur.e.tn || 0) ? {e: e, val: val} : cur;
+    return String(e.name || '').localeCompare(String(cur.e.name || '')) < 0 ? {e: e, val: val} : cur;
+  };
+  list.forEach(function(e){
+    best.score = pick(best.score, e, +e.avg || 0, false);
+    best.accuracy = pick(best.accuracy, e, entryAcc(e), false);
+    best.time = pick(best.time, e, entryAvgSecs(e), true);
+  });
+  return best;
+}
+function seriesCatToppers(key){
+  var best = {score: null, accuracy: null, time: null};
+  var pick = function(cur, e, val, n, lower){
+    if (!cur) return {e: e, val: val, n: n};
+    if (lower ? val < cur.val : val > cur.val) return {e: e, val: val, n: n};
+    if (val !== cur.val) return cur;
+    if (n !== cur.n) return n > cur.n ? {e: e, val: val, n: n} : cur;
+    return String(e.name || '').localeCompare(String(cur.e.name || '')) < 0 ? {e: e, val: val, n: n} : cur;
+  };
+  (LB.list || []).forEach(function(e){
+    var s = seriesStats(e, key);
+    if (!s) return;
+    best.score = pick(best.score, e, s.avgScore, s.n, false);
+    best.accuracy = pick(best.accuracy, e, s.avgAcc, s.n, false);
+    best.time = pick(best.time, e, s.avgSecs, s.n, true);
+  });
+  return {score: best.score ? {e: best.score.e, val: best.score.val} : null,
+    accuracy: best.accuracy ? {e: best.accuracy.e, val: best.accuracy.val} : null,
+    time: best.time ? {e: best.time.e, val: best.time.val} : null};
+}
+function catTopperCardHTML(kind, top){
+  if (!top) return '';
+  var meta = {score: {ic: '🏆', label: 'SCORE TOPPER', unit: 'avg score'},
+    accuracy: {ic: '🎯', label: 'ACCURACY TOPPER', unit: 'avg accuracy'},
+    time: {ic: '⚡', label: 'FASTEST', unit: 'lowest avg sec/question'}}[kind];
+  if (!meta) return '';
+  var val = (kind === 'time') ? r1(top.val).toFixed(1) + 's' : r1(top.val).toFixed(1) + '%';
+  return '<div class="lb-cat-card"><span class="lb-cat-ic">' + meta.ic + '</span>' + avImg(top.e, 40, 'ring r1') +
+    '<div class="lb-cat-tx"><small>' + meta.label + '</small><b>' + esc(top.e.name) + '</b></div>' +
+    '<div class="lb-cat-val"><b>' + val + '</b><small>' + meta.unit + '</small></div></div>';
+}
+function catToppersSectionHTML(list){
+  if (!list || !list.length) return '';
+  var t = overallCatToppers(list);
+  return '<div class="lb-cat"><div class="lb-cat-h">🏆 Category Toppers</div><div class="lb-cat-grid">' +
+    catTopperCardHTML('score', t.score) + catTopperCardHTML('accuracy', t.accuracy) + catTopperCardHTML('time', t.time) + '</div></div>';
+}
 function coinBreakdown(){
   var CS = coinSys();
   if (!CS || typeof CS.breakdown !== 'function') return null;
@@ -6916,7 +7026,7 @@ function podium(top){
       '<div class="pd-av">' + avImg(e, big, 'ring r' + rank) + medal(rank, rank === 1 ? 34 : 28) + '</div>' +
       '<div class="pd-name">' + esc(e.name) + (isMe(e) ? ' <i>You</i>' : '') + '</div>' +
       '<div class="pd-val"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><small>coins</small></div>' +
-      '<div class="pd-sub">' + entryAcc(e).toFixed(1) + '% avg acc · ' + e.tn + ' tests</div>' +
+      '<div class="pd-sub">' + r1(e.avg).toFixed(1) + '% avg score · ' + e.tn + ' tests</div>' +
       '<div class="pd-base"><b>' + rank + '</b></div></div>';
   });
   return h + '</div>';
@@ -6938,7 +7048,7 @@ function rowHTML(e, rank, i){
   return '<div class="lb-row' + (me ? ' me' : '') + '" style="--i:' + Math.min(i, 14) + '"><span class="lb-rk">' + rank + '</span>' + avImg(e, 44) +
     '<div class="lb-rn"><b>' + esc(e.name) + (me ? ' <i>You</i>' : '') + '</b><small>' + e.q + ' Qs · ' + entryAcc(e).toFixed(1) + '% avg acc · ' + e.tn + ' tests</small></div>' +
     (me ? '<button type="button" class="lb-coin-btn" data-coin-toggle aria-label="Show coin breakdown" aria-expanded="false">🪙 Info</button>' : '') +
-    '<div class="lb-rv"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><em>coins</em><span class="lb-acc">' + entryAcc(e).toFixed(1) + '% avg acc</span></div>' +
+    '<div class="lb-rv"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><em>coins</em><span class="lb-acc">' + r1(e.avg).toFixed(1) + '% avg score</span></div>' +
     (me ? coinBreakdownHTML() : '') + '</div>';
 }
 function renderOverall(){
@@ -6946,6 +7056,7 @@ function renderOverall(){
   var h = '';
   if (!arr.length) return h + '<div class="lb-empty"><b>The leaderboard is empty</b><p>Be the first to attempt a test and put your name here.</p></div>';
   h += podium(arr.slice(0, 3));
+  h += catToppersSectionHTML(arr);
   h += '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
   var rest = arr.slice(3, 100);
   if (rest.length){
@@ -6956,6 +7067,15 @@ function renderOverall(){
   var mi = -1; arr.forEach(function(e, i){ if (isMe(e)) mi = i; });
   if (mi >= 100) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, 0) + '</div>';
   return h;
+}
+function seriesCatsHTML(key){
+  var t = seriesCatToppers(key);
+  if (!t || (!t.score && !t.accuracy && !t.time)) return '';
+  var h = '<div class="sc-cats">';
+  if (t.score) h += '<div class="sc-cat-row"><span class="sc-cat-lbl">SCORE</span><span class="sc-cat-nm">' + esc(t.score.e.name) + '</span><span class="sc-cat-vl">' + r1(t.score.val).toFixed(1) + '%</span></div>';
+  if (t.accuracy) h += '<div class="sc-cat-row"><span class="sc-cat-lbl">ACCURACY</span><span class="sc-cat-nm">' + esc(t.accuracy.e.name) + '</span><span class="sc-cat-vl">' + r1(t.accuracy.val).toFixed(1) + '%</span></div>';
+  if (t.time) h += '<div class="sc-cat-row"><span class="sc-cat-lbl">FASTEST</span><span class="sc-cat-nm">' + esc(t.time.e.name) + '</span><span class="sc-cat-vl">' + r1(t.time.val).toFixed(1) + 's</span></div>';
+  return h + '</div>';
 }
 function seriesCard(key, title, sub){
   /* v59: series topper + own rank are BY COINS (per-series coin totals
@@ -6970,6 +7090,7 @@ function seriesCard(key, title, sub){
   return '<button type="button" class="lb-scard' + (on ? ' on' : '') + ' ' + key + '" data-series="' + key + '" aria-pressed="' + on + '">' +
     '<div class="sc-top"><span class="sc-ic">' + (key === 'ca' ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>') + '</span><div><b>' + title + '</b><small>' + sub + ' · ' + tests + ' tests · ' + b.length + ' players</small></div></div>' +
     (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>🪙 ' + fmtN(top.coins) + '</b><small>coins</small></div></div>' : '<div class="sc-none">No attempts yet — be the first topper!</div>') +
+    seriesCatsHTML(key) +
     '<div class="sc-me">' + (myI >= 0 ? 'Your rank <b>#' + (myI + 1) + '</b> · 🪙 ' + fmtN(b[myI].coins) + ' coins · ' + b[myI].n + '/' + tests + ' tests' : 'You have not attempted this series yet') + '</div></button>';
 }
 function renderSeriesTab(){
@@ -6979,6 +7100,24 @@ function renderSeriesTab(){
   var h = '<div class="lb-sgrid">' + seriesCard('maths', 'Math Super 1000+', 'Railway Maths') + seriesCard('ca', 'Current Affairs', 'Monthly CA') + '</div>';
   if (!seriesBoard('maths').length && !seriesBoard('ca').length) h += '<div class="lb-empty"><b>No one has attempted a test in this series yet</b><p>Attempt a test and become the first topper.</p></div>';
   return h;
+}
+function renderSeriesDetail(key){
+  var title = key === 'ca' ? 'Current Affairs' : 'Math Super 1000+';
+  var rows = [];
+  LB.list.forEach(function(e){ var st = seriesStats(e, key); if (!st) return; rows.push({e: e, s: st}); });
+  rows.sort(function(a, b){ return (b.s.avgScore - a.s.avgScore) || (b.s.n - a.s.n) || a.e.name.localeCompare(b.e.name); });
+  var h = '<div class="lb-detail"><div class="lb-detail-h"><button type="button" class="lb-detail-back" data-lb-back>\u2190 Back</button><div><b>' + title + '</b><small>' + rows.length + ' players \u00b7 ranked by avg score</small></div></div>';
+  if (!rows.length){
+    h += '<div class="lb-empty"><b>No one has attempted a test in this series yet</b><p>Attempt a test and become the first topper.</p></div>';
+  } else {
+    h += '<div class="lb-dtbl-wrap"><table class="lb-dtbl"><thead><tr><th>#</th><th>Player</th><th>Avg score</th><th>Avg accuracy</th><th>Avg time</th></tr></thead><tbody>';
+    rows.forEach(function(x, i){
+      var e = x.e, st = x.s;
+      h += '<tr class="' + (isMe(e) ? 'me' : '') + '"><td>' + (i + 1) + '</td><td><span class="lb-dt-pl">' + avImg(e, 32) + '<b>' + esc(e.name) + '</b>' + (isMe(e) ? ' <i>You</i>' : '') + '</span></td><td>' + r1(st.avgScore).toFixed(1) + '%</td><td>' + r1(st.avgAcc).toFixed(1) + '%</td><td>' + r1(st.avgSecs).toFixed(1) + 's</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  return h + '</div>';
 }
 function lbBanner(){
   if (LB.err === 'rules') return '<div class="lb-note warn"><b>Could not connect to the leaderboard server.</b> Allow read/write on the <code>leaderboard</code> collection in Firestore rules. Until then, only your own data is shown.</div>';
@@ -6994,7 +7133,7 @@ function lbRender(){
   var rf = $('lbRefresh'); if (rf) rf.classList.toggle('spin', !!LB.busy);
   if (LB.state === 'loading' && !LB.list.length){ var hero = $('lbHero'); if (hero) hero.innerHTML = ''; body.innerHTML = skeleton(); return; }
   lbRenderHero(sortedByCoins(LB.list));
-  body.innerHTML = lbBanner() + lbCoinsNote() + (LB.tab === 'overall' ? renderOverall() : renderSeriesTab());
+  body.innerHTML = lbBanner() + lbCoinsNote() + (LB.detail ? renderSeriesDetail(LB.detail) : (LB.tab === 'overall' ? renderOverall() : renderSeriesTab()));
   fillSeriesToppers(); /* v50 E23: picker toppers refresh with leaderboard data */
 }
 function openLeaderboard(){
@@ -7009,17 +7148,18 @@ function openLeaderboard(){
 function wireLeaderboard(){
   var v = $('view-leaderboard'); if (!v) return;
   v.addEventListener('click', function(e){
-    var t = e.target.closest('[data-tab],[data-series],[data-act],[data-coin-toggle],#lbMyAv,#lbBack,#lbRefresh'); if (!t) return;
-    if (t.id === 'lbBack'){ appBack('list'); return; }
+    var t = e.target.closest('[data-tab],[data-series],[data-act],[data-coin-toggle],[data-lb-back],#lbMyAv,#lbBack,#lbRefresh'); if (!t) return;
+    if (t.id === 'lbBack'){ if (LB.detail){ LB.detail = null; LB.tab = LB.detailFrom || 'overall'; lbRender(); return; } appBack('list'); return; }
     if (t.id === 'lbRefresh'){ lbRefresh(); try { lbSubscribe(); } catch (e) {} return; }
     if (t.id === 'lbMyAv'){ openPicker(); return; }
-    if (t.hasAttribute('data-tab')){ var tab = t.getAttribute('data-tab'); LB.tab = tab; if (tab !== 'overall') LB.series = tab; lbRender(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-tab')){ var tab = t.getAttribute('data-tab'); LB.tab = tab; LB.detail = null; if (tab !== 'overall') LB.series = tab; lbRender(); window.scrollTo(0, 0); return; }
     if (t.hasAttribute('data-coin-toggle')){
       var row = t.closest('.lb-row'), bd = row ? row.querySelector('.lb-breakdown') : null;
       if (bd){ var open = bd.hidden; bd.hidden = !open; t.setAttribute('aria-expanded', String(open)); t.setAttribute('aria-label', open ? 'Hide coin breakdown' : 'Show coin breakdown'); }
       return;
     }
-    if (t.hasAttribute('data-series')){ var k = t.getAttribute('data-series'); LB.tab = 'series'; LB.series = k; lbRender(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-lb-back')){ LB.detail = null; LB.tab = LB.detailFrom || 'overall'; lbRender(); window.scrollTo(0, 0); return; }
+    if (t.hasAttribute('data-series')){ var k = t.getAttribute('data-series'); LB.detail = k; LB.detailFrom = LB.tab; LB.tab = 'series'; LB.series = k; lbRender(); window.scrollTo(0, 0); return; }
     var a = t.getAttribute('data-act');
     if (a === 'tests') goTests();
   });
