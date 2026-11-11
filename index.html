@@ -3417,7 +3417,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 64; /* must match version.txt - bump on every release */
+var APP_VERSION = 65; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 function showView(name){
@@ -6709,6 +6709,16 @@ function entryAcc(e){
   if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var r = e.t[tid]; c += +r[1] || 0; w += +r[2] || 0; }); }
   return (c + w) ? r1(c / (c + w) * 100) : 0;
 }
+/* v65-A: Fastest eligibility helper. e.q is published as correct+wrong
+   (best attempt per test); fall back to summing correct+wrong over the
+   t-map records [score, correct, wrong, marks, timeTaken]. Skipped
+   questions never count — the t-map has no skipped field. */
+function entryAttempted(e){
+  if (e && typeof e.q === 'number' && isFinite(e.q)) return e.q;
+  var n = 0;
+  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var r = e.t[tid]; n += (+r[1] || 0) + (+r[2] || 0); }); }
+  return n;
+}
 function sortedByCoins(list){ return list.slice().sort(function(a, b){ return (entryCoins(b) - entryCoins(a)) || (b.q - a.q); }); }
 /* v63-A: category toppers — helpers (Worker A). entryAvgSecs / seriesStats
    derive from the per-test t-map records [score, correct, wrong, marks,
@@ -6729,7 +6739,7 @@ function seriesStats(e, key){
     c += +r[1] || 0; w += +r[2] || 0; secs += +r[4] || 0; marks += m;
   }); }
   if (!n) return null;
-  return {n: n, avgScore: scoreN ? scoreSum / scoreN : 0, avgAcc: (c + w) ? c / (c + w) * 100 : 0, avgSecs: marks ? secs / marks : 0};
+  return {n: n, avgScore: scoreN ? scoreSum / scoreN : 0, avgAcc: (c + w) ? c / (c + w) * 100 : 0, avgSecs: marks ? secs / marks : 0, attempted: c + w};
 }
 function overallCatToppers(list){
   var best = {score: null, accuracy: null, time: null};
@@ -6744,7 +6754,7 @@ function overallCatToppers(list){
   list.forEach(function(e){
     best.score = pick(best.score, e, +e.avg || 0, false);
     best.accuracy = pick(best.accuracy, e, entryAcc(e), false);
-    best.time = pick(best.time, e, entryAvgSecs(e), true);
+    if (!(entryAcc(e) < 40 || entryAttempted(e) < 25)) best.time = pick(best.time, e, entryAvgSecs(e), true); // v65-A: Fastest gate — acc>=40% and attempted>=25
   });
   return best;
 }
@@ -6762,7 +6772,7 @@ function seriesCatToppers(key){
     if (!s) return;
     best.score = pick(best.score, e, s.avgScore, s.n, false);
     best.accuracy = pick(best.accuracy, e, s.avgAcc, s.n, false);
-    best.time = pick(best.time, e, s.avgSecs, s.n, true);
+    if (!(s.avgAcc < 40 || s.attempted < 25)) best.time = pick(best.time, e, s.avgSecs, s.n, true); // v65-A: Fastest gate — acc>=40% and attempted>=25
   });
   return {score: best.score ? {e: best.score.e, val: best.score.val} : null,
     accuracy: best.accuracy ? {e: best.accuracy.e, val: best.accuracy.val} : null,
