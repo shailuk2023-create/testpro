@@ -3614,7 +3614,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 70; /* must match version.txt - bump on every release */
+var APP_VERSION = 71; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -5362,6 +5362,94 @@ function solEffectiveStatus(i){
   if (st.reattempt != null) return st.reattempt === q.ans ? 'correct' : 'incorrect';
   return solStatus(i);
 }
+/* ================= TESTPRO v71-B: "% answered correctly" pill (review only) =================
+   Fetches ONE doc (collection `question_stats`, doc id = testId) when the
+   review/solutions view opens, caches it in memory for the session, and
+   shows a green Testbook-style pill in the review header (renderSolution).
+   Doc shape: { "<qNo>": { "a": attempted, "c": correct } } where qNo is
+   the question's own number, String(q.n) — the same `n` the app stores
+   per question in attempts (qs[].n) and in reports (qnum 'Q'+q.n). The
+   doc id is the test id ('t<chapter>-<part>' / 'ca-<month>-<part>').
+   NEVER during the test: the pill only exists in solMeta, which is only
+   rendered by renderSolution() in the solutions view.
+   Any failure (no doc, no entry, attempted == 0, permission-denied
+   because the Firestore rule for `question_stats` is not added yet,
+   offline, timeout, any error) degrades silently to "no pill" — no
+   toast, no throw, review/solutions/leaderboard/submission keep working.
+   Saved-quiz mode (synthetic test id 'saved-quiz', questions mixed from
+   many chapters) never fetches and never shows a pill.
+   Firestore access reuses the leaderboard pattern: dynamic import of
+   firebase-firestore.js (gstatic 11.0.2) + window.__fb.db; NO second
+   Firebase app init, NO auth requirement (question_stats is public-read),
+   NO change to the Firebase/auth script. window.__qStatsFs is a test
+   seam only (the jsdom harness injects a mock Firestore module);
+   production never sets it. */
+var _qStatsCache = {};    /* testId -> doc data object, or null when missing/failed */
+var _qStatsPending = {};  /* testId -> in-flight Promise (dedupe; deleted on settle) */
+function qStatsLoadModule(){
+  try { if (typeof window !== 'undefined' && window.__qStatsFs) return Promise.resolve(window.__qStatsFs); } catch(e){}
+  /* LITERAL import URL (not a variable): the jsdom verify harness rewrites
+     exactly this literal to its mock Firestore (same pattern as the
+     leaderboard's FS_URL). A variable import (import(QSTATS_FS_URL)) is
+     NOT rewritten, so the real remote import fails silently in jsdom and
+     the pill never renders — that was the v71 integration bug (v71-FIX). */
+  return import('https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js');
+}
+function qStatsFetchForTest(t){
+  try {
+    if (!t || !t.id || t.id === 'saved-quiz') return Promise.resolve(null);
+    if (typeof state !== 'undefined' && state && state.savedQuizMode) return Promise.resolve(null);
+    if (Object.prototype.hasOwnProperty.call(_qStatsCache, t.id)) return Promise.resolve(_qStatsCache[t.id]);
+    if (_qStatsPending[t.id]) return _qStatsPending[t.id];
+    var fb = (typeof window !== 'undefined') ? window.__fb : null;
+    if (!fb || !fb.db) return Promise.resolve(null);
+    var testId = t.id;
+    var p = qStatsLoadModule().then(function(m){
+      var ref = m.doc(fb.db, 'question_stats', testId);
+      var timeout = new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, 10000); });
+      return Promise.race([m.getDoc(ref), timeout]);
+    }).then(function(snap){
+      var d = null;
+      try { d = (snap && typeof snap.exists === 'function' && snap.exists()) ? snap.data() : null; } catch(e){ d = null; }
+      _qStatsCache[testId] = (d && typeof d === 'object') ? d : null;
+      return _qStatsCache[testId];
+    }).catch(function(){ _qStatsCache[testId] = null; return null; });
+    _qStatsPending[testId] = p;
+    p.then(function(){ try { delete _qStatsPending[testId]; } catch(e){} },
+           function(){ try { delete _qStatsPending[testId]; } catch(e){} });
+    return p;
+  } catch(e){ return Promise.resolve(null); }
+}
+function qStatsPillHTML(i, q){
+  try {
+    if (typeof state === 'undefined' || !state || !state.test || state.savedQuizMode) return '';
+    var t = state.test;
+    if (!t.id || t.id === 'saved-quiz') return '';
+    if (!Object.prototype.hasOwnProperty.call(_qStatsCache, t.id)) return '';
+    var doc = _qStatsCache[t.id];
+    if (!doc) return '';
+    var key = String((q && q.n != null) ? q.n : (i + 1));
+    var ent = doc[key];
+    if (!ent) return '';
+    var a = Number(ent.a), c = Number(ent.c);
+    if (!isFinite(a) || !isFinite(c) || a <= 0) return '';
+    var pct = (c / a) * 100;
+    if (!isFinite(pct)) return '';
+    return '<span class="badge correct qstats-pill">' + pct.toFixed(1) + '% answered correctly</span>';
+  } catch(e){ return ''; }
+}
+function qStatsOnReviewOpen(t){
+  /* Fire-and-forget: on success re-render the current review question so
+     the pill appears; on failure nothing happens (no pill, no error). */
+  try {
+    qStatsFetchForTest(t).then(function(){
+      try {
+        if (typeof state !== 'undefined' && state && state.view === 'solutions' && state.test && t && state.test.id === t.id && !state.savedQuizMode) renderSolution();
+      } catch(e){}
+    });
+  } catch(e){}
+}
+
 function openSolutions(idx){
   state.savedQuizMode = false;
   state.qStates.forEach(function(st){ st.reattempt = null; });
@@ -5379,6 +5467,7 @@ function openSolutions(idx){
   updateAttemptButtons();
   showView('solutions');
   renderSolution();
+  qStatsOnReviewOpen(t);
 }
 function updateReattemptUI(){
   var rb = $('reattemptToggle');
@@ -5584,7 +5673,7 @@ function renderSolution(keepOpen){
     else { marksCls = 'neg'; marksTxt = '-0.33'; }
   }
   $('solMeta').innerHTML =
-    '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge +
+    '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge + qStatsPillHTML(i, q) +
     '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b>' + solTimeIcon(st.timeSpent, st.selected != null, status === 'incorrect') + '</span>' +
     '<span class="sm-time">Marks <span class="marks-chip ' + marksCls + '">' + marksTxt + '</span></span>' +
     '<button class="sol-save-btn" id="solBookmarkBtn" type="button" title="Save question" aria-label="Save question" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button>' +
