@@ -3614,7 +3614,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 69; /* must match version.txt - bump on every release */
+var APP_VERSION = 70; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -7127,7 +7127,7 @@ function openPicker(){
 }
 
 /* ============================ LEADERBOARD DATA ============================ */
-var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false};
+var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false, repairPubPending: false};
 var fsP = null;
 function fsMod(){ return fsP || (fsP = import(FS_URL)); }
 function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, ms); })]); }
@@ -7202,6 +7202,9 @@ async function lbPublish(force){
   var fb = window.__fb;
   if (!fb || !fb.user || !fb.db || !navigator.onLine) return false;
   if (LB.pubErr === 'permission-denied' && !force) return false;
+  LB.repairPubPending = false; /* v70 (Worker B): a publish attempt that
+     passes the online/auth guards consumes a pending repair publish.
+     A guard-failed attempt leaves the flag alone (deferred, not lost). */
   var e = myEntry();
   if (!e.tn) return false;
   var sig = JSON.stringify(e);
@@ -7217,6 +7220,26 @@ async function lbPublish(force){
 function lbSchedulePublish(force){
   if (LB.pubTimer) clearTimeout(LB.pubTimer);
   LB.pubTimer = setTimeout(function(){ LB.pubTimer = null; lbPublish(!!force); }, 3500);
+}
+/* v70 (Worker B): forced republish after a ledger repair changed eng.
+   Called from getCoins (load path) and pullAndMerge (sync path).
+   - At most ONE scheduled repair publish per repair: the flag blocks
+     re-arming until a publish attempt consumes it (see lbPublish).
+   - Guests NEVER publish and offline NEVER schedules: both return
+     WITHOUT arming the flag, so a later trigger (next pull, whose
+     end always calls schedulePublish(true), or the auth 'synced'
+     hook) re-fires this hook — the corrected total is deferred,
+     not lost.
+   - No publish->pull->publish loop: lbPublish writes the
+     `leaderboard` doc only, never the profile doc the pull reads;
+     the shared 3.5 s debounce + lbPublish sig-dedup collapse
+     repeat triggers into a single write. */
+function lbScheduleRepairPublish(){
+  if (LB.repairPubPending) return;
+  var fb = window.__fb;
+  if (!fb || !fb.user || !navigator.onLine) return;
+  LB.repairPubPending = true;
+  lbSchedulePublish(true);
 }
 function lbQuery(m, fb){ return m.query(m.collection(fb.db, 'leaderboard'), m.orderBy('u', 'desc'), m.limit(300)); }
 async function lbFetch(){
@@ -7802,7 +7825,7 @@ function openSeries(key){
 buildAvatarGrid();
 applyAvatars();
 wireLeaderboard();
-window.__lb = {open: openLeaderboard, schedulePublish: lbSchedulePublish, applyAvatars: applyAvatars, syncSeriesPicker: syncSeriesPicker, setAvatar: setMyAvatar, myAvatarId: myAvatarId, refresh: lbRefresh, myEntry: myEntry, subscribe: lbSubscribe, unsubscribe: lbUnsubscribe, live: function(){ return !!LB.live; }};
+window.__lb = {open: openLeaderboard, schedulePublish: lbSchedulePublish, scheduleRepairPublish: lbScheduleRepairPublish, applyAvatars: applyAvatars, syncSeriesPicker: syncSeriesPicker, setAvatar: setMyAvatar, myAvatarId: myAvatarId, refresh: lbRefresh, myEntry: myEntry, subscribe: lbSubscribe, unsubscribe: lbUnsubscribe, live: function(){ return !!LB.live; }};
 /* v66 Item 4b: the topper trigger in the coin-animation script (a separate
    IIFE) calls lbPublish / lbFetch / LB / myEntry / myUid / seriesTests /
    avSrc / myAvatarId / lbUseLocalMe / lbSaveCache / r2 as globals, but they
@@ -7908,6 +7931,41 @@ function migrateCoinsEngagement(c){
   c.engV68 = true;
   return true;
 }
+/* v70 ENGAGEMENT REPAIR (stale old-scale eng).
+   A stored `eng` in the OLD v59-v68 scale can survive with engV68:true
+   (resurrected via the sync-merge max rule, or a poisoned cloud object
+   with engV68:true + old-scale eng), so the v68/v69 /10 rescale never
+   touches it again — e.g. Sonveer: eng ~395 while his 3 tests earn at
+   most ~279 test coins. The per-day ledger (c.days) is the source of
+   truth: coinDaysSum re-derives usage/sol from usageSecs/solIds, so it
+   is always in the new scale.
+     eng < ledgerSum -> eng = ledgerSum (ledger wins).
+     eng > ledgerSum and eng/10 is closer to ledgerSum than eng is
+                       -> eng = eng/10 (old-scale; this preserves a
+                          pruned base in the new scale, since eng/10 =
+                          new ledger + new pruned base when the whole
+                          eng was old-scale).
+     eng > ledgerSum otherwise -> keep eng (plausible pruned/pre-ledger
+                          base already in the new scale).
+     eng == ledgerSum, or no/empty ledger -> no change; eng is NEVER
+                          zeroed here.
+   IDEMPOTENT: a repaired value no-ops on the next call (eng/10 is
+   farther from ledgerSum than eng is once eng is in the new scale).
+   Called from getCoins right after migrateCoinsEngagement, persisted
+   via storeSet when it changes. */
+function repairCoinsEngagement(c){
+  if (!c || typeof c !== 'object') return false;
+  if (!c.days || typeof c.days !== 'object' || Array.isArray(c.days)) return false;
+  if (Object.keys(c.days).length === 0) return false;
+  var ledgerSum = coinDaysSum(c.days);
+  var eng = +c.eng || 0;
+  if (eng < ledgerSum){ c.eng = ledgerSum; return true; }
+  if (eng > ledgerSum){
+    if (Math.abs(eng / 10 - ledgerSum) < Math.abs(eng - ledgerSum)){ c.eng = eng / 10; return true; }
+    return false;
+  }
+  return false;
+}
 function getCoins(store){
   var c = (store && store.coins) || null;
   if (!c || typeof c !== 'object'){ c = defaultCoins(); if (store) store.coins = c; return c; }
@@ -7939,6 +7997,9 @@ function getCoins(store){
      at once (storeSet -> pushSoon), so the new-scale value is what
      syncs to the cloud; the engV68 flag keeps later loads a no-op. */
   if (migrateCoinsEngagement(c)){ try { storeSet(store); } catch(e){} }
+  /* v70: repair a stale old-scale eng that survived with engV68:true
+     (see repairCoinsEngagement). Persisted the same way as the migrate. */
+  if (repairCoinsEngagement(c)){ try { storeSet(store); } catch(e){} try { if (window.__lb && window.__lb.scheduleRepairPublish) window.__lb.scheduleRepairPublish(); } catch(e){} }
   return c;
 }
 function coinToday(d){
@@ -8015,6 +8076,13 @@ function mergeCoins(dst, src){
      ledger sum. Idempotent via the engV68 flag on each side. */
   if (migrateCoinsEngagement(dst)) changed = true;
   migrateCoinsEngagement(src);
+  /* v70 (Worker B): ledger repair BEFORE merging (see
+     repairCoinsEngagement — Worker A). A poisoned side (engV68=true
+     + old-scale eng) would otherwise resurrect via the legacy max()
+     rule or inflate the ledger bases; repair first so both bases
+     are new-scale. A side with no ledger is a no-op for the repair. */
+  if (repairCoinsEngagement(dst)) changed = true;
+  if (repairCoinsEngagement(src)) changed = true;
   var ledger = dst.days && typeof dst.days === 'object' && !Array.isArray(dst.days) &&
                src.days && typeof src.days === 'object' && !Array.isArray(src.days);
   if (ledger){
@@ -8086,6 +8154,13 @@ function mergeCoins(dst, src){
       dst.streak = trueStreak; changed = true;
     }
   }
+  /* v70 (Worker B): repair the MERGED result once more — the legacy
+     (no-ledger) max() above can still lift a poisoned src eng into
+     dst when src has no ledger (the repair no-ops on a ledger-less
+     side), so re-run the repair on dst whenever dst HAS a ledger.
+     When NEITHER side has a ledger the repair cannot verify eng
+     and the max stands (known edge — see test_v70_B.js case c2). */
+  if (repairCoinsEngagement(dst)) changed = true;
   return changed;
 }
 /* v62: time coins for ONE question (seconds). isCA = GK/CA series
@@ -9464,6 +9539,10 @@ async function pullAndMerge(){
        wipe can never lose it. The stash key is deleted only after the push
        below succeeds. */
     var orphanRestored = false;
+    /* v70 (Worker B): eng snapshot before any merge in this pull — a
+       repair (mergeCoins) that changes eng must force a leaderboard
+       republish below, so the corrected total reaches Firestore. */
+    var _v70EngBefore = (store.coins && typeof store.coins.eng === 'number') ? store.coins.eng : 0;
     try { orphanRestored = restoreOrphanStore(uid, store); } catch(e){ orphanRestored = false; }
     var changed = !!orphanRestored;
     if (ensureAttemptTs(store)) changed = true;
@@ -9512,6 +9591,15 @@ async function pullAndMerge(){
       if (!store.coins) store.coins = defaultCoins();
       if (mergeCoins(store.coins, _cloudCoins)) changed = true;
     }
+    /* v70 (Worker B): forced republish when this pull changed eng
+       (repair or merge — either way the leaderboard total moved).
+       Runs BEFORE the end-of-pull schedulePublish(true), so the
+       publish is scheduled even if later pull code throws; that
+       end-of-pull call only re-arms the same shared debounce
+       timer (no double publish). Guests cannot reach here
+       (pullAndMerge returns early without fb.user) and the hook
+       itself is offline-safe. */
+    if (store.coins && (+store.coins.eng || 0) !== _v70EngBefore){ try { if (window.__lb && window.__lb.scheduleRepairPublish) window.__lb.scheduleRepairPublish(); } catch(e){} }
     if (shadow) shadow.coins = deepCopy(_cloudCoins);
     if (!store._fbMigrated){ store._fbMigrated = true; changed = true; }
     if (changed) saveLocal(store);
