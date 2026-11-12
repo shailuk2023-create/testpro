@@ -1117,6 +1117,15 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 
 /* ---- resume card ---- */
 .resume-card{border-radius:16px}
+/* v68-F: "Next test" suggestion card on home */
+.next-test-card{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow);cursor:pointer}
+.next-test-card[hidden]{display:none}
+.ntc-ico{width:40px;height:40px;flex:0 0 40px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#2dd4bf,#0891b2)}
+.ntc-body{flex:1;min-width:0}
+.ntc-label{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ntc-title{font-size:15px;font-weight:800;color:var(--text-strong);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ntc-sub{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ntc-btn{flex:0 0 auto}
 
 /* ---- series card ---- */
 .series-card{position:relative;overflow:hidden;border-radius:18px;padding:20px;transition:border-color .2s,box-shadow .2s,transform .2s}
@@ -2134,7 +2143,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="nav-sec">Test Series</div>
         <a href="#" id="navSeries" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-calc"/></svg><span>Railway Super 1000+ Maths</span></a>
         <a href="#" id="navAttempted" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg><span>Attempted Tests</span></a>
-        <a href="#" id="navSettings" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg><span>⚙️ Settings</span></a>
+        <a href="#" id="navSettings" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
       </nav>
     </aside>
     <div class="list-main">
@@ -2269,6 +2278,15 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
             <div id="resumeCardText" class="rc-text"></div>
           </div>
           <button class="btn btn-teal rc-btn" id="resumeCardBtn" type="button">Resume Test</button>
+        </div>
+        <div class="next-test-card anim" id="nextTestCard" hidden>
+          <span class="ntc-ico"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg></span>
+          <div class="ntc-body">
+            <div class="ntc-label">Up next</div>
+            <div class="ntc-title" id="nextTestTitle"></div>
+            <div class="ntc-sub" id="nextTestSub"></div>
+          </div>
+          <button class="btn btn-teal ntc-btn" id="nextTestBtn" type="button">Start</button>
         </div>
         <div id="homeSections">
           <div class="home-grid">
@@ -3596,9 +3614,138 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 67; /* must match version.txt - bump on every release */
+var APP_VERSION = 69; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
+/* ================= v68-I — restore state after refresh =================
+   User: refresh must NOT reset the app to Home — the open tab (and a
+   running test: same question, same answers, timer continuing) must come
+   back after a reload.
+   SAVE: saveLastView() persists the current view + sub-state to the
+   localStorage key `super1000_v1_lastView` (NOT inside the `super1000_v1`
+   store, so it is never synced to Firebase and survives store resets).
+   Called from setView() (every view change) and renderHome() (in-list
+   navigation that never calls setView, e.g. Back presses / CA pages).
+   RESTORE: restoreLastView() runs from init() at parse time. Phase 1
+   sets the view class + state immediately (no first-paint Home flash);
+   phase 2 (setTimeout 0) renders the restored view's content with the
+   normal openers, which live in later scripts and do not exist yet
+   while init() runs. The login gate is untouched: it is a modal overlay
+   (showGate/enterApp never touch state.view), so a logged-out boot still
+   shows the gate first and the restored view is underneath once inside.
+   inProgress resume uses the existing resumeTest() — the store already
+   saves it on every answer/navigation/timer tick; boot just never
+   called it. The resume itself is TWO-phase: phase 1 only VALIDATES
+   the saved progress (getInProgress + findTestById, both defined before
+   init) and switches the view class to 'test'; the real resumeTest()
+   runs in phase 2, because renderQuestion() needs syncSaveBtn /
+   syncStarBtn / isSaved from later scripts — calling it during init()
+   throws and the resume silently dies. A test resumes ONLY when it was
+   the open screen (saved view 'test') or when there is no saved view
+   yet (pre-v68 data); if the user deliberately left the test for
+   another tab, that tab wins and the test stays resumable from the Home
+   resume card. */
+var _V68I_LASTVIEW_KEY = 'super1000_v1_lastView';
+function saveLastView(){
+  try {
+    var v = state.view;
+    /* 'result' / 'solutions' / 'instructions' cannot be rebuilt from
+       storage alone (they need lastResult / state.test) — save Home. */
+    if (v === 'result' || v === 'solutions' || v === 'instructions') v = 'list';
+    if (v !== 'list' && v !== 'test' && v !== 'leaderboard' && v !== 'settings' && v !== 'saved') return;
+    localStorage.setItem(_V68I_LASTVIEW_KEY, JSON.stringify({
+      view: v,
+      navTab: state.navTab || 'home',
+      seriesOpen: !!state.seriesOpen,
+      seriesPicker: !!state.seriesPicker,
+      caView: state.caView || null,
+      caMonth: state.caMonth || null,
+      savedSeries: state.savedSeries || 'maths',
+      listFilter: state.listFilter || 'all',
+      caListFilter: state.caListFilter || 'all',
+      savedAt: Date.now()
+    }));
+  } catch(e){}
+}
+function readLastView(){
+  try {
+    var raw = localStorage.getItem(_V68I_LASTVIEW_KEY);
+    if (!raw) return null;
+    var r = JSON.parse(raw);
+    if (!r || typeof r !== 'object') return null;
+    if (r.view !== 'list' && r.view !== 'test' && r.view !== 'leaderboard' && r.view !== 'settings' && r.view !== 'saved') return null;
+    if (r.caView !== null && r.caView !== undefined && r.caView !== 'months' && r.caView !== 'month') return null;
+    return r;
+  } catch(e){ return null; }
+}
+function _v68iTryResumeTest(){
+  /* Phase 1 (parse time, inside init): only VALIDATE the saved progress
+     and switch the view class to 'test'. The real resumeTest() runs in
+     phase 2 (setTimeout 0, after every script has parsed) because
+     renderQuestion() needs syncSaveBtn / syncStarBtn / isSaved from
+     later scripts — calling it during init() throws and the resume
+     silently dies. Returns true when a resume was scheduled. */
+  try {
+    var p = (typeof getInProgress === 'function') ? getInProgress() : null;
+    if (!p) return false;
+    var t = (typeof findTestById === 'function') ? findTestById(p.testId) : null;
+    if (!t || !p.qStates || p.qStates.length !== t.questions.length){ try { clearProgress(); } catch(e){} return false; }
+  } catch(e){ return false; }
+  setView('test');
+  state.routeDepth = 0; _viewAt = {0:'test'};
+  setTimeout(function(){
+    try {
+      if (typeof resumeTest === 'function' && resumeTest()){ state.routeDepth = 0; _viewAt = {0:'test'}; return; }
+    } catch(e){}
+    /* saved test vanished between validation and resume — fall to Home */
+    try { state.navTab = 'home'; setView('list'); } catch(e){}
+  }, 0);
+  return true;
+}
+function restoreLastView(){
+  var saved = readLastView();
+  if (saved && saved.view === 'test'){
+    if (_v68iTryResumeTest()) return;
+    state.navTab = 'home';
+    setView('list');
+    return;
+  }
+  if (saved){
+    state.navTab = (saved.navTab === 'tests' || saved.navTab === 'leaderboard' || saved.navTab === 'settings') ? saved.navTab : 'home';
+    if (saved.view === 'leaderboard'){ state.navTab = 'leaderboard'; setView('leaderboard'); }
+    else if (saved.view === 'settings'){ state.navTab = 'settings'; setView('settings'); }
+    else if (saved.view === 'saved'){ state.navTab = 'home'; setView('saved'); }
+    else {
+      state.seriesOpen = !!saved.seriesOpen;
+      state.seriesPicker = !!saved.seriesPicker;
+      state.caView = saved.caView || null;
+      state.caMonth = (typeof saved.caMonth === 'string') ? saved.caMonth : null;
+      if (typeof saved.savedSeries === 'string') state.savedSeries = saved.savedSeries;
+      if (typeof saved.listFilter === 'string') state.listFilter = saved.listFilter;
+      if (typeof saved.caListFilter === 'string') state.caListFilter = saved.caListFilter;
+      if (state.caView) state.navTab = 'tests';
+      setView('list');
+    }
+    state.routeDepth = 0; _viewAt = {0: state.view};
+    /* Phase 2 (after every script has parsed): render the restored
+       view's content with the normal openers. showView is a no-op push
+       when already on the view. */
+    setTimeout(function(){
+      try {
+        if (state.view === 'leaderboard' && typeof openLeaderboard === 'function') openLeaderboard();
+        else if (state.view === 'saved' && typeof openSaved === 'function') openSaved();
+        else if (state.view === 'settings' && typeof openSettings === 'function') openSettings();
+        else if (state.view === 'list' && typeof renderHome === 'function') renderHome();
+      } catch(e){}
+    }, 0);
+    return;
+  }
+  /* No saved view (pre-v68 session): a leftover in-progress test still
+     resumes, exactly as the old Home resume card offered it. */
+  if (_v68iTryResumeTest()) return;
+  state.navTab = 'home';
+  setView('list');
+}
 function showView(name){
   if (state.view !== name){
     if (state.routeDepth > 0 && _viewAt[state.routeDepth - 1] === name){
@@ -3625,6 +3772,7 @@ function setView(name){
     if (el) el.classList.toggle('active', v === name);
   });
   state.view = name;
+  try { saveLastView(); } catch(e){} /* v68-I: persist the open view/tab for restore after refresh */
   _viewAt[state.routeDepth] = name;
   window.scrollTo(0, 0);
 }
@@ -5767,19 +5915,21 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   if (_st0.dark === undefined && isMobile()){ _st0.dark = true; storeSet(_st0); }
   applyTheme();
   initSlider();
-  /* v40: onboarding removed — boot always lands on HOME. The profile shows
-     defaults (Student / RRB NTPC / 91) until the user sets it in Settings
-     or the cloud profile arrives via sync. */
+  /* v68-I: restore-after-refresh — v40 always landed on HOME; now the
+     last view (and an in-progress test) is restored instead. The login
+     gate is untouched: it is a modal overlay, so a logged-out boot still
+     shows the gate first and the restored view is underneath once the
+     user enters the app (enterApp only closes the modal). */
   state.view = 'list';
   state.routeDepth = 0;
   state.homeGuard = false;
-  setView('list');
+  restoreLastView(); /* phase 1: view class + state; content render deferred to a setTimeout(0) inside it */
   window.history.replaceState(
-    {appView:'list', routeDepth:0, homeRoot:true, homeGuard:false},
+    {appView:state.view, routeDepth:0, homeRoot:(state.view === 'list' && !state.seriesOpen), homeGuard:false},
     '',
-    window.location.pathname + window.location.search + '#view-list'
+    window.location.pathname + window.location.search + '#view-' + state.view
   );
-  pushHomeBackGuard();
+  if (state.view === 'list') pushHomeBackGuard(); /* home-back guard is a Home-exit mechanism — only for a Home restore */
   applyProfile();
   renderList();
   /* v67-C: cached shell painted — drop Worker A's boot skeletons if
@@ -5840,6 +5990,94 @@ function resolveSaved(){
   });
   return out;
 }
+/* v68-F: "Next test" suggestion card on the home page.
+   After the user attempts any test, home suggests the next unattempted
+   test in the SAME series as their most recently attempted test (first
+   unattempted test after it in TESTS / CA_TESTS display order). If that
+   series is complete, the first unattempted test in the OTHER series is
+   used. No attempts yet, or everything attempted -> card stays hidden.
+   Tapping the card (or Start) opens the instructions for that test via
+   openInstructions(t) — the same entry point the test lists use.
+   Recomputed on every renderHome() from the live store; nothing cached. */
+function nextTestAttemptTs(a){
+  if (!a) return 0;
+  if (typeof a.ts === "number") return a.ts;
+  if (a.ts){ var n = +a.ts; return isNaN(n) ? 0 : n; }
+  if (a.date){ var d = Date.parse(a.date); return isNaN(d) ? 0 : d; }
+  return 0;
+}
+function nextTestIsAttempted(rec){
+  if (!rec) return false;
+  if (rec.attempts > 0) return true;
+  return getAttempts(rec).length > 0;
+}
+function findNextTest(){
+  var store = storeGet();
+  var series = [
+    {key: "maths", list: TESTS, map: store.tests || {}},
+    {key: "ca", list: CA_TESTS, map: store.tests_ca || {}}
+  ];
+  var best = null;
+  series.forEach(function(s){
+    s.list.forEach(function(t, idx){
+      getAttempts(s.map[t.id]).forEach(function(a){
+        var ts = nextTestAttemptTs(a);
+        if (!best || ts > best.ts) best = {test: t, idx: idx, ts: ts, key: s.key};
+      });
+    });
+  });
+  if (!best) return null;
+  function firstUnattempted(list, map, fromIdx){
+    for (var i = fromIdx; i < list.length; i++){
+      if (!nextTestIsAttempted(map[list[i].id])) return list[i];
+    }
+    return null;
+  }
+  var same = best.key === "ca" ? series[1] : series[0];
+  var other = best.key === "ca" ? series[0] : series[1];
+  var nxt = firstUnattempted(same.list, same.map, best.idx + 1);
+  if (nxt) return nxt;
+  return firstUnattempted(other.list, other.map, 0);
+}
+function nextTestLabel(t){
+  if (isCATest(t)) return "Current Affairs \u2022 " + (t.month_en || "") + " \u2022 Test " + t.num;
+  return "Maths \u2022 Test " + t.num;
+}
+function nextTestSub(t){
+  var q = (t.questions ? t.questions.length : t.marks) + " questions";
+  if (isCATest(t)) return q;
+  var s = t.nameEn || "";
+  if (t.parts > 1) s += " \u2022 Part " + t.part + "/" + t.parts;
+  return s + " \u2022 " + q;
+}
+function syncNextTestCard(){
+  var card = $("nextTestCard");
+  if (!card) return;
+  var t = null;
+  if (!state.seriesOpen && !state.caView) t = findNextTest();
+  if (!t){ card.hidden = true; card.style.display = "none"; return; }
+  var title = $("nextTestTitle"), sub = $("nextTestSub");
+  if (title) title.textContent = nextTestLabel(t);
+  if (sub) sub.textContent = nextTestSub(t);
+  card.setAttribute("data-test-id", t.id);
+  card.hidden = false;
+  card.style.display = "";
+  if (!syncNextTestCard._wired){
+    syncNextTestCard._wired = true;
+    var btn = $("nextTestBtn");
+    if (btn) btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      var tt = findTestById(card.getAttribute("data-test-id"));
+      if (tt) openInstructions(tt);
+    });
+    card.addEventListener("click", function(e){
+      if (e.target && e.target.closest && e.target.closest("#nextTestBtn")) return;
+      var tt = findTestById(card.getAttribute("data-test-id"));
+      if (tt) openInstructions(tt);
+    });
+  }
+}
+/* ---- end v68-F ---- */
 /* ---- folder home ---- */
 function renderHome(){
   renderStats();
@@ -5854,6 +6092,7 @@ function renderHome(){
   var b = $('irSavedCount'); if (b){ b.textContent = sv; b.classList.toggle('zero', sv === 0); }
   var sc = $('slideSavedCount'); if (sc) sc.textContent = sv ? '(' + sv + ')' : '';
   syncResumeCard();
+  syncNextTestCard();
   renderCASeriesCard();
   var open = !!state.seriesOpen;
   var hs = $('homeSections'); if (hs) hs.style.display = (open || state.caView) ? 'none' : '';
@@ -5863,6 +6102,7 @@ function renderHome(){
   if (state.caView) renderCAPage();
   try { if (window.__lb && window.__lb.syncSeriesPicker) window.__lb.syncSeriesPicker(); } catch(e){}
   renderFeatCards();
+  try { saveLastView(); } catch(e){} /* v68-I: in-list navigation (Back / CA pages) never calls setView — re-save here so the restored tab stays truthful */
 }
 /* v23: "Prepare Smarter" cards are live, animated, real-data cards.
    v66-B: all three cards are COMBINED Maths + CA (TESTS.concat(CA_TESTS)
@@ -7107,10 +7347,10 @@ function testCoins(rec, testId){
   if (typeof c !== 'number' || !isFinite(c)){
     try { c = CS.testCoinsFromEntry({score: rec[0], correct: rec[1], wrong: rec[2], marks: rec[3], timeTaken: rec[4]}, testId); } catch (e2) { c = NaN; }
   }
-  return (typeof c === 'number' && isFinite(c)) ? Math.max(0, Math.round(c)) : 0;
+  return (typeof c === 'number' && isFinite(c)) ? Math.max(0, Math.round(c * 10) / 10) : 0; /* v68-B: 1-decimal fractional per-test coins — ranking/sums use this; display rounds at render */
 }
 function entryCoins(e){
-  if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins));
+  if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins * 10) / 10); /* v68-B: 1-decimal fractional total — ranking uses this; display rounds at render */
   var sum = 0, ok = false;
   if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var c = testCoins(e.t[tid], tid); if (c){ sum += c; ok = true; } }); }
   return ok ? sum : 0;
@@ -7277,12 +7517,12 @@ function lbRenderHero(sorted0){
   host.innerHTML = '<div class="lb-hero"><span class="lb-hero-glow"></span>' +
     '<div class="lb-hero-main"><button type="button" class="lb-hero-av" id="lbMyAv" aria-label="Change avatar"><img id="lbMyAvImg" src="' + avSrc(me.avatar) + '" alt=""><span class="pen">' + ICON.edit + '</span></button>' +
     '<div class="lb-hero-txt"><small>Your rank</small><h2>' + name + '</h2><div class="lb-hero-rank"><b>#' + rank + '</b><span>of ' + total + ' ' + (total === 1 ? 'player' : 'players') + '</span></div></div>' +
-    '<div class="lb-coins"><span class="coin-ic" aria-hidden="true">🪙</span><b id="lbMyCoins" class="coin-countup" data-coins="' + entryCoins(me) + '">' + fmtN(entryCoins(me)) + '</b><span>coins</span></div></div>' +
+    '<div class="lb-coins"><span class="coin-ic" aria-hidden="true">🪙</span><b id="lbMyCoins" class="coin-countup" data-coins="' + entryCoins(me) + '">' + fmtN(Math.round(entryCoins(me))) + '</b><span>coins</span></div></div>' +
     '<div class="lb-hero-stats"><div><b>' + me.q + '</b><span>Questions</span></div><div><b>' + r1(me.avg).toFixed(1) + '%</b><span>Avg score</span></div><div><b>' + me.tn + '</b><span>Tests</span></div><div><b>' + entryAcc(me).toFixed(1) + '%</b><span>Avg accuracy</span></div></div></div>';
 }
 /* v59: one-line "How coins work" note, shown above the board on both tabs. */
 function lbCoinsNote(){
-  return '<div class="lb-note lb-coins-note"><button type="button" class="lb-coins-toggle" aria-expanded="false">🪙 How coins work</button><span class="lb-coins-full" hidden>🪙 How coins work: per test (best attempt only) — Score up to 1000, Accuracy up to 250 (100% = 250, 30% or less = 0), Time up to 250 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 1500 per test. Re-attempt coins are halved because answers have been seen — plus daily app opens, time spent in the app and solutions viewed.</span></div>';
+  return '<div class="lb-note lb-coins-note"><button type="button" class="lb-coins-toggle" aria-expanded="false">🪙 How coins work</button><span class="lb-coins-full" hidden>🪙 How coins work: per test (best attempt only) — Score up to 100, Accuracy up to 25 (100% = 25, 30% or less = 0), Time up to 25 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 150 per test. Re-attempt coins are halved because answers have been seen — plus daily app opens (+5, +10 on a 7+ day streak), time spent in the app (+1 per 10 min, max +10/day) and solutions viewed (+0.5 per solution, max +5/day).</span></div>';
 }
 function podium(top){
   var order = [1, 0, 2], h = '<div class="lb-podium">';
@@ -7294,7 +7534,7 @@ function podium(top){
     h += '<div class="pd p' + rank + ' ' + rkCls + (isMe(e) ? ' me' : '') + '" style="--i:' + idx + '">' + (rank === 1 ? '<span class="pd-crown">' + ICON.crown + '</span>' : '') +
       '<div class="pd-av">' + avImg(e, big, 'ring r' + rank) + medal(rank, rank === 1 ? 34 : 28) + '</div>' +
       '<div class="pd-name">' + esc(e.name) + (isMe(e) ? ' <i>You</i>' : '') + '</div>' +
-      '<div class="pd-val"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><small>coins</small></div>' +
+      '<div class="pd-val"><b>🪙 ' + fmtN(Math.round(entryCoins(e))) + '</b><small>coins</small></div>' +
       '<div class="pd-sub">' + r1(e.avg).toFixed(1) + '% avg score · ' + e.tn + ' tests</div>' +
       '<div class="pd-base"><b>' + rank + '</b></div></div>';
   });
@@ -7309,7 +7549,7 @@ function coinBreakdownHTML(){
   if (!b) return '<div class="lb-breakdown" hidden><div class="lb-bd-note">Coin breakdown will appear once the coin engine loads.</div></div>';
   var row = function(lbl, v){ return '<div class="lb-bd-row"><span>' + lbl + '</span><b>🪙 ' + fmtN(v) + '</b></div>'; };
   return '<div class="lb-breakdown" hidden><div class="lb-bd-title">Your coin breakdown</div>' +
-    row('Score coins · max 1000', b.score) + row('Accuracy coins · max 250', b.accuracy) + row('Time coins · max 250', b.time) + row('Engagement coins', b.engagement) +
+    row('Score coins · max 100', b.score) + row('Accuracy coins · max 25', b.accuracy) + row('Time coins · max 25', b.time) + row('Engagement coins', b.engagement) +
     '<div class="lb-bd-row total"><span>Total</span><b>🪙 ' + fmtN(b.total) + '</b></div></div>';
 }
 function rowHTML(e, rank, i){
@@ -7317,7 +7557,7 @@ function rowHTML(e, rank, i){
   return '<div class="lb-row' + (me ? ' me' : '') + '" style="--i:' + Math.min(i, 14) + '"><span class="lb-rk">' + rank + '</span>' + avImg(e, 44) +
     '<div class="lb-rn"><b>' + esc(e.name) + (me ? ' <i>You</i>' : '') + '</b><small>' + e.q + ' Qs · ' + entryAcc(e).toFixed(1) + '% avg acc · ' + e.tn + ' tests</small></div>' +
     (me ? '<button type="button" class="lb-coin-btn" data-coin-toggle aria-label="Show coin breakdown" aria-expanded="false">🪙 Info</button>' : '') +
-    '<div class="lb-rv"><b>🪙 ' + fmtN(entryCoins(e)) + '</b><em>coins</em><span class="lb-acc">' + r1(e.avg).toFixed(1) + '% avg score</span></div>' +
+    '<div class="lb-rv"><b>🪙 ' + fmtN(Math.round(entryCoins(e))) + '</b><em>coins</em><span class="lb-acc">' + r1(e.avg).toFixed(1) + '% avg score</span></div>' +
     (me ? coinBreakdownHTML() : '') + '</div>';
 }
 function renderOverall(){
@@ -7356,9 +7596,9 @@ function seriesCard(key, title, sub){
   var on = (LB.tab === 'series' && LB.series === key);
   return '<button type="button" class="lb-scard' + (on ? ' on' : '') + ' ' + key + '" data-series="' + key + '" aria-pressed="' + on + '">' +
     '<div class="sc-top"><span class="sc-ic">' + (key === 'ca' ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>') + '</span><div><b>' + title + '</b><small>' + sub + ' · ' + tests + ' tests · ' + b.length + ' players</small></div></div>' +
-    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>🪙 ' + fmtN(top.coins) + '</b><small>coins</small></div></div>' : '<div class="sc-none">No attempts yet — be the first topper!</div>') +
+    (top ? '<div class="sc-topper">' + avImg(top.e, 40, 'ring r1') + '<div><small>TOPPER</small><b>' + esc(top.e.name) + '</b></div><div class="sc-pts"><b>🪙 ' + fmtN(Math.round(top.coins)) + '</b><small>coins</small></div></div>' : '<div class="sc-none">No attempts yet — be the first topper!</div>') +
     seriesCatsHTML(key) +
-    '<div class="sc-me">' + (myI >= 0 ? 'Your rank <b>#' + (myI + 1) + '</b> · 🪙 ' + fmtN(b[myI].coins) + ' coins · ' + b[myI].n + '/' + tests + ' tests' : 'You have not attempted this series yet') + '</div></button>';
+    '<div class="sc-me">' + (myI >= 0 ? 'Your rank <b>#' + (myI + 1) + '</b> · 🪙 ' + fmtN(Math.round(b[myI].coins)) + ' coins · ' + b[myI].n + '/' + tests + ' tests' : 'You have not attempted this series yet') + '</div></button>';
 }
 function renderSeriesTab(){
   /* v53: one "Test Series" tab, no per-test cards — it shows only the two
@@ -7587,19 +7827,22 @@ window.openLeaderboard = openLeaderboard;
 </script>
 <script id="tp-coins">
 'use strict';
-/* ================= TESTPRO v62 — Coin System (engine + data) =================
-   Formula v62 (per test, BEST attempt only — re-attempts can only improve,
+/* ================= TESTPRO v68 — Coin System (engine + data) =================
+   Formula v68 = v62 ÷ 10 (per test, BEST attempt only — re-attempts can only improve,
    never add; anti-farming):
      scorePct = best.score / marks * 100; score coins = round(scorePct * 10)
-       (0-1000). UNCHANGED from v59.
+       (0-100). v68 RESCALE: every v62 integer coin value is computed exactly as
+       before, then divided by 10 — all coin values carry exactly 1 decimal
+       (e.g. 833 -> 83.3, per-question 8 -> 0.8). Guards, re-attempt factor 0.5,
+       Fastest gate and the home-page per-question time basis are UNCHANGED.
      accPct = best attempt's accuracy field (computed correct/(correct+wrong)
        * 100 when the field is missing); accuracy coins: acc <= 30% -> 0,
-       acc = 100% -> 250, between -> round((acc - 30) / 70 * 250) (max 250).
-     time coins (max 250, capped): PER-QUESTION, attempted questions only
+       acc = 100% -> 25, between -> round((acc - 30) / 70 * 250) / 10 (max 25).
+     time coins (max 25, capped): PER-QUESTION, attempted questions only
        (skipped earn 0 — a skipped question is recorded with sel: null, see
-       submitTest). GK/CA series (test id starts with 'ca-'): <= 10s -> 10,
-       >= 30s -> 0, between -> round(10 * (30 - t) / 20). Maths (all other
-       tests): <= 30s -> 10, >= 50s -> 0, between -> round(10 * (50 - t) / 20).
+       submitTest). GK/CA series (test id starts with 'ca-'): <= 10s -> 1,
+       >= 30s -> 0, between -> round(10 * (30 - t) / 20) / 10. Maths (all other
+       tests): <= 30s -> 1, >= 50s -> 0, between -> round(10 * (50 - t) / 20) / 10.
        Per-question times come from the best attempt's qs[].secs; when secs
        is missing, the fallback is the average seconds per question
        (timeTaken / marks) for each attempted question. Guards (whole test
@@ -7615,14 +7858,14 @@ window.openLeaderboard = openLeaderboard;
        applies to the WHOLE per-attempt total (score + accuracy +
        time). Engagement coins are NOT halved. Re-attempting can
        never reduce a test's coins.
-     Per-test coins = score + accuracy + time (max 1500). Negative scores
+     Per-test coins = score + accuracy + time (max 150). Negative scores
      clamp to 0 score coins (the formula ranges start at 0).
    Engagement coins (daily caps, local calendar dates YYYY-MM-DD):
-     open: +50 on the first open of the day; +100/day when the streak is
+     open: +5 on the first open of the day; +10/day when the streak is
        >= 7 consecutive days (lastOpenDate + streak tracked).
-     usage: +10 per 10 minutes of active use (visible tab), capped +100/day.
-     solution: +5 per solution viewed (unique question per day), capped
-       +50/day.
+     usage: +1 per 10 minutes of active use (visible tab), capped +10/day.
+     solution: +0.5 per solution viewed (unique question per day), capped
+       +5/day.
    Total coins = sum(best-attempt test coins over all attempted tests, both
    series) + lifetime engagement coins (store.coins.eng).
    Storage: test coins are DERIVED from existing attempt history — no new
@@ -7636,7 +7879,34 @@ window.openLeaderboard = openLeaderboard;
    No CSS, no view rendering, no animation in this block
    (Workers B/C own those). */
 function defaultCoins(){
-  return {eng: 0, lastOpenDate: '', streak: 0, day: '', usageSecs: 0, usageCoins: 0, solCoins: 0, solIds: [], days: {}};
+  return {eng: 0, lastOpenDate: '', streak: 0, day: '', usageSecs: 0, usageCoins: 0, solCoins: 0, solIds: [], days: {}, engV68: true};
+}
+/* v68 ENGAGEMENT RESCALE (divide by 10) + one-time migration.
+   Stored engagement coins from v67 and earlier are in the OLD scale
+   (open +50/+100, usage +10/10min max +100/day, solution +5 max +50/day).
+   The first v68 load divides the stored engagement values by 10 and sets
+   `engV68: true` on the coins object. The flag makes it IDEMPOTENT: a
+   second load (or a second merge) sees the flag and divides nothing, so
+   values can never be divided twice. Only values that are NOT re-derived
+   are divided here: eng (lifetime), usageCoins, solCoins (today's
+   counters) and each day-ledger entry's open award. Per-day usage/sol
+   are re-derived from usageSecs/solIds by getCoins/coinDaysSum/mergeCoins
+   (already in the new scale), so they must NOT be divided. Fresh v68
+   objects (defaultCoins) are born with engV68: true. */
+function migrateCoinsEngagement(c){
+  if (!c || typeof c !== 'object') return false;
+  if (c.engV68) return false; /* already in v68 scale - never divide twice */
+  if (typeof c.eng === 'number') c.eng = c.eng / 10;
+  if (typeof c.usageCoins === 'number') c.usageCoins = c.usageCoins / 10;
+  if (typeof c.solCoins === 'number') c.solCoins = c.solCoins / 10;
+  if (c.days && typeof c.days === 'object' && !Array.isArray(c.days)){
+    Object.keys(c.days).forEach(function(k){
+      var e = c.days[k];
+      if (e && typeof e === 'object' && typeof e.open === 'number') e.open = e.open / 10;
+    });
+  }
+  c.engV68 = true;
+  return true;
 }
 function getCoins(store){
   var c = (store && store.coins) || null;
@@ -7658,11 +7928,17 @@ function getCoins(store){
   if (!c.days || typeof c.days !== 'object' || Array.isArray(c.days)) c.days = {};
   Object.keys(c.days).forEach(function(k){
     var e = coinDayEntry(c, k);
-    e.usage = Math.min(100, Math.floor(e.usageSecs / 600) * 10);
-    e.sol = Math.min(50, e.solIds.length * 5);
+    e.usage = Math.min(10, Math.floor(e.usageSecs / 600) * 1);
+    e.sol = Math.min(5, e.solIds.length * 0.5);
   });
   var _dk = Object.keys(c.days).sort();
   while (_dk.length > 31) delete c.days[_dk.shift()];
+  /* v68: one-time /10 migration of stored old-scale engagement coins.
+     getCoins is the single reader of the local store.coins, so every
+     load path funnels through here. The migrated store is written back
+     at once (storeSet -> pushSoon), so the new-scale value is what
+     syncs to the cloud; the engV68 flag keeps later loads a no-op. */
+  if (migrateCoinsEngagement(c)){ try { storeSet(store); } catch(e){} }
   return c;
 }
 function coinToday(d){
@@ -7695,8 +7971,8 @@ function coinDaysSum(days){
   Object.keys(days || {}).forEach(function(k){
     var e = days[k] || {};
     s += (+e.open || 0)
-      + Math.min(100, Math.floor((+e.usageSecs || 0) / 600) * 10)
-      + Math.min(50, (Array.isArray(e.solIds) ? e.solIds.length : 0) * 5);
+      + Math.min(10, Math.floor((+e.usageSecs || 0) / 600) * 1)
+      + Math.min(5, (Array.isArray(e.solIds) ? e.solIds.length : 0) * 0.5);
   });
   return s;
 }
@@ -7707,14 +7983,14 @@ function coinDaysSum(days){
    (the old eng-max merge dropped one side: both devices' eng started
    from the same base, so max kept only one day's award).
    Rules, per date:
-     open   = MAX (the same day's open is ONE award — 50, or 100 on a 7+
+     open   = MAX (the same day's open is ONE award — 5, or 10 on a 7+
               day streak — never summed, so a second device opening the
               same day adds nothing).
-     usage  = MAX of usageSecs, coins recomputed min(100, floor(secs/600)*10)
+     usage  = MAX of usageSecs, coins recomputed min(10, floor(secs/600)*1)
               (usageSecs is a cumulative counter: summing it would
               double-count minutes already synced on a later pull; the
               daily cap bounds the divergent same-day loss).
-     sol    = UNION of solIds, coins = min(50, 5 * |union|) (a question
+     sol    = UNION of solIds, coins = min(5, 0.5 * |union|) (a question
               viewed on both devices counts once; different questions add).
    Lifetime eng is then rebuilt as max(dstBase, srcBase) + sum(merged days),
    where base = eng - sum(own days) is the pre-ledger / untracked part.
@@ -7726,12 +8002,19 @@ function coinDaysSum(days){
    local base that never saw the cloud's yesterday streak. If src's
    lastOpenDate is exactly the day before dst's, today continues src's
    streak: streak = src.streak + 1, and the open award is topped up to
-   the true amount (50 -> 100 when the true streak reaches 7).
+   the true amount (5 -> 10 when the true streak reaches 7).
    Returns true when dst changed. */
 function mergeCoins(dst, src){
   if (!src || typeof src !== 'object') return false;
   if (!dst || typeof dst !== 'object') return false;
   var changed = false;
+  /* v68: migrate BOTH sides to the /10 engagement scale BEFORE merging.
+     The cloud/stash side may still hold old-scale coins (a device that
+     has not opened v68 yet); merging unmigrated would resurrect old-scale
+     eng via the legacy max() rule and old-scale open awards via the
+     ledger sum. Idempotent via the engV68 flag on each side. */
+  if (migrateCoinsEngagement(dst)) changed = true;
+  migrateCoinsEngagement(src);
   var ledger = dst.days && typeof dst.days === 'object' && !Array.isArray(dst.days) &&
                src.days && typeof src.days === 'object' && !Array.isArray(src.days);
   if (ledger){
@@ -7743,11 +8026,11 @@ function mergeCoins(dst, src){
         if (!m) m = mergedDays[date] = {open: 0, usage: 0, usageSecs: 0, sol: 0, solIds: []};
         if ((+e.open || 0) > m.open) m.open = +e.open || 0;
         if ((+e.usageSecs || 0) > m.usageSecs) m.usageSecs = +e.usageSecs || 0;
-        m.usage = Math.min(100, Math.floor(m.usageSecs / 600) * 10);
+        m.usage = Math.min(10, Math.floor(m.usageSecs / 600) * 1);
         (Array.isArray(e.solIds) ? e.solIds : []).forEach(function(k){
           if (m.solIds.indexOf(k) === -1) m.solIds.push(k);
         });
-        m.sol = Math.min(50, m.solIds.length * 5);
+        m.sol = Math.min(5, m.solIds.length * 0.5);
       });
     });
     var _mk = Object.keys(mergedDays).sort();
@@ -7792,9 +8075,9 @@ function mergeCoins(dst, src){
   if (dst.lastOpenDate && src.lastOpenDate && src.lastOpenDate === coinYesterday(dst.lastOpenDate)){
     var trueStreak = (+src.streak || 0) + 1;
     if (trueStreak > (+dst.streak || 0)){
-      var trueOpen = trueStreak >= 7 ? 100 : 50;
+      var trueOpen = trueStreak >= 7 ? 10 : 5;
       var recordedOpen = (ledger && dst.days[dst.lastOpenDate]) ? (+dst.days[dst.lastOpenDate].open || 0)
-        : ((+dst.streak || 0) >= 7 ? 100 : 50);
+        : ((+dst.streak || 0) >= 7 ? 10 : 5);
       if (trueOpen > recordedOpen){
         dst.eng = (+dst.eng || 0) + (trueOpen - recordedOpen);
         if (ledger && dst.days[dst.lastOpenDate]) dst.days[dst.lastOpenDate].open = trueOpen;
@@ -7807,18 +8090,20 @@ function mergeCoins(dst, src){
 }
 /* v62: time coins for ONE question (seconds). isCA = GK/CA series
    (test id starts with 'ca-'); everything else is Maths. */
+/* v68: per-question time coins = v62 integer value / 10 (1.0 fast, 0 slow,
+   fractional between — e.g. 8 -> 0.8). Exactly 1 decimal. */
 function coinTimePerQ(secs, isCA){
   secs = +secs || 0;
   if (isCA){
-    if (secs <= 10) return 10;
+    if (secs <= 10) return 1;
     if (secs >= 30) return 0;
-    return Math.round(10 * (30 - secs) / 20);
+    return Math.round(10 * (30 - secs) / 20) / 10;
   }
-  if (secs <= 30) return 10;
+  if (secs <= 30) return 1;
   if (secs >= 50) return 0;
-  return Math.round(10 * (50 - secs) / 20);
+  return Math.round(10 * (50 - secs) / 20) / 10;
 }
-/* v62: time coins for one best attempt (max 250, capped).
+/* v68: time coins for one best attempt (max 25, capped).
    qs: the best attempt's qs[] entries {sel, secs} — a question counts
    only when attempted (sel != null; skipped attempts are recorded with
    sel: null — see submitTest). Skipped questions earn 0 time coins.
@@ -7846,31 +8131,33 @@ function coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId){
   } else {
     for (i = 0; i < attempted; i++) total += coinTimePerQ(avgSecs, isCA);
   }
-  return Math.min(250, total);
+  return Math.min(25, Math.round(total * 10) / 10); /* v68: sum of 1-decimal
+     per-question values, re-rounded to 1 decimal to clear float dust */
 }
 function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride, qs, testId){
   marks = +marks || 0;
   if (!marks) return {score: 0, accuracy: 0, time: 0, total: 0};
-  var scoreC = Math.max(0, Math.round((+score || 0) / marks * 100 * 10));
+  var scoreC = Math.max(0, Math.round((+score || 0) / marks * 100 * 10) / 10); /* v68: max 100 */
   var att = (+correct || 0) + (+wrong || 0);
   var accPct = (accOverride != null && !isNaN(+accOverride)) ? +accOverride : (att > 0 ? (+correct || 0) / att * 100 : 0);
   var accC = 0;
-  if (accPct > 30) accC = Math.min(250, Math.round((accPct - 30) / 70 * 250));
+  if (accPct > 30) accC = Math.min(25, Math.round((accPct - 30) / 70 * 250) / 10); /* v68: max 25 */
   var timeC = coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId);
-  return {score: scoreC, accuracy: accC, time: timeC, total: scoreC + accC + timeC};
+  return {score: scoreC, accuracy: accC, time: timeC, total: Math.round((scoreC + accC + timeC) * 10) / 10}; /* v68: max 150 */
 }
-/* v62 re-attempt rule: the FIRST attempt (attempt record no == 1, or no
+/* v68 re-attempt rule (v62 ÷ 10): the FIRST attempt (attempt record no == 1, or no
    missing) earns 100% of its test coins; every re-attempt (no >= 2)
    earns 50% of its whole per-attempt total (score + accuracy + time),
    because the answers have already been seen. The factor is applied
-   per part (rounded) and the total is the sum of the factored parts, so
+   per part (rounded to 1 decimal — a halved 83.3 becomes 41.7, the v62
+   halved integer 417 ÷ 10) and the total is the sum of the factored parts, so
    breakdowns always add up to the total. Engagement coins are NOT
    halved (only test coins). */
 function coinApplyFactor(parts, factor){
   factor = (factor == null || isNaN(+factor)) ? 1 : +factor;
-  var s = Math.round((+parts.score || 0) * factor);
-  var a = Math.round((+parts.accuracy || 0) * factor);
-  var ti = Math.round((+parts.time || 0) * factor);
+  var s = Math.round((+parts.score || 0) * factor * 10) / 10;
+  var a = Math.round((+parts.accuracy || 0) * factor * 10) / 10;
+  var ti = Math.round((+parts.time || 0) * factor * 10) / 10;
   return {score: s, accuracy: a, time: ti, total: s + a + ti};
 }
 function coinBestAttempt(testId){
@@ -7952,21 +8239,21 @@ function awardEngagement(type, key){
       if (c.lastOpenDate !== today){
         c.streak = (c.lastOpenDate === coinYesterday(today)) ? ((+c.streak || 0) + 1) : 1;
         c.lastOpenDate = today;
-        awarded = c.streak >= 7 ? 100 : 50;
+        awarded = c.streak >= 7 ? 10 : 5;
         openAwarded = awarded;
       }
     } else if (type === 'usage'){
       var secs = (typeof key === 'number' && key > 0) ? Math.floor(key) : 0;
       if (secs > 0){
         c.usageSecs = (+c.usageSecs || 0) + secs;
-        var earned = Math.min(100, Math.floor(c.usageSecs / 600) * 10);
+        var earned = Math.min(10, Math.floor(c.usageSecs / 600) * 1);
         awarded = Math.max(0, earned - (+c.usageCoins || 0));
         c.usageCoins = earned;
       }
     } else if (type === 'solution'){
       var qk = String(key == null ? '' : key);
-      if (qk && (c.solIds || []).indexOf(qk) === -1 && (+c.solCoins || 0) < 50){
-        c.solIds.push(qk); c.solCoins = (+c.solCoins || 0) + 5; awarded = 5;
+      if (qk && (c.solIds || []).indexOf(qk) === -1 && (+c.solCoins || 0) < 5){
+        c.solIds.push(qk); c.solCoins = (+c.solCoins || 0) + 0.5; awarded = 0.5;
       }
     } else { return 0; }
     if (awarded > 0){ c.eng = (+c.eng || 0) + awarded; dirty = true; }
@@ -9847,11 +10134,11 @@ function showCoinCelebration(delta){
     void rows[i].offsetWidth;
     rows[i].style.animation = '';
   }
-  $('coinRowScore').textContent = '+' + delta.score;
-  $('coinRowAcc').textContent = '+' + delta.accuracy;
-  $('coinRowTime').textContent = '+' + delta.time;
+  $('coinRowScore').textContent = '+' + Math.round(delta.score); /* v68-G: display only — whole coins */
+  $('coinRowAcc').textContent = '+' + Math.round(delta.accuracy); /* v68-G: display only — whole coins */
+  $('coinRowTime').textContent = '+' + Math.round(delta.time); /* v68-G: display only — whole coins */
   ov.removeAttribute('hidden');
-  countUp($('coinCelebTotal'), total, function(){ $('coinCelebTotal').textContent = '+' + total; });
+  countUp($('coinCelebTotal'), Math.round(total), function(){ $('coinCelebTotal').textContent = '+' + Math.round(total); }); /* v68-G: display only — whole coins */
   if (celebTimer) clearTimeout(celebTimer);
   celebTimer = setTimeout(hideCelebration, CELEB_MS);
 }
@@ -9893,7 +10180,7 @@ function topperSeriesRank(list, scope){
    derived via window.CoinSystem.testCoinsFromEntry, exactly as the
    board's own entry-coins derivation does. */
 function topperCoins(e){
-  if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins));
+  if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins * 10) / 10); /* v68-B: 1-decimal fractional total — ranking uses this; display rounds at render */
   var sum = 0, ok = false;
   if (e && e.t && window.CoinSystem){ Object.keys(e.t).forEach(function(tid){ var c = window.CoinSystem.testCoinsFromEntry(e.t[tid], tid); if (c){ sum += c; ok = true; } }); }
   return ok ? sum : 0;
@@ -10070,8 +10357,8 @@ function hideDailyToast(){
   if (t) t.setAttribute('hidden', '');
   if (toastTimer){ clearTimeout(toastTimer); toastTimer = null; }
 }
-/* Awarded amount comes from the engine — never hardcoded (50 daily,
-   100 on a >=7-day streak, per the brief — the engine decides). Show the
+/* Awarded amount comes from the engine — never hardcoded (5 daily,
+   10 on a >=7-day streak, per the brief — the engine decides). Show the
    toast ONLY when the award is > 0. Polls briefly for the engine because
    Worker A's script may load after this one. */
 function tryDailyOpen(){
