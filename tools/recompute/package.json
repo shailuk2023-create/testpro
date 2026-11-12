@@ -1,0 +1,1 @@
+{"dependencies":{"firebase-admin":"^12.0.0"},"description":"Server-side recompute of ALL TESTPRO users' leaderboard coin totals (v69 formula) for GitHub Actions","engines":{"node":"20"},"main":"run.js","name":"testpro-recompute-coins","private":true,"scripts":{"start":"node run.js"},"version":"1.0.0"}
