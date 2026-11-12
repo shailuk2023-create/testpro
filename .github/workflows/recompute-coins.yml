@@ -1,0 +1,42 @@
+name: Recompute leaderboard coins
+
+# Free alternative to the Cloud Function (needs paid Blaze):
+# recomputes ALL users' coin totals server-side with the v69 formula,
+# every 1 hour + on manual trigger.
+# Requires the repo secret FIREBASE_SERVICE_ACCOUNT_JSON
+# (the Firebase service account JSON, as a single-line JSON string).
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  recompute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: tools/recompute/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('tools/recompute/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: tools/recompute
+        run: npm install
+
+      - name: Recompute all users' coins
+        working-directory: tools/recompute
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: node run.js
