@@ -21,6 +21,11 @@
    and persists whatever getMigratedCoinsObj() returns when it differs.
 
    All coin values carry exactly 1 decimal (v68 rescale = v62 values / 10).
+
+   v71 addition (pure functions only, formula untouched): bestAttemptsByTest
+   / aggregateQuestionStats / questionStatsPct — per-question "% answered
+   correctly" aggregates, reusing the coin best-attempt selection. See the
+   v71 section above the PUBLIC INTERFACE.
    ========================================================================== */
 
 /* ---- Formula constants (v69) ---- */
@@ -173,18 +178,107 @@ function attemptMarks(a){
    Mirrors testCoinsDetail(): coins are computed PER ATTEMPT (each with its
    own factor — 1 for the first attempt, 0.5 for re-attempts) and the test
    total is the MAX over attempts, NOT just the best-by-score attempt's
-   coins. Re-attempting can never reduce a test's coins. */
-function bestTestTotal(testId, attempts){
+   coins. Re-attempting can never reduce a test's coins.
+   v71: the selection lives in selectBestAttempt() so the question-stats
+   aggregation can reuse the EXACT same best-attempt choice (same
+   comparison, same first-wins tie-break). bestTestTotal() below is a
+   thin wrapper over it — its return value is unchanged. */
+function selectBestAttempt(testId, attempts){
   var best = null;
-  attempts.forEach(function(a){
+  (Array.isArray(attempts) ? attempts : []).forEach(function(a){
+    if (!a) return;
     var marks = attemptMarks(a);
     var raw = coinsFromParts(a.score || 0, a.correct || 0, a.wrong || 0,
       marks, a.timeTaken || 0, a.accuracy, a.qs, testId);
     var f = (a.no != null && +a.no >= 2) ? REATTEMPT_FACTOR : 1;
     var d = coinApplyFactor(raw, f);
-    if (!best || d.total > best.total) best = d;
+    if (!best || d.total > best.parts.total) best = {attempt: a, parts: d};
   });
   return best;
+}
+
+function bestTestTotal(testId, attempts){
+  var best = selectBestAttempt(testId, attempts);
+  return best ? best.parts : null;
+}
+
+/* ============================================================================
+   v71 — per-question "% answered correctly" aggregation
+   ----------------------------------------------------------------------------
+   Pure functions, no Firebase dependency. The app displays, per question,
+   pct = correct / attempted * 100 (1 decimal); the stored aggregate is the
+   compact map { "<qNo>": { "a": attempted, "c": correct } } per test.
+
+   Rules (same as the coin best-attempt rule — see selectBestAttempt):
+     - ONE record per (user, test): that user's BEST attempt only.
+       Re-attempts are never counted as a separate user.
+     - attempted = the user SELECTED an answer for that question
+       (sel != null). Skipped (sel == null) does NOT count.
+     - correct = of the attempted, ok === true.
+     - A question nobody attempted is ABSENT from the map (not {a:0,c:0});
+       a test with no attempted question at all is ABSENT from the result.
+   The coin formula above is NOT touched by any of this.
+   ========================================================================== */
+
+/* bestAttemptsByTest(attempts)
+   attempts: one user's attempt objects (any tests mixed).
+   Returns { testId: <best attempt object> } — the single best attempt
+   per test, chosen by the same max-factored-total rule as the coins.
+   The returned attempt objects are the caller's own objects (not copies);
+   they are only read, never mutated, by aggregateQuestionStats(). */
+function bestAttemptsByTest(attempts){
+  var byTest = {};
+  (Array.isArray(attempts) ? attempts : []).forEach(function(a){
+    if (!a || typeof a.testId !== 'string' || !a.testId) return;
+    if (!byTest[a.testId]) byTest[a.testId] = [];
+    byTest[a.testId].push(a);
+  });
+  var out = {};
+  Object.keys(byTest).forEach(function(testId){
+    var best = selectBestAttempt(testId, byTest[testId]);
+    if (best) out[testId] = best.attempt;
+  });
+  return out;
+}
+
+/* aggregateQuestionStats(perUserBest)
+   perUserBest: array of per-user best-attempt maps, one entry per user,
+     each as returned by bestAttemptsByTest() — i.e. at most ONE attempt
+     per (user, test). Any other shape (null entries, missing qs) is
+     skipped, never throws.
+   Returns { testId: { "<qNo>": { "a": attempted, "c": correct } } }.
+   Keys are String(q.n); q.n must be a finite number. Only questions with
+   at least one attempted record appear. No per-user data is retained. */
+function aggregateQuestionStats(perUserBest){
+  var stats = {};
+  (Array.isArray(perUserBest) ? perUserBest : []).forEach(function(bestMap){
+    if (!bestMap || typeof bestMap !== 'object') return;
+    Object.keys(bestMap).forEach(function(testId){
+      var attempt = bestMap[testId];
+      if (!attempt || !Array.isArray(attempt.qs)) return;
+      attempt.qs.forEach(function(q){
+        if (!q) return;
+        var n = +q.n;
+        if (!isFinite(n)) return;
+        if (q.sel == null) return; /* skipped: not counted in attempted */
+        var key = String(n);
+        if (!stats[testId]) stats[testId] = {};
+        if (!stats[testId][key]) stats[testId][key] = {a: 0, c: 0};
+        stats[testId][key].a += 1;
+        if (q.ok === true) stats[testId][key].c += 1;
+      });
+    });
+  });
+  return stats;
+}
+
+/* questionStatsPct(a, c) — display helper for the app (Worker B):
+   percent answered correctly, 1 decimal, or null when nobody attempted. */
+function questionStatsPct(a, c){
+  a = +a || 0;
+  c = +c || 0;
+  if (a <= 0) return null;
+  return Math.round(c / a * 1000) / 10;
 }
 
 /* ============================================================================
@@ -261,6 +355,9 @@ function getMigratedCoinsObj(coinsObj){
 module.exports = {
   computeUserTotal: computeUserTotal,
   getMigratedCoinsObj: getMigratedCoinsObj,
+  bestAttemptsByTest: bestAttemptsByTest,
+  aggregateQuestionStats: aggregateQuestionStats,
+  questionStatsPct: questionStatsPct,
   MAX_TEST_COINS: MAX_TEST_COINS,
   MAX_SCORE: MAX_SCORE,
   MAX_ACCURACY: MAX_ACCURACY,
