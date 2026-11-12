@@ -13,6 +13,20 @@
    object is written back to users/{uid}/profile/data (field `coins`,
    merge:true) so it is never divided twice.
 
+   v70 ledger repair: a stored engagement `eng` can be stale old-scale
+   (~395 instead of ~39.5) even with engV68 already true (the sync-merge
+   max-rule resurrected the pre-v68 value while the flag blocked a second
+   /10). Before computing the total, eng is re-derived from the per-day
+   ledger (days[].open + capped usage/sol) and repaired when the ledger
+   proves it stale — the SAME rule as the app-side v70 repair (Worker A).
+   A repaired eng is written back to users/{uid}/profile/data (field
+   `coins`, merge:true) so the app sees it on next pull, and the repair is
+   logged old -> new per user.
+
+   v70 scope: run.js ONLY. recompute.js (the formula) is byte-identical to
+   functions/recompute.js and is NOT touched; the workflow .yml and
+   package.json are unchanged.
+
    Credentials: the service account JSON is read ONLY from the environment
    variable FIREBASE_SERVICE_ACCOUNT_JSON (a JSON string). No key file is
    read by default and no credential is hardcoded.
@@ -24,6 +38,10 @@
 var recompute = require('./recompute');
 var computeUserTotal = recompute.computeUserTotal;
 var getMigratedCoinsObj = recompute.getMigratedCoinsObj;
+var ENG_USAGE_DAILY_CAP = recompute.ENG_USAGE_DAILY_CAP;
+var ENG_USAGE_BUCKET_SECS = recompute.ENG_USAGE_BUCKET_SECS;
+var ENG_SOLUTION_DAILY_CAP = recompute.ENG_SOLUTION_DAILY_CAP;
+var ENG_SOLUTION_PER_Q = recompute.ENG_SOLUTION_PER_Q;
 
 /* ---- Firestore access helpers (work with real firebase-admin Firestore
    AND with a mock that exposes collection(name).doc(id).get()/set() plus
@@ -119,6 +137,86 @@ async function getDocData(ref){
 }
 
 /* ============================================================================
+   v70 — ledger-based repair of a stale old-scale engagement `eng`
+   ----------------------------------------------------------------------------
+   Bug: a profile can hold eng ~395 (old v59–v68 scale) with engV68 already
+   true, because the sync-merge max-rule resurrected the pre-v68 value
+   while the flag blocked re-division. The v68 migration alone therefore
+   cannot fix it, and the recompute must not trust the stored eng.
+
+   Repair rule (identical to the app-side v70 repair, Worker A):
+     ledgerSum = sum over coins.days of
+       open + min(10, floor(usageSecs/600)) + min(5, 0.5 * solIds.length)
+     - empty / missing ledger  -> keep eng (nothing proves staleness)
+     - eng < ledgerSum         -> eng := ledgerSum
+     - eng > ledgerSum AND |eng/10 - ledgerSum| < |eng - ledgerSum|
+                               -> eng := eng/10
+     - otherwise               -> keep eng
+   The repair runs on the EFFECTIVE coins object (after the v68 /10
+   migration, so days[].open is already new-scale, matching the usage/sol
+   caps) and never mutates its input. All values are 1-decimal.
+   ========================================================================== */
+function r1(x){ return Math.round(x * 10) / 10; }
+
+function deepCopyCoins(v){
+  return (v === undefined || v === null) ? v : JSON.parse(JSON.stringify(v));
+}
+
+/* Re-derive lifetime engagement from the per-day ledger (the source of
+   truth for what the user actually earned). Per day: the stored open
+   award + usage coins re-derived from usageSecs (+1 per 10 min, cap 10)
+   + solution coins re-derived from solIds (+0.5 per unique question,
+   cap 5). Returns null when there is no usable ledger (no days object,
+   empty, or no day with any usable field) so the caller keeps eng. */
+function ledgerEngagementSum(coinsObj){
+  if (!coinsObj || typeof coinsObj !== 'object') return null;
+  var days = coinsObj.days;
+  if (!days || typeof days !== 'object' || Array.isArray(days)) return null;
+  var keys = Object.keys(days);
+  if (!keys.length) return null;
+  var sum = 0;
+  var sawDay = false;
+  var i, d, open, usageSecs, usage, solCount, sol;
+  for (i = 0; i < keys.length; i++){
+    d = days[keys[i]];
+    if (!d || typeof d !== 'object') continue;
+    open = (typeof d.open === 'number' && isFinite(d.open)) ? d.open : 0;
+    usageSecs = (typeof d.usageSecs === 'number' && isFinite(d.usageSecs)) ? d.usageSecs : 0;
+    if (Array.isArray(d.solIds)) solCount = d.solIds.length;
+    else if (typeof d.solIds === 'number' && isFinite(d.solIds)) solCount = d.solIds;
+    else solCount = 0;
+    if (typeof d.open === 'number' || typeof d.usageSecs === 'number' || d.solIds != null) sawDay = true;
+    usage = Math.min(ENG_USAGE_DAILY_CAP, Math.floor(usageSecs / ENG_USAGE_BUCKET_SECS));
+    sol = Math.min(ENG_SOLUTION_DAILY_CAP, ENG_SOLUTION_PER_Q * solCount);
+    sum += open + usage + sol;
+  }
+  if (!sawDay) return null;
+  return r1(sum);
+}
+
+/* Decide whether the stored eng (on the EFFECTIVE, post-migration coins
+   object) is stale against the ledger. Returns
+   {changed, oldEng, newEng, ledgerSum}. Never mutates its input.
+   A non-numeric / missing eng counts as 0 when a ledger exists. */
+function repairEngagement(coinsObj){
+  var none = {changed: false, oldEng: null, newEng: null, ledgerSum: null};
+  if (!coinsObj || typeof coinsObj !== 'object') return none;
+  var ledgerSum = ledgerEngagementSum(coinsObj);
+  if (ledgerSum == null) return none; /* empty ledger -> keep eng */
+  var eng = (typeof coinsObj.eng === 'number' && isFinite(coinsObj.eng)) ? coinsObj.eng : 0;
+  if (eng < ledgerSum){
+    return {changed: true, oldEng: eng, newEng: r1(ledgerSum), ledgerSum: ledgerSum};
+  }
+  if (eng > ledgerSum){
+    var divided = r1(eng / 10);
+    if (Math.abs(divided - ledgerSum) < Math.abs(eng - ledgerSum)){
+      return {changed: true, oldEng: eng, newEng: divided, ledgerSum: ledgerSum};
+    }
+  }
+  return {changed: false, oldEng: eng, newEng: eng, ledgerSum: ledgerSum};
+}
+
+/* ============================================================================
    PUBLIC INTERFACE — async recomputeAllUsers(db)
    ========================================================================== */
 async function recomputeAllUsers(db){
@@ -153,7 +251,16 @@ async function recomputeAllUsers(db){
 
       /* (3) Recompute with the v69 formula. */
       var computed = computeUserTotal(attempts, coinsObj);
-      var newCoins = computed.total;
+
+      /* (3b) v70 ledger repair: the stored eng may be stale old-scale
+         even with engV68 already true. Repair it from the per-day ledger
+         (same rule as the app-side v70 repair) and use the repaired eng
+         for the total. The repair runs on the EFFECTIVE (post-migration)
+         coins object, so days[].open is new-scale. */
+      var effectiveCoins = getMigratedCoinsObj(coinsObj);
+      var repair = repairEngagement(effectiveCoins);
+      var engagement = repair.changed ? repair.newEng : computed.engagement;
+      var newCoins = r1(computed.testCoins + engagement);
 
       /* (4) Write ONLY {coins, u} to the leaderboard doc (merge:true). */
       await collectionRef(db, 'leaderboard').doc(uid).set(
@@ -161,21 +268,31 @@ async function recomputeAllUsers(db){
         {merge: true}
       );
 
-      /* (5) If the engagement object was migrated (engV68), persist the
-         migrated object so it is never divided twice. */
-      if (computed.engagementMigrated){
-        var migrated = getMigratedCoinsObj(coinsObj);
+      /* (5) Persist the engagement object when it was migrated (engV68)
+         and/or repaired (v70 ledger repair), so the app sees the repaired
+         value on next pull and the fix is never applied twice. The write
+         is a deep copy with the repaired eng set — the stored object is
+         never mutated in place. */
+      if (computed.engagementMigrated || repair.changed){
+        var toPersist = deepCopyCoins(effectiveCoins);
+        if (repair.changed) toPersist.eng = repair.newEng;
         await docRef(db, 'users/' + uid + '/profile/data').set(
-          {coins: migrated},
+          {coins: toPersist},
           {merge: true}
         );
-        console.log('[migrate] ' + uid + ': engagement coins object migrated to v68 scale');
+        if (computed.engagementMigrated){
+          console.log('[migrate] ' + uid + ': engagement coins object migrated to v68 scale');
+        }
+        if (repair.changed){
+          console.log('[repair] ' + uid + ': eng ' + repair.oldEng + ' -> ' + repair.newEng + ' (ledger ' + repair.ledgerSum + ')');
+        }
       }
 
       /* (7) Log old -> new total. */
       console.log('[update] ' + uid + ': ' + oldCoins + ' -> ' + newCoins);
       usersUpdated++;
-      results.push({uid: uid, oldCoins: oldCoins, newCoins: newCoins});
+      results.push({uid: uid, oldCoins: oldCoins, newCoins: newCoins,
+        engRepair: repair.changed ? {oldEng: repair.oldEng, newEng: repair.newEng, ledgerSum: repair.ledgerSum} : null});
     } catch (err){
       /* One bad user must not abort the whole run; the error is logged
          and the user is counted as skipped (their coins are untouched). */
@@ -187,7 +304,7 @@ async function recomputeAllUsers(db){
   return {usersUpdated: usersUpdated, usersSkipped: usersSkipped, results: results};
 }
 
-module.exports = {recomputeAllUsers: recomputeAllUsers};
+module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum};
 
 /* ---- Direct run: node run.js --------------------------------------------
    Service account JSON comes ONLY from env var
