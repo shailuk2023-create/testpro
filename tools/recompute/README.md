@@ -5,7 +5,7 @@
 TESTPRO app me har user ke coins uske apne phone par calculate hote hain — jab wo naya version kholta hai, tabhi uska total update hota hai. Isliye kisi user ka total purana (stale) dikh sakta hai — jaise vk ka total 8035 dikh raha tha, jabki sahi total ~620–640 hona chahiye tha.
 
 Ye setup us problem ko **server-side, automatic** solve karta hai:
-- GitHub Actions (GitHub ka free tier — **koi paisa nahi lagta, Blaze/paid plan ki zaroorat nahi**) har 6 ghante me khud chal kar **sabhi users ke coin totals dobara calculate** karta hai aur Firebase me update kar deta hai.
+- GitHub Actions (GitHub ka free tier — **koi paisa nahi lagta, Blaze/paid plan ki zaroorat nahi**) har 1 ghante me khud chal kar **sabhi users ke coin totals dobara calculate** karta hai aur Firebase me update kar deta hai.
 - Kisi user ko app kholne ki zaroorat nahi — totals apne aap sahi rehte hain.
 
 **Important:** Neeche ke Step 1 aur Step 2 **aapko khud karne hain** — service account key aur GitHub secret sirf aap bana sakte hain, assistant aapke Firebase console ya GitHub settings me nahi ja sakta.
@@ -50,7 +50,8 @@ Ye setup us problem ko **server-side, automatic** solve karta hai:
 
 ## Step 4 — Automatic: aage kuch karne ki zaroorat nahi
 
-- Iske baad ye workflow **har 6 ghante me apne aap chalega** — sabke totals khud-ba-khud sahi rehte hain.
+- Iske baad ye workflow **har 1 ghante me apne aap chalega** — sabke totals khud-ba-khud sahi rehte hain.
+- Har run sirf ~30 second ka hota hai (npm caching ki wajah se), to mahine bhar me bhi GitHub ke free minutes (2,000/month) ke andar rehta hai.
 - Aapko dobara kuch nahi karna. Kabhi manually chalana ho to Step 3 dobara karein.
 
 ---
@@ -70,4 +71,4 @@ Ye setup us problem ko **server-side, automatic** solve karta hai:
 - `tools/recompute/recompute.js` — coin calculation ka logic (v69 formula, bilkul wahi jo app me hai).
 - `tools/recompute/run.js` — Firebase se sab users padhta hai, totals recalculate karke wapas likhta hai.
 - `tools/recompute/package.json` — zaroori library (`firebase-admin`).
-- `.github/workflows/recompute-coins.yml` — GitHub Actions workflow: har 6 ghante + manual run.
+- `.github/workflows/recompute-coins.yml` — GitHub Actions workflow: har 1 ghante + manual run.
