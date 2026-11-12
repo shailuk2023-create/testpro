@@ -27,6 +27,20 @@
    functions/recompute.js and is NOT touched; the workflow .yml and
    package.json are unchanged.
 
+   v71 addition: the same hourly run ALSO computes per-question
+   "% answered correctly" stats and writes them to a NEW Firestore
+   collection `question_stats` (one doc per test, doc id = testId, fields
+   = map { "<qNo>": { "a": attempted, "c": correct } }). Aggregation
+   reuses the attempts already fetched for the coin recompute and the
+   coin best-attempt selection (bestAttemptsByTest / aggregateQuestionStats
+   in recompute.js — pure functions, formula untouched). Only docs whose
+   stats changed vs the existing doc are written; tests with no attempts
+   are skipped; only aggregates are written, never per-user data. A stats
+   failure is logged and reported in the summary but never aborts or
+   changes the coin recompute. The Admin SDK bypasses Firestore rules,
+   so no rule change is needed for writing; the app reads the collection
+   (Worker B / coordinator owns the read rule).
+
    Credentials: the service account JSON is read ONLY from the environment
    variable FIREBASE_SERVICE_ACCOUNT_JSON (a JSON string). No key file is
    read by default and no credential is hardcoded.
@@ -38,6 +52,8 @@
 var recompute = require('./recompute');
 var computeUserTotal = recompute.computeUserTotal;
 var getMigratedCoinsObj = recompute.getMigratedCoinsObj;
+var bestAttemptsByTest = recompute.bestAttemptsByTest;
+var aggregateQuestionStats = recompute.aggregateQuestionStats;
 var ENG_USAGE_DAILY_CAP = recompute.ENG_USAGE_DAILY_CAP;
 var ENG_USAGE_BUCKET_SECS = recompute.ENG_USAGE_BUCKET_SECS;
 var ENG_SOLUTION_DAILY_CAP = recompute.ENG_SOLUTION_DAILY_CAP;
@@ -217,6 +233,62 @@ function repairEngagement(coinsObj){
 }
 
 /* ============================================================================
+   v71 — sync per-question "% answered correctly" stats to `question_stats`
+   ----------------------------------------------------------------------------
+   statsEqual(a, b): true when two per-test stat maps hold exactly the same
+   question keys with the same {a, c} numbers. A missing existing doc
+   (a null/undefined) is never equal, so a new test is always written once.
+   ========================================================================== */
+function statsEqual(a, b){
+  if (!a || typeof a !== 'object') return false;
+  if (!b || typeof b !== 'object') return false;
+  var ka = Object.keys(a), kb = Object.keys(b);
+  if (ka.length !== kb.length) return false;
+  for (var i = 0; i < kb.length; i++){
+    var k = kb[i];
+    var av = a[k], bv = b[k];
+    if (!av || typeof av !== 'object') return false;
+    if (av.a !== bv.a || av.c !== bv.c) return false;
+  }
+  return true;
+}
+
+/* syncQuestionStats(db, perUserBest)
+   perUserBest: array of per-user best-attempt maps (one entry per user
+   with attempts, as returned by bestAttemptsByTest) — collected during
+   the coin loop above from the attempts already fetched there.
+   Aggregates across ALL those users (one record per (user, test)), then
+   writes ONE doc per test to the NEW collection `question_stats`
+   (doc id = testId, fields = { "<qNo>": { "a", "c" } }, plain set() so a
+   stale question number disappears). Only docs whose stats CHANGED vs
+   the existing doc are written; unchanged docs are skipped (idempotent,
+   cheap). Tests with no attempted question produce no doc at all.
+   Existing docs for tests absent from the new aggregate are left alone
+   (never deleted here). Returns
+   {testsWritten, testsUnchanged, testsSkipped, error}. */
+async function syncQuestionStats(db, perUserBest){
+  var stats = aggregateQuestionStats(perUserBest);
+  var testIds = Object.keys(stats);
+  var out = {testsWritten: 0, testsUnchanged: 0, testsSkipped: 0, error: null};
+  if (!testIds.length) return out;
+  var existingDocs = await listDocs(collectionRef(db, 'question_stats'));
+  var existing = {};
+  existingDocs.forEach(function(d){ existing[d.id] = d.data || {}; });
+  for (var i = 0; i < testIds.length; i++){
+    var testId = testIds[i];
+    var next = stats[testId];
+    if (statsEqual(existing[testId], next)){
+      out.testsUnchanged++;
+      continue;
+    }
+    await collectionRef(db, 'question_stats').doc(testId).set(next);
+    out.testsWritten++;
+    console.log('[qstats] ' + testId + ': wrote ' + Object.keys(next).length + ' questions');
+  }
+  return out;
+}
+
+/* ============================================================================
    PUBLIC INTERFACE — async recomputeAllUsers(db)
    ========================================================================== */
 async function recomputeAllUsers(db){
@@ -226,6 +298,7 @@ async function recomputeAllUsers(db){
   var usersUpdated = 0;
   var usersSkipped = 0;
   var results = [];
+  var perUserBest = []; /* v71: one best-attempt map per user, for qstats */
 
   for (var i = 0; i < leaderboardDocs.length; i++){
     var entry = leaderboardDocs[i];
@@ -244,6 +317,11 @@ async function recomputeAllUsers(db){
         console.log('[skip] ' + uid + ': no attempts (kept coins=' + oldCoins + ')');
         continue;
       }
+
+      /* (6b) v71: keep this user's BEST attempt per test for the
+         question-stats aggregation (pure selection, same rule as coins;
+         collected here so the stats step reuses these fetched attempts). */
+      perUserBest.push(bestAttemptsByTest(attempts));
 
       /* (2b) Engagement coins object from users/{uid}/profile/data. */
       var profileData = await getDocData(docRef(db, 'users/' + uid + '/profile/data'));
@@ -301,10 +379,21 @@ async function recomputeAllUsers(db){
     }
   }
 
-  return {usersUpdated: usersUpdated, usersSkipped: usersSkipped, results: results};
+  /* v71: question stats AFTER the coin loop, so a stats failure can
+     never abort or change the coin recompute above. The summary still
+     records the failure for the Actions log. */
+  var questionStats = {testsWritten: 0, testsUnchanged: 0, testsSkipped: 0, error: null};
+  try {
+    questionStats = await syncQuestionStats(db, perUserBest);
+  } catch (err){
+    questionStats.error = err && err.message ? err.message : String(err);
+    console.error('[qstats-error] ' + questionStats.error);
+  }
+
+  return {usersUpdated: usersUpdated, usersSkipped: usersSkipped, results: results, questionStats: questionStats};
 }
 
-module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum};
+module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum, syncQuestionStats: syncQuestionStats, statsEqual: statsEqual};
 
 /* ---- Direct run: node run.js --------------------------------------------
    Service account JSON comes ONLY from env var
