@@ -1137,6 +1137,13 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 .series-card .fc-bar::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.6) 50%,transparent 75%);transform:translateX(-100%);animation:hxShimmer 2.4s ease-in-out infinite}
 .sc-chev{transition:transform .2s}
 .series-card:hover .sc-chev{transform:translateX(4px);color:var(--teal)}
+/* v72: NEW badge — GA series card (home + series picker). Small red pill
+   pinned to the card's top-right corner; gentle pulse, pointer-events
+   none so it never blocks the card tap target. The badge HTML is only
+   rendered while gaNewBadgeVisible() is true (5 days after launch). */
+.ga-new-badge{position:absolute;top:10px;right:10px;z-index:2;display:inline-block;background:#dc2626;color:#fff;font-size:10px;font-weight:800;letter-spacing:.08em;line-height:1;padding:4px 7px;border-radius:999px;box-shadow:0 2px 8px rgba(220,38,38,.45);pointer-events:none;animation:gaNewPulse 2.2s ease-in-out infinite}
+@keyframes gaNewPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.78;transform:scale(.93)}}
+@media (prefers-reduced-motion: reduce){.ga-new-badge{animation:none}}
 
 /* ---- quick actions: coloured gradient chips ---- */
 .qa-btn{border-radius:18px;transition:border-color .2s,box-shadow .2s,transform .2s,background .2s}
@@ -2296,6 +2303,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <div id="skel-series" class="skel-wrap" aria-hidden="true">
   <div class="skel skel-series-card"></div>
   <div class="skel skel-series-card"></div>
+  <div class="skel skel-series-card"></div>
 </div>
 <!-- v67-A skel:series end -->
               <div class="series-card anim" style="--d:.12s" id="seriesFolder" data-skel-for="skel-series" role="button" tabindex="0" aria-label="Open Math Super 1000+ test series">
@@ -2330,6 +2338,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <div class="skel skel-tile"></div>
     </div>
     <div class="skel-yp">
+      <div class="skel skel-yp-row"></div>
       <div class="skel skel-yp-row"></div>
       <div class="skel skel-yp-row"></div>
     </div>
@@ -2428,7 +2437,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
               </div>
               <svg class="i sc-chev" aria-hidden="true"><use href="#i-chev-r"/></svg>
             </div>
-            <div class="series-card" data-series="ga" role="button" tabindex="0" aria-label="Open General Awareness test series">
+            <div class="series-card" data-series="ga" role="button" tabindex="0" aria-label="Open General Awareness test series"><span class="ga-new-badge" id="spGaNewBadge" style="display:none">NEW</span>
               <div class="sc-ico ga-ico"><svg class="i i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" fill="currentColor"/><path d="M4 21V5" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
               <div class="fc-body">
                 <div class="fc-title">General Awareness</div>
@@ -3536,12 +3545,18 @@ function gaTotals(){
   return {subjects: (GABANK || []).length, tests: GA_TESTS.length, totalQ: totalQ, attempted: attempted,
     pct: GA_TESTS.length ? Math.round((attempted / GA_TESTS.length) * 100) : 0};
 }
+/* v72: GA launch — NEW badge window. The badge shows on the GA series card
+   (home + series picker) for 5 days after launch, then never renders —
+   no user action needed. Launch = 13 Nov 2026 (v72 GA launch date). */
+var GA_LAUNCH_TS = Date.parse('2026-11-13T00:00:00+05:30');
+function gaNewBadgeVisible(){ return Date.now() <= GA_LAUNCH_TS + 5 * 864e5; }
 /* Home: ONE series card for the whole GA series (tapping it opens the subjects page). */
 function renderGASeriesCard(){
   var wrap = $('gaSeriesList');
   if (!wrap) return;
   var tot = gaTotals();
-  var html = '<div class="series-card anim" style="--d:.18s" role="button" tabindex="0" data-ga-series aria-label="Open General Awareness test series">' +
+  var badge = gaNewBadgeVisible() ? '<span class="ga-new-badge" aria-hidden="true">NEW</span>' : '';
+  var html = '<div class="series-card anim" style="--d:.18s" role="button" tabindex="0" data-ga-series aria-label="Open General Awareness test series">' + badge +
     '<div class="sc-ico ga-ico"><svg class="i i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" fill="currentColor"/><path d="M4 21V5" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>' +
     '<div class="fc-body">' +
     '<div class="fc-title">General Awareness</div>' +
@@ -6657,13 +6672,13 @@ function featPerfData(){
   var prev = list.length > 1 ? list[list.length - 2] : null;
   return {pct: Math.round(latest.pct), delta: prev ? Math.round(latest.pct - prev.pct) : null, n: list.length};
 }
-function featReviseData(){ /* v66-B: Maths + CA */
+function featReviseData(){ /* v72: Maths + CA + GA (saved count now includes GA too) */
   var store = storeGet(), wrong = 0;
   TESTS.concat(CA_TESTS, GA_TESTS).forEach(function(t){
     var rec = getTestRec(t);
     if (rec && rec.last) wrong += rec.last.wrong || 0;
   });
-  return {saved: getSaved().length + getSavedCA().length, wrong: wrong};
+  return {saved: getSaved().length + getSavedCA().length + getSavedGA().length, wrong: wrong};
 }
 function featCountDown(el, targetSec, done){
   /* price-drop countdown: 5:00 se tez, target ke paas slow, bilkul target par ruko */
@@ -8249,6 +8264,7 @@ function syncSeriesPicker(){
   pk.style.display = show ? '' : 'none';
   st.style.display = show ? 'none' : '';
   fillSeriesToppers();
+  var nb = $('spGaNewBadge'); if (nb) nb.style.display = gaNewBadgeVisible() ? '' : 'none';
   if (!show) return;
   var store = storeGet(), att = 0;
   TESTS.forEach(function(t){ var rec = store.tests[t.id]; if (rec && rec.attempts > 0) att++; });
