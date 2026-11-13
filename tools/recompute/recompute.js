@@ -246,27 +246,41 @@ function bestAttemptsByTest(attempts){
      each as returned by bestAttemptsByTest() — i.e. at most ONE attempt
      per (user, test). Any other shape (null entries, missing qs) is
      skipped, never throws.
-   Returns { testId: { "<qNo>": { "a": attempted, "c": correct } } }.
+   Returns { testId: { "<qNo>": { "a": totalTestTakers, "c": correct } } }.
+   Testbook definition: `a` = TOTAL users who submitted that test (best
+   attempt), INCLUDING those who skipped this question; `c` = of those,
+   how many answered it correctly. So a question 2 users got right and
+   3 skipped (5 takers) is {a: 5, c: 2} = 40%, never 100%.
    Keys are String(q.n); q.n must be a finite number. Only questions with
-   at least one attempted record appear. No per-user data is retained. */
+   at least one record appear. No per-user data is retained. */
 function aggregateQuestionStats(perUserBest){
   var stats = {};
+  var takers = {}; /* testId -> total users who submitted that test (best attempt) */
   (Array.isArray(perUserBest) ? perUserBest : []).forEach(function(bestMap){
     if (!bestMap || typeof bestMap !== 'object') return;
     Object.keys(bestMap).forEach(function(testId){
       var attempt = bestMap[testId];
-      if (!attempt || !Array.isArray(attempt.qs)) return;
+      if (!attempt) return;
+      takers[testId] = (takers[testId] || 0) + 1;
+      if (!Array.isArray(attempt.qs)) return;
       attempt.qs.forEach(function(q){
         if (!q) return;
         var n = +q.n;
         if (!isFinite(n)) return;
-        if (q.sel == null) return; /* skipped: not counted in attempted */
         var key = String(n);
         if (!stats[testId]) stats[testId] = {};
         if (!stats[testId][key]) stats[testId][key] = {a: 0, c: 0};
-        stats[testId][key].a += 1;
         if (q.ok === true) stats[testId][key].c += 1;
       });
+    });
+  });
+  /* Testbook definition: denominator = TOTAL test takers (including those
+     who skipped this question), NOT only those who selected an answer.
+     A skipped question counts in `a` but never in `c`. */
+  Object.keys(stats).forEach(function(testId){
+    var total = takers[testId] || 0;
+    Object.keys(stats[testId]).forEach(function(key){
+      stats[testId][key].a = total;
     });
   });
   return stats;
