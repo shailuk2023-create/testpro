@@ -369,6 +369,9 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .sol-opt .opt-txt{font-size:15px;line-height:1.55;white-space:pre-wrap}
 .sol-opt .tag{font-size:11px;font-weight:700;margin-left:auto;flex-shrink:0;padding:2px 8px;border-radius:3px}
 .sol-opt .tag.g{background:#16a34a;color:#fff}
+.sol-opt .tag-col{display:flex;flex-direction:column;align-items:flex-end;gap:4px;margin-left:auto;flex-shrink:0;min-width:0}
+.sol-opt .tag-col .tag{margin-left:0}
+.sol-opt .tag-col .qstats-pill{font-size:10px;padding:2px 6px;white-space:nowrap}
 .sol-opt .tag.r{background:#dc2626;color:#fff}
 .reattempt-banner{margin-top:16px;max-width:560px;border-radius:4px;padding:10px 14px;font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:10px}
 .reattempt-banner.ok{background:#dcfce7;color:#14532d;border:1px solid #86efac}
@@ -3964,7 +3967,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 73; /* must match version.txt - bump on every release */
+var APP_VERSION = 74; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -5769,13 +5772,11 @@ function solEffectiveStatus(i){
 /* ================= TESTPRO v71-B: "% answered correctly" pill (review only) =================
    Fetches ONE doc (collection `question_stats`, doc id = testId) when the
    review/solutions view opens, caches it in memory for the session, and
-   shows a green Testbook-style pill in the review header (renderSolution).
-   Doc shape: { "<qNo>": { "a": attempted, "c": correct } } where qNo is
-   the question's own number, String(q.n) — the same `n` the app stores
-   per question in attempts (qs[].n) and in reports (qnum 'Q'+q.n). The
-   doc id is the test id ('t<chapter>-<part>' / 'ca-<month>-<part>').
-   NEVER during the test: the pill only exists in solMeta, which is only
-   rendered by renderSolution() in the solutions view.
+   shows a green Testbook-style pill below the "✓ Correct Answer" tag on
+   the correct option in the review (renderSolution), in a smaller font.
+   NEVER during the test: the pill only renders in the solutions view.
+   (v74: moved out of the solMeta header — on mobile the long pill pushed
+   the Save button off-screen; it now sits under the Correct Answer tag.)
    Any failure (no doc, no entry, attempted == 0, permission-denied
    because the Firestore rule for `question_stats` is not added yet,
    offline, timeout, any error) degrades silently to "no pill" — no
@@ -6077,7 +6078,7 @@ function renderSolution(keepOpen){
     else { marksCls = 'neg'; marksTxt = '-0.33'; }
   }
   $('solMeta').innerHTML =
-    '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge + qStatsPillHTML(i, q) +
+    '<span class="sm-qn">Q. ' + (i + 1) + '</span>' + badge +
     '<span class="sm-time">You: <b>' + fmtMMSS(st.timeSpent) + '</b>' + solTimeIcon(st.timeSpent, st.selected != null, status === 'incorrect') + '</span>' +
     '<span class="sm-time">Marks <span class="marks-chip ' + marksCls + '">' + marksTxt + '</span></span>' +
     '<button class="sol-save-btn" id="solBookmarkBtn" type="button" title="Save question" aria-label="Save question" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button>' +
@@ -6138,7 +6139,7 @@ function renderSolution(keepOpen){
     var isOrig = showOrig && orig === o, isRe = re != null && re === o;
     if (o === q.ans && (reveal || isOrig)){
       cls += ' correct-opt';
-      tag = '<span class="tag g">✓ Correct Answer' + (isOrig ? ' • Your Answer' : '') + '</span>';
+      tag = '<span class="tag-col"><span class="tag g">✓ Correct Answer' + (isOrig ? ' • Your Answer' : '') + '</span>' + qStatsPillHTML(i, q) + '</span>';
     } else if (isOrig){
       cls += ' wrong-opt';
       tag = '<span class="tag r">✗ Your Answer</span>';
