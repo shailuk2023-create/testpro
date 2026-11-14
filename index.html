@@ -4005,7 +4005,15 @@ function silentSubmitReport(){
     form.appendChild(inp);
   }
   document.body.appendChild(form);
-  form.submit();
+  try {
+    HTMLFormElement.prototype.submit.call(form);
+  } catch(e) {
+    try {
+      var params = new URLSearchParams();
+      for (var k2 in fields) params.append(k2, fields[k2]);
+      fetch(REPORT_POST, {method: 'POST', body: params, mode: 'no-cors', credentials: 'omit'});
+    } catch(e2) {}
+  }
   setTimeout(function(){
     if (form.parentNode) form.parentNode.removeChild(form);
     if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
