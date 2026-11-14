@@ -3972,10 +3972,15 @@ function silentSubmitReport(){
   if (!detail) detail = '—';
   var reporterName = '';
   try {
-    var _store = storeGet();
-    var _p = (_store && _store.profile) || {};
-    reporterName = (_p.name || '').trim();
-    if (reporterName === 'Student') reporterName = '';
+    if (typeof myName === 'function') {
+      reporterName = (myName() || '').trim();
+      if (reporterName === 'Student') reporterName = '';
+    } else {
+      var _store = storeGet();
+      var _p = (_store && _store.profile) || {};
+      reporterName = (_p.name || '').trim();
+      if (reporterName === 'Student') reporterName = '';
+    }
   } catch(e) { reporterName = ''; }
   var fields = {};
   if (reporterName) fields['entry.' + REPORT_ENTRIES.name] = reporterName;
@@ -4072,7 +4077,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 87; /* must match version.txt - bump on every release */
+var APP_VERSION = 88; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
