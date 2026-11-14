@@ -3982,6 +3982,24 @@ function silentSubmitReport(){
       if (reporterName === 'Student') reporterName = '';
     }
   } catch(e) { reporterName = ''; }
+  if (!reporterName) {
+    try {
+      var _labels = document.querySelectorAll('.user-name-label');
+      for (var _li = 0; _li < _labels.length; _li++) {
+        var _lt = (_labels[_li].textContent || '').trim();
+        if (_lt && _lt !== 'Student') { reporterName = _lt; break; }
+      }
+    } catch(e2) {}
+  }
+  if (!reporterName) {
+    try {
+      var _g = document.getElementById('homeGreeting');
+      if (_g) {
+        var _gt = (_g.textContent || '').replace(/^Hello,\s*/i, '').trim();
+        if (_gt && _gt !== 'Student') reporterName = _gt;
+      }
+    } catch(e3) {}
+  }
   var fields = {};
   if (reporterName) fields['entry.' + REPORT_ENTRIES.name] = reporterName;
   fields['entry.' + REPORT_ENTRIES.chapter] = c.chapter;
@@ -4077,7 +4095,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 88; /* must match version.txt - bump on every release */
+var APP_VERSION = 89; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
