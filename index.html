@@ -3877,7 +3877,7 @@ function startSavedQuizCA(fromIdx){
 }
 /* ---- Error reports: silent auto-submit (hidden-iframe POST to the form; the user never sees Google Forms) ---- */
 var REPORT_POST = 'https://docs.google.com/forms/d/e/1FAIpQLSfd1aDxVfPdqgstWoZ7hvzAFRqgSMe_1k0PwQcvFG2ni8tONw/formResponse';
-var REPORT_ENTRIES = {chapter: '28302624', test: '7931323', qnum: '454803881', what: '2084794939', detail: '2075019739', qtext: '1104278919', opts: '678583984', ans: '1069606461', sol: '1875940681'};
+var REPORT_ENTRIES = {chapter: '28302624', test: '7931323', qnum: '454803881', what: '2084794939', detail: '2075019739', qtext: '1104278919', opts: '678583984', ans: '1069606461', sol: '1875940681', name: '7266f174'};
 function stripTags(s){ return String(s == null ? '' : s).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(); }
 function reportContext(){
   var t = state.test;
@@ -3970,7 +3970,15 @@ function silentSubmitReport(){
   var d = $('reportDetail');
   var detail = d ? d.value.trim() : '';
   if (!detail) detail = '—';
+  var reporterName = '';
+  try {
+    var _store = storeGet();
+    var _p = (_store && _store.profile) || {};
+    reporterName = (_p.name || '').trim();
+    if (reporterName === 'Student') reporterName = '';
+  } catch(e) { reporterName = ''; }
   var fields = {};
+  if (reporterName) fields['entry.' + REPORT_ENTRIES.name] = reporterName;
   fields['entry.' + REPORT_ENTRIES.chapter] = c.chapter;
   fields['entry.' + REPORT_ENTRIES.test] = c.test;
   fields['entry.' + REPORT_ENTRIES.qnum] = c.qnum;
@@ -4056,7 +4064,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 83; /* must match version.txt - bump on every release */
+var APP_VERSION = 84; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
