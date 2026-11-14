@@ -281,6 +281,7 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 #reportToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center}
 #reportToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #modalReport .rep-type{width:100%;text-align:left;justify-content:flex-start}
+#modalReport .rep-type.selected{border:2px solid #0b7196;background:#e0f2f7;color:#0b7196;font-weight:700}
 .modal{background:var(--surface);border-radius:8px;max-width:720px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.3)}
 .modal .m-head{background:linear-gradient(90deg,#0b7196,#1486ae);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-radius:8px 8px 0 0}
 .modal .m-head h3{font-size:16px}
@@ -2982,6 +2983,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     </div>
     <div class="m-foot" style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-grey" data-close="modalReport">Cancel</button>
+      <button class="btn btn-teal" id="reportSendBtn" disabled>Send</button>
     </div>
   </div>
 </div>
@@ -3873,9 +3875,8 @@ function startSavedQuizCA(fromIdx){
   showView('solutions');
   renderSolution();
 }
-/* ---- Error reports: prefilled form in a new tab (silent submit is blocked in the app viewer) ---- */
+/* ---- Error reports: silent auto-submit (hidden-iframe POST to the form; the user never sees Google Forms) ---- */
 var REPORT_POST = 'https://docs.google.com/forms/d/e/1FAIpQLSfd1aDxVfPdqgstWoZ7hvzAFRqgSMe_1k0PwQcvFG2ni8tONw/formResponse';
-var REPORT_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSfd1aDxVfPdqgstWoZ7hvzAFRqgSMe_1k0PwQcvFG2ni8tONw/viewform?usp=pp_url';
 var REPORT_ENTRIES = {chapter: '28302624', test: '7931323', qnum: '454803881', what: '2084794939', detail: '2075019739', qtext: '1104278919', opts: '678583984', ans: '1069606461', sol: '1875940681'};
 function stripTags(s){ return String(s == null ? '' : s).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(); }
 function reportContext(){
@@ -3939,33 +3940,70 @@ function reportContext(){
     sol: solStr
   };
 }
+var reportSelectedType = null;
 function openReportModal(){
   var c = reportContext();
   var lbl = $('reportQLabel');
   if (lbl) lbl.textContent = c.chapter + ' • ' + c.test + ' • ' + c.qnum;
   var d = $('reportDetail');
   if (d) d.value = '';
+  reportSelectedType = null;
+  document.querySelectorAll('#modalReport .rep-type').forEach(function(b){ b.classList.remove('selected'); });
+  var send = $('reportSendBtn');
+  if (send) send.disabled = true;
   $('modalReport').classList.add('show');
 }
-function reportURL(type){
+function selectReportType(btn){
+  document.querySelectorAll('#modalReport .rep-type').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  reportSelectedType = btn.getAttribute('data-type');
+  var send = $('reportSendBtn');
+  if (send) send.disabled = false;
+}
+function silentSubmitReport(){
+  var type = reportSelectedType;
+  if (!type){
+    showToast('Pehle choose karo — kya galat hai?');
+    return;
+  }
   var c = reportContext();
   var d = $('reportDetail');
   var detail = d ? d.value.trim() : '';
-  var p = 'entry.' + REPORT_ENTRIES.chapter + '=' + encodeURIComponent(c.chapter)
-    + '&entry.' + REPORT_ENTRIES.test + '=' + encodeURIComponent(c.test)
-    + '&entry.' + REPORT_ENTRIES.qnum + '=' + encodeURIComponent(c.qnum)
-    + '&entry.' + REPORT_ENTRIES.what + '=' + encodeURIComponent(type)
-    + '&entry.' + REPORT_ENTRIES.detail + '=' + encodeURIComponent(detail)
-    + '&entry.' + REPORT_ENTRIES.qtext + '=' + encodeURIComponent(c.qtext)
-    + '&entry.' + REPORT_ENTRIES.opts + '=' + encodeURIComponent(c.opts)
-    + '&entry.' + REPORT_ENTRIES.ans + '=' + encodeURIComponent(c.ans)
-    + '&entry.' + REPORT_ENTRIES.sol + '=' + encodeURIComponent(c.sol);
-  return REPORT_FORM + '&' + p;
-}
-function submitReport(type){
-  window.open(reportURL(type), '_blank');
+  if (!detail) detail = '—';
+  var fields = {};
+  fields['entry.' + REPORT_ENTRIES.chapter] = c.chapter;
+  fields['entry.' + REPORT_ENTRIES.test] = c.test;
+  fields['entry.' + REPORT_ENTRIES.qnum] = c.qnum;
+  fields['entry.' + REPORT_ENTRIES.what] = type;
+  fields['entry.' + REPORT_ENTRIES.detail] = detail;
+  fields['entry.' + REPORT_ENTRIES.qtext] = c.qtext;
+  fields['entry.' + REPORT_ENTRIES.opts] = c.opts;
+  fields['entry.' + REPORT_ENTRIES.ans] = c.ans;
+  fields['entry.' + REPORT_ENTRIES.sol] = c.sol;
+  fields['submit'] = 'Submit';
+  var iframe = document.createElement('iframe');
+  iframe.name = 'reportSubmitFrame';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = REPORT_POST;
+  form.target = 'reportSubmitFrame';
+  for (var k in fields){
+    var inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = k;
+    inp.value = fields[k];
+    form.appendChild(inp);
+  }
+  document.body.appendChild(form);
+  form.submit();
+  setTimeout(function(){
+    if (form.parentNode) form.parentNode.removeChild(form);
+    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+  }, 8000);
   closeModal('modalReport');
-  showToast('The report form is open — just press Submit, nothing to fill in');
+  showToast('Report bhej di gayi — thank you!');
 }
 function showToast(msg){
   var el = $('reportToast');
@@ -3975,8 +4013,12 @@ function showToast(msg){
   setTimeout(function(){ el.classList.remove('show'); }, 2600);
 }
 document.querySelectorAll('#modalReport .rep-type').forEach(function(b){
-  b.addEventListener('click', function(){ submitReport(this.getAttribute('data-type')); });
+  b.addEventListener('click', function(){ selectReportType(this); });
 });
+(function(){
+  var send = $('reportSendBtn');
+  if (send) send.addEventListener('click', silentSubmitReport);
+})();
 
 var TOTAL_QS = BANK.reduce(function(a, c){ return a + (c.questions || []).length; }, 0);
 
@@ -4014,7 +4056,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 82; /* must match version.txt - bump on every release */
+var APP_VERSION = 83; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
