@@ -3007,6 +3007,8 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   <a href="#" id="smTests"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg>Tests</a>
   <a href="#" id="smSaved"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved Questions</a>
   <a href="#" id="smLeader"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</a>
+  <a href="#" id="smAttempted"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg>Attempted Tests</a>
+  <a href="#" id="smRefresh"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh</a>
 </div>
 <div class="menu-backdrop" id="menuBackdrop"></div>
 
@@ -4012,7 +4014,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 76; /* must match version.txt - bump on every release */
+var APP_VERSION = 77; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -7300,6 +7302,8 @@ function closeMenu(){ $('sideMenu').classList.remove('open'); $('menuBackdrop').
   on('smHome', 'click', function(){ closeMenu(); goHome(); });
   on('smTests', 'click', function(){ closeMenu(); goTests(true); });
   on('smSaved', 'click', function(){ closeMenu(); openSaved(); });
+  on('smAttempted', 'click', function(){ closeMenu(); openAttempted(); });
+  on('smRefresh', 'click', function(){ closeMenu(); _v76ManualUpdateCheck(); });
   on('homeMenuBtn', 'click', openMenu);
   on('menuBackdrop', 'click', closeMenu);
   on('avatarInitial', 'click', openSettings);
