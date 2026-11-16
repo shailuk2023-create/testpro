@@ -297,6 +297,30 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 .submit-counts .sc .l{font-size:12px;color:var(--muted)}
 /* ---------- RESULT ---------- */
 #view-result{min-height:100vh;background:var(--bg)}
+/* ---- v94-D GRAPHS: analysis graphs (inline SVG, offline, no chart lib) ---- */
+#anaGraphs{margin-top:18px}
+.ana-title{font-size:17px;font-weight:700;color:var(--text-strong,#111827);margin:2px 0 4px}
+.ana-sub{font-size:12px;color:var(--muted,#6b7280);margin:0 0 12px}
+.ana-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.ana-card{background:var(--surface,#fff);border:1px solid var(--border,#e5e7eb);border-radius:14px;padding:14px 16px 12px;box-shadow:0 1px 4px rgba(15,23,42,.06)}
+.ana-card h4{margin:0 0 2px;font-size:15px;color:var(--text-strong,#111827)}
+.ana-card .ana-src{font-size:11.5px;color:var(--muted,#6b7280);margin:0 0 10px;line-height:1.45}
+.ana-card svg{display:block;width:100%;height:auto}
+.ana-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--muted,#6b7280);margin-top:6px}
+.ana-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.ana-stack{display:flex;height:14px;border-radius:7px;overflow:hidden;margin-top:10px}
+.ana-stack div{height:100%}
+.ana-weak-row{margin:9px 0}
+.ana-weak-top{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--text,#1f2937)}
+.ana-weak-top .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ana-weak-top .vl{white-space:nowrap;font-weight:600;color:var(--muted,#6b7280)}
+.ana-weak-track{height:10px;border-radius:5px;background:var(--surface3,#f1f5f9);margin-top:4px;overflow:hidden}
+.ana-weak-fill{height:100%;border-radius:5px}
+.ana-weak-row.cur .ana-weak-top .nm{font-weight:700}
+.ana-weak-row.cur{outline:2px solid #0ea5a5;outline-offset:4px;border-radius:6px}
+.ana-pill{display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#0ea5a5;border-radius:8px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.ana-empty{font-size:13px;color:var(--muted,#6b7280);padding:8px 0}
+
 .result-wrap{max-width:960px;margin:0 auto;padding:24px 18px 40px}
 .result-topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:5}
 .result-topbar .links{display:flex;gap:8px;align-items:center;font-size:13px}
@@ -323,6 +347,137 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .res-grid button.wrong{background:#da3d35}
 .res-grid button.skipped{background:#e5e7eb;color:#4b5563}
 .res-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+/* ---------- v94 ANALYSIS (Worker B) ---------- */
+#view-analysis{min-height:100vh;background:var(--bg)}
+.ana-back{background:var(--surface3);border:1px solid var(--border2);color:var(--text);width:32px;height:32px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer;flex-shrink:0}
+.ana-wrap{max-width:1080px;margin:0 auto;padding:22px 18px 48px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:0 20px}
+.ana-h{grid-column:1/-1;font-size:20px;font-weight:800;margin:2px 0 16px;color:var(--text-strong);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ana-refresh{background:var(--surface);border:1px solid var(--border2);color:var(--accent2);font-size:12px;font-weight:700;border-radius:20px;padding:5px 12px;cursor:pointer}
+.ana-stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.ana-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 12px;display:flex;align-items:center;gap:10px;min-width:0}
+.ana-ic{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.ana-stat-tx{display:flex;flex-direction:column;min-width:0}
+.ana-stat-tx b{font-size:17px;font-weight:800;color:var(--text);white-space:nowrap}
+.ana-stat-tx span{font-size:12px;color:var(--muted);font-weight:600}
+.ana-gap{grid-column:1/-1;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;border-radius:10px;padding:18px 20px;text-align:center;margin-bottom:20px}
+.ana-gap b{font-size:17px;color:#14532d}
+.ana-gap p{color:#4b5563;margin-top:6px;font-size:13.5px}
+.ana-main{grid-column:1;min-width:0}
+.ana-side{grid-column:2;min-width:0}
+.ana-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:20px}
+.ana-pad0{padding:0;overflow:hidden}
+.ana-pad0 table.sum{border:none;border-radius:0}
+.ana-sub-note{font-size:12px;color:var(--muted);font-weight:600}
+.ana-note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.ana-empty{color:var(--muted);font-size:13.5px;margin:4px 0}
+.ana-wtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ana-wtabs button{background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:700;border-radius:20px;padding:7px 14px;cursor:pointer}
+.ana-wtabs button.on{background:#0e7490;border-color:#0e7490;color:#fff}
+.ana-ch{padding:12px 0;border-bottom:1px solid var(--border)}
+.ana-ch:last-child{border-bottom:none;padding-bottom:2px}
+.ana-ch-top{display:flex;justify-content:space-between;gap:10px;font-size:14px;flex-wrap:wrap}
+.ana-ch-nums{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.ana-ch-nums i{font-style:normal;font-weight:700;margin-left:8px}
+.ana-ch-nums i.g{color:#15803d}
+.ana-ch-nums i.r{color:#b91c1c}
+.ana-ch-bar{height:8px;background:var(--surface2);border-radius:6px;margin:9px 0 5px;overflow:hidden}
+.ana-ch-bar span{display:block;height:100%;border-radius:6px}
+.ana-ch-bar span.bad{background:#da3d35}
+.ana-ch-bar span.mid{background:#f59e0b}
+.ana-ch-bar span.good{background:#25ad5e}
+.ana-ch-acc{font-size:12.5px;color:var(--muted)}
+.ana-ranker{display:flex;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--border)}
+.ana-ranker:last-child{border-bottom:none}
+.ana-ranker.me{background:#ecfeff;border-radius:8px;padding-left:8px;padding-right:8px}
+.ana-rk{width:22px;text-align:center;font-weight:800;color:var(--muted);flex-shrink:0}
+.ana-av{border-radius:50%;object-fit:cover;flex-shrink:0}
+.ana-av-init{display:inline-flex;align-items:center;justify-content:center;background:#0e7490;color:#fff;font-weight:800;font-size:17px}
+.ana-rn{flex:1;min-width:0}
+.ana-rn b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ana-rn b i{color:#0e7490;font-size:12px}
+.ana-rn small{color:var(--muted);font-size:12px}
+.ana-rs{text-align:right;flex-shrink:0}
+.ana-rs b{font-size:15px}
+.ana-rs small{color:var(--muted);font-size:12px}
+@media (max-width:900px){
+  .ana-wrap{grid-template-columns:minmax(0,1fr)}
+  .ana-main,.ana-side,.ana-h,.ana-stats,.ana-gap{grid-column:1}
+  .ana-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:560px){
+  .ana-stats{grid-template-columns:repeat(2,1fr)}
+  .ana-wrap{padding:16px 14px 44px}
+}
+/* ---------- v94 RANK PREDICTOR (Worker E) ---------- */
+#rankPredictor{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 20px 16px;margin-bottom:20px}
+.rnk-rank{font-size:15px;color:var(--muted);margin-bottom:18px}
+.rnk-rank b{font-size:26px;color:var(--text);margin:0 4px}
+.rnk-bubble-row{position:relative;height:30px;margin:0 4px}
+.rnk-bubble{position:absolute;top:0;transform:translateX(-50%);background:#111827;color:#fff;font-size:12.5px;font-weight:700;border-radius:6px;padding:5px 9px;white-space:nowrap;pointer-events:none}
+.rnk-bubble:after{content:'';position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);border:5px solid transparent;border-top-color:#111827;border-bottom:none}
+#rankPredictor input[type=range]{width:100%;accent-color:#0e7490;cursor:pointer}
+.rnk-scale{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:6px}
+.rnk-scale span:nth-child(2){font-weight:800;color:var(--accent);font-size:14px}
+.rnk-note{font-size:12.5px;color:var(--muted);line-height:1.5;margin:12px 0 0}
+.rnk-you{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.rnk-you b{color:var(--text)}
+/* ---------- v94 MOBILE ANALYSIS (Worker C) ---------- */
+/* Mobile-only elements: hidden on desktop by default. */
+#mobQsBreak{display:none}
+.mob-sec{display:none}
+.mob-ana-tabs{display:none}
+@media (max-width:900px){
+  /* --- mobile tab bar: Analysis | Leaderboard + Solution button (right) --- */
+  .mob-ana-tabs{display:flex;align-items:stretch;position:sticky;top:52px;z-index:5;background:var(--surface);border-bottom:1px solid var(--border)}
+  .mob-ana-tabs [data-mob-tab]{flex:1;background:none;border:none;border-bottom:2px solid transparent;font-size:14px;font-weight:700;color:var(--muted);padding:13px 4px;cursor:pointer}
+  .mob-ana-tabs [data-mob-tab].on{color:var(--teal);border-bottom-color:var(--teal)}
+  .mob-sol-btn{flex:0 0 auto;align-self:center;background:#0e7490;color:#fff;border:none;border-radius:20px;font-size:13.5px;font-weight:700;padding:8px 18px;margin:6px 10px 6px 4px;cursor:pointer}
+  /* --- Testbook-style mobile analysis --- */
+  #view-analysis .ana-h{display:none}
+  #view-analysis .ana-wrap{padding:14px 14px 44px}
+  /* QUICK SUMMARY: stacked rows, icon left, label left, value right */
+  #view-analysis .ana-stats{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+  #view-analysis .ana-stats::before{content:"QUICK SUMMARY";font-size:12.5px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin:2px 0 -2px}
+  #view-analysis .ana-stat{padding:13px 14px}
+  #view-analysis .ana-ic{width:36px;height:36px;font-size:17px}
+  #view-analysis .ana-stat-tx{flex:1;flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  #view-analysis .ana-stat-tx span{order:1;font-size:14px}
+  #view-analysis .ana-stat-tx b{order:2;font-size:16px}
+  /* Correct / Incorrect / Unattempted strip under the summary */
+  #mobQsBreak{display:flex;flex-wrap:wrap;gap:8px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:20px;font-size:13px;color:var(--muted)}
+  .mob-qs-chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .mob-qs-chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .mob-qs-chip b{color:var(--text)}
+  /* Section titles: small uppercase Testbook-style labels */
+  #view-analysis .ana-main>.res-sec-title,#view-analysis .ana-side>.res-sec-title{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:20px 0 10px}
+  #view-analysis .ana-gap{padding:14px;margin-bottom:20px}
+  #view-analysis .ana-card{padding:14px}
+  #view-analysis .ana-pad0{overflow-x:auto}
+  #view-analysis table.sum{min-width:520px}
+  /* Leaderboard tab: Top Rankers only (main hidden) */
+  #view-analysis .ana-side{display:none}
+  #view-analysis.mob-tab-lb .ana-main,#view-analysis.mob-tab-lb .ana-stats,#view-analysis.mob-tab-lb .ana-gap,#view-analysis.mob-tab-lb #mobQsBreak,#view-analysis.mob-tab-lb .mob-sec{display:none}
+  #view-analysis.mob-tab-lb .ana-side{display:block}
+  /* Mobile-only COMPARE card */
+  .mob-sec{display:block}
+  .mob-cmp{width:100%;font-size:13px}
+  .mob-cmp-row{display:grid;grid-template-columns:62px repeat(5,1fr);gap:6px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--border)}
+  .mob-cmp-row:last-child{border-bottom:none}
+  .mob-cmp-head{font-size:11.5px;font-weight:800;text-transform:uppercase;color:var(--muted);padding-top:0}
+  .mob-cmp-row b{font-size:13px;color:var(--text)}
+  .mob-cmp-row span{text-align:center;color:var(--text)}
+  .mob-cmp-row span:first-child{text-align:left}
+  /* Rank Predictor (Worker E) - presentation only, never its logic */
+  #rankPredictor{padding:16px 14px}
+  #rankPredictor input[type=range]{width:100%}
+  /* Graphs worker cards - keep SVGs inside the card on mobile */
+  #anaMarksDist svg,#anaQDist svg{max-width:100%;height:auto}
+}
+@media (max-width:560px){
+  #view-analysis .ana-stats{gap:8px}
+  .mob-cmp-row{font-size:12px;grid-template-columns:52px repeat(5,1fr)}
+  .mob-cmp-row b{font-size:12px}
+}
 /* ---------- SOLUTIONS ---------- */
 #view-solutions{height:100vh;display:none;flex-direction:column;background:var(--surface);overflow:hidden}
 #view-solutions.active{display:flex}
@@ -337,6 +492,36 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .sol-sub{height:44px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;font-size:12px;color:var(--muted);gap:8px}
 .sol-sub .sec-tab{background:#0e6f8f;color:#fff;padding:5px 12px;border-radius:3px;font-weight:600;font-size:13px}
 .sol-main{flex:1;display:flex;overflow:hidden;position:relative}
+/* ================= TESTPRO v94-A (SOLUTION): Testbook-style PC solution view =================
+   - Blue header + palette stuck together: the old full-width .sol-sub bar sat
+     between header and palette (44px gap). It is removed; SECTIONS + View-in
+     now live in .sol-pane-top INSIDE the question pane, so the palette's top
+     edge touches the blue header directly (no gap, no margin, no border).
+   - "Your first attempt" badge sits in the blue header (attempt 1 only).
+   - Black slide button on the palette's left edge (PC only) collapses it.
+   - Language toggle is left of the palette (in .sol-pane-top, pane side).
+   - Header Summary -> Analytics (opens the summary modal retitled Analytics).
+   - Solution tab label above the solution body (Testbook-style).
+   - qstats pill untouched: PC = sol-meta header pill, mobile = below
+     "✓ Correct Answer" tag (v74 rule, see .sol-opt .tag-col rules). */
+#view-solutions .sol-header{margin-bottom:0;border-bottom:0}
+#view-solutions .sol-main{margin-top:0;padding-top:0}
+#view-solutions .sol-palette{margin-top:0;border-top:0}
+.sol-pane-top{height:44px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;font-size:12px;color:var(--muted);gap:8px}
+.sol-pane-top .sec-tab{background:#0e6f8f;color:#fff;padding:5px 12px;border-radius:3px;font-weight:600;font-size:13px}
+.first-attempt-badge{background:#fee2e2;color:#b91c1c;font-size:12px;font-weight:700;border-radius:4px;padding:5px 10px;white-space:nowrap;flex-shrink:0}
+.sol-pal-slide{display:none}
+.sol-tab{display:inline-block;font-size:14px;font-weight:700;color:var(--text-strong);border-bottom:2px solid #0e86b0;padding-bottom:6px;margin-bottom:12px}
+@media (min-width:901px){
+.sol-pal-slide{display:flex;position:absolute;right:295px;top:50%;transform:translateY(-50%);z-index:60;width:22px;height:64px;background:#111;color:#fff;border:0;border-radius:4px 0 0 4px;align-items:center;justify-content:center;font-size:18px;font-weight:700;line-height:1;cursor:pointer;padding:0}
+#view-solutions.sol-pal-collapsed .sol-palette{display:none}
+#view-solutions.sol-pal-collapsed .sol-pal-slide{right:0}
+}
+@media (max-width:900px){
+.first-attempt-badge{display:none}
+.sol-pane-top>div:first-child,.sol-pane-top .vi-lbl{display:none}
+.sol-pane-top{justify-content:flex-end}
+}
 .sol-pane{flex:1;display:flex;flex-direction:column;min-width:0}
 .sol-meta{min-height:44px;border-bottom:1px solid var(--border);padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;flex-shrink:0}
 .sol-save-btn{display:inline-flex;align-items:center;gap:5px;margin-left:auto;border:1px solid var(--border2);border-radius:5px;padding:5px 9px;background:var(--surface);color:var(--muted2);font-size:12px;font-weight:600}
@@ -2808,6 +2993,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <button id="resReattemptTop" class="desk-only">Reattempt This Test</button>
       <button id="resGoTests" class="desk-only">Go to Tests</button>
       <button id="resGoSolTop" class="desk-only">Solutions</button>
+      <button id="resGoAnalysisTop" class="desk-only">Analysis</button>
     </div>
   </div>
   <div class="result-wrap">
@@ -2825,10 +3011,50 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <h3 class="res-sec-title">Question-wise Performance</h3>
     <div class="res-grid" id="resGrid"></div>
     <div class="res-actions">
+      <button class="btn btn-teal" id="btnViewAnalysis">View Analysis</button>
       <button class="btn btn-teal" id="btnViewSol">View Solutions</button>
       <button class="btn btn-outline" id="btnReattempt">Re-attempt</button>
       <button class="btn btn-grey" id="btnBackList">Back to Tests</button>
     </div>
+    <h3 class="res-sec-title">Rank Predictor</h3>
+    <div id="rankPredictor"></div>
+    <div id="anaGraphs" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- ================= ANALYSIS (v94, Worker B) ================= -->
+<div id="view-analysis" class="view">
+  <div class="result-topbar">
+    <div class="rt-left"><button class="ana-back" id="anaBackBtn" type="button" title="Back to result">&#8592;</button><svg class="logo-mark" viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg><span class="logo-text">TESTPRO</span><span class="rt-name" id="anaTestName">Test</span></div>
+    <div class="links">
+      <button class="attempt-btn" id="anaAttemptBtn">Attempt 1 &#9662;</button>
+      <button id="anaGoSolTop" class="desk-only">Solutions</button>
+      <button id="anaGoTests" class="desk-only">Go to Tests</button>
+    </div>
+  </div>
+  <div class="mob-ana-tabs" id="mobTabs">
+    <button type="button" data-mob-tab="summary" class="on">Analysis</button>
+    <button type="button" data-mob-tab="lb">Leaderboard</button>
+    <button type="button" class="mob-sol-btn" id="mobSolBtn">Solution</button>
+  </div>
+  <div class="ana-wrap">
+    <h2 class="ana-h">Overall Performance Summary <button class="ana-refresh" id="anaRefreshBtn" type="button" title="Refresh ranks from the server">&#8635; Refresh</button></h2>
+    <div class="ana-stats" id="anaStats"></div>
+    <div class="mob-qs-break" id="mobQsBreak" aria-live="polite"></div>
+    <div class="ana-card ana-gap" id="anaGap"></div>
+    <div class="ana-main">
+      <h3 class="res-sec-title">Sectional Summary</h3>
+      <div class="ana-card ana-pad0"><table class="sum" id="anaSectional"></table></div>
+      <h3 class="res-sec-title">Your Weak &amp; Strong Chapters <span class="ana-sub-note" id="anaWeakNote"></span></h3>
+      <div class="ana-card" id="anaWeak"></div>
+      <h3 class="res-sec-title mob-sec">Compare</h3>
+      <div class="ana-card mob-sec" id="mobCompare"></div>
+    </div>
+    <aside class="ana-side">
+      <h3 class="res-sec-title" style="margin-top:0">Top Rankers</h3>
+      <div class="ana-card" id="anaRankers"></div>
+      <p class="ana-note" id="anaDataNote"></p>
+    </aside>
   </div>
 </div>
 
@@ -2844,21 +3070,20 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     </div>
     <div class="right">
       <button class="pill-btn" id="solAttemptBtn">Attempt 1 ▾</button>
-      <button class="pill-btn" id="solSummaryBtn">Summary</button>
+      <span class="first-attempt-badge" id="solFirstAttemptBadge">Your first attempt</span>
+      <button class="pill-btn sol-analytics-btn" id="solSummaryBtn" title="Analytics">Analytics</button>
       <button class="sol-fs-btn" id="solFsBtn"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></svg><span class="fs-txt">Switch Full Screen</span></button>
-    </div>
-  </div>
-  <div class="sol-sub">
-    <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:600">SECTIONS</span><span class="sec-tab" id="solSecName">Test</span></div>
-    <div style="display:flex;align-items:center;gap:6px"><span class="vi-lbl" style="font-weight:600">View in</span>
-      <select id="solLangSelect" class="sel-sm">
-        <option value="hi">Hindi</option>
-        <option value="en">English</option>
-      </select>
     </div>
   </div>
   <div class="sol-main">
     <div class="sol-pane">
+      <div class="sol-pane-top"><div style="display:flex;align-items:center;gap:10px"><span style="font-weight:600">SECTIONS</span><span class="sec-tab" id="solSecName">Test</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span class="vi-lbl" style="font-weight:600">View in</span>
+          <select id="solLangSelect" class="sel-sm">
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+          </select>
+        </div></div>
       <div class="sol-meta" id="solMeta"></div>
       <div class="sol-scroll" id="solScroll">
         <div class="q-src" id="solSrc"></div>
@@ -2867,6 +3092,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="q-fig hidden" id="solFig"></div>
         <div class="sol-opts" id="solOptions"></div>
         <div class="sol-card hidden" id="solCard">
+          <div class="sol-tab">Solution</div>
           <div class="sc-head">
             <div style="display:flex;align-items:center;gap:10px"><span class="co">CORRECT OPTION</span><span class="co-txt" id="solCorrectOpt"></span></div>
             
@@ -2892,6 +3118,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <button class="btn" id="solNext" style="background:#8ec3eb;color:#1f2937">Next</button>
       </div>
     </div>
+    <button class="sol-pal-slide" id="solPalSlideBtn" type="button" aria-label="Hide question palette" title="Hide palette">›</button>
     <aside class="sol-palette" id="solPaletteDrawer">
       <div class="sp-user">
         <div class="u"><div class="avatar">S</div><span class="user-name-label">Student</span></div>
@@ -4096,7 +4323,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 93; /* must match version.txt - bump on every release */
+var APP_VERSION = 94; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -4133,7 +4360,7 @@ function saveLastView(){
     var v = state.view;
     /* 'result' / 'solutions' / 'instructions' cannot be rebuilt from
        storage alone (they need lastResult / state.test) — save Home. */
-    if (v === 'result' || v === 'solutions' || v === 'instructions') v = 'list';
+    if (v === 'result' || v === 'solutions' || v === 'instructions' || v === 'analysis') v = 'list';
     if (v !== 'list' && v !== 'test' && v !== 'leaderboard' && v !== 'settings' && v !== 'saved' && v !== 'attempted') return;
     localStorage.setItem(_V68I_LASTVIEW_KEY, JSON.stringify({
       view: v,
@@ -4258,7 +4485,7 @@ function showView(name){
 function setView(name){
   if (name === 'onboarding') name = 'list'; /* v40: onboarding removed — stale history entries land on HOME */
   if (name !== 'solutions' && typeof closeInlineVideo === 'function') closeInlineVideo();
-  ['list','instructions','test','result','solutions','settings','saved','leaderboard','attempted'].forEach(function(v){
+  ['list','instructions','test','result','analysis','solutions','settings','saved','leaderboard','attempted'].forEach(function(v){
     var el = $('view-' + v);
     if (el) el.classList.toggle('active', v === name);
   });
@@ -5969,6 +6196,289 @@ function saveSettings(){
 
 'use strict';
 /* ================= RESULT ================= */
+
+/* ================= v94-D: ANALYSIS GRAPHS =================
+   Four graphs in #anaGraphs, rendered at the end of renderResult.
+   Inline SVG + plain HTML bars only — no external chart library, fully
+   offline. Every number is REAL data (see patch_graphs.py header):
+   current attempt stats, the leaderboard per-test `t`-map
+   (LB.list / cached lb list), and local best-attempt history.
+   Nothing is hardcoded; when class data is unavailable the card says
+   so and falls back to your own history. */
+function anaNum(v, d){ v = +v; return isFinite(v) ? v : (d || 0); }
+function anaPct1(v){ return (Math.round(v * 10) / 10).toFixed(1); }
+/* Leaderboard entries that attempted THIS test: t[tid] =
+   [score, correct, wrong, marks, timeTaken, factor]. LB.list is live
+   when the leaderboard was opened; otherwise read its localStorage
+   cache (same list lbRefresh/lbSaveCache use). */
+function anaLbTestScores(tid){
+  var list = [];
+  try { if (typeof LB !== 'undefined' && LB && Array.isArray(LB.list) && LB.list.length) list = LB.list; } catch (e) {}
+  if (!list.length){
+    try { if (typeof lbLoadCache === 'function'){ var c = lbLoadCache(); if (c && Array.isArray(c.list)) list = c.list; } } catch (e) {}
+  }
+  var out = [];
+  list.forEach(function(en){
+    if (!en || !en.t) return;
+    var r = en.t[tid];
+    if (!Array.isArray(r) || r.length < 4) return;
+    var marks = anaNum(r[3], 0); if (marks <= 0) return;
+    out.push({name: String(en.name || 'Student'), score: anaNum(r[0], 0),
+      correct: anaNum(r[1], 0), wrong: anaNum(r[2], 0), marks: marks,
+      time: anaNum(r[4], 0)});
+  });
+  return out;
+}
+/* Fallback histogram source: your own best-score % per attempted test. */
+function anaLocalBestPcts(){
+  var out = [];
+  try {
+    var st = storeGet();
+    [['tests', TESTS], ['tests_ca', CA_TESTS], ['tests_ga', GA_TESTS]].forEach(function(pair){
+      var map = st[pair[0]] || {};
+      (pair[1] || []).forEach(function(t){
+        var rec = map[t.id]; if (!rec) return;
+        var atts = getAttempts(rec); if (!atts.length) return;
+        var best = null;
+        atts.forEach(function(a){ if (!best || (a.score || 0) > (best.score || 0)) best = a; });
+        if (!best || !t.marks) return;
+        out.push(Math.max(0, Math.min(100, (best.score || 0) / t.marks * 100)));
+      });
+    });
+  } catch (e) {}
+  return out;
+}
+/* Weak chapters: best-attempt accuracy per test (each test IS one
+   chapter / GA topic / CA month), weakest first, top 8. */
+function anaWeakChapters(){
+  var rows = [];
+  try {
+    var st = storeGet();
+    var series = [
+      {list: (typeof TESTS !== 'undefined' ? TESTS : []), map: st.tests || {}, label: 'Maths'},
+      {list: (typeof CA_TESTS !== 'undefined' ? CA_TESTS : []), map: st.tests_ca || {}, label: 'CA'},
+      {list: (typeof GA_TESTS !== 'undefined' ? GA_TESTS : []), map: st.tests_ga || {}, label: 'GA'}
+    ];
+    series.forEach(function(s){
+      (s.list || []).forEach(function(t){
+        var rec = s.map[t.id]; if (!rec) return;
+        var atts = []; try { atts = getAttempts(rec); } catch (e) {}
+        if (!atts.length) return;
+        var best = null;
+        atts.forEach(function(a){ if (!best || (a.score || 0) > (best.score || 0)) best = a; });
+        if (!best) return;
+        var att = (best.correct || 0) + (best.wrong || 0);
+        if (!att) return;
+        var nm = t.id;
+        try { nm = testTitle(t); } catch (e) {}
+        rows.push({id: t.id, name: nm, series: s.label,
+          acc: (best.correct || 0) / att * 100, correct: best.correct || 0, att: att});
+      });
+    });
+  } catch (e) {}
+  rows.sort(function(a, b){ return a.acc - b.acc; });
+  return rows.slice(0, 8);
+}
+function anaWeakColor(acc){ return acc < 50 ? '#ef4444' : (acc < 70 ? '#f59e0b' : '#22c55e'); }
+function anaSvgMarks(buckets, myPct, avgPct, nStudents){
+  var W = 560, H = 252, L = 36, R = 10, T = 26, B = 32;
+  var iw = W - L - R, ih = H - T - B;
+  var max = 1; buckets.forEach(function(b){ if (b > max) max = b; });
+  var bw = iw / 10, gap = 6;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Marks distribution">';
+  s += '<defs><linearGradient id="anaGm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0ea5a5"/></linearGradient></defs>';
+  [0, 0.5, 1].forEach(function(f){
+    var y = T + ih - ih * f;
+    s += '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="#e5e7eb" stroke-width="1"/>';
+    s += '<text x="' + (L - 5) + '" y="' + (y + 4) + '" font-size="10" fill="#94a3b8" text-anchor="end">' + Math.round(max * f) + '</text>';
+  });
+  buckets.forEach(function(b, i){
+    var h = ih * b / max, x = L + i * bw + gap / 2, y = T + ih - h;
+    var myBucket = myPct >= i * 10 && myPct < (i + 1) * 10;
+    s += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + (bw - gap).toFixed(1) + '" height="' + Math.max(h, 2).toFixed(1) + '" rx="4" fill="' + (myBucket ? '#8b5cf6' : 'url(#anaGm)') + '"/>';
+    if (b > 0) s += '<text x="' + (x + (bw - gap) / 2).toFixed(1) + '" y="' + (y - 5).toFixed(1) + '" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">' + b + '</text>';
+    s += '<text x="' + (x + (bw - gap) / 2).toFixed(1) + '" y="' + (H - 10) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + (i * 10) + '&ndash;' + ((i + 1) * 10) + '</text>';
+  });
+  function vline(pct, color, label){
+    if (pct == null || !isFinite(pct)) return;
+    var x = L + Math.max(0, Math.min(100, pct)) / 100 * iw;
+    s += '<line x1="' + x.toFixed(1) + '" y1="' + (T - 14) + '" x2="' + x.toFixed(1) + '" y2="' + (T + ih) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="5 3"/>';
+    s += '<text x="' + x.toFixed(1) + '" y="' + (T - 18) + '" font-size="11" font-weight="700" fill="' + color + '" text-anchor="middle">' + label + '</text>';
+  }
+  if (avgPct != null) vline(avgPct, '#94a3b8', 'Avg ' + anaPct1(avgPct) + '%');
+  vline(myPct, '#8b5cf6', 'You ' + anaPct1(myPct) + '%');
+  s += '<text x="' + L + '" y="' + (H - 0) + '" font-size="0" fill="none"></text>';
+  s += '</svg>';
+  return s;
+}
+function anaSvgQuestions(correct, wrong, skipped){
+  var total = correct + wrong + skipped || 1;
+  var W = 560, H = 210, L = 40, R = 10, T = 24, B = 28;
+  var iw = W - L - R, ih = H - T - B;
+  var max = Math.max(correct, wrong, skipped, 1);
+  var data = [
+    {label: 'Correct', v: correct, color: '#22c55e'},
+    {label: 'Wrong', v: wrong, color: '#ef4444'},
+    {label: 'Skipped', v: skipped, color: '#94a3b8'}
+  ];
+  var bw = iw / 3, gap = 44;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Question distribution">';
+  [0, 0.5, 1].forEach(function(f){
+    var y = T + ih - ih * f;
+    s += '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="#e5e7eb" stroke-width="1"/>';
+    s += '<text x="' + (L - 5) + '" y="' + (y + 4) + '" font-size="10" fill="#94a3b8" text-anchor="end">' + Math.round(max * f) + '</text>';
+  });
+  data.forEach(function(d, i){
+    var h = ih * d.v / max, x = L + i * bw + gap / 2, y = T + ih - h;
+    s += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + (bw - gap).toFixed(1) + '" height="' + Math.max(h, 2).toFixed(1) + '" rx="5" fill="' + d.color + '"/>';
+    s += '<text x="' + (x + (bw - gap) / 2).toFixed(1) + '" y="' + (y - 6).toFixed(1) + '" font-size="13" font-weight="700" fill="#334155" text-anchor="middle">' + d.v + '</text>';
+    s += '<text x="' + (x + (bw - gap) / 2).toFixed(1) + '" y="' + (H - 8) + '" font-size="11" fill="#64748b" text-anchor="middle">' + d.label + ' (' + anaPct1(d.v / total * 100) + '%)</text>';
+  });
+  s += '</svg>';
+  return s;
+}
+function anaSvgCompare(rows){
+  /* rows: [{label, val, disp, max}] per metric group, values already
+     grouped as [You, Topper, Avg]; one SVG, 5 metric groups. */
+  var W = 560, L = 64, R = 64, T = 8;
+  var groupH = 78, H = T + rows.length * groupH + 6;
+  var iw = W - L - R;
+  var who = [['You', '#0ea5a5'], ['Topper', '#8b5cf6'], ['Avg', '#94a3b8']];
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Compare with topper">';
+  rows.forEach(function(g, gi){
+    var gy = T + gi * groupH;
+    s += '<text x="0" y="' + (gy + 12) + '" font-size="12" font-weight="700" fill="#334155">' + g.label + '</text>';
+    if (g.note) s += '<text x="' + (L + iw + 6) + '" y="' + (gy + 12) + '" font-size="10" fill="#94a3b8" text-anchor="end">' + g.note + '</text>';
+    g.vals.forEach(function(v, k){
+      var y = gy + 18 + k * 17;
+      var w = Math.max(2, iw * v / g.max);
+      s += '<text x="0" y="' + (y + 10) + '" font-size="10.5" fill="#64748b">' + who[k][0] + '</text>';
+      s += '<rect x="' + L + '" y="' + y + '" width="' + w.toFixed(1) + '" height="12" rx="6" fill="' + who[k][1] + '"/>';
+      s += '<text x="' + (L + w + 6).toFixed(1) + '" y="' + (y + 10) + '" font-size="11" font-weight="700" fill="#334155">' + g.disps[k] + '</text>';
+    });
+  });
+  s += '</svg>';
+  return s;
+}
+function renderAnalysisGraphs(stats){
+  var box = document.getElementById('anaGraphs');
+  if (!box) return;
+  var t = state.test; if (!t || !t.questions) return;
+  var n = t.questions.length;
+  var st = stats || state.lastResult || computeStats();
+  var myPct = n > 0 ? Math.max(0, Math.min(100, (st.score || 0) / n * 100)) : 0;
+  /* ---- 1. Marks distribution ---- */
+  var lbScores = anaLbTestScores(t.id);
+  var buckets = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var avgPct = null, marksSrc = '', nStu = 0;
+  if (lbScores.length){
+    lbScores.forEach(function(e){
+      var p = Math.max(0, Math.min(100, e.score / e.marks * 100));
+      buckets[Math.min(9, Math.floor(p / 10))]++;
+    });
+    var sum = 0; lbScores.forEach(function(e){ sum += Math.max(0, Math.min(100, e.score / e.marks * 100)); });
+    avgPct = sum / lbScores.length;
+    nStu = lbScores.length;
+    marksSrc = 'Based on ' + nStu + ' student' + (nStu === 1 ? '' : 's') + ' who attempted this test (leaderboard best scores). Your bucket is purple.';
+  } else {
+    var mine = anaLocalBestPcts();
+    mine.forEach(function(p){ buckets[Math.min(9, Math.floor(p / 10))]++; });
+    nStu = mine.length;
+    marksSrc = 'No class data yet — your best score in each of ' + nStu + ' attempted test' + (nStu === 1 ? '' : 's') + '. Open the Leaderboard once and this becomes all students.';
+  }
+  /* ---- 2. Question distribution ---- */
+  var total = n || 1;
+  var qSvg = anaSvgQuestions(st.correct || 0, st.wrong || 0, st.skipped || 0);
+  var stack = '<div class="ana-stack" role="img" aria-label="Attempt mix">' +
+    '<div style="width:' + ((st.correct || 0) / total * 100).toFixed(1) + '%;background:#22c55e"></div>' +
+    '<div style="width:' + ((st.wrong || 0) / total * 100).toFixed(1) + '%;background:#ef4444"></div>' +
+    '<div style="width:' + ((st.skipped || 0) / total * 100).toFixed(1) + '%;background:#94a3b8"></div></div>' +
+    '<div class="ana-legend"><span><i style="background:#22c55e"></i>Correct ' + (st.correct || 0) + '</span>' +
+    '<span><i style="background:#ef4444"></i>Wrong ' + (st.wrong || 0) + ' (&minus;' + ((st.wrong || 0) / 3).toFixed(2) + ' marks)</span>' +
+    '<span><i style="background:#94a3b8"></i>Skipped ' + (st.skipped || 0) + '</span></div>';
+  /* ---- 3. Compare with topper ---- */
+  var you = {score: st.score || 0, acc: st.accuracy || 0, correct: st.correct || 0,
+    wrong: st.wrong || 0, time: state.timeTaken || 0};
+  var topper = null, avg = null, cmpSrc = '';
+  if (lbScores.length){
+    topper = lbScores[0];
+    lbScores.forEach(function(e){ if (e.score > topper.score) topper = e; });
+    var sS = 0, sC = 0, sW = 0, sT = 0, sA = 0;
+    lbScores.forEach(function(e){
+      sS += e.score; sC += e.correct; sW += e.wrong; sT += e.time;
+      var a = (e.correct + e.wrong) > 0 ? e.correct / (e.correct + e.wrong) * 100 : 0;
+      sA += a;
+    });
+    var m = lbScores.length;
+    avg = {score: sS / m, acc: sA / m, correct: sC / m, wrong: sW / m, time: sT / m};
+    cmpSrc = 'Topper: ' + topper.name + ' (' + lbScores.length + ' students on this test). Average = mean of all students.';
+  } else {
+    var atts = [];
+    try { var rec = getTestRec(t); if (rec) atts = getAttempts(rec); } catch (e) {}
+    var best = null, s2 = 0, s2c = 0, s2w = 0, s2t = 0, s2a = 0;
+    atts.forEach(function(a){
+      if (!best || (a.score || 0) > (best.score || 0)) best = a;
+      s2 += (a.score || 0); s2c += (a.correct || 0); s2w += (a.wrong || 0); s2t += (a.timeTaken || 0);
+      var aa = (a.correct || 0) + (a.wrong || 0) > 0 ? (a.correct || 0) / ((a.correct || 0) + (a.wrong || 0)) * 100 : 0;
+      s2a += aa;
+    });
+    var cnt = Math.max(atts.length, 1);
+    topper = best ? {name: 'Your best', score: best.score || 0, acc: best.accuracy || 0,
+      correct: best.correct || 0, wrong: best.wrong || 0, time: best.timeTaken || 0}
+      : {name: 'Your best', score: you.score, acc: you.acc, correct: you.correct, wrong: you.wrong, time: you.time};
+    avg = {score: s2 / cnt, acc: s2a / cnt, correct: s2c / cnt, wrong: s2w / cnt, time: s2t / cnt};
+    cmpSrc = 'No class data yet — Topper row is your own best on this test and Average is the mean of your ' + atts.length + ' attempt' + (atts.length === 1 ? '' : 's') + ' here.';
+  }
+  function fmtScore(v){ return (Math.round(v * 100) / 100).toFixed(2); }
+  function fmtTime(v){ try { return fmtMMSS(Math.round(v)); } catch (e) { return Math.round(v) + 's'; } }
+  var cmpRows = [
+    {label: 'Score', note: 'of ' + n, max: Math.max(you.score, topper.score, avg.score, 1),
+     vals: [you.score, topper.score, avg.score],
+     disps: [fmtScore(you.score), fmtScore(topper.score), fmtScore(avg.score)]},
+    {label: 'Accuracy', note: '', max: 100,
+     vals: [you.acc, topper.acc, avg.acc],
+     disps: [anaPct1(you.acc) + '%', anaPct1(topper.acc) + '%', anaPct1(avg.acc) + '%']},
+    {label: 'Correct', note: 'of ' + n, max: Math.max(you.correct, topper.correct, avg.correct, 1),
+     vals: [you.correct, topper.correct, avg.correct],
+     disps: [String(you.correct), String(topper.correct), anaPct1(avg.correct)]},
+    {label: 'Wrong', note: 'lower is better', max: Math.max(you.wrong, topper.wrong, avg.wrong, 1),
+     vals: [you.wrong, topper.wrong, avg.wrong],
+     disps: [String(you.wrong), String(topper.wrong), anaPct1(avg.wrong)]},
+    {label: 'Time', note: '', max: Math.max(you.time, topper.time, avg.time, 1),
+     vals: [you.time, topper.time, avg.time],
+     disps: [fmtTime(you.time), fmtTime(topper.time), fmtTime(avg.time)]}
+  ];
+  /* ---- 4. Weak chapters ---- */
+  var weak = anaWeakChapters();
+  var weakHtml = '';
+  if (!weak.length){
+    weakHtml = '<div class="ana-empty">No chapter data yet — attempt more tests and your weakest chapters will appear here.</div>';
+  } else {
+    weak.forEach(function(w){
+      var cur = (w.id === t.id);
+      weakHtml += '<div class="ana-weak-row' + (cur ? ' cur' : '') + '">' +
+        '<div class="ana-weak-top"><span class="nm">' + esc(w.name) + (cur ? '<span class="ana-pill">THIS TEST</span>' : '') + '</span>' +
+        '<span class="vl">' + anaPct1(w.acc) + '% &middot; ' + w.correct + '/' + w.att + '</span></div>' +
+        '<div class="ana-weak-track"><div class="ana-weak-fill" style="width:' + Math.max(2, Math.min(100, w.acc)).toFixed(1) + '%;background:' + anaWeakColor(w.acc) + '"></div></div></div>';
+    });
+  }
+  box.innerHTML =
+    '<h3 class="ana-title">\uD83D\uDCCA Analysis Graphs</h3>' +
+    '<p class="ana-sub">Your attempt, visualised — every number below is real data from this attempt, the leaderboard, or your own history.</p>' +
+    '<div class="ana-grid">' +
+    '<div class="ana-card"><h4>Marks Distribution</h4><p class="ana-src">' + esc(marksSrc) + '</p>' +
+      anaSvgMarks(buckets, myPct, avgPct, nStu) +
+      '<div class="ana-legend"><span><i style="background:#22d3ee"></i>Students per 10% bucket</span><span><i style="background:#8b5cf6"></i>Your bucket</span><span><i style="background:#94a3b8"></i>Average</span></div></div>' +
+    '<div class="ana-card"><h4>Question Distribution</h4><p class="ana-src">This attempt: ' + (st.correct || 0) + ' correct, ' + (st.wrong || 0) + ' wrong, ' + (st.skipped || 0) + ' skipped out of ' + n + ' questions.</p>' +
+      qSvg + stack + '</div>' +
+    '<div class="ana-card"><h4>Compare with Topper</h4><p class="ana-src">' + esc(cmpSrc) + '</p>' +
+      anaSvgCompare(cmpRows) +
+      '<div class="ana-legend"><span><i style="background:#0ea5a5"></i>You</span><span><i style="background:#8b5cf6"></i>Topper</span><span><i style="background:#94a3b8"></i>Average</span></div></div>' +
+    '<div class="ana-card"><h4>Weak Chapters</h4><p class="ana-src">Best-attempt accuracy per chapter / topic / month across all your attempted tests — weakest first.</p>' +
+      weakHtml + '</div>' +
+    '</div>';
+}
+
 function renderResult(stats, prevBest){
   var t = state.test, n = t.questions.length;
   $('resTestName').textContent = testTitle(t);
@@ -6001,11 +6511,13 @@ function renderResult(stats, prevBest){
   });
   $('resGrid').innerHTML = grid;
   updateAttemptButtons();
+  renderRankPredictor();
   document.querySelectorAll('#resGrid [data-sol]').forEach(function(el){
     el.addEventListener('click', function(){
       openSolutions(parseInt(this.getAttribute('data-sol'), 10));
     });
   });
+  try { renderAnalysisGraphs(stats); } catch (e) {}
 }
 $('btnViewSol').addEventListener('click', function(){ openSolutions(0); });
 $('resGoSolTop').addEventListener('click', function(){ openSolutions(0); });
@@ -6015,6 +6527,438 @@ $('btnReattempt').addEventListener('click', function(){ startTest(); });
 $('resReattemptTop').addEventListener('click', function(){ startTest(); });
 
 /* ================= SOLUTIONS ================= */
+/* ================= v94 ANALYSIS — Testbook-style test analysis (Worker B) =================
+   New #view-analysis (PC), opened from the result view (View Analysis
+   button / topbar Analysis). Sections: Overall Performance Summary,
+   topper-gap card, Sectional Summary, Weak/Average/Strong chapters,
+   Top Rankers (TOP 5 only).
+   DATA — real only, never hardcoded/fake:
+   - Rank / percentile / topper / average all come from the SAME Firebase
+     data the leaderboard uses: the `leaderboard` collection docs, each
+     doc's per-test `t` map [score, correct, wrong, marks, timeTaken]
+     (best-by-coins attempt). Read via window.LB.list (live, up to 300
+     docs, fetched by lbRefresh), falling back to the cached copy in
+     localStorage (tp_lb_cache_v1, up to 100 docs). The attempt being
+     viewed is always merged in as "You" (state.lastResult), replacing
+     the user's own published record so the user is never double-counted.
+   - If nobody else has attempted the test yet, rank is 1/1 and percentile
+     shows a dash, with a plain note — no invented numbers.
+   - Weak/Average/Strong chapters come from the user's own local attempt
+     history (best attempt per test) in the same series (Maths: chapter,
+     CA: month, GA: subject). Accuracy bands: <60 weak, 60-80 average,
+     >80 strong.
+   - The marks distribution (all takers' scores on this test) is exposed
+     as window.__anaDist (plain array of scores, ascending) for the Rank
+     Predictor worker. No predictor UI, no graphs, no mobile tabs in this
+     patch — those are other workers' scope.
+   Coin/leaderboard model untouched — this only READS LB data and calls
+   window.__lb.refresh() once per open to pull the latest ranks. */
+var _anaWTab = 'weak';
+var _anaLastFetch = 0;
+function anaChapterName(chNum){
+  var name = 'Chapter ' + chNum;
+  try { (BANK || []).forEach(function(ch){ if (ch.chapter === chNum && ch.name_en) name = ch.name_en; }); } catch(e){}
+  return name;
+}
+function anaRankOf(score, rows){
+  var r = 1;
+  rows.forEach(function(x){ if (x.score > score) r++; });
+  return r;
+}
+function anaAvImg(e, px){
+  try {
+    if (window.avSrc && typeof window.avSrc === 'function' && e.avatar){
+      return '<img class="ana-av" style="width:' + px + 'px;height:' + px + 'px" src="' + window.avSrc(e.avatar) + '" alt="">';
+    }
+  } catch(err){}
+  var ch = String(e.name || 'S').charAt(0).toUpperCase();
+  return '<span class="ana-av ana-av-init" style="width:' + px + 'px;height:' + px + 'px">' + esc(ch) + '</span>';
+}
+/* Per-test taker scores for test t, from the leaderboard's Firebase data. */
+function anaScores(t){
+  var rows = [], meUid = '', entries = null, fromCache = false;
+  try { meUid = (window.myUid && window.myUid()) || ''; } catch(e){}
+  try { if (window.LB && LB.list && LB.list.length) entries = LB.list; } catch(e){}
+  if (!entries){
+    try {
+      var c = JSON.parse(localStorage.getItem('tp_lb_cache_v1') || 'null');
+      if (c && c.list && c.list.length){ entries = c.list; fromCache = true; }
+    } catch(e){}
+  }
+  if (entries){
+    entries.forEach(function(e){
+      if (!e || !e.t) return;
+      var r = e.t[t.id];
+      if (!r) return;
+      if (String(e.uid) === String(meUid)) return; /* me added below, viewed attempt */
+      rows.push({uid: e.uid, name: e.name || 'Student', avatar: e.avatar, score: +r[0] || 0, correct: +r[1] || 0, wrong: +r[2] || 0, marks: +r[3] || 0, time: +r[4] || 0, me: false});
+    });
+  }
+  var st = state.lastResult || {score: 0, correct: 0, wrong: 0, attempted: 0, skipped: 0, accuracy: 0};
+  var meName = 'You', meAv = null;
+  try { var meE = window.myEntry ? window.myEntry() : null; if (meE){ if (meE.name) meName = meE.name; meAv = meE.avatar; } } catch(e){}
+  rows.push({uid: meUid || 'me', name: meName, avatar: meAv, score: +st.score || 0, correct: +st.correct || 0, wrong: +st.wrong || 0, marks: t.marks, time: state.timeTaken || 0, me: true});
+  rows.sort(function(a, b){ return (b.score - a.score) || (a.time - b.time) || String(a.name).localeCompare(String(b.name)); });
+  return {rows: rows, fromCache: fromCache, live: !!(!fromCache && entries)};
+}
+function anaSyncAttemptBtn(){
+  var b = $('anaAttemptBtn');
+  if (b) b.textContent = 'Attempt ' + (state.attemptNo != null ? state.attemptNo : 1) + ' \u25be';
+}
+function anaStatCard(ic, bg, val, lbl){
+  return '<div class="ana-stat"><span class="ana-ic" style="background:' + bg + '">' + ic + '</span><div class="ana-stat-tx"><b>' + val + '</b><span>' + lbl + '</span></div></div>';
+}
+function anaRankersHTML(rows, me){
+  var top = rows.slice(0, 5), h = '';
+  top.forEach(function(r, i){
+    h += '<div class="ana-ranker' + (r.me ? ' me' : '') + '"><span class="ana-rk">' + (i + 1) + '</span>' + anaAvImg(r, 40) +
+      '<div class="ana-rn"><b>' + esc(r.name) + (r.me ? ' <i>You</i>' : '') + '</b><small>' + r.correct + ' \u2713 \u00b7 ' + r.wrong + ' \u2717 \u00b7 ' + fmtMMSS(r.time) + '</small></div>' +
+      '<div class="ana-rs"><b>' + r.score.toFixed(2) + '</b><small> / ' + (r.marks || '') + '</small></div></div>';
+  });
+  var myRank = anaRankOf(me.score, rows);
+  if (myRank > 5){
+    h += '<div class="ana-ranker me"><span class="ana-rk">' + myRank + '</span>' + anaAvImg(me, 40) +
+      '<div class="ana-rn"><b>' + esc(me.name) + ' <i>You</i></b><small>' + me.correct + ' \u2713 \u00b7 ' + me.wrong + ' \u2717 \u00b7 ' + fmtMMSS(me.time) + '</small></div>' +
+      '<div class="ana-rs"><b>' + me.score.toFixed(2) + '</b><small> / ' + (me.marks || '') + '</small></div></div>';
+  }
+  return h || '<p class="ana-empty">No takers yet.</p>';
+}
+function anaRenderWeak(){
+  var t = state.test;
+  if (!t) return;
+  var series = isGATest(t) ? 'ga' : (isCATest(t) ? 'ca' : 'maths');
+  var tests = series === 'ga' ? GA_TESTS : (series === 'ca' ? CA_TESTS : TESTS);
+  var st0 = storeGet();
+  var map = series === 'ga' ? (st0.tests_ga || {}) : (series === 'ca' ? (st0.tests_ca || {}) : (st0.tests || {}));
+  var groups = {};
+  tests.forEach(function(x){
+    var rec = map[x.id];
+    if (!rec) return;
+    var hist = getAttempts(rec);
+    if (!hist.length) return;
+    var best = null;
+    hist.forEach(function(a){ if (!best || (a.score || 0) > (best.score || 0)) best = a; });
+    if (!best) return;
+    var key, name;
+    if (series === 'maths'){ key = 'ch' + x.chapter; name = anaChapterName(x.chapter); }
+    else if (series === 'ca'){ key = x.month; name = x.month_en || x.month; }
+    else { key = x.subject; name = x.subject_en || x.subject; }
+    var g = groups[key];
+    if (!g) g = groups[key] = {name: name, correct: 0, wrong: 0, tests: 0};
+    g.correct += best.correct || 0; g.wrong += best.wrong || 0; g.tests++;
+  });
+  var arr = [];
+  Object.keys(groups).forEach(function(k){
+    var g = groups[k], att = g.correct + g.wrong;
+    g.acc = att ? g.correct / att * 100 : 0; g.att = att;
+    arr.push(g);
+  });
+  var weak = arr.filter(function(g){ return g.acc < 60; }).sort(function(a, b){ return a.acc - b.acc; });
+  var avgG = arr.filter(function(g){ return g.acc >= 60 && g.acc <= 80; }).sort(function(a, b){ return a.acc - b.acc; });
+  var strong = arr.filter(function(g){ return g.acc > 80; }).sort(function(a, b){ return b.acc - a.acc; });
+  var tabs = [['weak', 'Weak', weak], ['average', 'Average', avgG], ['strong', 'Strong', strong]];
+  var h = '<div class="ana-wtabs">';
+  tabs.forEach(function(tp){ h += '<button type="button" data-ana-wtab="' + tp[0] + '" class="' + (_anaWTab === tp[0] ? 'on' : '') + '">' + tp[1] + ' (' + tp[2].length + ')</button>'; });
+  h += '</div>';
+  var list = _anaWTab === 'weak' ? weak : (_anaWTab === 'average' ? avgG : strong);
+  if (!arr.length) h += '<p class="ana-empty">No chapter data yet — attempt more tests in this series.</p>';
+  else if (!list.length) h += '<p class="ana-empty">No ' + _anaWTab + ' chapters in this series. \uD83C\uDF89</p>';
+  else {
+    list.forEach(function(g, i){
+      h += '<div class="ana-ch"><div class="ana-ch-top"><b>' + (i + 1) + '. ' + esc(g.name) + '</b><span class="ana-ch-nums"><i class="g">' + g.correct + ' \u2713</i><i class="r">' + g.wrong + ' \u2717</i><i>' + g.tests + ' test' + (g.tests > 1 ? 's' : '') + '</i></span></div>' +
+        '<div class="ana-ch-bar"><span style="width:' + Math.round(g.acc) + '%" class="' + (g.acc < 60 ? 'bad' : (g.acc <= 80 ? 'mid' : 'good')) + '"></span></div>' +
+        '<div class="ana-ch-acc">Correct ' + g.acc.toFixed(1) + '%</div></div>';
+    });
+  }
+  $('anaWeak').innerHTML = h;
+  var note = $('anaWeakNote');
+  if (note) note.textContent = series === 'maths' ? '\u00b7 from your attempts in the Maths series' : (series === 'ca' ? '\u00b7 from your attempts in Current Affairs' : '\u00b7 from your attempts in General Awareness');
+}
+function anaRender(){
+  var t = state.test, st = state.lastResult;
+  if (!t || !st) return;
+  var n = t.questions.length, marks = t.marks || n;
+  $('anaTestName').textContent = testTitle(t);
+  anaSyncAttemptBtn();
+  var d = anaScores(t);
+  var rows = d.rows, total = rows.length;
+  var me = null, topper = rows[0] || null;
+  rows.forEach(function(r){ if (r.me) me = r; });
+  if (!me) return;
+  var myRank = anaRankOf(me.score, rows);
+  var pct = total < 2 ? null : Math.round((total - myRank) / total * 1000) / 10;
+  var sum = 0;
+  rows.forEach(function(r){ sum += r.score; });
+  var avg = total ? sum / total : 0;
+  $('anaStats').innerHTML =
+    anaStatCard('\uD83C\uDFC6', '#e11d48', myRank + ' / ' + total, 'Rank') +
+    anaStatCard('\uD83C\uDFAF', '#7c3aed', st.score.toFixed(2) + ' / ' + marks, 'Score') +
+    anaStatCard('\uD83D\uDCDD', '#0284c7', st.attempted + ' / ' + n, 'Attempted') +
+    anaStatCard('\u2705', '#059669', st.accuracy.toFixed(2) + '%', 'Accuracy') +
+    anaStatCard('\uD83D\uDCCA', '#4f46e5', pct == null ? '\u2014' : pct.toFixed(1) + '%', 'Percentile');
+  var gap = '';
+  if (total < 2) gap = '<b>You are the first to attempt this test! \uD83C\uDF89</b><p>Rank and percentile will appear once other students attempt it.</p>';
+  else if (topper.me) gap = '<b>\uD83C\uDF89 You are the topper of this test!</b><p>Your score ' + me.score.toFixed(2) + ' is the highest among ' + total + ' takers. Average score is ' + avg.toFixed(2) + '.</p>';
+  else {
+    var diff = Math.round((topper.score - me.score) * 100) / 100;
+    gap = '<b>You scored ' + diff.toFixed(2) + ' Marks \u25bc less than the topper!</b><p>Topper: ' + esc(topper.name) + ' \u2014 ' + topper.score.toFixed(2) + ' marks \u00b7 Average: ' + avg.toFixed(2) + ' \u00b7 ' + total + ' takers.</p>';
+  }
+  $('anaGap').innerHTML = gap;
+  var hist = getAttempts(getTestRec(t)) || [];
+  var best = null;
+  hist.forEach(function(a){ if (!best || (a.score || 0) > (best.score || 0)) best = a; });
+  var secRows = '<tr><th>Section</th><th>Score</th><th>Attempted</th><th>Accuracy</th><th>Time</th></tr>' +
+    '<tr><td><b>Test</b></td><td>' + st.score.toFixed(2) + ' / ' + marks + '</td><td>' + st.attempted + ' / ' + n + '</td><td>' + st.accuracy.toFixed(2) + '%</td><td>' + fmtMMSS(state.timeTaken) + ' / ' + fmtMins(t.secs) + ' min</td></tr>';
+  if (best){
+    var ba = (best.correct || 0) + (best.wrong || 0);
+    secRows += '<tr><td><b>Your best attempt</b></td><td>' + Number(best.score || 0).toFixed(2) + ' / ' + marks + '</td><td>' + ba + ' / ' + n + '</td><td>' + Number(best.accuracy || 0).toFixed(2) + '%</td><td>' + fmtMMSS(best.timeTaken || 0) + '</td></tr>';
+  }
+  $('anaSectional').innerHTML = secRows;
+  anaRenderWeak();
+  /* v94: expose the per-test marks distribution for the Rank Predictor
+     worker — plain array of all takers' scores on this test (incl. you),
+     ascending. No predictor UI in this patch. */
+  try { window.__anaDist = rows.map(function(r){ return r.score; }).sort(function(a, b){ return a - b; }); } catch(e){}
+  $('anaRankers').innerHTML = anaRankersHTML(rows, me);
+  var note = '';
+  if (d.live) note = 'Live ranks from ' + total + ' player' + (total === 1 ? '' : 's') + ' on this test \u00b7 same leaderboard data as the Leaderboard tab.';
+  else if (d.fromCache) note = 'Ranks from cached leaderboard data (' + total + ' players) \u2014 tap \u21bb Refresh for the latest.';
+  else note = 'Only your attempt is available right now \u2014 log in / refresh to compare with others.';
+  $('anaDataNote').textContent = note;
+  try { mobFillSummary(); } catch(e){}
+}
+function anaFetchFresh(){
+  try {
+    if (!window.__lb || typeof window.__lb.refresh !== 'function') return;
+    var now = Date.now();
+    if (now - _anaLastFetch < 20000) return;
+    _anaLastFetch = now;
+    var p = window.__lb.refresh();
+    if (p && typeof p.then === 'function') p.then(function(){ try { if (state.view === 'analysis') anaRender(); } catch(e){} });
+  } catch(e){}
+}
+function anaOpen(){
+  if (!state.test || !state.lastResult) return;
+  _anaWTab = 'weak';
+  try { mobSetTab('summary'); } catch(e){}
+  anaRender();
+  showView('analysis');
+  anaFetchFresh();
+}
+$('btnViewAnalysis').addEventListener('click', anaOpen);
+$('resGoAnalysisTop').addEventListener('click', anaOpen);
+$('anaBackBtn').addEventListener('click', function(){ appBack('result'); });
+$('anaGoSolTop').addEventListener('click', function(){ openSolutions(0); });
+$('anaGoTests').addEventListener('click', function(){ backToCAMonth(); renderHome(); showView('list'); });
+$('anaAttemptBtn').addEventListener('click', function(){ openAttemptPicker(); });
+$('anaRefreshBtn').addEventListener('click', function(){ _anaLastFetch = 0; anaFetchFresh(); });
+$('anaWeak').addEventListener('click', function(e){ var b = e.target.closest('[data-ana-wtab]'); if (!b) return; _anaWTab = b.getAttribute('data-ana-wtab'); anaRenderWeak(); });
+
+/* ================= v94 RANK PREDICTOR (Worker E) =================
+   Testbook-style slider: move the score, see the predicted rank live.
+   Rank at score S = 1 + (takers scoring above S), from REAL data only:
+   window.__anaDist when present ([{marks, count}] pairs or a plain
+   score array), else the per-test scores from the leaderboard aggregates
+   already in the app (window.LB.list, live Firebase docs; fallback the
+   tp_lb_cache_v1 localStorage copy), with the viewed attempt merged in
+   as "You" (own uid excluded first — never double-counted). Only your
+   attempt so far -> rank 1/1 with a plain note, never a fake number.
+   Read-only: touches no coins, no leaderboard writes, no banks. */
+var _rnkDist = null; /* {kind:'scores'|'buckets', scores:[], pairs:[], total, source} */
+function rnkCollectScores(t){
+  var dist = null;
+  /* (a) Worker B distribution, if exposed. */
+  try {
+    var ad = (typeof window !== 'undefined') ? window.__anaDist : null;
+    if (Array.isArray(ad) && ad.length){
+      if (typeof ad[0] === 'number'){
+        dist = {kind: 'scores', scores: ad.map(function(x){ return +x || 0; }), total: ad.length, source: 'anaDist'};
+      } else if (ad[0] && ad[0].marks != null && ad[0].count != null){
+        var pairs = ad.map(function(p){ return {marks: +p.marks || 0, count: +p.count || 0}; });
+        var tot = 0;
+        pairs.forEach(function(p){ tot += p.count; });
+        dist = {kind: 'buckets', pairs: pairs, total: tot, source: 'anaDist'};
+      }
+    }
+  } catch(e){}
+  if (dist) return dist;
+  /* (b) Leaderboard aggregates already in the app (same source Worker B
+     reads): live LB.list, else the cached copy. */
+  var entries = null, fromCache = false;
+  try { var lb = (typeof window !== 'undefined') ? window.LB : null; if (lb && lb.list && lb.list.length) entries = lb.list; } catch(e){}
+  if (!entries){
+    try {
+      var c = JSON.parse(localStorage.getItem('tp_lb_cache_v1') || 'null');
+      if (c && c.list && c.list.length){ entries = c.list; fromCache = true; }
+    } catch(e){}
+  }
+  var scores = [];
+  var meUid = '';
+  try { meUid = (window.myUid && window.myUid()) || ''; } catch(e){}
+  if (entries){
+    entries.forEach(function(e){
+      if (!e || !e.t) return;
+      var r = e.t[t.id];
+      if (!r) return;
+      if (String(e.uid) === String(meUid)) return; /* me added below */
+      scores.push(+r[0] || 0);
+    });
+  }
+  /* Viewed attempt always merged in as "You". */
+  var st = state.lastResult || {score: 0};
+  scores.push(+st.score || 0);
+  return {kind: 'scores', scores: scores, total: scores.length,
+          source: entries ? (fromCache ? 'cache' : 'live') : 'you-only'};
+}
+function rnkRankAt(s, dist){
+  var above = 0, i;
+  if (!dist) return 1;
+  if (dist.kind === 'buckets'){
+    for (i = 0; i < dist.pairs.length; i++) if (dist.pairs[i].marks > s) above += dist.pairs[i].count;
+  } else {
+    for (i = 0; i < dist.scores.length; i++) if (dist.scores[i] > s) above++;
+  }
+  return above + 1;
+}
+function rnkUpdate(){
+  var box = $('rankPredictor');
+  var r = $('rnkRange');
+  if (!box || !r || !_rnkDist) return;
+  var s = parseFloat(r.value);
+  var min = parseFloat(r.min), max = parseFloat(r.max);
+  var rank = rnkRankAt(s, _rnkDist);
+  var rk = $('rnkRank');
+  if (rk) rk.textContent = '#' + rank;
+  var sc = $('rnkScore');
+  if (sc) sc.textContent = s.toFixed(2) + ' / ' + max;
+  var bub = $('rnkBubble');
+  if (bub){
+    bub.textContent = 'Rank ' + rank;
+    var pct = max > min ? (s - min) / (max - min) * 100 : 50;
+    if (pct < 5) pct = 5;
+    if (pct > 95) pct = 95;
+    bub.style.left = pct + '%';
+  }
+}
+function renderRankPredictor(){
+  var box = $('rankPredictor');
+  if (!box) return;
+  var t = state.test, st = state.lastResult;
+  if (!t || !st){ box.innerHTML = ''; return; }
+  var n = t.questions.length, marks = t.marks || n;
+  var dist = rnkCollectScores(t);
+  _rnkDist = dist;
+  var total = dist.total || 1;
+  var minScore = 0;
+  if (dist.kind === 'buckets') dist.pairs.forEach(function(p){ if (p.marks < minScore) minScore = Math.floor(p.marks); });
+  else dist.scores.forEach(function(s){ if (s < minScore) minScore = Math.floor(s); });
+  var myScore = +st.score || 0;
+  if (myScore < minScore) myScore = minScore;
+  if (myScore > marks) myScore = marks;
+  var note = '';
+  if (dist.source === 'live') note = 'Predicted from the ' + total + ' real score' + (total === 1 ? '' : 's') + ' on this test (live leaderboard data). More takers = sharper prediction.';
+  else if (dist.source === 'cache') note = 'Predicted from the ' + total + ' real score' + (total === 1 ? '' : 's') + ' on this test (cached leaderboard data).';
+  else if (dist.source === 'anaDist') note = 'Predicted from the real marks distribution for this test (' + total + ' takers).';
+  else note = 'Only your attempt is available right now — rank will sharpen once other students attempt this test.';
+  box.innerHTML =
+    '<div class="rnk-rank">Predicted Rank <b id="rnkRank">\u2014</b> <span>of ' + total + ' taker' + (total === 1 ? '' : 's') + '</span></div>' +
+    '<div class="rnk-bubble-row"><span class="rnk-bubble" id="rnkBubble">Rank \u2014</span></div>' +
+    '<input type="range" id="rnkRange" min="' + minScore + '" max="' + marks + '" step="0.25" value="' + myScore + '" aria-label="Score for rank prediction">' +
+    '<div class="rnk-scale"><span>' + minScore + '</span><span id="rnkScore">' + myScore.toFixed(2) + ' / ' + marks + '</span><span>' + marks + '</span></div>' +
+    '<p class="rnk-you">You scored <b>' + (+st.score || 0).toFixed(2) + '</b> on this test — drag the slider to see your rank at any score.</p>' +
+    '<p class="rnk-note">' + note + '</p>';
+  var r = $('rnkRange');
+  if (r){ r.addEventListener('input', rnkUpdate); rnkUpdate(); }
+}
+
+/* ================= v94 MOBILE ANALYSIS (Worker C) =================
+   Mobile-only: tab bar switching (Analysis | Leaderboard, Solution is a
+   button, not a tab), QUICK SUMMARY Correct/Incorrect/Unattempted strip
+   and the mobile-only COMPARE card. All numbers come from the same data
+   Worker B's anaRender uses (state.lastResult + the leaderboard
+   aggregates); nothing is hardcoded. PC layout untouched. */
+function mobSetTab(tab){
+  var v = $('view-analysis');
+  if (!v) return;
+  v.classList.toggle('mob-tab-lb', tab === 'lb');
+  var btns = document.querySelectorAll('#mobTabs [data-mob-tab]');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i].getAttribute('data-mob-tab') === tab);
+  try { window.scrollTo(0, 0); } catch(e){}
+}
+function mobCompareHTML(t, st){
+  /* You / Topper / Average from the leaderboard aggregates (same source
+     Worker B reads): window.LB.list, else tp_lb_cache_v1; per-test `t`
+     map is [score, correct, wrong, marks, timeTaken]. Viewed attempt
+     merged in as "You" (own uid excluded first, never double-counted). */
+  var entries = null, meUid = '';
+  try { if (window.LB && LB.list && LB.list.length) entries = LB.list; } catch(e){}
+  if (!entries){
+    try {
+      var c = JSON.parse(localStorage.getItem('tp_lb_cache_v1') || 'null');
+      if (c && c.list && c.list.length) entries = c.list;
+    } catch(e){}
+  }
+  try { meUid = (window.myUid && window.myUid()) || ''; } catch(e){}
+  var others = [];
+  if (entries){
+    entries.forEach(function(e){
+      if (!e || !e.t) return;
+      var r = e.t[t.id];
+      if (!r) return;
+      if (String(e.uid) === String(meUid)) return;
+      others.push({name: e.name || 'Student', score: +r[0] || 0, correct: +r[1] || 0, wrong: +r[2] || 0, time: +r[4] || 0});
+    });
+  }
+  var you = {name: 'You', score: +st.score || 0, correct: +st.correct || 0, wrong: +st.wrong || 0, time: state.timeTaken || 0};
+  var all = others.concat([you]);
+  var topper = null;
+  all.forEach(function(r){ if (!topper || r.score > topper.score || (r.score === topper.score && r.time < topper.time)) topper = r; });
+  var sumS = 0, sumC = 0, sumW = 0, sumT = 0;
+  all.forEach(function(r){ sumS += r.score; sumC += r.correct; sumW += r.wrong; sumT += r.time; });
+  var n = all.length;
+  var avg = {score: n ? sumS / n : 0, correct: n ? sumC / n : 0, wrong: n ? sumW / n : 0, time: n ? sumT / n : 0};
+  function accOf(r){ var a = r.correct + r.wrong; return a ? (r.correct / a * 100) : 0; }
+  function tstr(s){ try { return fmtMMSS(Math.round(s) || 0); } catch(e){ return '\u2014'; } }
+  function row(who, r, isAvg){
+    var sc = isAvg ? r.score.toFixed(2) : r.score.toFixed(2);
+    var cc = isAvg ? r.correct.toFixed(1) : String(r.correct);
+    var ww = isAvg ? r.wrong.toFixed(1) : String(r.wrong);
+    return '<div class="mob-cmp-row"><b>' + who + '</b><span>' + sc + '</span><span>' + accOf(r).toFixed(1) + '%</span><span>' + cc + '</span><span>' + ww + '</span><span>' + tstr(r.time) + '</span></div>';
+  }
+  var h = '<div class="mob-cmp">' +
+    '<div class="mob-cmp-row mob-cmp-head"><span></span><span>Score</span><span>Accuracy</span><span>Correct</span><span>Wrong</span><span>Time</span></div>' +
+    row('You', you, false);
+  if (others.length){
+    h += row('Topper', topper, false) + row('Average', avg, true);
+    h += '</div><p class="ana-note">Topper: ' + esc(topper.name) + ' \u00b7 ' + n + ' taker' + (n === 1 ? '' : 's') + ' on this test.</p>';
+  } else {
+    h += row('Average', avg, true);
+    h += '</div><p class="ana-note">Only your attempt so far \u2014 the topper row appears once others attempt this test.</p>';
+  }
+  return h;
+}
+function mobFillSummary(){
+  var st = state.lastResult, t = state.test;
+  if (!st || !t) return;
+  var b = $('mobQsBreak');
+  if (b){
+    var n = t.questions.length;
+    var c = +st.correct || 0, w = +st.wrong || 0;
+    var s = (st.skipped != null) ? +st.skipped : (n - (+st.attempted || 0));
+    b.innerHTML = '<span class="mob-qs-chip"><i style="background:#16a34a"></i>Correct&nbsp;<b>' + c + '</b></span>' +
+      '<span class="mob-qs-chip"><i style="background:#dc2626"></i>Incorrect&nbsp;<b>' + w + '</b></span>' +
+      '<span class="mob-qs-chip"><i style="background:#94a3b8"></i>Unattempted&nbsp;<b>' + s + '</b></span>';
+  }
+  var cmp = $('mobCompare');
+  if (cmp) cmp.innerHTML = mobCompareHTML(t, st);
+}
+try {
+  var _mobSol = $('mobSolBtn');
+  if (_mobSol) _mobSol.addEventListener('click', function(){ openSolutions(0); });
+  var _mobTabs = $('mobTabs');
+  if (_mobTabs) _mobTabs.addEventListener('click', function(e){ var b = e.target.closest('[data-mob-tab]'); if (b) mobSetTab(b.getAttribute('data-mob-tab')); });
+} catch(e){}
+
 function solStatus(i){
   var st = state.qStates[i], q = state.test.questions[i];
   if (st.selected == null) return 'skipped';
@@ -6178,6 +7122,7 @@ function updateReattemptUI(){
 }
 function updateAttemptButtons(){
   var label = 'Attempt ' + (state.attemptNo != null ? state.attemptNo : 1) + ' ▾';
+  var _fab = $('solFirstAttemptBadge'); if (_fab) _fab.classList.toggle('hidden', !((state.attemptNo == null) || state.attemptNo === 1));
   var a = $('resAttemptBtn'), b = $('solAttemptBtn');
   if (a) a.textContent = label;
   if (b) b.textContent = label;
@@ -6199,6 +7144,7 @@ function openAttemptPicker(){
       closeModal('modalAttempts');
       if (!loadAttempt(t, no)) return;
       if (state.view === 'solutions') openSolutions(state.solIdx);
+      else if (state.view === 'analysis') anaRender();
       else renderResult(state.lastResult, state.prevBest);
     });
   });
@@ -6405,6 +7351,7 @@ function renderSolution(keepOpen){
     $('solPalSec').textContent = 'Saved Questions';
     $('solAttemptBtn').classList.add('hidden');
     $('solSummaryBtn').classList.add('hidden');
+    $('solFirstAttemptBadge').classList.add('hidden');
     $('solSummaryBtn2').classList.add('hidden');
     $('solQpBtn').classList.add('hidden');
     $('reattemptControl').classList.add('hidden');
@@ -6414,6 +7361,7 @@ function renderSolution(keepOpen){
   } else {
     $('solAttemptBtn').classList.remove('hidden');
     $('solSummaryBtn').classList.remove('hidden');
+    $('solFirstAttemptBadge').classList.toggle('hidden', !((state.attemptNo == null) || state.attemptNo === 1));
     $('solSummaryBtn2').classList.remove('hidden');
     $('solQpBtn').classList.remove('hidden');
     $('reattemptControl').classList.remove('hidden');
@@ -6772,7 +7720,8 @@ $('solQpBtn').addEventListener('click', function(){
     });
   });
 });
-function openSummary(){
+function openSummary(title){
+  var _sumH = document.querySelector('#modalSummary .m-head h3'); if (_sumH) _sumH.textContent = title || 'Test Summary';
   var stats = computeStats();
   var t = state.test, n = t.questions.length;
   $('summaryBody').innerHTML =
@@ -6785,7 +7734,7 @@ function openSummary(){
     '<p>Accuracy: <b>' + stats.accuracy.toFixed(2) + '%</b> • Time taken: <b>' + fmtMMSS(state.timeTaken) + '</b></p>';
   openModal('modalSummary');
 }
-$('solSummaryBtn').addEventListener('click', openSummary);
+$('solSummaryBtn').addEventListener('click', function(){ openSummary('Analytics'); });
 $('solSummaryBtn2').addEventListener('click', openSummary);
 
 /* ---- solutions palette drawer toggle on small screens ---- */
@@ -6797,7 +7746,7 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   btn.setAttribute('aria-label', 'Question palette');
   btn.style.display = 'none';
   btn.addEventListener('click', openSolPaletteDrawer);
-  var sub = document.querySelector('.sol-sub');
+  var sub = document.querySelector('.sol-pane-top');
   if (sub) sub.appendChild(btn);
   function sync(){
     var mobile = window.innerWidth < 900;
@@ -6805,6 +7754,17 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   }
   window.addEventListener('resize', sync);
   setInterval(sync, 500);
+})();
+/* v94-A: black palette slide button (PC) — collapses/expands the solution palette. */
+(function(){
+  var btn = $('solPalSlideBtn'); if (!btn) return;
+  btn.addEventListener('click', function(){
+    var v = document.getElementById('view-solutions'); if (!v) return;
+    var collapsed = v.classList.toggle('sol-pal-collapsed');
+    btn.textContent = collapsed ? '\u2039' : '\u203a';
+    btn.setAttribute('aria-label', collapsed ? 'Show question palette' : 'Hide question palette');
+    btn.title = collapsed ? 'Show palette' : 'Hide palette';
+  });
 })();
 
 /* ================= INIT ================= */
@@ -8515,14 +9475,14 @@ function renderOverall(){
   if (!arr.length) return h + '<div class="lb-empty"><b>The leaderboard is empty</b><p>Be the first to attempt a test and put your name here.</p></div>';
   h += podium(arr.slice(0, 3));
   h += catToppersSectionHTML(arr);
-  var rest = arr.slice(3, 100);
+  var rest = arr.slice(3, 5); /* v94: top-5 only (podium shows 1-3) */
   if (rest.length){
     h += '<div class="lb-list">';
     rest.forEach(function(e, i){ h += rowHTML(e, i + 4, i); });
     h += '</div>';
   }
   var mi = -1; arr.forEach(function(e, i){ if (isMe(e)) mi = i; });
-  if (mi >= 100) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, 0) + '</div>';
+  if (mi >= 5) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, 0) + '</div>'; /* v94: pin own row when outside top 5 */
   return h;
 }
 function seriesCatsHTML(key){
@@ -8568,6 +9528,7 @@ function renderSeriesDetail(key){
   } else {
     h += '<div class="lb-dtbl-wrap"><table class="lb-dtbl"><thead><tr><th>#</th><th>Player</th><th>Avg score</th><th>Avg accuracy</th><th>Avg time</th></tr></thead><tbody>';
     rows.forEach(function(x, i){
+      if (i >= 5 && !isMe(x.e)) return; /* v94: top-5 + own row only */
       var e = x.e, st = x.s;
       h += '<tr class="' + (isMe(e) ? 'me' : '') + '"><td>' + (i + 1) + '</td><td><span class="lb-dt-pl">' + avImg(e, 32) + '<b>' + esc(e.name) + '</b>' + (isMe(e) ? ' <i>You</i>' : '') + '</span></td><td>' + r1(st.avgScore).toFixed(1) + '%</td><td>' + r1(st.avgAcc).toFixed(1) + '%</td><td>' + r1(st.avgSecs).toFixed(1) + 's</td></tr>';
     });
