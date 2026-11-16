@@ -9369,11 +9369,37 @@ function testCoins(rec, testId){
   }
   return (typeof c === 'number' && isFinite(c)) ? Math.max(0, Math.round(c * 10) / 10) : 0; /* v68-B: 1-decimal fractional per-test coins — ranking/sums use this; display rounds at render */
 }
+/* v94-LBFIX: per-entry memo for the DERIVED coin total. The old code ran
+   the full t-map derivation inside entryCoins() on every call, and
+   sortedByCoins() called it inside the sort comparator (~2.5k comparisons
+   per sort, 2 sorts per render, plus a re-render on every realtime
+   snapshot) — with ~300 entries lacking a published coins field that is
+   seconds of blocked main thread per render: the leaderboard tab froze
+   ("This page isn't responding") and no tab would respond. The memo is
+   keyed by the entry object (WeakMap) and validated by a cheap numeric
+   fingerprint of the t-map, so a mutated/replaced entry never serves a
+   stale total; entries are rebuilt by cleanEntry/myEntry on every fetch
+   anyway. Values returned are identical to the uncached derivation. */
+var _entryCoinsMemo = (typeof WeakMap === 'function') ? new WeakMap() : null;
+function _entryCoinsFp(e){
+  var t = e && e.t, fp = 0, n = 0;
+  if (t){ for (var k in t){ if (Object.prototype.hasOwnProperty.call(t, k)){ var r = t[k] || []; fp += (+r[0] || 0) * 1 + (+r[1] || 0) * 3 + (+r[2] || 0) * 7 + (+r[3] || 0) * 13 + (+r[4] || 0) * 17 + (+r[5] || 0) * 19; n++; } } }
+  return n + ':' + fp;
+}
 function entryCoins(e){
   if (e && typeof e.coins === 'number' && isFinite(e.coins)) return Math.max(0, Math.round(e.coins * 10) / 10); /* v68-B: 1-decimal fractional total — ranking uses this; display rounds at render */
+  if (!e || !e.t) return 0;
+  var fp = null;
+  if (_entryCoinsMemo){
+    fp = _entryCoinsFp(e);
+    var hit = _entryCoinsMemo.get(e);
+    if (hit && hit.fp === fp) return hit.v;
+  }
   var sum = 0, ok = false;
-  if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var c = testCoins(e.t[tid], tid); if (c){ sum += c; ok = true; } }); }
-  return ok ? sum : 0;
+  Object.keys(e.t).forEach(function(tid){ var c = testCoins(e.t[tid], tid); if (c){ sum += c; ok = true; } });
+  var v = ok ? sum : 0;
+  if (_entryCoinsMemo) _entryCoinsMemo.set(e, {fp: fp, v: v});
+  return v;
 }
 function entryAcc(e){
   if (e && typeof e.acc === 'number' && isFinite(e.acc)) return r1(e.acc);
@@ -9391,7 +9417,16 @@ function entryAttempted(e){
   if (e && e.t){ Object.keys(e.t).forEach(function(tid){ var r = e.t[tid]; n += (+r[1] || 0) + (+r[2] || 0); }); }
   return n;
 }
-function sortedByCoins(list){ return list.slice().sort(function(a, b){ return (entryCoins(b) - entryCoins(a)) || (b.q - a.q); }); }
+/* v94-LBFIX: decorate-sort-undecorate — each entry's coin total is
+   computed ONCE per sort (and memoised in entryCoins), never inside the
+   comparator. The old comparator re-derived totals on every comparison,
+   which was the leaderboard freeze. Ordering is unchanged: coins desc,
+   then q desc. */
+function sortedByCoins(list){
+  var d = list.map(function(e){ return {e: e, c: entryCoins(e)}; });
+  d.sort(function(a, b){ return (b.c - a.c) || (b.e.q - a.e.q); });
+  return d.map(function(x){ return x.e; });
+}
 /* v63-A: category toppers — helpers (Worker A). entryAvgSecs / seriesStats
    derive from the per-test t-map records [score, correct, wrong, marks,
    timeTaken]; values are kept raw here and rounded only at display. */
