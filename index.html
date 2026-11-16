@@ -4095,7 +4095,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 91; /* must match version.txt - bump on every release */
+var APP_VERSION = 92; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -6111,6 +6111,46 @@ function qStatsOnReviewOpen(t){
   } catch(e){}
 }
 
+/* v92: preload ALL solution images of a test when the solution view opens.
+   Previously an image fetched only when its own question rendered, so a
+   quick question change could leave it unloaded (or load-failed). Now, as
+   soon as the 1st question's solution opens, every image URL in the whole
+   test starts loading, so each is already cached when its question is
+   reached. data: URIs are already embedded in the file and need no fetch,
+   so they are skipped. Preload Image objects are separate from the
+   displayed <img> elements — the v79 failed-image hiding and the lightbox
+   are untouched. */
+var _preloadedTestImgs = [];
+function preloadTestImages(t){
+  try {
+    if (!t || !t.questions || !t.questions.length) return;
+    var seen = {}, urls = [], i, q, m, sm;
+    /* Every <img class="sol-img" src="..."> in every question's solution. */
+    var re = /<img\b[^>]*>/g;
+    for (i = 0; i < t.questions.length; i++){
+      q = t.questions[i];
+      if (!q || !q.sol) continue;
+      re.lastIndex = 0;
+      while ((m = re.exec(q.sol)) !== null){
+        if (m[0].indexOf('sol-img') === -1) continue;
+        sm = m[0].match(/src="([^"]+)"/) || m[0].match(/src='([^']+)'/);
+        if (!sm || !sm[1]) continue;
+        /* data: URIs are embedded — no fetch needed, skip them. */
+        if (sm[1].indexOf('data:') === 0) continue;
+        if (!seen[sm[1]]){ seen[sm[1]] = true; urls.push(sm[1]); }
+      }
+    }
+    /* Drop the previous test's preloads (lets the browser release them)
+       and start fetching this test's images. */
+    _preloadedTestImgs = [];
+    for (i = 0; i < urls.length; i++){
+      var im = new Image();
+      im.src = urls[i];
+      _preloadedTestImgs.push(im);
+    }
+  } catch (e) {}
+}
+
 function openSolutions(idx){
   state.savedQuizMode = false;
   state.qStates.forEach(function(st){ st.reattempt = null; });
@@ -6128,6 +6168,7 @@ function openSolutions(idx){
   updateAttemptButtons();
   showView('solutions');
   renderSolution();
+  preloadTestImages(t);
   qStatsOnReviewOpen(t);
 }
 function updateReattemptUI(){
