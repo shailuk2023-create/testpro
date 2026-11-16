@@ -921,6 +921,30 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .saved-item .sq-foot{display:flex;justify-content:space-between;align-items:center}
 .saved-item .sq-tap{font-size:12.5px;color:var(--muted)}
 .unsave-btn{background:none;border:none;color:#dc2626;font-size:18px;padding:4px 8px}
+/* sh-saved: Saved Questions polish, ported from Claude NEW2 (saved rules only) */
+/* saved / attempted header */
+.saved-head{position:relative;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#0e7490,#6366f1 60%,#a855f7);color:#fff;box-shadow:0 10px 24px -12px rgba(99,102,241,.6);margin-bottom:18px}
+.saved-head h1{color:#fff;font-size:20px;display:flex;align-items:center;gap:8px;min-width:0}
+.saved-head h1 svg{width:22px;height:22px;fill:rgba(255,255,255,.25);stroke:#fff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;flex-shrink:0}
+.saved-head .sh-back{width:36px;height:36px;padding:0;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:18px;flex-shrink:0}
+.saved-head .sh-count{background:rgba(255,255,255,.22);color:#fff!important;border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:800;white-space:nowrap}
+/* saved question cards */
+.saved-item{border-radius:14px;padding:14px 16px 12px;border-left:4px solid #0e7490;transition:transform .15s,box-shadow .15s}
+.saved-item.sv-ca{border-left-color:#f59e0b}.saved-item.sv-ga{border-left-color:#8b5cf6}
+.saved-item:active{transform:scale(.99)}
+.saved-item .sq-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.saved-item .sq-ch{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved-item .sq-qn{flex-shrink:0;font-size:11.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#0e7490,#6366f1);border-radius:999px;padding:2px 9px}
+.saved-item .sq-q{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;overflow-wrap:anywhere;margin:8px 0 6px}
+.saved-item .sq-test{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);min-width:0}
+.saved-item .sq-test svg{width:12px;height:12px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.saved-item .sq-test span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved-item .sq-foot{margin-top:4px}
+@media (max-width:900px){
+  .saved-head{padding:12px}
+  .saved-head h1{font-size:17px}
+  .saved-series-row{flex-direction:column}
+}
 /* ---- Current Affairs series (v26) ---- */
 .sc-ico.ca-ico{background:linear-gradient(135deg,#f59e0b,#d97706)}
 .saved-series-row{display:flex;gap:10px;margin-bottom:14px}
@@ -2708,6 +2732,66 @@ html.skel-on #skel-lb:not(.skel-hide)~[data-skel-pair="skel-lb"]{display:none!im
 }
 </style>
 </style>
+<style id="sh-headers">
+/* Worker B: header/navigation -- Claude NEW2 (v95) replication + own audit fixes.
+   See patch_sh_headers.py header comment for the scope decisions. */
+/* claude: analysis result-topbar gradient + shadow */
+#view-analysis .result-topbar{background:linear-gradient(90deg,var(--surface),rgba(99,102,241,.08));box-shadow:0 2px 10px -6px rgba(15,23,42,.35)}
+/* claude: analysis result-topbar links no-shrink */
+#view-analysis .result-topbar .links{flex-shrink:0}
+/* claude: analysis result test name bold/strong */
+#view-analysis .rt-name{font-weight:700;color:var(--text-strong);max-width:100%}
+/* claude: analysis section titles flex */
+#view-analysis .res-sec-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:16px;font-weight:800}
+/* claude: analysis section titles gradient bar */
+#view-analysis .res-sec-title:before{content:"";width:5px;height:18px;border-radius:4px;background:linear-gradient(180deg,#6366f1,#ec4899);flex-shrink:0}
+/* claude: analysis title gradient text */
+.ana-h{font-weight:800;background:linear-gradient(90deg,#0e7490,#7c3aed);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* claude: analysis title refresh button keeps readable fill */
+.ana-h .ana-refresh{-webkit-text-fill-color:var(--text)}
+/* claude: weak/active tab red */
+.ana-wtabs button.on[data-ana-wtab=weak]{background:#e11d48;color:#fff}
+/* claude: average/active tab amber */
+.ana-wtabs button.on[data-ana-wtab=average]{background:#f59e0b;color:#fff}
+/* claude: strong/active tab green */
+.ana-wtabs button.on[data-ana-wtab=strong]{background:#16a34a;color:#fff}
+/* audit: result result-topbar same gradient + shadow as analysis */
+#view-result .result-topbar{background:linear-gradient(90deg,var(--surface),rgba(99,102,241,.08));box-shadow:0 2px 10px -6px rgba(15,23,42,.35)}
+/* audit: result section title flex */
+#view-result .res-sec-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:16px;font-weight:800}
+/* audit: result section title gradient bar */
+#view-result .res-sec-title:before{content:"";width:5px;height:18px;border-radius:4px;background:linear-gradient(180deg,#6366f1,#ec4899);flex-shrink:0}
+/* audit: app top bar light teal/violet wash (was flat white) */
+.list-topbar{background:linear-gradient(90deg,var(--surface),rgba(0,150,181,.07) 55%,rgba(124,58,237,.08))}
+/* audit: home/series section heads flex for gradient bar */
+.sec-head h2,.sp-head h2{display:flex;align-items:center;gap:8px}
+/* audit: home/series section heads gradient bar (same device as res-sec-title) */
+.sec-head h2:before,.sp-head h2:before{content:"";width:5px;height:18px;border-radius:4px;background:linear-gradient(180deg,#6366f1,#ec4899);flex-shrink:0}
+/* audit: bottom-nav active gets soft teal pill (was text colour only) */
+.bottom-nav button.active{background:rgba(0,150,181,.10)}
+/* audit: sidebar 'Test Series' divider brighter + tracked (was dim #6f7f93) */
+.sidebar nav .nav-sec{color:#93a5bb;letter-spacing:.09em}
+/* audit: mobile drawer active state (dormant: no JS marks the active drawer item today) */
+.side-menu a.active{background:rgba(0,150,181,.12);color:var(--teal)}
+/* audit: settings title gradient text, echoing ana-h */
+.set-topbar .set-title{background:linear-gradient(90deg,#0e7490,#7c3aed);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* audit: instructions header light teal wash (was flat) */
+.inst-header{background:linear-gradient(90deg,var(--surface),rgba(0,150,181,.06))}
+@media (max-width:900px){
+  /* claude: mobile mob-ana-tabs shadow */
+  .mob-ana-tabs{top:52px;box-shadow:0 2px 8px -6px rgba(0,0,0,.3)}
+  /* claude: mobile mob-ana-tabs tab weight */
+  .mob-ana-tabs [data-mob-tab]{font-weight:800}
+  /* claude: mobile analysis topbar padding/gap */
+  #view-analysis .result-topbar{padding:0 10px;gap:8px}
+  /* claude: mobile analysis topbar left flex */
+  #view-analysis .rt-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+  /* claude: mobile analysis test name size/flex */
+  #view-analysis .rt-name{font-size:14px;flex:1}
+  /* claude: mobile analysis attempt button compact */
+  #view-analysis .links .attempt-btn{padding:6px 10px;font-size:12px;white-space:nowrap}
+}
+</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
@@ -3294,9 +3378,9 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <div id="view-saved" class="view">
   <div class="saved-wrap">
     <div class="saved-head">
-      <button class="btn btn-light" id="savedBackBtn">← Back</button>
-      <h1>Saved Questions</h1>
-      <span id="savedCountLbl" style="margin-left:auto;font-weight:700;color:var(--muted)"></span>
+      <button class="btn btn-light sh-back" id="savedBackBtn">←</button>
+      <h1><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a1 1 0 0 1 1 1v17l-6-4-6 4V4a1 1 0 0 1 1-1z"/></svg>Saved Questions</h1>
+      <span id="savedCountLbl" class="sh-count" style="margin-left:auto"></span>
     </div>
     <div id="savedListWrap">
       <div class="saved-series-row" id="savedSeriesRow">
@@ -3343,9 +3427,9 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <div id="view-attempted" class="view">
   <div class="att-wrap">
     <div class="saved-head">
-      <button class="btn btn-light" id="attBackBtn" type="button">← Back</button>
-      <h1>Attempted Tests</h1>
-      <span id="attCountLbl" style="margin-left:auto;font-weight:700;color:var(--muted)"></span>
+      <button class="btn btn-light sh-back" id="attBackBtn" type="button">←</button>
+      <h1><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 13l2 2 4-4"/></svg>Attempted Tests</h1>
+      <span id="attCountLbl" class="sh-count" style="margin-left:auto"></span>
     </div>
     <div id="attList"></div>
   </div>
@@ -4448,7 +4532,7 @@ function renderSavedListGA(){
   var html = '';
   items.forEach(function(it, idx){
     var txt = (state.lang === 'hi' ? it.q.q_hi : it.q.q_en) || it.q.q_en || it.q.q_hi || '';
-    html += '<div class="saved-item" data-sq="' + idx + '"><div class="sq-ch">' + esc(it.chapter.name_en) + ' \u2022 Q' + it.q.n + '</div><div class="sq-q">' + esc(txt) + '</div><div class="sq-foot"><span class="sq-tap">Tap to attempt \u2192</span><button class="unsave-btn" data-unsave-ga="' + it.chapter.chapter + ':' + it.q.n + '" title="Remove">\u2715</button></div></div>';
+    html += savedItemHTML(it, idx, txt, 'data-unsave-ga', 'ga');
   });
   $('savedList').innerHTML = html;
   document.querySelectorAll('#savedList .saved-item').forEach(function(el){
@@ -4528,7 +4612,7 @@ function renderSavedListCA(){
   var html = '';
   items.forEach(function(it, idx){
     var txt = (state.lang === 'hi' ? it.q.q_hi : it.q.q_en) || it.q.q_en || it.q.q_hi || '';
-    html += '<div class="saved-item" data-sq="' + idx + '"><div class="sq-ch">' + esc(it.chapter.name_en) + ' • Q' + it.q.n + '</div><div class="sq-q">' + esc(txt) + '</div><div class="sq-foot"><span class="sq-tap">Tap to attempt →</span><button class="unsave-btn" data-unsave-ca="' + it.chapter.chapter + ':' + it.q.n + '" title="Remove">✕</button></div></div>';
+    html += savedItemHTML(it, idx, txt, 'data-unsave-ca', 'ca');
   });
   $('savedList').innerHTML = html;
   document.querySelectorAll('#savedList .saved-item').forEach(function(el){
@@ -8714,6 +8798,27 @@ function openSaved(){
   renderSavedList();
   showView('saved');
 }
+
+/* v95: saved-question card — 2-line question clamp + small test detail */
+function savedTestInfo(it, series){
+  try{
+    var arr = series==='ca' ? CA_TESTS : (series==='ga' ? GA_TESTS : TESTS), q = it.q, ch = it.chapter.chapter, found = null;
+    for (var i=0;i<arr.length && !found;i++){
+      var t = arr[i];
+      if (t.chapter !== ch && !(series==='ca' && ('ca-'+t.month)===ch)) continue;
+      if ((t.questions||[]).indexOf(q) !== -1) found = t;
+    }
+    if (!found) for (var j=0;j<arr.length && !found;j++){ var t2=arr[j]; if ((t2.chapter===ch || (series==='ca' && ('ca-'+t2.month)===ch)) && (t2.questions||[]).some(function(x){return x.n===q.n;})) found=t2; }
+    var sl = series==='ca' ? 'Current Affairs' : (series==='ga' ? 'General Awareness' : 'Maths');
+    return sl + ' \u00b7 ' + (found ? testTitlePart(found) : it.chapter.name_en);
+  }catch(e){ return it.chapter.name_en; }
+}
+function savedItemHTML(it, idx, txt, attr, series){
+  return '<div class="saved-item sv-'+series+'" data-sq="'+idx+'"><div class="sq-top"><span class="sq-ch">'+esc(it.chapter.name_en)+'</span><span class="sq-qn">Q'+it.q.n+'</span></div>'+
+    '<div class="sq-q">'+esc(txt)+'</div>'+
+    '<div class="sq-test"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5"/></svg><span>'+esc(savedTestInfo(it, series))+'</span></div>'+
+    '<div class="sq-foot"><span class="sq-tap">Tap to attempt \u2192</span><button class="unsave-btn" '+attr+'="'+it.chapter.chapter+':'+it.q.n+'" title="Remove">\u2715</button></div></div>';
+}
 function renderSavedList(){
   if (state.savedSeries === 'ca'){ renderSavedListCA(); return; }
   if (state.savedSeries === 'ga'){ renderSavedListGA(); return; }
@@ -8729,7 +8834,7 @@ function renderSavedList(){
   var html = '';
   items.forEach(function(it, idx){
     var txt = (state.lang === 'hi' ? it.q.q_hi : it.q.q_en) || it.q.q_en || it.q.q_hi || '';
-    html += '<div class="saved-item" data-sq="' + idx + '"><div class="sq-ch">' + esc(it.chapter.name_en) + ' • Q' + it.q.n + '</div><div class="sq-q">' + esc(txt) + '</div><div class="sq-foot"><span class="sq-tap">Tap to attempt →</span><button class="unsave-btn" data-unsave="' + it.chapter.chapter + ':' + it.q.n + '" title="Remove">✕</button></div></div>';
+    html += savedItemHTML(it, idx, txt, 'data-unsave', 'maths');
   });
   $('savedList').innerHTML = html;
   document.querySelectorAll('#savedList .saved-item').forEach(function(el){
