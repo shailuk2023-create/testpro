@@ -428,6 +428,7 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 #anaMarksDist svg,#anaQDist svg{max-width:100%;height:auto}
 #mobQsBreak{display:none}
 .mob-ana-tabs{display:none}
+.mob-swipe-hint{display:none}
 .qb-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--surface3)}
 .qb-bar span{display:block;height:100%}
 .qb-row{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--muted)}
@@ -460,6 +461,18 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
   .ana-side{display:none;position:static}
   #view-analysis.mob-tab-lb .ana-main,#view-analysis.mob-tab-lb .ana-stats,#view-analysis.mob-tab-lb .ana-gap,#view-analysis.mob-tab-lb #mobQsBreak,#view-analysis.mob-tab-lb .ana-actions{display:none}
   #view-analysis.mob-tab-lb .ana-side{display:block}
+  /* Mobile swipe: horizontal swipe switches Analysis <-> Leaderboard.
+     pan-y keeps vertical scrolling native; horizontal moves reach JS. */
+  #view-analysis{touch-action:pan-y}
+  @keyframes anaSwipeL{from{transform:translateX(28px);opacity:.3}to{transform:translateX(0);opacity:1}}
+  @keyframes anaSwipeR{from{transform:translateX(-28px);opacity:.3}to{transform:translateX(0);opacity:1}}
+  #view-analysis .ana-wrap.ana-swipe-l{animation:anaSwipeL .24s ease-out}
+  #view-analysis .ana-wrap.ana-swipe-r{animation:anaSwipeR .24s ease-out}
+  .mob-swipe-hint{display:block;text-align:center;font-size:12px;font-weight:600;color:var(--muted);padding:7px 10px 1px;letter-spacing:.02em}
+  .mob-swipe-hint b{color:var(--teal);font-weight:800;padding:0 2px}
+  @media (prefers-reduced-motion: reduce){
+    #view-analysis .ana-wrap.ana-swipe-l,#view-analysis .ana-wrap.ana-swipe-r{animation:none}
+  }
   .mob-cmp{font-size:12.5px}
   .mob-cmp-row{grid-template-columns:54px repeat(5,minmax(0,1fr));gap:4px;padding:10px 6px}
   #rankPredictor{padding:16px 14px}
@@ -3108,6 +3121,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <button type="button" data-mob-tab="lb">Leaderboard</button>
     <button type="button" class="mob-sol-btn" id="mobSolBtn">Solution</button>
   </div>
+  <div class="mob-swipe-hint" aria-hidden="true"><b>&#8249;</b> Swipe to switch between Analysis &amp; Leaderboard <b>&#8250;</b></div>
   <div class="ana-wrap">
     <h2 class="ana-h">Performance Analysis <button class="ana-refresh" id="anaRefreshBtn" type="button" title="Refresh ranks from the server">&#8635; Refresh</button></h2>
     <div class="ana-stats" id="anaStats"></div>
@@ -6985,7 +6999,17 @@ function mobSetTab(tab){
   v.classList.toggle('mob-tab-lb', tab === 'lb');
   var btns = document.querySelectorAll('#mobTabs [data-mob-tab]');
   for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i].getAttribute('data-mob-tab') === tab);
+  var wrap = v.querySelector('.ana-wrap');
+  if (wrap){
+    wrap.classList.remove('ana-swipe-l', 'ana-swipe-r');
+    try { void wrap.offsetWidth; } catch(e){}
+    wrap.classList.add(tab === 'lb' ? 'ana-swipe-l' : 'ana-swipe-r');
+  }
   try { window.scrollTo(0, 0); } catch(e){}
+}
+function mobCurrentTab(){
+  var v = $('view-analysis');
+  return (v && v.classList.contains('mob-tab-lb')) ? 'lb' : 'summary';
 }
 function mobCompareHTML(t, st){
   /* You / Topper / Average from the leaderboard aggregates (same source
@@ -7061,6 +7085,52 @@ try {
   if (_mobSol) _mobSol.addEventListener('click', function(){ openSolutions(0); });
   var _mobTabs = $('mobTabs');
   if (_mobTabs) _mobTabs.addEventListener('click', function(e){ var b = e.target.closest('[data-mob-tab]'); if (b) mobSetTab(b.getAttribute('data-mob-tab')); });
+} catch(e){}
+/* Mobile swipe (Analysis <-> Leaderboard): a clear horizontal swipe on the
+   analysis content switches tabs, same as tapping the tab bar. Guards:
+   mobile widths only, single finger, mostly-horizontal fast gesture;
+   never hijacks taps on controls, the Rank Predictor slider, or swipes
+   that start inside a horizontally scrollable area (sectional table). */
+try {
+  var _anaView = $('view-analysis');
+  if (_anaView){
+    var _swX = null, _swY = null, _swT = 0, _swOK = false;
+    function _anaHScroll(el){
+      while (el && el !== _anaView){
+        if (el.clientWidth && el.scrollWidth > el.clientWidth + 4){
+          var ox = '';
+          try { ox = window.getComputedStyle(el).overflowX; } catch(e){}
+          if (ox === 'auto' || ox === 'scroll') return true;
+        }
+        el = el.parentElement;
+      }
+      return false;
+    }
+    _anaView.addEventListener('touchstart', function(e){
+      _swOK = false;
+      if (!window.matchMedia || !window.matchMedia('(max-width: 900px)').matches) return;
+      if (!e.touches || e.touches.length !== 1) return;
+      var t = e.target;
+      if (t && t.closest && t.closest('button, a, input, select, textarea, label')) return;
+      if (_anaHScroll(t)) return;
+      _swX = e.touches[0].clientX; _swY = e.touches[0].clientY; _swT = Date.now(); _swOK = true;
+    }, {passive: true});
+    _anaView.addEventListener('touchcancel', function(){ _swOK = false; _swX = null; }, {passive: true});
+    _anaView.addEventListener('touchend', function(e){
+      if (!_swOK || _swX === null) return;
+      _swOK = false;
+      var ct = e.changedTouches && e.changedTouches[0];
+      if (!ct) return;
+      var dx = ct.clientX - _swX, dy = ct.clientY - _swY;
+      _swX = null;
+      if (Math.abs(dx) < 56) return;
+      if (Math.abs(dy) > Math.abs(dx) * 0.55) return;
+      if (Date.now() - _swT > 700) return;
+      var cur = mobCurrentTab();
+      if (dx < 0 && cur === 'summary') mobSetTab('lb');
+      else if (dx > 0 && cur === 'lb') mobSetTab('summary');
+    }, {passive: true});
+  }
 } catch(e){}
 
 function solStatus(i){
