@@ -366,9 +366,23 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 .ana-stat-tx{display:flex;flex-direction:column;min-width:0;gap:2px}
 .ana-stat-tx span{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .ana-stat-tx b{font-size:20px;font-weight:700;color:var(--text-strong);white-space:nowrap}
-.ana-gap{grid-column:1/-1;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:12px;padding:16px 20px;margin-bottom:14px;text-align:left}
-.ana-gap b{font-size:16px;color:var(--text-strong);font-weight:700}
-.ana-gap p{color:var(--muted);margin:4px 0 0;font-size:13.5px;line-height:1.5}
+/* Gap card (fresh fr-gp- states): gradient hero per result state. Icon via ::before emoji. */
+.ana-card.ana-gap{grid-column:1/-1;position:relative;overflow:hidden;border:none;border-radius:16px;padding:18px 20px 18px 78px;margin-bottom:14px;text-align:left;color:#fff;box-shadow:0 8px 22px rgba(15,23,42,.22);animation:frGpIn .45s ease-out both}
+.ana-card.ana-gap b{font-size:16px;color:#fff;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.18)}
+.ana-card.ana-gap p{color:rgba(255,255,255,.93);margin:4px 0 0;font-size:13.5px;line-height:1.5}
+.ana-card.ana-gap::before{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:36px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.ana-card.ana-gap::after{content:'';position:absolute;top:0;bottom:0;left:0;width:55%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);transform:translateX(-180%) skewX(-12deg);animation:frGpShine 1.1s .2s ease-out forwards;pointer-events:none}
+.ana-card.ana-gap.fr-gp-win{background:linear-gradient(135deg,#047857,#10b981 55%,#34d399)}
+.ana-card.ana-gap.fr-gp-win::before{content:'\1F3C6'}
+.ana-card.ana-gap.fr-gp-sad{background:linear-gradient(135deg,#991b1b,#ef4444 55%,#f87171)}
+.ana-card.ana-gap.fr-gp-sad::before{content:'\1F4AA'}
+.ana-card.ana-gap.fr-gp-mid{background:linear-gradient(135deg,#92400e,#d97706 55%,#f59e0b)}
+.ana-card.ana-gap.fr-gp-mid::before{content:'\2728'}
+.ana-card.ana-gap.fr-gp-first{background:linear-gradient(135deg,#0e7490,#0284c7 55%,#38bdf8)}
+.ana-card.ana-gap.fr-gp-first::before{content:'\1F680'}
+@keyframes frGpIn{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes frGpShine{to{transform:translateX(320%) skewX(-12deg)}}
+@media (prefers-reduced-motion:reduce){.ana-card.ana-gap,.ana-card.ana-gap::after{animation:none}}
 .ana-actions{grid-column:1/-1;display:flex;gap:10px;margin-bottom:26px}
 .ana-actions .btn{padding:9px 18px;font-size:13.5px;border-radius:8px}
 .ana-main{grid-column:1;min-width:0}
@@ -452,7 +466,8 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
   .ana-stat:last-child{grid-column:1/-1;flex-direction:row;align-items:center}
   .ana-stat-tx b{font-size:19px}
   #mobQsBreak{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
-  .ana-gap{padding:14px 16px}
+  .ana-card.ana-gap{padding:14px 16px 14px 66px}
+  .ana-card.ana-gap::before{left:14px;font-size:28px}
   .ana-actions{margin-bottom:20px}
   .ana-actions .btn{flex:1;padding:11px 10px}
   .ana-card{padding:14px;margin-bottom:20px}
@@ -1464,11 +1479,28 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 .stat-tile:nth-child(3) .st-ico{background:linear-gradient(135deg,#fbbf24,#f97316)}
 .stat-tile:nth-child(4) .st-ico{background:linear-gradient(135deg,#facc15,#ca8a04)}
 /* v66-B: Your Progress — combined tiles (.yp-total) + per-series breakdown rows */
-.yp-breakdown{margin-top:10px;display:grid;gap:8px}
-.yp-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;font-size:13px}
-.yp-series{font-weight:800;color:var(--text-strong);white-space:nowrap}
-.yp-nums{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;color:var(--muted2);font-variant-numeric:tabular-nums}
+/* gp-home: colourful Your Progress series rows — teal Maths / violet CA / amber GA */
+.yp-breakdown{margin-top:10px;display:grid;gap:10px}
+.yp-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--border);border-top:3px solid var(--border);border-radius:14px;font-size:13px;box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease}
+.yp-row:hover{transform:translateY(-2px);box-shadow:0 8px 18px -10px rgba(15,23,42,.35)}
+.yp-series{font-weight:800;white-space:nowrap;padding:5px 10px;border-radius:999px;font-size:12.5px}
+.yp-nums{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;align-items:center;color:var(--muted2);font-variant-numeric:tabular-nums}
 .yp-nums b{color:var(--text-strong);font-weight:800}
+.yp-nums span:last-child{padding:4px 10px;border-radius:999px;color:#fff;font-weight:700;white-space:nowrap}
+.yp-nums span:last-child b{color:#fff}
+.yp-row-maths{border-top-color:#14b8a6;background:linear-gradient(135deg,rgba(20,184,166,.16),rgba(20,184,166,.05))}
+.yp-row-maths .yp-series{background:rgba(20,184,166,.20);color:#0f766e}
+.yp-row-maths .yp-nums span:last-child{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+.yp-row-ca{border-top-color:#8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(139,92,246,.05))}
+.yp-row-ca .yp-series{background:rgba(139,92,246,.18);color:#6d28d9}
+.yp-row-ca .yp-nums span:last-child{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.yp-row-ga{border-top-color:#f59e0b;background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.05))}
+.yp-row-ga .yp-series{background:rgba(245,158,11,.22);color:#b45309}
+.yp-row-ga .yp-nums span:last-child{background:linear-gradient(135deg,#f59e0b,#d97706)}
+[data-theme="dark"] .yp-row-maths .yp-series{color:#5eead4}
+[data-theme="dark"] .yp-row-ca .yp-series{color:#c4b5fd}
+[data-theme="dark"] .yp-row-ga .yp-series{color:#fcd34d}
+@media (max-width:480px){.yp-row{padding:10px;gap:8px}.yp-nums{gap:8px}}
 [data-theme="dark"] .st-ico{color:#fff}
 
 /* ---- "Prepare smarter" feature row ---- */
@@ -7180,13 +7212,15 @@ function anaRender(){
     anaStatCard(ANA_IC.att, 't-sky', st.attempted + ' / ' + n, 'Attempted') +
     anaStatCard(ANA_IC.acc, 't-green', st.accuracy.toFixed(2) + '%', 'Accuracy') +
     anaStatCard(ANA_IC.pct, 't-indigo', pct == null ? '\u2014' : pct.toFixed(1) + '%', 'Percentile');
-  var gap = '';
-  if (total < 2) gap = '<b>You are the first to attempt this test!</b><p>Rank and percentile will appear once other students attempt it.</p>';
-  else if (topper.me) gap = '<b>You are the topper of this test!</b><p>Your score ' + me.score.toFixed(2) + ' is the highest among ' + total + ' takers. Average score is ' + avg.toFixed(2) + '.</p>';
+  var gap = '', gapCls = 'fr-gp-first';
+  if (total < 2) { gapCls = 'fr-gp-first'; gap = '<b>You are the first to attempt this test!</b><p>Rank and percentile will appear once other students attempt it.</p>'; }
+  else if (topper.me) { gapCls = 'fr-gp-win'; gap = '<b>You are the topper of this test!</b><p>Your score ' + me.score.toFixed(2) + ' is the highest among ' + total + ' takers. Average score is ' + avg.toFixed(2) + '.</p>'; }
   else {
     var diff = Math.round((topper.score - me.score) * 100) / 100;
+    gapCls = (diff <= 2 || diff <= marks * 0.10) ? 'fr-gp-mid' : 'fr-gp-sad';
     gap = '<b>You scored ' + diff.toFixed(2) + ' Marks less than the topper!</b><p>Topper: ' + esc(topper.name) + ' \u2014 ' + topper.score.toFixed(2) + ' marks \u00b7 Average: ' + avg.toFixed(2) + ' \u00b7 ' + total + ' takers.</p>';
   }
+  $('anaGap').className = 'ana-card ana-gap ' + gapCls;
   $('anaGap').innerHTML = gap;
   var hist = getAttempts(getTestRec(t)) || [];
   var best = null;
