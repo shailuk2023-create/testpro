@@ -3,23 +3,20 @@
    TESTPRO — automatic notifications (GitHub Actions + Firestore + Web Push)
    ----------------------------------------------------------------------------
    Runs on a schedule (see .github/workflows/notifications.yml) and sends:
-     1. Daily 5 PM IST reminder — rotating motivational message, target 'all'.
-        Only inside the 17:00 IST hour, and only once per day (guarded by the
-        notifications_meta/reminder state doc + deterministic doc id).
-     2. Inactivity — a user with no attempt in the last 2 days gets a nudge
+     1. Inactivity — a user with no attempt in the last 2 days gets a nudge
         (target = their uid). At most once per user per 3 days, and only if
         their last attempt was within the last 30 days (no nagging quitters).
-     3. Topper change — the #1 user by total coins changed vs meta/topper.
+     2. Topper change — the #1 user by total coins changed vs meta/topper.
         Same doc id (topper-<uid>-<coins>) and same meta guard as the in-app
         fast path, so the two never double-send. First run records the
         baseline only — no notification.
-     4. Top-3 milestone — a user entering the leaderboard top 3 for the first
+     3. Top-3 milestone — a user entering the leaderboard top 3 for the first
         time gets a congrats (target = their uid). First run records the
         baseline only — no notification.
-     5. 7-day streak — attempts on 7 consecutive days (ending today or
+     4. 7-day streak — attempts on 7 consecutive days (ending today or
         yesterday) gets a "7 din ki streak!" (target = their uid). Notified
         once per streak end date.
-     6. Manual announcement — MODE=announce with ANNOUNCE_TITLE /
+     5. Manual announcement — MODE=announce with ANNOUNCE_TITLE /
         ANNOUNCE_BODY (from workflow_dispatch inputs).
 
    Every notification is BOTH a Firestore doc in `notifications`
@@ -30,8 +27,7 @@
    open the app. Subscriptions answering 404/410 are deleted.
 
    Modes (env MODE, default 'all'):
-     all         reminder (if in the 17:00 IST hour) + all condition checks
-     reminder    only the daily 5 PM reminder
+     all         all condition checks (topper / inactivity / milestone / streak)
      conditions  only topper / inactivity / milestone / streak
      announce    only a manual announcement (needs ANNOUNCE_TITLE + BODY)
    DRY_RUN=true  detect + log what WOULD be sent; write nothing, push nothing.
@@ -71,19 +67,6 @@ function shiftDate(dateStr, days) {
   return new Date(base).toISOString().slice(0, 10);
 }
 
-/* ---- rotating 5 PM reminder messages (pure, weekday 0=Sun..6=Sat) ---- */
-var REMINDER_TITLE = 'Quiz ka time ho gaya! \u23F0';
-var REMINDER_MESSAGES = [
-  'Sunday hai, par NTPC rukta nahi! \uD83D\uDCDA Aaj ek quiz attempt karo \u2014 chhota sa step, bada farak.',
-  'Naya hafta, nayi shuruaat! \uD83C\uDFAF Aaj ka pehla quiz attempt karo \u2014 momentum banao.',
-  'Aaj ka quiz attempt kiya? \uD83D\uDCDD 15 minute do, apni taiyari ko aage badhao!',
-  'Aadha hafta ho gaya \u2014 consistency hi jeet hai! \uD83D\uDCAA Aaj ek test attempt karo.',
-  'Topper se gap kam karna hai? \uD83C\uDFC6 Aaj ka quiz attempt karo, coins badhao!',
-  'Friday! Weekend se pehle ek quiz kar lo \u2014 kal araam se revision karna. \uD83D\uDCDA',
-  'Saturday = mock day! \uD83D\uDCDD Aaj ek full test attempt karo aur apna score dekho.'
-];
-function reminderMessage(weekday) { return REMINDER_MESSAGES[weekday % 7]; }
-
 /* ---- streak detection (pure): distinct IST dates -> streak end or null ---- */
 function detectStreakEnd(dateList, todayStr) {
   var set = {};
@@ -107,8 +90,6 @@ async function main() {
   var dryRun = String(process.env.DRY_RUN || 'false') === 'true';
   var now = Date.now();
   var today = istDate(now);
-  var hourIst = istParts(now).hour;
-  var weekdayIst = istParts(now).weekday;
 
   var saRaw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   if (!saRaw) fail('FIREBASE_SERVICE_ACCOUNT_JSON secret is not set');
@@ -127,8 +108,8 @@ async function main() {
   if (!pushReady) console.log('WARN: VAPID secrets incomplete — notification docs will still be written, pushes skipped');
 
   var summary = {
-    mode: mode, dryRun: dryRun, istDate: today, istHour: hourIst,
-    reminder: 'skipped', topper: 'skipped', inactivity: [], milestone: [],
+    mode: mode, dryRun: dryRun, istDate: today,
+    topper: 'skipped', inactivity: [], milestone: [],
     streak: [], announcement: 'skipped',
     push: { sent: 0, failed: 0, deletedExpired: 0, skippedNoVapid: 0 },
     errors: []
@@ -194,37 +175,7 @@ async function main() {
     return true;
   }
 
-  /* ================= 1. DAILY 5 PM REMINDER ================= */
-  if (mode === 'all' || mode === 'reminder') {
-    try {
-      if (hourIst !== 17) {
-        summary.reminder = 'skipped-not-5pm-ist';
-      } else {
-        var remRef = db.doc('notifications_meta/reminder');
-        var remSnap = await remRef.get();
-        var remData = remSnap.exists ? (remSnap.data() || {}) : {};
-        if (remData.lastDate === today) {
-          summary.reminder = 'skipped-already-sent-today';
-        } else {
-          var body = reminderMessage(weekdayIst);
-          var docId = 'reminder-' + today;
-          var wrote = await writeNotif(docId, {
-            type: 'reminder', title: REMINDER_TITLE, body: body,
-            target: 'all', createdAt: Date.now(), data: { date: today, weekday: weekdayIst }
-          });
-          if (wrote) {
-            if (!dryRun) await remRef.set({ lastDate: today, updatedAt: Date.now() }, { merge: true });
-            await fanOut(REMINDER_TITLE, body, '', 'normal');
-            summary.reminder = dryRun ? 'dry-run-would-send' : 'sent';
-          } else {
-            summary.reminder = 'skipped-doc-exists';
-          }
-        }
-      }
-    } catch (e) { summary.errors.push('reminder: ' + (e && e.message)); summary.reminder = 'error'; }
-  }
-
-  /* ================= 2. MANUAL ANNOUNCEMENT ================= */
+  /* ================= 1. MANUAL ANNOUNCEMENT ================= */
   if (mode === 'announce') {
     try {
       var aTitle = String(process.env.ANNOUNCE_TITLE || '').trim();
@@ -245,7 +196,7 @@ async function main() {
     } catch (e) { summary.errors.push('announcement: ' + (e && e.message)); summary.announcement = 'error'; }
   }
 
-  /* ================= 3. CONDITION CHECKS ================= */
+  /* ================= 2. CONDITION CHECKS ================= */
   if (mode === 'all' || mode === 'conditions') {
     /* ---- load leaderboard (coins desc, then q desc — same as the app) ---- */
     var entries = [];
@@ -265,7 +216,7 @@ async function main() {
     subs.forEach(function (s) { if (s.uid) uidSet[s.uid] = true; });
     var uids = Object.keys(uidSet);
 
-    /* ---- 3a. TOPPER CHANGE (meta/topper guard, same as in-app path) ---- */
+    /* ---- 2a. TOPPER CHANGE (meta/topper guard, same as in-app path) ---- */
     try {
       if (!entries.length) {
         summary.topper = 'skipped-no-users';
@@ -296,7 +247,7 @@ async function main() {
       }
     } catch (e) { summary.errors.push('topper: ' + (e && e.message)); summary.topper = 'error'; }
 
-    /* ---- 3b. TOP-3 MILESTONE (first time only; baseline on first run) ---- */
+    /* ---- 2b. TOP-3 MILESTONE (first time only; baseline on first run) ---- */
     try {
       var top3 = entries.slice(0, 3).map(function (e) { return e.uid; });
       var mRef = db.doc('notifications_meta/top3');
@@ -332,7 +283,7 @@ async function main() {
       }
     } catch (e) { summary.errors.push('milestone: ' + (e && e.message)); summary.milestone.push('error'); }
 
-    /* ---- 3c. INACTIVITY + 3d. STREAK (per user, from attempts) ---- */
+    /* ---- 2c. INACTIVITY + 2d. STREAK (per user, from attempts) ---- */
     var twoDaysAgo = shiftDate(today, -2);
     var thirtyDaysAgo = shiftDate(today, -30);
     var tenDaysAgoMs = now - 10 * DAY_MS;
@@ -427,4 +378,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { istParts: istParts, istDate: istDate, shiftDate: shiftDate, reminderMessage: reminderMessage, detectStreakEnd: detectStreakEnd, REMINDER_TITLE: REMINDER_TITLE };
+module.exports = { istParts: istParts, istDate: istDate, shiftDate: shiftDate, detectStreakEnd: detectStreakEnd };
