@@ -3008,22 +3008,26 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 <style id="hdr-brand-simple">
 /* Header brand simple (user, 17 Nov 2026): no round pill around TESTPRO + logo,
    no white box around the logo — plain logo + black TEST / golden PRO text,
-   like the slider. Kills the premium5 gradient on .bw. */
-.list-topbar .pm-brand{background:none!important;border:none!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin-right:0!important;gap:8px!important;min-width:0}
+   like the slider. Kills the premium5 gradient on .bw.
+   Brand made BIGGER (user, 17 Nov 2026): logo + TESTPRO text sized up to match
+   the slider — desktop logo 36px / text 24px, mobile logo 24px / text 18px. */
+.list-topbar .pm-brand{background:none!important;border:none!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin-right:0!important;gap:10px!important;min-width:0}
 .list-topbar .pm-brand:hover{transform:none!important}
-.list-topbar .pm-brand .logo-mark{background:none!important;border-radius:0!important;box-shadow:none!important;padding:0!important;height:28px!important;animation:none!important}
-.list-topbar .pm-brand .bw{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:var(--text-strong)!important;font-weight:800!important;font-size:19px!important;letter-spacing:.3px!important;white-space:nowrap}
+.list-topbar .pm-brand .logo-mark{background:none!important;border-radius:0!important;box-shadow:none!important;padding:0!important;height:36px!important;animation:none!important}
+.list-topbar .pm-brand .bw{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:var(--text-strong)!important;font-weight:800!important;font-size:24px!important;letter-spacing:.3px!important;white-space:nowrap}
 .list-topbar .pm-brand .bw b{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:#f0b429!important;font-weight:800!important}
 @media (max-width:640px){
-  .list-topbar .pm-brand{gap:6px!important;padding:0!important}
-  .list-topbar .pm-brand .logo-mark{height:18px!important;padding:0!important}
-  .list-topbar .pm-brand .bw{font-size:15px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .list-topbar .pm-brand{gap:7px!important;padding:0!important}
+  .list-topbar .pm-brand .logo-mark{height:24px!important;padding:0!important}
+  .list-topbar .pm-brand .bw{font-size:18px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 }
 @media (max-width:380px){
   .list-topbar .pm-brand{padding:0!important}
+  .list-topbar .pm-brand .logo-mark{height:22px!important;padding:0!important}
   .list-topbar .pm-brand .bw{display:none!important}
 }
 </style>
+
 <style id="notif-bell-css">
 /* ============ NOTIF (Worker A): bell icon + in-app notification panel ============
    Bell sits in .tb-actions right after #darkToggle. Panel is position:absolute
