@@ -5643,6 +5643,12 @@ function _v76ManualUpdateCheck(){
 }
 /* ===== v76-K END ===== */
 function closeOverlayForBack(){
+  /* v76b: a history.back() issued to unwind a lightbox entry — consume it
+     (the popstate handler re-pushes the view state) so the test never navigates. */
+  if (typeof lbBackPending !== 'undefined' && lbBackPending){ lbBackPending = false; var lb0 = $('imgLightbox'); if (lb0 && lb0.classList.contains('open')) closeImgLightbox(); return true; }
+  /* v76b: device Back with the image open — close the image, not the test. */
+  var lb = $('imgLightbox');
+  if (lb && lb.classList.contains('open')){ closeImgLightbox(); return true; }
   var modal = document.querySelector('.modal-overlay.show');
   if (modal){ modal.classList.remove('show'); return true; }
   if ($('paletteDrawer').classList.contains('open')){ closePaletteDrawer(); return true; }
@@ -8623,6 +8629,7 @@ function lbZoomBy(f){
 }
 function openImgLightbox(src, alt){
   var lb = $('imgLightbox'); if (!lb) return;
+  var alreadyOpen = lb.classList.contains('open');
   var img = lbImg();
   img.src = src;
   img.alt = alt || '';
@@ -8630,6 +8637,10 @@ function openImgLightbox(src, alt){
   lb.classList.add('open');
   img.onload = function(){ lbFitZoom(); };
   if (img.complete && img.naturalWidth) lbFitZoom();
+  /* v76b: lightbox history — push ONE entry so device Back closes the
+     image instead of the test behind it. A second image while one is open
+     reuses the same entry (no duplicate push). */
+  if (!alreadyOpen){ try { history.pushState({testproLightbox:true, appView:state.view, routeDepth:state.routeDepth}, '', '#view-' + state.view); } catch(e){} }
 }
 function closeImgLightbox(){
   var lb = $('imgLightbox'); if (!lb) return;
@@ -8641,6 +8652,22 @@ function closeImgLightbox(){
   img.style.width = ''; img.style.height = '';
   img.style.maxWidth = ''; img.style.maxHeight = '';
   lbScale = 1; lbFitScale = 1;
+}
+/* v76b: close the lightbox from its own controls (X / backdrop / Escape).
+   If the top history entry is the one the lightbox pushed, unwind it with
+   history.back() and let the popstate handler consume it (lbBackPending) —
+   the entry is popped and the test stays put. Otherwise close directly. */
+var lbBackPending = false;
+function closeImgLightboxUI(){
+  var st = null;
+  try { st = history.state; } catch(e){}
+  if (st && st.testproLightbox && !lbBackPending){
+    lbBackPending = true;
+    closeImgLightbox();
+    try { history.back(); } catch(e){ lbBackPending = false; }
+  } else {
+    closeImgLightbox();
+  }
 }
 /* v76: wire the zoom buttons and two-finger pinch once (script runs once). */
 (function(){
@@ -8689,11 +8716,11 @@ document.addEventListener('click', function(e){
     openImgLightbox(t.src, t.getAttribute('alt'));
     return;
   }
-  if (t && t.id === 'imgLightboxClose'){ closeImgLightbox(); return; }
-  if (t && t.id === 'imgLightbox'){ closeImgLightbox(); }
+  if (t && t.id === 'imgLightboxClose'){ closeImgLightboxUI(); return; }
+  if (t && t.id === 'imgLightbox'){ closeImgLightboxUI(); }
 });
 document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape') closeImgLightbox();
+  if (e.key === 'Escape') closeImgLightboxUI();
 });
 document.querySelectorAll('#filterMenu button').forEach(function(el){
   el.addEventListener('click', function(e){
