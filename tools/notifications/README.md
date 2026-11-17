@@ -10,7 +10,6 @@ via VAPID keys.
 
 | Type | When | Target |
 |---|---|---|
-| `reminder` | Daily, 5 PM IST only (17:00 hour), rotating message by weekday | all users |
 | `inactivity` | No attempt in the last 2 days (last attempt within 30 days), max once per user per 3 days | that user |
 | `topper` | The #1 user by total coins changes (same guard + doc id as the in-app fast path, so no duplicates) | all users |
 | `milestone` | A user enters the leaderboard top 3 for the first time | that user |
@@ -22,7 +21,7 @@ nobody gets a flood of "welcome" notifications on launch day.
 
 ## Files
 
-- `send.js` — the sender. Modes via env `MODE`: `all` (default), `reminder`,
+- `send.js` — the sender. Modes via env `MODE`: `all` (default),
   `conditions`, `announce`. `DRY_RUN=true` logs what WOULD be sent and
   writes/sends nothing. `ANNOUNCE_TITLE` / `ANNOUNCE_BODY` for manual sends.
 - `package.json` — `firebase-admin` + `web-push`.
@@ -39,5 +38,6 @@ docs are still written (the bell works) and pushes are skipped with a warning.
 
 ## Workflow
 
-`.github/workflows/notifications.yml` — daily 11:30 UTC (17:00 IST) +
-hourly at :45, plus manual `workflow_dispatch` (mode / title / body / dry run).
+`.github/workflows/notifications.yml` — hourly at :45 (topper, inactivity,
+top-3 milestone, 7-day streak), plus manual `workflow_dispatch`
+(mode / title / body / dry run).
