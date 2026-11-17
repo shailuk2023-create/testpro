@@ -1,0 +1,98 @@
+# ============================================================================
+# TESTPRO — automatic notifications (GitHub Actions + Firestore + Web Push)
+# STAGED — NOT LIVE YET. Add via the GitHub website (see
+# AUTO_NOTIFICATIONS_SETUP.md): repo > Actions > New workflow > paste this
+# file as `.github/workflows/notifications.yml`.
+#
+# This REPLACES the earlier staged `topper-push.yml` snippet — its topper
+# logic is merged into tools/notifications/send.js. Do NOT add both files.
+#
+# What it does (script: tools/notifications/send.js, MODE=all by default):
+#   - Hourly condition checks: topper change, inactivity (2 days),
+#     top-3 milestone (first time), 7-day streak.
+#   - Every notification is a Firestore `notifications` doc (the app bell)
+#     AND a Web Push to `push_subscriptions` via VAPID. 404/410 subs deleted.
+#   - Manual run (Actions > Run workflow) can send a custom announcement
+#     (title + body inputs) or a dry run (detects, writes/sends nothing).
+#
+# Report-correction notifications are NOT sent here — the 15-minute
+# report-check cron handles those (step 8b).
+#
+# Cost: free (GitHub Actions free tier + Firebase Spark free tier).
+# No Progressier, no paid service, no new backend server.
+#
+# SECRETS (repo Settings > Secrets and variables > Actions — NAMES ONLY):
+#   FIREBASE_SERVICE_ACCOUNT_JSON — already set (used by recompute-coins).
+#   VAPID_PUBLIC_KEY  — must match NTF_VAPID_PUBLIC_KEY in the app.
+#   VAPID_PRIVATE_KEY — never in the app, repo, or logs.
+#   VAPID_SUBJECT     — mailto: contact, e.g. mailto:owner@example.com.
+# ============================================================================
+name: TESTPRO automatic notifications
+
+on:
+  schedule:
+    - cron: '45 * * * *'    # hourly :45 — condition checks (topper, inactivity, milestone, streak)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'What to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - conditions
+          - announce
+      title:
+        description: 'Announcement title (only for mode = announce)'
+        required: false
+        default: ''
+        type: string
+      body:
+        description: 'Announcement message (only for mode = announce)'
+        required: false
+        default: ''
+        type: string
+      dry_run:
+        description: 'Detect what WOULD be sent, but write/send nothing'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: tools/notifications/node_modules
+          key: ${{ runner.os }}-notif-node-${{ hashFiles('tools/notifications/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-notif-node-
+
+      - name: Install dependencies
+        working-directory: tools/notifications
+        run: npm install
+
+      - name: Send notifications
+        working-directory: tools/notifications
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          APP_URL: 'https://shailuk2023-create.github.io/testpro/'
+          MODE: ${{ inputs.mode }}
+          ANNOUNCE_TITLE: ${{ inputs.title }}
+          ANNOUNCE_BODY: ${{ inputs.body }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: node send.js
