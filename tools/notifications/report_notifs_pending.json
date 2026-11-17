@@ -1,0 +1,76 @@
+[
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – January 2026 • January Test 4 • Q100 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794904110163,
+    "data": {
+      "chapter": "CA – January 2026",
+      "test": "January Test 4",
+      "qnum": "Q100 (CA Test Q25)"
+    },
+    "responseId": "ACYDBNibmfOCNjVN4XnmKkD-WAhD10AiXnAI-0A2cQOMy444Ey5h07Pndgx8RnDAcpvQMQk",
+    "fixedSummary": "January Test 4 Q100 image replaced: flooded-field photo -> ripe golden rice paddy (The Hindu BusinessLine news illustration, embedded offline as base64 JPEG)",
+    "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 2 • Q30 (CA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794913075493,
+    "data": {
+      "chapter": "CA – February 2026",
+      "test": "February Test 2",
+      "qnum": "Q30 (CA Test Q5)"
+    },
+    "responseId": "ACYDBNjoZiXh8v5mbxRNRt5werWeM7tv5oJE6Q2IuecvgrAOAfK6VR-VpQ3rtIvdtczdSA4",
+    "fixedSummary": "February Test 2 Q30 (Rob Jetten) solution image replaced: Binnenhof building photo -> official swearing-in photo (Jetten + King Willem-Alexander signing royal decrees, Huis ten Bosch, 23 Feb 2026; government.nl), embedded offline as base64 JPEG",
+    "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 2 • Q40 (CA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794916716738,
+    "data": {
+      "chapter": "CA – February 2026",
+      "test": "February Test 2",
+      "qnum": "Q40 (CA Test Q15)"
+    },
+    "responseId": "ACYDBNg-UTzV5lf_4r7t07iQlUMZb6DA0qlfxn83QYmMUPRRJv9GW2ZqcYyTxJKIyfLMils",
+    "fixedSummary": "February Test 2 Q40 (World Government Summit 2026, Dubai) solution image replaced: generic Dubai skyline sunset photo -> WGS 2026 panel photo with 'WORLD GOVERNMENT SUMMIT / SHAPING FUTURE GOVERNMENTS 3-5 FEBRUARY 2026' backdrop (An-Nahar photo, embedded offline as base64 JPEG). Q/options/key/solution unchanged (key C Dubai verified)."
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • Saved Questions • Q13 (Saved Q2) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794917640553,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "Saved Questions",
+      "qnum": "Q13 (Saved Q2)"
+    },
+    "responseId": "ACYDBNgfhB2p_JDhNd8pSWxfK9XxymJeF1XC_RoZpHYOQqsaabSiRTK4PaqPls5rbUQpD1g",
+    "fixedSummary": "Saved Questions Q13 (Aug CA, 2026 Commonwealth Games India 39 medals) image replaced: St Andrew's Cathedral garden photo, Glasgow -> Glasgow 2026 Commonwealth Games mural at Glasgow Airport (Wikimedia Commons, direct URL)",
+    "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 1 • Q13 (CA Test Q13) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794918551966,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 1",
+      "qnum": "Q13 (CA Test Q13)"
+    },
+    "responseId": "ACYDBNjiM9Esz8qwmnxi5hgG_pTsOUf2rYOhci4YFSWRW242lWOEwalx0LgpuH51Tu0eti4",
+    "fixedSummary": "CA Aug 2026, August Test 1, Q13 (Commonwealth Games 2026, India 39 medals): solution image replaced with reporter-supplied link image (Hindi infographic, 13 gold/17 silver/9 bronze), embedded offline as base64. Q/options/key (B, 39)/solution unchanged.",
+    "sent": false
+  }
+]
