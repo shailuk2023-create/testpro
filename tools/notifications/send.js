@@ -18,6 +18,12 @@
         once per streak end date.
      5. Manual announcement — MODE=announce with ANNOUNCE_TITLE /
         ANNOUNCE_BODY (from workflow_dispatch inputs).
+     6. Report corrections — fixed-report notifications recorded by the
+        report-check cron in tools/notifications/report_notifs_pending.json
+        (mirrored from the workspace pending file) are delivered here
+        (target = the reporter uid). Runs in 'all'/'conditions' only, never
+        in 'announce'. Doc id 'report-<responseId>' dedups, so a re-run
+        never resends an already-delivered report notification.
 
    Every notification is BOTH a Firestore doc in `notifications`
    (the app bell reads it: {type, title, body, target, createdAt (ms
@@ -110,7 +116,7 @@ async function main() {
   var summary = {
     mode: mode, dryRun: dryRun, istDate: today,
     topper: 'skipped', inactivity: [], milestone: [],
-    streak: [], announcement: 'skipped',
+    streak: [], report: [], announcement: 'skipped',
     push: { sent: 0, failed: 0, deletedExpired: 0, skippedNoVapid: 0 },
     errors: []
   };
@@ -366,6 +372,52 @@ async function main() {
     }
     if (!summary.inactivity.length) summary.inactivity.push('none');
     if (!summary.streak.length) summary.streak.push('none');
+
+    /* ---- 2e. REPORT CORRECTIONS (from report_notifs_pending.json) ---- */
+    /* The report-check cron appends fixed-report notifications to the
+       workspace pending file and mirrors it to the repo at
+       tools/notifications/report_notifs_pending.json; this step delivers
+       them (Firestore doc + Web Push) on the hourly run. Doc id is
+       deterministic ('report-' + responseId) so a re-run never resends. */
+    try {
+      var fs = require('fs');
+      var path = require('path');
+      var reportFile = path.join(__dirname, 'report_notifs_pending.json');
+      var reportRaw = null;
+      try { reportRaw = fs.readFileSync(reportFile, 'utf8'); }
+      catch (e) { console.log('report: pending file not found, skipping'); }
+      if (reportRaw) {
+        var reportEntries = null;
+        try { reportEntries = JSON.parse(reportRaw); }
+        catch (e) { console.log('report: pending file unparsable, skipping'); }
+        if (Array.isArray(reportEntries)) {
+          for (var ri = 0; ri < reportEntries.length; ri++) {
+            var re = reportEntries[ri];
+            if (!re || typeof re !== 'object') continue;
+            if (typeof re.responseId !== 'string' || !re.responseId) continue;
+            if (typeof re.target !== 'string' || !re.target) continue;
+            if (re.sent === true) continue;
+            var safeId = String(re.responseId).replace(/[^A-Za-z0-9_-]/g, '');
+            if (!safeId) continue;
+            var rTitle = (typeof re.title === 'string' && re.title) ? re.title : 'Report fix ho gayi';
+            var rBody = (typeof re.body === 'string') ? re.body : '';
+            var rId = 'report-' + safeId;
+            var rWrote = await writeNotif(rId, {
+              type: 'report', title: rTitle, body: rBody, target: re.target,
+              createdAt: (typeof re.createdAt === 'number' ? re.createdAt : Date.now()),
+              data: (re.data && typeof re.data === 'object') ? re.data : {}
+            });
+            if (rWrote) {
+              await fanOut(rTitle, rBody, re.target, 'normal');
+              summary.report.push('sent:' + re.responseId);
+            } else {
+              summary.report.push('skipped-exists:' + re.responseId);
+            }
+          }
+        }
+      }
+      if (!summary.report.length) summary.report.push('none');
+    } catch (e) { summary.errors.push('report: ' + (e && e.message)); summary.report.push('error'); }
   }
 
   console.log(JSON.stringify(summary));
