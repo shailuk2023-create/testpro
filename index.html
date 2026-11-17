@@ -3038,7 +3038,7 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
    .list-topbar gets position:relative so the absolute panel anchors to it;
    that does not move the top bar and does not affect the position:fixed
    search dropdown (.search-open). */
-.list-topbar{position:relative}
+.list-topbar{position:relative;z-index:100}
 #notifBell{position:relative}
 #notifBell .i{color:var(--muted2)}
 #notifBell:hover .i{color:var(--accent)}
