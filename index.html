@@ -2975,6 +2975,29 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 @media(max-width:520px){#view-leaderboard .fr-hb-av{width:74px!important;height:74px!important}#view-leaderboard .fr-hb-rank b{font-size:32px!important}#view-leaderboard .fr-hb-hero-txt h2{font-size:20px!important}#view-leaderboard .fr-hb-stats{gap:6px!important}#view-leaderboard .fr-hb-stats b{font-size:15px!important}#view-leaderboard .fr-hb-stats span{font-size:9.5px!important}#view-leaderboard .fr-hb-coins{min-width:70px!important;padding:8px!important}#view-leaderboard .fr-hb-coins b{font-size:20px!important}}
 @media(prefers-reduced-motion:reduce){#view-leaderboard .fr-hb-hero,#view-leaderboard .fr-hb-hero *,.list-topbar,.pm-brand .logo-mark{animation:none!important}}
 </style>
+<style id="mh-header-fix">
+/* MH header fix: mobile top-header horizontal overflow (staged, CSS only).
+   Desktop (>=641px) is untouched — the premium look stays exactly as is. */
+@media (max-width:640px){
+  .list-topbar{height:60px!important;padding:0 10px!important;gap:8px!important;
+    max-width:100vw;box-sizing:border-box}
+  .list-topbar .icon-btn{width:36px!important;height:36px!important;flex-shrink:0}
+  .list-topbar .avatar{width:36px!important;height:36px!important;flex-shrink:0}
+  .list-topbar #fsBtnHome{display:none!important}
+  .list-topbar .pm-brand{gap:6px!important;padding:5px 8px 5px 4px!important;
+    margin-right:0!important;flex-shrink:1!important;min-width:0}
+  .list-topbar .pm-brand .logo-mark{height:18px!important;padding:3px 5px!important}
+  .list-topbar .pm-brand .bw{font-size:15px!important;letter-spacing:.3px!important;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .list-topbar .tb-actions{gap:6px!important;flex-shrink:0;min-width:0}
+}
+@media (max-width:380px){
+  .list-topbar{padding:0 8px!important;gap:6px!important}
+  .list-topbar .pm-brand .bw{display:none!important}
+  .list-topbar .pm-brand{padding:5px 6px 5px 4px!important}
+  .list-topbar .tb-actions{gap:5px!important}
+}
+</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
@@ -3901,7 +3924,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 
 <!-- v75: tap-to-zoom lightbox for solution reference images -->
 <div id="imgLightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
-  <div class="lb-scroll"><img id="imgLightboxImg" src="" alt=""></div>
+  <div class="lb-scroll"><img id="imgLightboxImg" alt=""></div>
   <div class="lb-tools">
     <button id="lbZoomOut" type="button" aria-label="Zoom out">−</button>
     <button id="lbZoomIn" type="button" aria-label="Zoom in">+</button>
@@ -8485,7 +8508,9 @@ function closeImgLightbox(){
   var lb = $('imgLightbox'); if (!lb) return;
   lb.classList.remove('open');
   var img = lbImg();
-  img.src = ''; img.onload = null;
+  /* mh-audit: img.src='' leaves an empty src (resolves to the page
+     URL); remove the attribute instead -- next open sets src again. */
+  if(img){img.removeAttribute('src'); img.onload = null;}
   img.style.width = ''; img.style.height = '';
   img.style.maxWidth = ''; img.style.maxHeight = '';
   lbScale = 1; lbFitScale = 1;
@@ -8896,6 +8921,9 @@ function featReviseData(){ /* v72: Maths + CA + GA (saved count now includes GA 
 }
 /* start a card animation only once the card is actually on screen (scroll / tab switch) */
 function featWhenVisible(el, go){
+  /* mh-audit: el.closest throws if el is null; the no-IO fallback
+     below is only reached after this line, so guard first. */
+  if(!el||typeof go!=='function')return;
   var card = (el.closest && el.closest('.feat-card')) || el, fired = false;
   function fire(){ if (fired) return; fired = true; go(); }
   if (!('IntersectionObserver' in window)){ fire(); return; }
@@ -13280,7 +13308,7 @@ function buildTopperCelebration(){
   ov.innerHTML =
     '<div class="topper-card" role="dialog" aria-label="You are the topper">' +
       '<div class="topper-gif-wrap"><img class="topper-gif" src="' + TOPPER_GIF + '" alt="Topper celebration">' +
-      '<img id="topperAvatar" src="" alt=""></div>' +
+      '<img id="topperAvatar" alt=""></div>' +
       '<button type="button" class="topper-x" id="topperX" aria-label="Close">\u00d7</button>' +
       '<div class="topper-body"><h3 class="topper-title" id="topperTitle">You are the Topper!</h3>' +
       '<p class="topper-sub" id="topperSub">Rank #1 on the leaderboard.</p>' +
@@ -13586,10 +13614,15 @@ window.CoinAnim = {
   if($('ttNxtT'))$('ttNxtT').textContent=(c&&!c.hidden&&t&&t.textContent)?t.textContent:'Start';
  }
  function init(){
-  var A=$('ttAttempted'),S=$('ttSaved'),N=$('ttNext'); if(!A)return;
-  A.onclick=function(){click('navAttempted')};
-  S.onclick=function(){click('navSaved')};
-  N.onclick=function(){var c=$('nextTestCard');if(c&&!c.hidden)click('nextTestBtn');else{var f=document.querySelector('#seriesPicker .series-card');if(f)f.click()}};
+  var A=$('ttAttempted'),S=$('ttSaved'),N=$('ttNext');
+  /* mh-audit: old code returned only on !A, then wired S/N
+     unconditionally -- S.onclick throws if #ttSaved is absent and
+     the upd() poll never starts. Guard each button; skip the
+     poll entirely when the hero has no shortcut buttons. */
+  if(!A&&!S&&!N)return;
+  if(A)A.onclick=function(){click('navAttempted')};
+  if(S)S.onclick=function(){click('navSaved')};
+  if(N)N.onclick=function(){var c=$('nextTestCard');if(c&&!c.hidden)click('nextTestBtn');else{var f=document.querySelector('#seriesPicker .series-card');if(f)f.click()}};
   upd();setInterval(upd,1500);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
