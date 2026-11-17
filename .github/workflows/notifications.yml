@@ -15,8 +15,11 @@
 #   - Manual run (Actions > Run workflow) can send a custom announcement
 #     (title + body inputs) or a dry run (detects, writes/sends nothing).
 #
-# Report-correction notifications are NOT sent here — the 15-minute
-# report-check cron handles those (step 8b).
+# Report-correction notifications ARE sent here (send.js section 2e): the
+# 15-minute report-check cron records each fixed report in
+# tools/notifications/report_notifs_pending.json and pushes that file; the
+# `push` trigger below runs this workflow immediately, so the reporter is
+# notified within minutes — no manual run and no hourly wait.
 #
 # Cost: free (GitHub Actions free tier + Firebase Spark free tier).
 # No Progressier, no paid service, no new backend server.
@@ -58,6 +61,11 @@ on:
         required: false
         default: false
         type: boolean
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/notifications/report_notifs_pending.json'   # report fixed -> cron pushes pending JSON -> workflow runs immediately and sends the report notification (no manual run, no hourly wait)
 
 jobs:
   notify:
