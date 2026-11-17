@@ -5090,6 +5090,7 @@ function linkReportToReporter(uid, type, c, detail, reporterName){
   } catch(e) {}
 }
 function silentSubmitReport(){
+  var type = reportSelectedType;
   if (!type){
     showToast('Pehle choose karo — kya galat hai?');
     return;
