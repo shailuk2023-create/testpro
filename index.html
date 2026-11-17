@@ -10559,14 +10559,12 @@ function renderOverall(){
   if (!arr.length) return h + '<div class="lb-empty"><b>The leaderboard is empty</b><p>Be the first to attempt a test and put your name here.</p></div>';
   h += podium(arr.slice(0, 3));
   h += catToppersSectionHTML(arr);
-  var rest = arr.slice(3, 5); /* v94: top-5 only (podium shows 1-3) */
+  var rest = arr.slice(3); /* all users in the main Leaderboard (Analysis Top Rankers stays top 5) */
   if (rest.length){
     h += '<div class="lb-list">';
     rest.forEach(function(e, i){ h += rowHTML(e, i + 4, i); });
     h += '</div>';
   }
-  var mi = -1; arr.forEach(function(e, i){ if (isMe(e)) mi = i; });
-  if (mi >= 5) h += '<div class="lb-list pinned">' + rowHTML(arr[mi], mi + 1, 0) + '</div>'; /* v94: pin own row when outside top 5 */
   return h;
 }
 /* fr-rw: fresh series-card category-toppers markup (data logic unchanged). */
@@ -10612,7 +10610,6 @@ function renderSeriesDetail(key){
   } else {
     h += '<div class="fr-rw-dtbl-wrap"><table class="fr-rw-dtbl"><thead><tr><th>#</th><th>Player</th><th>Avg score</th><th>Avg accuracy</th><th>Avg time</th></tr></thead><tbody>';
     rows.forEach(function(x, i){
-      if (i >= 5 && !isMe(x.e)) return;
       var e = x.e, st = x.s;
       h += '<tr class="' + (isMe(e) ? 'fr-rw-me' : '') + '" style="--i:' + Math.min(i, 5) + '"><td><span class="fr-rw-drk">' + (i + 1) + '</span></td><td><span class="fr-rw-dpl">' + avImg(e, 32) + '<b>' + esc(e.name) + '</b>' + (isMe(e) ? ' <span class="fr-rw-you">You</span>' : '') + '</span></td><td>' + r1(st.avgScore).toFixed(1) + '%</td><td>' + r1(st.avgAcc).toFixed(1) + '%</td><td>' + r1(st.avgSecs).toFixed(1) + 's</td></tr>';
     });
