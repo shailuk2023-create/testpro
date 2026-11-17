@@ -10,6 +10,13 @@
 <meta name="apple-mobile-web-app-title" content="TESTPRO">
 <link rel="manifest" href="https://progressier.app/XI0kRddwFU4ZoDYaXp2f/progressier.json"/>
 <script defer src="https://progressier.app/XI0kRddwFU4ZoDYaXp2f/script.js"></script>
+<!-- Worker B (Web Push + VAPID, NOT Progressier): push notifications use the
+     browser-native Web Push API + VAPID (see the NTF_* block in the
+     leaderboard script). The Progressier script above is kept ONLY for PWA
+     install/offline — it is NOT the push transport. The SKQuizPro zip the
+     user sent contains zero Progressier code; its push works via Web Push +
+     VAPID, and TESTPRO mirrors that proven design with Firestore
+     (push_subscriptions collection) as the subscription store. -->
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>/* v40: apply the saved theme before first paint — no light->dark flash on boot */try{var _v40s=JSON.parse(localStorage.getItem('super1000_v1')||'{}');var _v40d=_v40s.dark;if(_v40d===undefined)_v40d=(window.innerWidth<900||(typeof navigator!=='undefined'&&navigator.maxTouchPoints>0));document.documentElement.setAttribute('data-theme',_v40d?'dark':'light');}catch(e){}</script>
@@ -2998,6 +3005,73 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
   .list-topbar .tb-actions{gap:5px!important}
 }
 </style>
+<style id="hdr-brand-simple">
+/* Header brand simple (user, 17 Nov 2026): no round pill around TESTPRO + logo,
+   no white box around the logo — plain logo + black TEST / golden PRO text,
+   like the slider. Kills the premium5 gradient on .bw. */
+.list-topbar .pm-brand{background:none!important;border:none!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin-right:0!important;gap:8px!important;min-width:0}
+.list-topbar .pm-brand:hover{transform:none!important}
+.list-topbar .pm-brand .logo-mark{background:none!important;border-radius:0!important;box-shadow:none!important;padding:0!important;height:28px!important;animation:none!important}
+.list-topbar .pm-brand .bw{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:var(--text-strong)!important;font-weight:800!important;font-size:19px!important;letter-spacing:.3px!important;white-space:nowrap}
+.list-topbar .pm-brand .bw b{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:#f0b429!important;font-weight:800!important}
+@media (max-width:640px){
+  .list-topbar .pm-brand{gap:6px!important;padding:0!important}
+  .list-topbar .pm-brand .logo-mark{height:18px!important;padding:0!important}
+  .list-topbar .pm-brand .bw{font-size:15px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+}
+@media (max-width:380px){
+  .list-topbar .pm-brand{padding:0!important}
+  .list-topbar .pm-brand .bw{display:none!important}
+}
+</style>
+<style id="notif-bell-css">
+/* ============ NOTIF (Worker A): bell icon + in-app notification panel ============
+   Bell sits in .tb-actions right after #darkToggle. Panel is position:absolute
+   under the top bar on desktop, and a position:fixed full-width sheet on mobile.
+   Colours reuse the app tokens (var(--surface)/--border/--teal/--muted) so the
+   light + dark themes match automatically. The .sync-pill is already
+   display:none at <=560px (base CSS), so no extra pill rule is needed here.
+   .list-topbar gets position:relative so the absolute panel anchors to it;
+   that does not move the top bar and does not affect the position:fixed
+   search dropdown (.search-open). */
+.list-topbar{position:relative}
+#notifBell{position:relative}
+#notifBell .i{color:var(--muted2)}
+#notifBell:hover .i{color:var(--accent)}
+#notifBell[aria-expanded="true"]{background:var(--hover);color:var(--accent);border-color:var(--border2)}
+.notif-dot{position:absolute;top:7px;right:7px;width:10px;height:10px;border-radius:50%;background:#ef4444;border:2px solid var(--surface);display:block;pointer-events:none}
+.notif-dot[hidden]{display:none!important}
+.notif-panel{position:absolute;top:calc(100% + 8px);right:12px;width:380px;max-width:calc(100vw - 24px);max-height:min(480px,calc(100dvh - 90px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 18px 44px -12px rgba(15,23,42,.35);z-index:90;overflow:hidden}
+.notif-panel[hidden]{display:none!important}
+.notif-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.notif-title{font-size:15px;font-weight:800;color:var(--text-strong)}
+.notif-markall{border:0;background:none;color:var(--teal);font-size:13px;font-weight:700;cursor:pointer;padding:4px 6px;border-radius:8px}
+.notif-markall:hover{background:var(--hover)}
+.notif-list{overflow-y:auto;padding:6px}
+.notif-item{display:flex;gap:10px;padding:10px;border-radius:12px;cursor:pointer;border-left:3px solid transparent}
+.notif-item:hover{background:var(--hover)}
+.notif-item:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.notif-item.notif-unread{background:color-mix(in srgb,var(--teal) 7%,transparent);border-left-color:var(--teal)}
+.notif-item.notif-unread .notif-item-title{font-weight:800}
+.notif-ic{flex:0 0 34px;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--input-bg);color:var(--teal)}
+.notif-ic .i{width:18px;height:18px}
+.notif-ic.t-topper{color:#f59e0b}
+.notif-ic.t-report{color:#22c55e}
+.notif-ic.t-announcement{color:#8b5cf6}
+.notif-item-body{flex:1;min-width:0}
+.notif-item-title,.notif-item-msg,.notif-item-time{display:block}
+.notif-item-title{font-size:14px;font-weight:700;color:var(--text-strong);line-height:1.3}
+.notif-item-msg{font-size:13px;color:var(--muted);line-height:1.45;margin-top:2px;overflow-wrap:break-word}
+.notif-item-time{font-size:11.5px;color:var(--muted);margin-top:4px}
+.notif-empty{padding:22px 16px;text-align:center;font-size:13.5px;color:var(--muted)}
+@media (max-width:640px){
+  /* Fixed sheet: the top bar carries backdrop-filter (premium5), which makes
+     it the containing block for fixed descendants — it is full-viewport-width
+     at top:0, so left/right/top land exactly as on the viewport. */
+  .notif-panel{position:fixed;top:66px;left:8px;right:8px;width:auto;max-width:none;max-height:calc(100dvh - 80px)}
+  #notifBell .notif-dot{top:5px;right:5px}
+}
+</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
@@ -3122,6 +3196,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
 <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9.5a6 6 0 1 0-12 0c0 5.5-2 6.5-2 6.5h16s-2-1-2-6.5"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/></symbol>
 </defs></svg>
 
 <!-- ================= HOME / TEST LIST ================= -->
@@ -3148,9 +3223,15 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="tb-actions">
           <button class="icon-btn mob-only" id="homeSearchIcon" title="Search" aria-label="Search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
           <button class="icon-btn" id="darkToggle" title="Dark mode" aria-label="Dark mode"><svg class="i i-moon" aria-hidden="true"><use href="#i-moon"/></svg><svg class="i i-sun" aria-hidden="true"><use href="#i-sun"/></svg></button>
+          <button class="icon-btn" id="notifBell" title="Notifications" aria-label="Notifications" aria-haspopup="true" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span class="notif-dot" id="notifDot" hidden></span></button>
           <button class="icon-btn" id="fsBtnHome" title="Full screen" aria-label="Full screen"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg></button>
           <span class="sync-pill" id="syncStatus" title="Sync status">● Offline</span>
           <div class="avatar" id="avatarInitial" title="Profile" role="button" tabindex="0">S</div>
+        </div>
+        <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications" hidden>
+          <div class="notif-head"><span class="notif-title">Notifications</span><button type="button" class="notif-markall" id="notifMarkAll">Mark all read</button></div>
+          <div class="notif-list" id="notifList" role="list"></div>
+          <div class="notif-empty" id="notifEmpty">Connecting&hellip;</div>
         </div>
       </div>
       <div class="list-body" id="listBody">
@@ -4968,8 +5049,43 @@ function selectReportType(btn){
   var send = $('reportSendBtn');
   if (send) send.disabled = false;
 }
+/* ---- Report -> reporter link (Worker C, notifications) ----
+   The report is linked to the reporter two ways (both best-effort, both
+   silent on failure — the Google Form POST below is the source of truth
+   and must never break):
+   (a) PRIMARY: one doc in Firestore collection `reports`
+       {uid, chapter, test, qnum, what, detail, qtext, opts, ans, sol,
+        name, createdAt (Date.now() ms), status:'open'} — auto-ID doc.
+       The 15-min report-check cron matches it by chapter/test/qnum/what
+       + createdAt within ~30 min of the form response time.
+   (b) FALLBACK: a ` [uid:<UID>]` token appended to the Detail field sent
+       to the Google Form, so the cron can recover the UID from the form
+       response alone even if the Firestore write was blocked by rules
+       or the user was offline. The cron strips the token before showing
+       the detail anywhere.
+   Guest (no login): reportUid() returns '' — no Firestore write, no
+   token, the Form POST is unchanged. 'me' (myUid's guest sentinel) is
+   NEVER treated as a UID. */
+function reportUid(){
+  try {
+    var u = (typeof myUid === 'function') ? (myUid() || '') : '';
+    if (!u || u === 'me') return '';
+    return String(u);
+  } catch(e) { return ''; }
+}
+function linkReportToReporter(uid, type, c, detail, reporterName){
+  if (!uid) return;
+  try {
+    var fb = window.__fb;
+    if (!fb || !fb.db || typeof fsMod !== 'function' || typeof withTimeout !== 'function') return;
+    var doc = {uid: uid, chapter: c.chapter, test: c.test, qnum: c.qnum, what: type, detail: detail, qtext: c.qtext, opts: c.opts, ans: c.ans, sol: c.sol, name: reporterName || '', createdAt: Date.now(), status: 'open'};
+    withTimeout(fsMod(), 10000).then(function(m){
+      var ref = m.doc(m.collection(fb.db, 'reports'));
+      return withTimeout(m.setDoc(ref, doc), 10000);
+    }).catch(function(){});
+  } catch(e) {}
+}
 function silentSubmitReport(){
-  var type = reportSelectedType;
   if (!type){
     showToast('Pehle choose karo — kya galat hai?');
     return;
@@ -5008,13 +5124,19 @@ function silentSubmitReport(){
       }
     } catch(e3) {}
   }
+  var reportUidVal = reportUid();
+  var detailForForm = detail;
+  if (reportUidVal) {
+    linkReportToReporter(reportUidVal, type, c, detail, reporterName);
+    detailForForm = detail + ' [uid:' + reportUidVal + ']';
+  }
   var fields = {};
   if (reporterName) fields['entry.' + REPORT_ENTRIES.name] = reporterName;
   fields['entry.' + REPORT_ENTRIES.chapter] = c.chapter;
   fields['entry.' + REPORT_ENTRIES.test] = c.test;
   fields['entry.' + REPORT_ENTRIES.qnum] = c.qnum;
   fields['entry.' + REPORT_ENTRIES.what] = type;
-  fields['entry.' + REPORT_ENTRIES.detail] = detail;
+  fields['entry.' + REPORT_ENTRIES.detail] = detailForForm;
   fields['entry.' + REPORT_ENTRIES.qtext] = c.qtext;
   fields['entry.' + REPORT_ENTRIES.opts] = c.opts;
   fields['entry.' + REPORT_ENTRIES.ans] = c.ans;
@@ -9943,6 +10065,191 @@ function openPicker(){
 
 /* ============================ LEADERBOARD DATA ============================ */
 var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', list: [], state: 'idle', err: '', fetchedAt: 0, stale: false, busy: false, lastSig: '', pubTimer: null, pubErr: '', unsub: null, live: false, repairPubPending: false};
+/* ============================ WEB PUSH + TOPPER NOTIFY (Worker B) ============================
+   Push transport is browser-native Web Push + VAPID (NOT Progressier — the
+   SKQuizPro zip the user sent contains ZERO Progressier code; its push works
+   via Web Push + VAPID + a backend, and this mirrors that proven design with
+   Firestore as the subscription store instead of Supabase).
+   - SUBSCRIBE (this block): PushManager + the active service worker subscribe
+     with the VAPID PUBLIC key below; the subscription (endpoint/p256dh/auth)
+     is upserted into Firestore `push_subscriptions/{deviceId}` with the
+     Firebase UID attached ('' for guests) so the sender can target one user
+     or broadcast to all. No new backend is needed.
+   - PERMISSION: never prompted on load. ntfEnsurePushSubscription() is
+     silent — it only (re)subscribes when Notification.permission is already
+     'granted'. ntfEnablePush() is the explicit user-gesture entry (wire it to
+     the bell / settings affordance): it asks once via requestPermission(),
+     and never re-asks after a denial.
+   - SERVICE WORKER NOTE: the subscription binds to whichever SW is active
+     (today: the Progressier-registered SW). Push events are delivered to
+     THAT worker, so a raw Web Push payload only shows if that worker handles
+     `push` events. If a test push never arrives, the minimal fix is a
+     TESTPRO-owned SW file with `push` + `notificationclick` handlers
+     (mirroring skquizpro-ref/public/sw-extras.js) registered for the app —
+     which replaces the Progressier SW for the scope, so it must also keep a
+     fetch handler to preserve PWA installability. Coordinator decision at
+     go-live; do NOT silently swap the SW here. A runtime warning is logged
+     when the active SW URL contains 'progressier'.
+   - TOPPER (this block): ntfCheckTopper() runs on every leaderboard refresh
+     (onSnapshot + lbRefresh). It writes ONE `notifications` doc per real
+     topper change (deterministic id `topper-<uid>-<coins>`, createdAt = ms
+     number per the Worker-C convention) and records the last-notified topper
+     in `meta/topper`. First run only records the baseline — no notification.
+     The hourly GitHub Actions job is the backstop (same doc id, same meta)
+     and the actual push sender.
+   - SECRETS: the VAPID *public* key below is safe to ship in the app. The
+     VAPID *private* key NEVER appears here — it lives only in the GitHub
+     secret VAPID_PRIVATE_KEY. Firestore rules must allow: authed users to
+     create/read `notifications`, read/write their own `push_subscriptions`
+     doc, and read/write `meta/topper` (the hourly job uses the Admin SDK
+     and bypasses rules). */
+var NTF_VAPID_PUBLIC_KEY = 'BBEC37inGxK2DYBCFtLRLHdhT3geI5wRfJGm5vXSfI9kcdcag7rtngAsr0BNrso-HkknL7ZdTDF07SWiMuKLDoY'; /* VAPID PUBLIC key only (generated fresh for TESTPRO, 17 Nov 2026; 87-char base64url P-256). Its private counterpart was NOT stored anywhere — at go-live regenerate the pair in ONE session, paste the private key straight into the GitHub secret VAPID_PRIVATE_KEY, and replace this constant with the new public key. NEVER put a private key in this file. */
+var NTF = {lastTopperSig: '', topperBusy: false, pushBusy: false, deviceId: '', lastEndpoint: '', lastUid: null};
+function ntfFbUid(){ var u = fbUser(); return u ? u.uid : ''; }
+function ntfB64UrlToU8(s){
+  var pad = '='.repeat((4 - (s.length % 4)) % 4);
+  var b64 = (s + pad).replace(/-/g, '+').replace(/_/g, '/');
+  var raw = atob(b64), out = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+function ntfU8ToB64Url(buf){
+  if (!buf) return '';
+  var bytes = new Uint8Array(buf), bin = '';
+  for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function ntfDeviceId(){
+  if (NTF.deviceId) return NTF.deviceId;
+  var id = '';
+  try { id = localStorage.getItem('tp_push_device_id') || ''; } catch (e) {}
+  if (!id){ id = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36); try { localStorage.setItem('tp_push_device_id', id); } catch (e) {} }
+  NTF.deviceId = id;
+  return id;
+}
+function ntfSubKeys(sub){
+  var endpoint = '', p256dh = '', auth = '';
+  try { var j = sub.toJSON(); endpoint = (j && j.endpoint) || sub.endpoint || ''; p256dh = (j && j.keys && j.keys.p256dh) || ''; auth = (j && j.keys && j.keys.auth) || ''; } catch (e) {}
+  try { if (!p256dh) p256dh = ntfU8ToB64Url(sub.getKey('p256dh')); } catch (e) {}
+  try { if (!auth) auth = ntfU8ToB64Url(sub.getKey('auth')); } catch (e) {}
+  return {endpoint: endpoint, p256dh: p256dh, auth: auth};
+}
+/* Silent subscribe/resync: only runs when Notification.permission is already
+   'granted' — it NEVER prompts. Reuses the existing PushManager subscription
+   when present; otherwise subscribes with the VAPID public key, then upserts
+   the subscription into Firestore `push_subscriptions/{deviceId}` (one doc
+   per device; the uid field is overwritten on each login, so a later login
+   on the same browser retargets the device). Guests store with uid '' so
+   broadcast pushes still reach them. No-ops gracefully when the browser has
+   no serviceWorker / PushManager / Notification. */
+async function ntfEnsurePushSubscription(uid){
+  uid = uid || '';
+  if (NTF.pushBusy) return {ok: false, reason: 'busy'};
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || typeof Notification === 'undefined') return {ok: false, reason: 'unsupported'};
+  if (Notification.permission !== 'granted') return {ok: false, reason: 'no-permission'};
+  if (!NTF_VAPID_PUBLIC_KEY) return {ok: false, reason: 'no-vapid-key'};
+  var fb = window.__fb;
+  if (!fb || !fb.db || !navigator.onLine) return {ok: false, reason: 'no-db'};
+  NTF.pushBusy = true;
+  try {
+    var reg = await navigator.serviceWorker.ready;
+    if (reg && reg.active && reg.active.scriptURL && /progressier/i.test(reg.active.scriptURL)){
+      try { console.warn('[ntf-push] active service worker is Progressier-registered; a test push must confirm delivery — see the NTF block comment.'); } catch (e) {}
+    }
+    var sub = await reg.pushManager.getSubscription();
+    if (!sub){
+      sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: ntfB64UrlToU8(NTF_VAPID_PUBLIC_KEY).buffer});
+    }
+    var k = ntfSubKeys(sub);
+    if (!k.endpoint || !k.p256dh || !k.auth) return {ok: false, reason: 'no-keys'};
+    if (k.endpoint === NTF.lastEndpoint && NTF.lastUid === uid) return {ok: true, reason: 'already-stored'};
+    var m = await withTimeout(fsMod(), 10000);
+    if (!m || typeof m.setDoc !== 'function' || typeof m.doc !== 'function') return {ok: false, reason: 'no-firestore'};
+    var devId = ntfDeviceId();
+    await withTimeout(m.setDoc(m.doc(fb.db, 'push_subscriptions', devId), {endpoint: k.endpoint, p256dh: k.p256dh, auth: k.auth, uid: uid, deviceId: devId, userAgent: (navigator.userAgent || '').slice(0, 300), updatedAt: Date.now()}, {merge: true}), 10000);
+    NTF.lastEndpoint = k.endpoint; NTF.lastUid = uid;
+    try { localStorage.setItem('tp_push_subscribed', '1'); } catch (e) {}
+    return {ok: true};
+  } catch (e){
+    try { console.warn('[ntf-push]', (e && e.name) || '', (e && e.message) || e); } catch (e2) {}
+    return {ok: false, reason: (e && e.name) || 'subscribe-failed'};
+  } finally { NTF.pushBusy = false; }
+}
+/* Explicit user-gesture entry (wire to the bell / settings affordance by the
+   coordinator): asks for Notification permission ONCE, only from a tap.
+   A denial is respected — this never re-asks on its own. */
+async function ntfEnablePush(){
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || typeof Notification === 'undefined') return {ok: false, reason: 'unsupported'};
+  var perm = Notification.permission;
+  if (perm === 'denied') return {ok: false, reason: 'denied'};
+  if (perm === 'default'){
+    try { perm = await Notification.requestPermission(); } catch (e) { return {ok: false, reason: 'prompt-failed'}; }
+  }
+  if (perm !== 'granted') return {ok: false, reason: 'not-granted'};
+  return ntfEnsurePushSubscription(ntfFbUid());
+}
+/* Auth null-branch hook: wasAuthed = a real sign-out (leave the stored
+   subscription alone — the next login overwrites its uid field; clearing it
+   here would need an authed write, but fb.user is already null).
+   First boot with no session (guest): silently re-sync if permission was
+   already granted; never prompts. */
+function ntfOnAuthNull(wasAuthed){
+  if (wasAuthed) return;
+  try { var p = ntfEnsurePushSubscription(''); if (p && typeof p.catch === 'function') p.catch(function(){}); } catch (e) {}
+}
+/* Topper-change detection. Called after every leaderboard refresh
+   (lbSubscribe onSnapshot + lbRefresh) with the already coins-sorted list.
+   - In-memory sig (uid:coins) dedups repeat snapshots in this session.
+   - `meta/topper` is the cross-client guard: first run (no meta doc) only
+     records the baseline — NO notification for the initial topper. A change
+     writes ONE `notifications` doc with the deterministic id
+     `topper-<uid>-<coins>` (idempotent if two clients — or the hourly job —
+     race) and updates the meta doc. createdAt is a ms NUMBER (Worker-C
+     convention), not a serverTimestamp.
+   - A failed fast path only logs; the hourly GitHub Actions job is the
+     backstop and sends the actual push. */
+async function ntfCheckTopper(list){
+  var fb = window.__fb;
+  if (!list || !list.length || !fb || !fb.user || !fb.db || !navigator.onLine) return 'skip';
+  var top = list[0];
+  if (!top || !top.uid) return 'skip';
+  var coins = entryCoins(top);
+  var sig = top.uid + ':' + coins;
+  if (sig === NTF.lastTopperSig) return 'same';
+  NTF.lastTopperSig = sig;
+  if (NTF.topperBusy) return 'busy';
+  NTF.topperBusy = true;
+  try {
+    var m = await withTimeout(fsMod(), 10000);
+    if (!m || typeof m.getDoc !== 'function' || typeof m.setDoc !== 'function' || typeof m.doc !== 'function') return 'no-firestore';
+    var metaRef = m.doc(fb.db, 'meta', 'topper');
+    var metaSnap = await withTimeout(m.getDoc(metaRef), 10000);
+    var md = (metaSnap && metaSnap.exists && metaSnap.exists()) ? metaSnap.data() : null;
+    if (!md || !md.uid){
+      await withTimeout(m.setDoc(metaRef, {uid: top.uid, name: String(top.name || 'Student').slice(0, 24), coins: coins, updatedAt: Date.now()}, {merge: true}), 10000);
+      return 'first-run';
+    }
+    if (md.uid === top.uid && +md.coins === coins) return 'already-notified';
+    var title = 'New leaderboard topper!';
+    var body = String(top.name || 'Student').slice(0, 24) + ' now leads with ' + coins + ' coins!';
+    var docId = 'topper-' + top.uid + '-' + coins;
+    var notifRef = m.doc(fb.db, 'notifications', docId);
+    var ex = await withTimeout(m.getDoc(notifRef), 10000);
+    if (!ex || !ex.exists || !ex.exists()){
+      await withTimeout(m.setDoc(notifRef, {type: 'topper', title: title, body: body, target: 'all', createdAt: Date.now(), data: {topperUid: top.uid, topperName: String(top.name || 'Student').slice(0, 24), coins: coins}}), 10000);
+    }
+    await withTimeout(m.setDoc(metaRef, {uid: top.uid, name: String(top.name || 'Student').slice(0, 24), coins: coins, updatedAt: Date.now()}, {merge: true}), 10000);
+    return 'notified';
+  } catch (e){
+    try { console.warn('[ntf-topper]', (e && e.code) || (e && e.message) || e); } catch (e2) {}
+    return 'error';
+  } finally { NTF.topperBusy = false; }
+}
+window.ntfEnsurePushSubscription = ntfEnsurePushSubscription;
+window.ntfEnablePush = ntfEnablePush;
+window.ntfOnAuthNull = ntfOnAuthNull;
+window.ntfCheckTopper = ntfCheckTopper;
+
 var fsP = null;
 function fsMod(){ return fsP || (fsP = import(FS_URL)); }
 function withTimeout(p, ms){ return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e = new Error('timeout'); e.code = 'timeout'; rej(e); }, ms); })]); }
@@ -10095,6 +10402,7 @@ async function lbRefresh(){
     lbUseLocalMe();
     lbSaveCache(LB.list);
     LB.state = 'ok';
+    try { ntfCheckTopper(LB.list); } catch (e) {} /* Worker B: topper-change -> notifications doc */
   } catch (err){
     var code = (err && err.code) || '';
     if (!code && LB.pubErr) code = LB.pubErr;
@@ -10137,6 +10445,7 @@ async function lbSubscribe(){
       lbUseLocalMe();
       lbSaveCache(LB.list);
       lbRender();
+      try { ntfCheckTopper(LB.list); } catch (e) {} /* Worker B: topper-change -> notifications doc */
     }, function(err){
       /* Listener died (rules revoked, net drop, sign-out). Never show a
          rules note for a plain logout: no user -> just detach quietly. */
@@ -10822,6 +11131,356 @@ window.lbUseLocalMe = lbUseLocalMe; window.lbSaveCache = lbSaveCache;
 window.r2 = r2;
 
 window.openLeaderboard = openLeaderboard;
+})();
+</script>
+<script id="tp-notif">
+/* ================= TESTPRO notifications — bell + in-app panel (Worker A) ============
+   Firestore collection: `notifications`. Document shape (writers: topper
+   detection / report flow / announcements — Workers B/C, NOT this file):
+     { type: 'topper' | 'report' | 'announcement',
+       title: string, body: string,
+       target: 'all' | <Firebase UID>,          // 'all' = every user
+       createdAt: serverTimestamp() | millis,   // writers use serverTimestamp()
+       data: {...} }  // e.g. {uid, name, coins} for topper; {chapter, testId, qnum} for report
+   READS (this file only — nothing here writes a notification document):
+     Two onSnapshot listeners, NO orderBy. A where()+orderBy() on different
+     fields would need a composite Firestore index; sorting is done
+     client-side instead, so no index is required:
+       (a) where('target','==','all'), limit(50)         — everyone, incl. guests
+       (b) where('target','==',<current UID>), limit(50) — logged-in user only
+     The two buckets are merged, de-duplicated by doc id, sorted newest-first.
+   READ STATE (per user):
+     - Instant/offline source of truth: localStorage key
+       `tp_notif_read_v1_<uid>` (or `..._guest` when logged out) — a JSON
+       array of read notification ids (capped at 200). The red dot reads
+       ONLY this mirror, so it clears instantly and works offline.
+     - Cross-device copy: `users/{uid}/profile/data` field `readNotifs`
+       (array, setDoc merge:true — the sync module's own profile push also
+       uses merge:true and never writes a `readNotifs` field, so the two
+       writes cannot clobber each other). Written debounced (800 ms) and
+       batched: one write per mark-all-read, not one per item. On subscribe
+       the cloud array is pulled once per UID and unioned into the mirror.
+       Guests (no UID) use localStorage only — no Firestore read-state write.
+   UID source: live `window.__fb.user.uid` first; before auth resolves, the
+   last login's UID stamped in the local store (`_fbMeta.uid`, cleared on
+   logout) — the same source the v45 optimistic launch uses. Never the 'me'
+   fallback from myUid(): that is not a Firebase UID.
+   Navigation on tap: topper -> leaderboard, announcement -> home,
+   report -> mark-read only (the fixed question's test is not reliably
+   addressable from the notification data). Panel: bell toggles, closes on
+   outside tap / Escape. Does not touch the top-bar search dropdown.
+   Test seam: window.__notif = {ensure, markAllRead, unread, list, open, close}. */
+(function(){
+'use strict';
+var NOTIF_FS_URL = 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+var LS_PREFIX = 'tp_notif_read_v1_';
+var READ_CAP = 200;
+var QUERY_LIMIT = 50;
+var WRITE_DEBOUNCE_MS = 800;
+var N = {list: [], allList: [], myList: [], read: {}, readKey: null, unsubs: [], fsP: null, subscribed: false, subscribing: false, uid: null, pulledUid: null, pullRetryAfter: 0, writeTimer: null, cloudDirty: false, hookDone: false, retryAfter: 0, timer: null};
+function notifEl(id){ return document.getElementById(id); }
+function notifEsc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+function notifUid(){
+  try {
+    var fb = window.__fb;
+    if (fb && fb.user && fb.user.uid) return fb.user.uid;
+    var st = null;
+    try { st = JSON.parse(localStorage.getItem('super1000_v1') || '{}'); } catch (e) { st = null; }
+    if (st && st._fbMeta && st._fbMeta.uid) return st._fbMeta.uid;
+  } catch (e) {}
+  return null;
+}
+function notifLiveUid(){
+  try { var fb = window.__fb; if (fb && fb.user && fb.user.uid) return fb.user.uid; } catch (e) {}
+  return null;
+}
+function notifReadKey(uid){ return LS_PREFIX + (uid || 'guest'); }
+function notifLoadRead(uid){
+  N.readKey = notifReadKey(uid);
+  N.read = {};
+  try {
+    var arr = JSON.parse(localStorage.getItem(N.readKey) || '[]');
+    if (arr && arr.length) { for (var i = 0; i < arr.length; i++) { if (arr[i]) N.read[arr[i]] = 1; } }
+  } catch (e) { N.read = {}; }
+}
+function notifSaveRead(){
+  try {
+    var ids = Object.keys(N.read);
+    if (ids.length > READ_CAP) ids = ids.slice(ids.length - READ_CAP);
+    localStorage.setItem(N.readKey || notifReadKey(N.uid), JSON.stringify(ids));
+  } catch (e) {}
+}
+function notifIsRead(id){ return !!N.read[id]; }
+function notifUnreadCount(){
+  var n = 0;
+  for (var i = 0; i < N.list.length; i++) { if (!notifIsRead(N.list[i].id)) n++; }
+  return n;
+}
+function notifUpdateDot(){
+  var bell = notifEl('notifBell'), dot = notifEl('notifDot');
+  var u = notifUnreadCount();
+  if (dot) dot.hidden = (u === 0);
+  if (bell) bell.setAttribute('aria-label', u > 0 ? ('Notifications (' + u + ' unread)') : 'Notifications');
+}
+function notifTsMs(v){
+  if (v == null) return 0;
+  if (typeof v === 'number') return v;
+  if (typeof v === 'string') { var n = Date.parse(v); return isNaN(n) ? 0 : n; }
+  try { if (typeof v.toMillis === 'function') return v.toMillis(); } catch (e) {}
+  try { if (typeof v.seconds === 'number') return v.seconds * 1000; } catch (e) {}
+  return 0;
+}
+function notifTimeAgo(ms){
+  if (!ms) return '';
+  var d = Date.now() - ms;
+  if (d < 0) d = 0;
+  var m = Math.floor(d / 60000);
+  if (m < 1) return 'Just now';
+  if (m < 60) return m + 'm ago';
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  var days = Math.floor(h / 24);
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return days + 'd ago';
+  try { return new Date(ms).toLocaleDateString(undefined, {day: 'numeric', month: 'short'}); } catch (e) { return ''; }
+}
+function notifIcon(type){
+  if (type === 'topper') return {sym: 'i-trophy', cls: 't-topper'};
+  if (type === 'report') return {sym: 'i-check-circle', cls: 't-report'};
+  return {sym: 'i-spark', cls: 't-announcement'};
+}
+function notifMerge(){
+  var seen = {}, out = [], i, it;
+  for (i = 0; i < N.myList.length; i++) { it = N.myList[i]; if (it && it.id && !seen[it.id]) { seen[it.id] = 1; out.push(it); } }
+  for (i = 0; i < N.allList.length; i++) { it = N.allList[i]; if (it && it.id && !seen[it.id]) { seen[it.id] = 1; out.push(it); } }
+  out.sort(function(a, b){ return (b.ms || 0) - (a.ms || 0); });
+  N.list = out.slice(0, QUERY_LIMIT);
+}
+function notifRender(){
+  var listEl = notifEl('notifList'), emptyEl = notifEl('notifEmpty');
+  if (!listEl) return;
+  var html = '', i, it, ic;
+  for (i = 0; i < N.list.length; i++) {
+    it = N.list[i];
+    ic = notifIcon(it.type);
+    html += '<div class="notif-item' + (notifIsRead(it.id) ? '' : ' notif-unread') + '" role="listitem" tabindex="0" data-nid="' + notifEsc(it.id) + '" data-ntype="' + notifEsc(it.type) + '">'
+      + '<span class="notif-ic ' + ic.cls + '"><svg class="i" aria-hidden="true"><use href="#' + ic.sym + '"/></svg></span>'
+      + '<span class="notif-item-body"><span class="notif-item-title">' + notifEsc(it.title) + '</span>'
+      + '<span class="notif-item-msg">' + notifEsc(it.body) + '</span>'
+      + (it.ms ? '<span class="notif-item-time">' + notifEsc(notifTimeAgo(it.ms)) + '</span>' : '')
+      + '</span></div>';
+  }
+  listEl.innerHTML = html;
+  if (emptyEl) {
+    if (!N.list.length) { emptyEl.hidden = false; emptyEl.textContent = N.subscribed ? 'No notifications yet.' : 'Connecting…'; }
+    else emptyEl.hidden = true;
+  }
+  notifUpdateDot();
+}
+function notifMarkRead(id){
+  if (!id || notifIsRead(id)) return;
+  N.read[id] = 1;
+  notifSaveRead();
+  notifScheduleCloudWrite();
+  notifRender();
+}
+function notifMarkAllRead(){
+  var changed = false, i;
+  for (i = 0; i < N.list.length; i++) { if (!notifIsRead(N.list[i].id)) { N.read[N.list[i].id] = 1; changed = true; } }
+  if (!changed) return;
+  notifSaveRead();
+  notifScheduleCloudWrite();
+  notifRender();
+}
+function notifScheduleCloudWrite(){
+  if (N.writeTimer) return;
+  N.writeTimer = setTimeout(function(){
+    N.writeTimer = null;
+    notifFlushRead();
+  }, WRITE_DEBOUNCE_MS);
+}
+function notifFsMod(){
+  if (!N.fsP) N.fsP = import(NOTIF_FS_URL);
+  return N.fsP;
+}
+function notifFlushRead(){
+  var uid = notifLiveUid();
+  if (!uid) { N.cloudDirty = true; return; }
+  if (uid !== N.uid) return;
+  N.cloudDirty = false;
+  notifFsMod().then(function(m){
+    try {
+      var fb = window.__fb;
+      if (!fb || !fb.db || !fb.user || fb.user.uid !== uid) return;
+      var ids = Object.keys(N.read);
+      if (ids.length > READ_CAP) ids = ids.slice(ids.length - READ_CAP);
+      var pr = m.setDoc(m.doc(fb.db, 'users/' + uid + '/profile/data'), {readNotifs: ids}, {merge: true});
+      if (pr && pr.catch) pr.catch(function(){ N.cloudDirty = true; });
+    } catch (e) {}
+  }).catch(function(){ N.fsP = null; N.cloudDirty = true; });
+}
+function notifPullRead(){
+  var uid = notifLiveUid();
+  if (!uid) return;
+  if (N.pulledUid === uid) return;
+  if (N.pullRetryAfter && Date.now() < N.pullRetryAfter) return;
+  notifFsMod().then(function(m){
+    var fb = window.__fb;
+    if (!fb || !fb.db || !fb.user || fb.user.uid !== uid) return null;
+    return m.getDoc(m.doc(fb.db, 'users/' + uid + '/profile/data'));
+  }).then(function(snap){
+    if (!snap || typeof snap.exists !== 'function' || !snap.exists()) return;
+    var d = null;
+    try { d = snap.data(); } catch (e) {}
+    N.pulledUid = uid;
+    if (d && d.readNotifs && d.readNotifs.length) {
+      var changed = false, i;
+      for (i = 0; i < d.readNotifs.length; i++) { if (d.readNotifs[i] && !N.read[d.readNotifs[i]]) { N.read[d.readNotifs[i]] = 1; changed = true; } }
+      if (changed) { notifSaveRead(); notifRender(); }
+    }
+  }).catch(function(){ N.fsP = null; N.pullRetryAfter = Date.now() + 60000; });
+}
+function notifSnapToItems(snap){
+  var out = [];
+  try {
+    snap.forEach(function(docSnap){
+      var d = null;
+      try { d = docSnap.data(); } catch (e) {}
+      if (!d) return;
+      out.push({id: docSnap.id, type: (d.type || 'announcement'), title: (d.title || ''), body: (d.body || ''), ms: notifTsMs(d.createdAt), data: (d.data || {})});
+    });
+  } catch (e) {}
+  return out;
+}
+function notifUnsubscribe(){
+  for (var i = 0; i < N.unsubs.length; i++) { try { N.unsubs[i](); } catch (e) {} }
+  N.unsubs = [];
+  N.subscribed = false;
+}
+function notifSubscribe(){
+  var fb = window.__fb;
+  if (!fb || !fb.db) return Promise.resolve(false);
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(false);
+  if (N.subscribed || N.subscribing) return Promise.resolve(false);
+  N.subscribing = true;
+  var uid = notifUid();
+  return notifFsMod().then(function(m){
+    var fb2 = window.__fb;
+    if (!fb2 || !fb2.db) { N.subscribing = false; return false; }
+    if (N.subscribed) { N.subscribing = false; return true; }
+    var col = m.collection(fb2.db, 'notifications');
+    function onErr(err){
+      var code = (err && err.code) || '';
+      N.retryAfter = Date.now() + (code === 'permission-denied' ? 120000 : 15000);
+      notifUnsubscribe();
+    }
+    var un1 = m.onSnapshot(m.query(col, m.where('target', '==', 'all'), m.limit(QUERY_LIMIT)), function(snap){
+      N.allList = notifSnapToItems(snap);
+      notifMerge(); notifRender();
+    }, onErr);
+    N.unsubs.push(un1);
+    if (uid) {
+      var un2 = m.onSnapshot(m.query(col, m.where('target', '==', uid), m.limit(QUERY_LIMIT)), function(snap){
+        N.myList = notifSnapToItems(snap);
+        notifMerge(); notifRender();
+      }, onErr);
+      N.unsubs.push(un2);
+    }
+    N.subscribed = true;
+    N.subscribing = false;
+    return true;
+  }).catch(function(){
+    N.fsP = null;
+    N.subscribing = false;
+    notifUnsubscribe();
+    N.retryAfter = Date.now() + 15000;
+    return false;
+  });
+}
+function notifEnsure(){
+  var uid = notifUid();
+  if (uid !== N.uid) {
+    N.uid = uid;
+    notifLoadRead(uid);
+    N.pulledUid = null;
+    notifUnsubscribe();
+    notifRender();
+  }
+  if (window.__fbSync && window.__fbSync.onAuthChange && !N.hookDone) {
+    N.hookDone = true;
+    try {
+      window.__fbSync.onAuthChange(function(st){
+        if (st === 'synced') { if (N.cloudDirty) notifFlushRead(); notifPullRead(); notifEnsure(); }
+        else if (st === 'logged-out') { notifUnsubscribe(); notifEnsure(); }
+      });
+    } catch (e) {}
+  }
+  if (N.subscribed) { if (N.cloudDirty) notifFlushRead(); notifPullRead(); return; }
+  if (N.subscribing) return;
+  if (Date.now() < N.retryAfter) return;
+  if (!window.__fb || !window.__fb.db) return;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  notifPullRead();
+  notifSubscribe();
+}
+function notifPanelOpen(){ var p = notifEl('notifPanel'); return !!(p && !p.hidden); }
+function notifSetPanel(open){
+  var p = notifEl('notifPanel'), bell = notifEl('notifBell');
+  if (!p) return;
+  p.hidden = !open;
+  if (bell) bell.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) notifRender();
+}
+function notifTogglePanel(){ notifSetPanel(!notifPanelOpen()); }
+function notifOnItem(nid, ntype){
+  if (!nid) return;
+  notifMarkRead(nid);
+  notifSetPanel(false);
+  try {
+    if (ntype === 'topper' && typeof window.openLeaderboard === 'function') window.openLeaderboard();
+    else if (ntype === 'announcement' && typeof goHome === 'function') goHome();
+  } catch (e) {}
+}
+function notifWire(){
+  var bell = notifEl('notifBell'), panel = notifEl('notifPanel'), listEl = notifEl('notifList'), markAll = notifEl('notifMarkAll');
+  if (!bell || !panel) return false;
+  bell.addEventListener('click', function(){ notifTogglePanel(); });
+  if (markAll) markAll.addEventListener('click', function(){ notifMarkAllRead(); });
+  if (listEl) {
+    listEl.addEventListener('click', function(e){
+      var t = e.target && e.target.closest ? e.target.closest('.notif-item') : null;
+      if (!t) return;
+      notifOnItem(t.getAttribute('data-nid'), t.getAttribute('data-ntype'));
+    });
+    listEl.addEventListener('keydown', function(e){
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var t = e.target && e.target.closest ? e.target.closest('.notif-item') : null;
+      if (!t) return;
+      e.preventDefault();
+      notifOnItem(t.getAttribute('data-nid'), t.getAttribute('data-ntype'));
+    });
+  }
+  document.addEventListener('click', function(e){
+    if (!notifPanelOpen()) return;
+    var t = e.target;
+    if (t && t.closest && (t.closest('#notifPanel') || t.closest('#notifBell'))) return;
+    notifSetPanel(false);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && notifPanelOpen()) notifSetPanel(false);
+  });
+  if (window.addEventListener) window.addEventListener('online', function(){ notifEnsure(); });
+  return true;
+}
+window.__notif = {ensure: notifEnsure, markAllRead: notifMarkAllRead, unread: notifUnreadCount, list: function(){ return N.list.slice(); }, open: function(){ notifSetPanel(true); }, close: function(){ notifSetPanel(false); }};
+notifLoadRead(notifUid());
+N.uid = notifUid();
+notifRender();
+if (!notifWire()) {
+  document.addEventListener('DOMContentLoaded', function(){ notifWire(); notifRender(); });
+}
+N.timer = setInterval(notifEnsure, 3000);
+notifEnsure();
 })();
 </script>
 <script id="tp-coins">
@@ -13045,6 +13704,7 @@ async function loadSdk(){
            the pull that follows tags it with this UID. */
         discardForeignStore(user.uid);
         fbLastUid = user.uid;
+        try { if (typeof window.ntfEnsurePushSubscription === 'function') window.ntfEnsurePushSubscription(user.uid); } catch (e) {} /* Worker B: silent Web Push resync (no prompt; only when permission already granted) */
         /* v40: the password step is for a FIRST-TIME Google account only
            (isNewUser). The register window is the gate's default, so every
            Google tap from a fresh boot carried ae === 'register' — the old
@@ -13075,6 +13735,7 @@ async function loadSdk(){
           return;
         }
         fbSignOutRequested = false;
+        try { if (typeof window.ntfOnAuthNull === 'function') window.ntfOnAuthNull(!!fbAuthedOnce); } catch (e) {} /* Worker B: guest push resync on first boot; no-op on real sign-out */
         if (fbEmailLinkPromptActive){ /* v48: the link-return email prompt owns the modal until the user submits the email — a first null firing must not reset it or pop the login form */ updateHeader(); updateModalView(); updateSettingsAccount(); return; }
         resetPwStep();
         setStatus(navigator.onLine ? 'logged-out' : 'offline');
