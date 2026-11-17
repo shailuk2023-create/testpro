@@ -11449,7 +11449,7 @@ function notifOnItem(nid, ntype){
 function notifWire(){
   var bell = notifEl('notifBell'), panel = notifEl('notifPanel'), listEl = notifEl('notifList'), markAll = notifEl('notifMarkAll');
   if (!bell || !panel) return false;
-  bell.addEventListener('click', function(){ notifTogglePanel(); });
+  /* Bell is handled by the delegated document click handler below (robust on mobile/touch + if the button is re-created). */
   if (markAll) markAll.addEventListener('click', function(){ notifMarkAllRead(); });
   if (listEl) {
     listEl.addEventListener('click', function(e){
@@ -11466,10 +11466,12 @@ function notifWire(){
     });
   }
   document.addEventListener('click', function(e){
-    if (!notifPanelOpen()) return;
     var t = e.target;
-    if (t && t.closest && (t.closest('#notifPanel') || t.closest('#notifBell'))) return;
-    notifSetPanel(false);
+    var onBell = !!(t && t.closest && t.closest('#notifBell'));
+    if (onBell) { notifTogglePanel(); return; }
+    if (!notifPanelOpen()) return;
+    var onPanel = !!(t && t.closest && t.closest('#notifPanel'));
+    if (!onPanel) notifSetPanel(false);
   });
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && notifPanelOpen()) notifSetPanel(false);
