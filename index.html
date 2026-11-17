@@ -3217,6 +3217,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <a href="#" id="navAttempted" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg><span>Attempted Tests</span></a>
         <a href="#" id="navSettings" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
         <a href="#" id="navRefresh" onclick="return false"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg><span>Refresh</span></a>
+        <a href="#" id="navPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="navPushLbl">System notifications</span></a>
       </nav>
     </aside>
     <div class="list-main">
@@ -3663,6 +3664,12 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <div class="av-grid" id="avatarGrid"></div>
       </section>
 
+      <section class="card set-card">
+        <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bell"/></svg></span>Notifications</h3>
+        <button class="fb-email-btn" id="setPushBtn" type="button">Enable system notifications</button>
+        <p class="set-acct-status" id="setPushStatus">Topper, streak aur report fix ki khabar phone par bhi pao — button dabakar on karo.</p>
+      </section>
+
     </div>
 
     <div class="set-actions">
@@ -4102,6 +4109,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   <a href="#" id="smLeader"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</a>
   <a href="#" id="smAttempted"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg>Attempted Tests</a>
   <a href="#" id="smRefresh"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh</a>
+  <a href="#" id="smPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="smPushLbl">System notifications</span></a>
 </div>
 <div class="menu-backdrop" id="menuBackdrop"></div>
 
@@ -10220,6 +10228,96 @@ async function ntfEnablePush(){
   if (perm !== 'granted') return {ok: false, reason: 'not-granted'};
   return ntfEnsurePushSubscription(ntfFbUid());
 }
+/* ---- System-notification enable buttons (sidebar bottom + slide-in menu + Settings) ----
+   One shared state helper for #navPush / #smPush / #setPushBtn. Uses
+   Notification.permission + a live pushManager.getSubscription() check.
+   Never prompts on its own — only the tap handler calls ntfEnablePush(). */
+function ntfPushSupported(){
+  try { return ('serviceWorker' in navigator) && ('PushManager' in window) && (typeof Notification !== 'undefined'); }
+  catch (e) { return false; }
+}
+function ntfPushToast(m){
+  try { if (typeof toast === 'function') toast(m); } catch (e) {}
+}
+async function ntfPushHasSub(){
+  try {
+    if (!ntfPushSupported()) return false;
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
+    var reg = await navigator.serviceWorker.ready;
+    if (!reg || !reg.pushManager) return false;
+    var sub = await reg.pushManager.getSubscription();
+    return !!sub;
+  } catch (e) { return false; }
+}
+function ntfPushSetLabels(st){
+  var navLbl = document.getElementById('navPushLbl');
+  var smLbl = document.getElementById('smPushLbl');
+  var setBtn = document.getElementById('setPushBtn');
+  var setStatus = document.getElementById('setPushStatus');
+  var navA = document.getElementById('navPush');
+  var smA = document.getElementById('smPush');
+  if (navLbl) navLbl.textContent = st.nav;
+  if (smLbl) smLbl.textContent = st.nav;
+  if (setBtn){ setBtn.textContent = st.btn; setBtn.disabled = !!st.btnDisabled; }
+  if (setStatus) setStatus.textContent = st.status;
+  if (navA) navA.style.opacity = st.dim ? '0.55' : '';
+  if (smA) smA.style.opacity = st.dim ? '0.55' : '';
+}
+async function ntfRefreshPushBtns(){
+  if (!ntfPushSupported()){
+    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications unavailable', btnDisabled: true, status: 'Is browser me system notifications supported nahi hai.', dim: true});
+    return;
+  }
+  var perm = 'default';
+  try { perm = Notification.permission || 'default'; } catch (e) {}
+  if (perm === 'denied'){
+    ntfPushSetLabels({nav: 'System notifications • Blocked', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — browser ki site settings me jaakar notifications Allow karo, phir wapas aakar dekho.', dim: true});
+    return;
+  }
+  var hasSub = false;
+  try { hasSub = await ntfPushHasSub(); } catch (e) { hasSub = false; }
+  if (perm === 'granted' && hasSub){
+    ntfPushSetLabels({nav: 'System notifications • ON', btn: 'System notifications ON ✓', btnDisabled: false, status: 'System notifications ON hain — topper, streak aur report fix ki khabar phone par bhi milegi.', dim: false});
+    return;
+  }
+  ntfPushSetLabels({nav: 'System notifications', btn: 'Enable system notifications', btnDisabled: false, status: (perm === 'granted') ? 'Permission mil gayi hai — button dabakar subscribe karo.' : 'Topper, streak aur report fix ki khabar phone par bhi pao — button dabakar on karo.', dim: false});
+}
+async function ntfPushBtnTap(ev){
+  if (ev && ev.preventDefault) ev.preventDefault();
+  if (!ntfPushSupported()){ ntfPushToast('Is browser me system notifications supported nahi hai.'); return; }
+  var perm = 'default';
+  try { perm = Notification.permission || 'default'; } catch (e) {}
+  if (perm === 'denied'){
+    ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
+    return;
+  }
+  var res = {ok: false, reason: 'error'};
+  try {
+    if (typeof window.ntfEnablePush === 'function') res = await window.ntfEnablePush();
+  } catch (e) { res = {ok: false, reason: 'error'}; }
+  if (res && res.ok){
+    ntfPushToast('System notifications ON ho gayi!');
+  } else if (res && res.reason === 'denied'){
+    ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
+  } else if (res && res.reason === 'not-granted'){
+    ntfPushToast('Permission nahi mili — system notifications on nahi hui.');
+  } else if (res && res.reason === 'unsupported'){
+    ntfPushToast('Is browser me system notifications supported nahi hai.');
+  } else {
+    ntfPushToast('System notifications on nahi ho payi — dobara try karo.');
+  }
+  try { var pr = ntfRefreshPushBtns(); if (pr && pr.catch) pr.catch(function(){}); } catch (e) {}
+}
+(function ntfPushWire(){
+  try {
+    ['navPush', 'smPush', 'setPushBtn'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', ntfPushBtnTap);
+    });
+    var pr = ntfRefreshPushBtns();
+    if (pr && pr.catch) pr.catch(function(){});
+  } catch (e) {}
+})();
 /* Auth null-branch hook: wasAuthed = a real sign-out (leave the stored
    subscription alone — the next login overwrites its uid field; clearing it
    here would need an authed write, but fb.user is already null).
