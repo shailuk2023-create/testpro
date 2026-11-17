@@ -3028,6 +3028,19 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 }
 </style>
 
+<style id="sm-push-toggle">
+/* System-notification toggle (slide-in menu, right of #smPush). Native-style
+   iOS/Android switch: rounded pill track, sliding knob, teal when ON. */
+.sm-push-toggle{margin-left:auto;flex-shrink:0;display:inline-flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sm-push-toggle input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.sm-push-toggle .sm-push-track{display:inline-block;width:46px;height:26px;border-radius:999px;background:#cbd5e1;position:relative;transition:background .2s ease;flex-shrink:0}
+.sm-push-toggle .sm-push-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s ease}
+.sm-push-toggle input:checked + .sm-push-track{background:var(--teal,#0096b5)}
+.sm-push-toggle input:checked + .sm-push-track .sm-push-knob{transform:translateX(20px)}
+.sm-push-toggle input:disabled + .sm-push-track{opacity:.45;cursor:not-allowed}
+.sm-push-toggle input:focus-visible + .sm-push-track{outline:2px solid var(--teal,#0096b5);outline-offset:2px}
+</style>
+
 <style id="notif-bell-css">
 /* ============ NOTIF (Worker A): bell icon + in-app notification panel ============
    Bell sits in .tb-actions right after #darkToggle. Panel is position:absolute
@@ -4109,7 +4122,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
   <a href="#" id="smLeader"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</a>
   <a href="#" id="smAttempted"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg>Attempted Tests</a>
   <a href="#" id="smRefresh"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh</a>
-  <a href="#" id="smPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="smPushLbl">System notifications</span></a>
+  <a href="#" id="smPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="smPushLbl">System notifications</span><label class="sm-push-toggle" id="smPushToggleWrap" for="smPushToggle"><input type="checkbox" id="smPushToggle" aria-label="System notifications on/off"><span class="sm-push-track"><span class="sm-push-knob"></span></span></label></a>
 </div>
 <div class="menu-backdrop" id="menuBackdrop"></div>
 
@@ -10262,25 +10275,94 @@ function ntfPushSetLabels(st){
   if (setStatus) setStatus.textContent = st.status;
   if (navA) navA.style.opacity = st.dim ? '0.55' : '';
   if (smA) smA.style.opacity = st.dim ? '0.55' : '';
+  /* Slide-in menu toggle: ON only when really subscribed; disabled when unsupported. */
+  var tg = document.getElementById('smPushToggle');
+  if (tg){
+    if (typeof st.toggle === 'boolean') tg.checked = st.toggle;
+    tg.disabled = !!st.toggleDisabled;
+  }
+  var tgWrap = document.getElementById('smPushToggleWrap');
+  if (tgWrap) tgWrap.style.opacity = (st.toggleDisabled || st.dim) ? '0.45' : '';
 }
 async function ntfRefreshPushBtns(){
   if (!ntfPushSupported()){
-    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications unavailable', btnDisabled: true, status: 'Is browser me system notifications supported nahi hai.', dim: true});
+    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications unavailable', btnDisabled: true, status: 'Is browser me system notifications supported nahi hai.', dim: true, toggle: false, toggleDisabled: true});
     return;
   }
   var perm = 'default';
   try { perm = Notification.permission || 'default'; } catch (e) {}
   if (perm === 'denied'){
-    ntfPushSetLabels({nav: 'System notifications • Blocked', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — browser ki site settings me jaakar notifications Allow karo, phir wapas aakar dekho.', dim: true});
+    ntfPushSetLabels({nav: 'System notifications • Blocked', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — browser ki site settings me jaakar notifications Allow karo, phir wapas aakar dekho.', dim: true, toggle: false, toggleDisabled: false});
     return;
   }
   var hasSub = false;
   try { hasSub = await ntfPushHasSub(); } catch (e) { hasSub = false; }
   if (perm === 'granted' && hasSub){
-    ntfPushSetLabels({nav: 'System notifications • ON', btn: 'System notifications ON ✓', btnDisabled: false, status: 'System notifications ON hain — topper, streak aur report fix ki khabar phone par bhi milegi.', dim: false});
+    ntfPushSetLabels({nav: 'System notifications • ON', btn: 'System notifications ON ✓', btnDisabled: false, status: 'System notifications ON hain — topper, streak aur report fix ki khabar phone par bhi milegi.', dim: false, toggle: true, toggleDisabled: false});
     return;
   }
-  ntfPushSetLabels({nav: 'System notifications', btn: 'Enable system notifications', btnDisabled: false, status: (perm === 'granted') ? 'Permission mil gayi hai — button dabakar subscribe karo.' : 'Topper, streak aur report fix ki khabar phone par bhi pao — button dabakar on karo.', dim: false});
+  ntfPushSetLabels({nav: 'System notifications', btn: 'Enable system notifications', btnDisabled: false, status: (perm === 'granted') ? 'Permission mil gayi hai — button dabakar subscribe karo.' : 'Topper, streak aur report fix ki khabar phone par bhi pao — button dabakar on karo.', dim: false, toggle: false, toggleDisabled: false});
+}
+/* Unsubscribe this device from system push + remove its Firestore doc.
+   Returns true when the browser subscription is gone (the doc delete is
+   best-effort cleanup — a failed delete does not re-subscribe the device). */
+async function ntfDisablePush(){
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
+    var reg = await navigator.serviceWorker.ready;
+    if (!reg || !reg.pushManager) return false;
+    var sub = null;
+    try { sub = await reg.pushManager.getSubscription(); } catch (e) { sub = null; }
+    if (sub){
+      try { await sub.unsubscribe(); } catch (e) { return false; }
+    }
+    var fb = window.__fb;
+    if (fb && fb.db){
+      try {
+        var m = await withTimeout(fsMod(), 10000);
+        if (m && typeof m.deleteDoc === 'function' && typeof m.doc === 'function'){
+          await withTimeout(m.deleteDoc(m.doc(fb.db, 'push_subscriptions', ntfDeviceId())), 10000);
+        }
+      } catch (e) { /* best-effort: the browser subscription is already gone */ }
+    }
+    NTF.lastEndpoint = ''; NTF.lastUid = null;
+    try { localStorage.removeItem('tp_push_subscribed'); } catch (e) {}
+    return true;
+  } catch (e) { return false; }
+}
+/* Slide-in menu toggle (change event). ON = same as tapping the enable
+   button (ntfEnablePush — permission popup appears when 'default');
+   OFF = unsubscribe + delete the device's push_subscriptions doc.
+   Reverts the switch + toasts when the operation fails. */
+async function ntfPushToggleChange(ev){
+  var tg = document.getElementById('smPushToggle');
+  if (!tg) return;
+  if (!ntfPushSupported()){ tg.checked = false; ntfPushToast('Is browser me system notifications supported nahi hai.'); return; }
+  if (tg.checked){
+    var res = {ok: false, reason: 'error'};
+    try {
+      if (typeof window.ntfEnablePush === 'function') res = await window.ntfEnablePush();
+    } catch (e) { res = {ok: false, reason: 'error'}; }
+    if (res && res.ok){
+      ntfPushToast('System notifications ON ho gayi!');
+    } else {
+      tg.checked = false;
+      if (res && res.reason === 'denied') ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
+      else if (res && res.reason === 'not-granted') ntfPushToast('Permission nahi mili — system notifications on nahi hui.');
+      else if (res && res.reason === 'unsupported') ntfPushToast('Is browser me system notifications supported nahi hai.');
+      else ntfPushToast('System notifications on nahi ho payi — dobara try karo.');
+    }
+  } else {
+    var ok = false;
+    try { ok = await ntfDisablePush(); } catch (e) { ok = false; }
+    if (ok){
+      ntfPushToast('System notifications OFF ho gayi.');
+    } else {
+      tg.checked = true;
+      ntfPushToast('System notifications off nahi ho payi — dobara try karo.');
+    }
+  }
+  try { var pr = ntfRefreshPushBtns(); if (pr && pr.catch) pr.catch(function(){}); } catch (e) {}
 }
 async function ntfPushBtnTap(ev){
   if (ev && ev.preventDefault) ev.preventDefault();
@@ -10314,6 +10396,15 @@ async function ntfPushBtnTap(ev){
       var el = document.getElementById(id);
       if (el) el.addEventListener('click', ntfPushBtnTap);
     });
+    /* Slide-in menu toggle: stop its clicks reaching #smPush (the toggle
+       lives inside the #smPush anchor); the change event drives ON/OFF. */
+    var tgWrap = document.getElementById('smPushToggleWrap');
+    if (tgWrap) tgWrap.addEventListener('click', function(ev){ if (ev && ev.stopPropagation) ev.stopPropagation(); });
+    var tg = document.getElementById('smPushToggle');
+    if (tg){
+      tg.addEventListener('click', function(ev){ if (ev && ev.stopPropagation) ev.stopPropagation(); });
+      tg.addEventListener('change', ntfPushToggleChange);
+    }
     var pr = ntfRefreshPushBtns();
     if (pr && pr.catch) pr.catch(function(){});
   } catch (e) {}
