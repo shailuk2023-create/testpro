@@ -87,5 +87,50 @@
     "responseId": "ACYDBNiYjh4CwyI2IAMb7sTKqDkRR0spLSflYzQZnwxsAJ3Rrv2DQSEilOHPHNdKsLPHHHs",
     "fixedSummary": "CA Jan 2026, January Test 3, Q56 (India AI Impact Summit 2026): solution image replaced with reporter-supplied Amar Ujala banner link image, embedded offline as base64. Q/options/key/solution unchanged.",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Medieval History • Medieval 2 • Q6 (GA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794929213005,
+    "data": {
+      "chapter": "GA – Medieval History",
+      "test": "Medieval 2",
+      "qnum": "Q6 (GA Test Q6)"
+    },
+    "responseId": "ACYDBNhfHBRdLs0YQgj7oip3FPlunim0dx598DB1VMJvlduMGHsRR-IqqBxMCF3QgKwmROo",
+    "fixedSummary": "GA Medieval History, Medieval 2, Q6 (Rashtrakuta not related to Tamil Nadu): solution image replaced — Meenakshi Temple photo (generic Tamil Nadu place photo) replaced with Wikimedia Rashtrakuta Empire map. Q/options/key (B, Rashtrakuta)/solution unchanged.",
+    "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Medieval History • Medieval 2 • Q11 (GA Test Q11) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794929213005,
+    "data": {
+      "chapter": "GA – Medieval History",
+      "test": "Medieval 2",
+      "qnum": "Q11 (GA Test Q11)"
+    },
+    "responseId": "ACYDBNjHMXv4muv8xt8T-JlN30eCZ_4fDRS6BsaEsVD7W39y3qGJb9un0mNnKn_nkN4GKLU",
+    "fixedSummary": "GA Medieval History, Medieval 2, Q11 (Basavanna, Vachana movement, Kannada): solution image replaced with reporter-supplied link image (painting of Basavanna in Anubhava Mantapa with devotees), embedded offline as base64. Q/options/key (A, Kannada)/solution unchanged.",
+    "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794929213005,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q5 (GA Test Q5)"
+    },
+    "responseId": "ACYDBNjTTUHS_Su8FWqtQwZLwPUVgeCj3D0T0OI3JjgmypDylm2osIX8SpByYTicKibHWqQ",
+    "fixedSummary": "GA Modern History, Modern 3, Q5 (Santhal rebellion led by Sidhu and Kanhu): solution image replaced with reporter-supplied link image (Santhal rebels illustration, 1855–56), embedded offline as base64. Q/options/key (A, Sidhu and Kanhu)/solution unchanged.",
+    "sent": false
   }
 ]
