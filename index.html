@@ -11305,7 +11305,7 @@ function notifScheduleCloudWrite(){
   }, WRITE_DEBOUNCE_MS);
 }
 function notifFsMod(){
-  if (!N.fsP) N.fsP = import(NOTIF_FS_URL);
+  if (!N.fsP) N.fsP = import(NOTIF_FS_URL).catch(function(e){ N.fsP = null; throw e; });
   return N.fsP;
 }
 function notifFlushRead(){
