@@ -72,5 +72,20 @@
     "responseId": "ACYDBNjiM9Esz8qwmnxi5hgG_pTsOUf2rYOhci4YFSWRW242lWOEwalx0LgpuH51Tu0eti4",
     "fixedSummary": "CA Aug 2026, August Test 1, Q13 (Commonwealth Games 2026, India 39 medals): solution image replaced with reporter-supplied link image (Hindi infographic, 13 gold/17 silver/9 bronze), embedded offline as base64. Q/options/key (B, 39)/solution unchanged.",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – January 2026 • January Test 3 • Q56 (CA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794926312130,
+    "data": {
+      "chapter": "CA – January 2026",
+      "test": "January Test 3",
+      "qnum": "Q56 (CA Test Q6)"
+    },
+    "responseId": "ACYDBNiYjh4CwyI2IAMb7sTKqDkRR0spLSflYzQZnwxsAJ3Rrv2DQSEilOHPHNdKsLPHHHs",
+    "fixedSummary": "CA Jan 2026, January Test 3, Q56 (India AI Impact Summit 2026): solution image replaced with reporter-supplied Amar Ujala banner link image, embedded offline as base64. Q/options/key/solution unchanged.",
+    "sent": false
   }
 ]
