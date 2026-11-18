@@ -10324,7 +10324,7 @@ async function ntfRefreshPushBtns(){
   var perm = 'default';
   try { perm = Notification.permission || 'default'; } catch (e) {}
   if (perm === 'denied'){
-    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — browser ki site settings me jaakar notifications Allow karo, phir wapas aakar dekho.', dim: true, toggle: false, toggleDisabled: false});
+    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — ek baar manually Allow karna hoga: Chrome me address bar ke lock icon > Site settings > Notifications > Allow (phone: Settings > Apps > TESTPRO/Chrome > Notifications ON), phir wapas aakar toggle dabao.', dim: false, toggle: false, toggleDisabled: false});
     return;
   }
   var hasSub = false;
@@ -10379,7 +10379,7 @@ async function ntfPushToggleChange(ev){
       ntfPushToast('System notifications ON ho gayi!');
     } else {
       tg.checked = false;
-      if (res && res.reason === 'denied') ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
+      if (res && res.reason === 'denied') ntfPushToast('Notifications blocked hain — site settings me Allow karo (address bar lock icon > Site settings > Notifications), phir toggle dabao.');
       else if (res && res.reason === 'not-granted') ntfPushToast('Permission nahi mili — system notifications on nahi hui.');
       else if (res && res.reason === 'unsupported') ntfPushToast('Is browser me system notifications supported nahi hai.');
       else if (res && res.reason === 'no-sw') ntfPushToast('Push worker register nahi hua — app ko GitHub Pages link se kholo aur dobara try karo.');
@@ -10404,7 +10404,7 @@ async function ntfPushBtnTap(ev){
   var perm = 'default';
   try { perm = Notification.permission || 'default'; } catch (e) {}
   if (perm === 'denied'){
-    ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
+    ntfPushToast('Notifications blocked hain — site settings me Allow karo (address bar lock icon > Site settings > Notifications), phir toggle dabao.');
     return;
   }
   var res = {ok: false, reason: 'error'};
@@ -10414,7 +10414,7 @@ async function ntfPushBtnTap(ev){
   if (res && res.ok){
     ntfPushToast('System notifications ON ho gayi!');
   } else if (res && res.reason === 'denied'){
-    ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
+    ntfPushToast('Notifications blocked hain — site settings me Allow karo (address bar lock icon > Site settings > Notifications), phir toggle dabao.');
   } else if (res && res.reason === 'not-granted'){
     ntfPushToast('Permission nahi mili — system notifications on nahi hui.');
   } else if (res && res.reason === 'unsupported'){
@@ -10451,6 +10451,12 @@ async function ntfPushBtnTap(ev){
     if (pr && pr.catch) pr.catch(function(){});
   } catch (e) {}
 })();
+/* Blocked-state refresh: when the user returns from system settings after
+   manually Allowing notifications, refresh the toggle state without a
+   manual reload (a denied permission can never re-show the system popup
+   from the page — the user must Allow once in site settings). */
+document.addEventListener('visibilitychange', function(){ if (!document.hidden){ try { var pr = ntfRefreshPushBtns(); if (pr && pr.catch) pr.catch(function(){}); } catch (e) {} } });
+window.addEventListener('focus', function(){ try { var pr = ntfRefreshPushBtns(); if (pr && pr.catch) pr.catch(function(){}); } catch (e) {} });
 /* Auth null-branch hook: wasAuthed = a real sign-out (leave the stored
    subscription alone — the next login overwrites its uid field; clearing it
    here would need an authed write, but fb.user is already null).
