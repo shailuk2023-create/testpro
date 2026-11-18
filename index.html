@@ -4795,6 +4795,101 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 #view-list .slider:has(> .slider-track)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:64px;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20120%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C58%20C70%2C30%20150%2C78%20220%2C52%20C290%2C28%20340%2C60%20400%2C44%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%230d9488%27%20fill-opacity%3D%270.14%27%2F%3E%3Cpath%20d%3D%27M0%2C84%20C90%2C60%20170%2C100%20260%2C78%20C320%2C64%20360%2C80%20400%2C70%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%230e7490%27%20fill-opacity%3D%270.10%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%2796%27%20r%3D%273%27%20fill%3D%27%230d9488%27%20fill-opacity%3D%270.18%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27100%27%20r%3D%272.5%27%20fill%3D%27%230d9488%27%20fill-opacity%3D%270.18%27%2F%3E%3C%2Fsvg%3E");background-size:100% 100%;background-repeat:no-repeat;background-position:center bottom;}
 [data-theme="dark"] #view-list .slider:has(> .slider-track)::after{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20120%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C58%20C70%2C30%20150%2C78%20220%2C52%20C290%2C28%20340%2C60%20400%2C44%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%2338bdf8%27%20fill-opacity%3D%270.12%27%2F%3E%3Cpath%20d%3D%27M0%2C84%20C90%2C60%20170%2C100%20260%2C78%20C320%2C64%20360%2C80%20400%2C70%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%2338bdf8%27%20fill-opacity%3D%270.08%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%2796%27%20r%3D%273%27%20fill%3D%27%2338bdf8%27%20fill-opacity%3D%270.15%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27100%27%20r%3D%272.5%27%20fill%3D%27%2338bdf8%27%20fill-opacity%3D%270.15%27%2F%3E%3C%2Fsvg%3E");}
 </style>
+<style id="v11a-heroes">
+/* v11a fix 1 -- wave-style background on BOTH hero cards.
+   Same two-layer wave as the v10a-slider Rank Predictor wave
+   (#v10a-slider: two bezier paths + two dots, viewBox 0 0 400 120),
+   re-coloured gold (#f59e0b front @.22, #fbbf24 back @.16, #fde047 dots
+   @.22) so it reads on the saturated hero gradients in BOTH themes
+   (v10 teal @.14 was made for a light card surface and is invisible
+   on teal/purple/navy). Gold is already the hero accent in both
+   themes. The wave is folded into each card's existing ::before so
+   nothing on the card is lost; ::before sits behind the content
+   (z-index:-1, isolated stacking context) with pointer-events:none. */
+.home-hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20120%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C58%20C70%2C30%20150%2C78%20220%2C52%20C290%2C28%20340%2C60%20400%2C44%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.22%27%2F%3E%3Cpath%20d%3D%27M0%2C84%20C90%2C60%20170%2C100%20260%2C78%20C320%2C64%20360%2C80%20400%2C70%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.16%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%2796%27%20r%3D%273%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27100%27%20r%3D%272.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3C%2Fsvg%3E"),radial-gradient(520px 260px at 90% 0,rgba(56,189,248,.35),transparent 70%),radial-gradient(420px 240px at 0 100%,rgba(244,114,182,.28),transparent 70%);background-size:100% 140px,auto,auto;background-position:center bottom,0 0,0 0;background-repeat:no-repeat,no-repeat,no-repeat}
+#view-leaderboard .fr-hb-hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20120%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C58%20C70%2C30%20150%2C78%20220%2C52%20C290%2C28%20340%2C60%20400%2C44%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.22%27%2F%3E%3Cpath%20d%3D%27M0%2C84%20C90%2C60%20170%2C100%20260%2C78%20C320%2C64%20360%2C80%20400%2C70%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.16%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%2796%27%20r%3D%273%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27100%27%20r%3D%272.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3C%2Fsvg%3E"),radial-gradient(2px 2px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 30% 70%,#a5f3fc,transparent),radial-gradient(2px 2px at 55% 18%,#fde68a,transparent),radial-gradient(1.5px 1.5px at 78% 62%,#fff,transparent),radial-gradient(2px 2px at 90% 25%,#FDE68A,transparent),radial-gradient(1.5px 1.5px at 45% 88%,#fff,transparent);background-size:100% 130px,auto,auto,auto,auto,auto,auto;background-position:center bottom,0 0,0 0,0 0,0 0,0 0;background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat}
+#view-leaderboard .fr-hb-hero.fr-gm-hero::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20120%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C58%20C70%2C30%20150%2C78%20220%2C52%20C290%2C28%20340%2C60%20400%2C44%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.22%27%2F%3E%3Cpath%20d%3D%27M0%2C84%20C90%2C60%20170%2C100%20260%2C78%20C320%2C64%20360%2C80%20400%2C70%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.16%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%2796%27%20r%3D%273%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27100%27%20r%3D%272.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3C%2Fsvg%3E"),linear-gradient(120deg,#0f766e 0%,#2563eb 38%,#0891b2 68%,#0e7490 100%);background-size:100% 130px,auto;background-position:center bottom,0 0;background-repeat:no-repeat,no-repeat}
+.lb-hero::before{content:"";position:absolute;left:0;right:0;bottom:0;height:130px;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20120%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C58%20C70%2C30%20150%2C78%20220%2C52%20C290%2C28%20340%2C60%20400%2C44%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.22%27%2F%3E%3Cpath%20d%3D%27M0%2C84%20C90%2C60%20170%2C100%20260%2C78%20C320%2C64%20360%2C80%20400%2C70%20L400%2C120%20L0%2C120%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.16%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%2796%27%20r%3D%273%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27100%27%20r%3D%272.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.22%27%2F%3E%3C%2Fsvg%3E");background-size:100% 100%;background-position:center bottom;background-repeat:no-repeat}
+/* v11a fix 2 -- mobile home hero NARROWER (existing <=640px breakpoint).
+   Card itself narrows (width calc + centred auto side margins) with
+   tighter padding; the text block, chips and buttons narrow with it.
+   The image is NOT touched: there is no img.hx-art / .hx-art rule in
+   this block, so its size stays exactly as the base sets it (200px
+   tall @ <=560px, height:100% @ >=561px). Text/chips/buttons wrap,
+   nothing truncates. The wave shortens to 100px on the shorter card. */
+@media (max-width:640px){
+  #view-list .home-hero{width:calc(100% - 28px)!important;margin-left:auto!important;margin-right:auto!important;padding:20px 16px!important}
+  #view-list .home-hero .hh-text{max-width:52%}
+  #view-list .home-hero .hx-chips{gap:6px}
+  #view-list .home-hero .hx-chip{padding:5px 10px}
+  #view-list .home-hero .hx-cta-row{gap:8px}
+  #view-list .home-hero .hx-cta,#view-list .home-hero .hx-ghost{padding:0 16px}
+  #view-list .home-hero::before{background-size:100% 100px,auto,auto}
+}
+</style>
+<style id="v11b-progress">
+/* v11b-progress — Worker B: Your Progress card redesign (CSS only).
+   Scope: #view-list .panel[data-skel-for="skel-progress"] only.
+   (1) v10 bar-chart watermark OFF. (2) Top strip: soft teal wash +
+   low wave behind ring + 7-day bars (bars/tooltip untouched) — the
+   wave is a ::before pseudo with a SINGLE-layer background-image,
+   never a multi-layer background-image list, so even weak CSS
+   parsers (jsdom's cssstyle) resolve it; same for the row waves.
+   (3) Stat tiles: vertical, per-tile tint + top accent.
+   (4) Series rows: per-series tint + wave + left accent bar.
+   Maths teal / Current Affairs amber / General Awareness green. */
+#view-list .panel[data-skel-for="skel-progress"]::before{display:none!important;content:none!important;background-image:none!important;}
+#view-list .panel[data-skel-for="skel-progress"]{background-image:linear-gradient(180deg,rgba(13,148,136,.07),rgba(13,148,136,0) 220px)!important;}
+/* ---- (c) top area: ring + 7-day bars ---- */
+#view-list .panel[data-skel-for="skel-progress"] .rd-progress{position:relative;overflow:hidden;background-color:rgba(13,148,136,.06);background-image:linear-gradient(135deg,rgba(20,184,166,.12),rgba(240,180,41,.07) 58%,rgba(20,184,166,.05));border:1px solid rgba(13,148,136,.16);border-radius:16px;padding:12px 14px;margin-bottom:12px;}
+#view-list .panel[data-skel-for="skel-progress"] .rd-progress::before{content:"";position:absolute;left:0;right:0;bottom:0;height:74px;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%2080'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,44%20C70,24%20150,60%20220,40%20C290,22%20340,50%20400,34%20L400,80%20L0,80%20Z'%20fill='%230d9488'%20fill-opacity='0.10'/%3E%3Cpath%20d='M0,62%20C90,46%20170,68%20260,54%20C320,45%20360,56%20400,50%20L400,80%20L0,80%20Z'%20fill='%230e7490'%20fill-opacity='0.07'/%3E%3C/svg%3E");background-size:100% 100%;background-repeat:no-repeat;background-position:center bottom;}
+#view-list .panel[data-skel-for="skel-progress"] .rd-progress>*{position:relative;z-index:1;}
+#view-list .panel[data-skel-for="skel-progress"] .rd-ring-wrap::after{content:"";position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,.22),rgba(240,180,41,.10) 55%,rgba(20,184,166,0) 72%);z-index:0;pointer-events:none;}
+#view-list .panel[data-skel-for="skel-progress"] .rd-ring{position:relative;z-index:1;}
+#view-list .panel[data-skel-for="skel-progress"] .rd-ring-label{z-index:2;}
+/* ---- (b) stat tiles: vertical, per-tile tint + top accent ---- */
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile{position:relative;overflow:hidden;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:16px!important;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile>*{position:relative;z-index:1;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile::before{content:"";position:absolute;top:-34px;right:-34px;left:auto;bottom:auto;width:96px;height:96px;border-radius:50%;z-index:0;pointer-events:none;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile::after{content:"";position:absolute;top:0;left:14px;right:14px;bottom:auto;height:3px;border-radius:0 0 4px 4px;z-index:0;pointer-events:none;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile .st-lbl{order:3;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile .st-val{order:2;font-size:24px;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(1){background:linear-gradient(160deg,rgba(20,184,166,.16),rgba(20,184,166,.03))!important;border-color:rgba(13,148,136,.24)!important;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(1)::before{background:radial-gradient(circle,rgba(20,184,166,.28),rgba(20,184,166,0) 70%);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(1)::after{background:linear-gradient(90deg,#14b8a6,#0d9488);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(2){background:linear-gradient(160deg,rgba(8,145,178,.15),rgba(8,145,178,.03))!important;border-color:rgba(8,145,178,.24)!important;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(2)::before{background:radial-gradient(circle,rgba(8,145,178,.28),rgba(8,145,178,0) 70%);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(2)::after{background:linear-gradient(90deg,#06b6d4,#0891b2);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(3){background:linear-gradient(160deg,rgba(245,158,11,.16),rgba(245,158,11,.03))!important;border-color:rgba(245,158,11,.26)!important;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(3)::before{background:radial-gradient(circle,rgba(245,158,11,.30),rgba(245,158,11,0) 70%);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(3)::after{background:linear-gradient(90deg,#fbbf24,#d97706);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(4){background:linear-gradient(160deg,rgba(249,115,22,.14),rgba(249,115,22,.03))!important;border-color:rgba(234,88,12,.26)!important;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(4)::before{background:radial-gradient(circle,rgba(249,115,22,.30),rgba(249,115,22,0) 70%);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-total .stat-tile:nth-child(4)::after{background:linear-gradient(90deg,#fb923c,#ea580c);}
+/* ---- (a) series rows: per-series tint + wave + left accent bar ---- */
+#view-list .panel[data-skel-for="skel-progress"] .yp-row{position:relative;overflow:hidden;border-radius:16px;padding:12px 14px;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row::before{content:"";position:absolute;right:0;bottom:0;width:230px;height:100%;z-index:0;pointer-events:none;background-repeat:no-repeat;background-size:100% 100%;background-position:right bottom;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;z-index:0;pointer-events:none;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row>*{position:relative;z-index:1;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-maths{border-top-color:#14b8a6;background:linear-gradient(135deg,rgba(20,184,166,.18),rgba(20,184,166,.05));}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-maths::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%2060'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,38%20C40,18%2080,52%20120,34%20C150,22%20175,36%20200,28%20L200,60%20L0,60%20Z'%20fill='%2314b8a6'%20fill-opacity='0.10'/%3E%3Cpath%20d='M0,48%20C50,34%20100,56%20150,42%20C175,35%20190,42%20200,38%20L200,60%20L0,60%20Z'%20fill='%2314b8a6'%20fill-opacity='0.07'/%3E%3C/svg%3E");}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-maths::after{background:linear-gradient(180deg,#14b8a6,#0d9488);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ca{border-top-color:#f59e0b;background:linear-gradient(135deg,rgba(245,158,11,.20),rgba(245,158,11,.05));}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ca::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%2060'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,38%20C40,18%2080,52%20120,34%20C150,22%20175,36%20200,28%20L200,60%20L0,60%20Z'%20fill='%23f59e0b'%20fill-opacity='0.11'/%3E%3Cpath%20d='M0,48%20C50,34%20100,56%20150,42%20C175,35%20190,42%20200,38%20L200,60%20L0,60%20Z'%20fill='%23f59e0b'%20fill-opacity='0.07'/%3E%3C/svg%3E");}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ca::after{background:linear-gradient(180deg,#fbbf24,#d97706);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ca .yp-series{background:rgba(245,158,11,.22);color:#92400e;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ca .yp-nums span:last-child{background:linear-gradient(135deg,#f59e0b,#d97706);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ga{border-top-color:#22c55e;background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(34,197,94,.05));}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ga::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%2060'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,38%20C40,18%2080,52%20120,34%20C150,22%20175,36%20200,28%20L200,60%20L0,60%20Z'%20fill='%2322c55e'%20fill-opacity='0.11'/%3E%3Cpath%20d='M0,48%20C50,34%20100,56%20150,42%20C175,35%20190,42%20200,38%20L200,60%20L0,60%20Z'%20fill='%2322c55e'%20fill-opacity='0.07'/%3E%3C/svg%3E");}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ga::after{background:linear-gradient(180deg,#4ade80,#16a34a);}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ga .yp-series{background:rgba(34,197,94,.20);color:#166534;}
+#view-list .panel[data-skel-for="skel-progress"] .yp-row-ga .yp-nums span:last-child{background:linear-gradient(135deg,#22c55e,#16a34a);}
+/* ---- dark theme ---- */
+[data-theme="dark"] #view-list .panel[data-skel-for="skel-progress"]{background-image:linear-gradient(180deg,rgba(45,212,191,.09),rgba(45,212,191,0) 220px)!important;}
+[data-theme="dark"] #view-list .panel[data-skel-for="skel-progress"] .rd-progress{background-color:rgba(45,212,191,.07);border-color:rgba(45,212,191,.20);}
+[data-theme="dark"] #view-list .panel[data-skel-for="skel-progress"] .yp-row-ca .yp-series{color:#fcd34d;}
+[data-theme="dark"] #view-list .panel[data-skel-for="skel-progress"] .yp-row-ga .yp-series{color:#86efac;}
+</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
