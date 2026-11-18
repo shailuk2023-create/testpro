@@ -3089,120 +3089,6 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
   #notifBell .notif-dot{top:5px;right:5px}
 }
 </style>
-<style id="redesign-premium">
-/* TESTPRO premium redesign — override layer, last in cascade. Visual layer only:
-   palette variables + home-screen component restyles. No existing rule edited. */
-:root{
-  --bg:#F4F3FA; --surface:#FFFFFF; --surface2:#F7F6FC; --surface3:#EFEDF7;
-  --text:#17122B; --text-strong:#17122B; --muted:#6B6580; --muted2:#4A4462;
-  --border:#E7E4F3; --border2:#D9D4ED;
-  --accent:#6C5CE7; --accent2:#8B5CF6;
-  --teal:#12B5A5; --teal-bright:#12B5A5;
-  --good:#22C55E; --bad:#F4503C; --purple:#8B5CF6;
-  --shadow:0 1px 3px rgba(23,18,43,.05),0 10px 28px -14px rgba(108,92,231,.22);
-}
-[data-theme="dark"]{
-  --bg:#0E1128; --surface:#1B1F3A; --surface2:#232848; --surface3:#141831;
-  --text:#F2F0FF; --text-strong:#FFFFFF; --muted:#9A94B8; --muted2:#CBC6E8;
-  --border:#2B3054; --border2:#3C4272;
-  --accent:#8B7CFF; --accent2:#A78BFA;
-  --teal:#2DD4BF; --teal-bright:#2DD4BF;
-  --good:#4ADE80; --bad:#FF8A6B; --purple:#A78BFA;
-  --shadow:0 1px 3px rgba(0,0,0,.45),0 12px 30px -14px rgba(0,0,0,.6);
-}
-/* ---- hero ---- */
-#view-list .home-hero{background:linear-gradient(120deg,#6C5CE7 0%,#8B5CF6 52%,#D946EF 100%);border-radius:24px;box-shadow:0 24px 48px -20px rgba(108,92,231,.55),inset 0 1px 0 rgba(255,255,255,.22)}
-#view-list .home-hero .hx-eyebrow{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.30)}
-#view-list .home-hero h2{color:#fff}
-#view-list .home-hero #homeSub{color:#fff}
-#view-list .hx-cta{background:#fff;color:#5B3DF0;box-shadow:0 10px 22px -8px rgba(30,10,80,.5)}
-#view-list .hx-ghost{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.40);color:#fff}
-#view-list .hx-art{right:18px;bottom:0;width:min(340px,38%)}
-.hx-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.hx-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);white-space:nowrap}
-.hx-chip b{font-weight:800}
-.hx-chip-target{background:rgba(255,255,255,.22)}
-.hx-chip-streak{background:rgba(255,176,32,.28);border-color:rgba(255,176,32,.55)}
-/* ---- week strip ---- */
-.rd-week{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:16px 16px 14px;margin-bottom:16px;box-shadow:var(--shadow)}
-.rd-week-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px;min-width:0}
-.rd-week-head h3{font-size:16px;font-weight:800;color:var(--text-strong);margin:0}
-.rd-week-sub{font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap}
-.rd-week-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-.rd-day{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px 9px;border-radius:16px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:inherit;min-width:0}
-.rd-day span{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
-.rd-day b{font-size:15px;font-weight:800;color:var(--text-strong);line-height:1}
-.rd-day.rd-today{background:linear-gradient(135deg,#6C5CE7,#8B5CF6);border-color:transparent;box-shadow:0 8px 18px -6px rgba(108,92,231,.55)}
-.rd-day.rd-today span,.rd-day.rd-today b{color:#fff}
-.rd-day.rd-selected{outline:2px solid #8B5CF6;outline-offset:1px}
-.rd-day.rd-today.rd-selected{outline-color:#FFB020}
-/* ---- progress ring + resume + 7-day bars ---- */
-.rd-progress{display:flex;gap:18px;align-items:center;margin-bottom:16px}
-.rd-ring-wrap{position:relative;flex:0 0 auto;width:120px;height:120px}
-.rd-ring{width:120px;height:120px}
-.rd-ring circle{fill:none;stroke-width:11;stroke-linecap:round}
-.rd-ring-bg{stroke:var(--surface3)}
-.rd-ring-fg{stroke:url(#rdRingGrad);stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset .8s cubic-bezier(.2,.7,.2,1)}
-.rd-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;pointer-events:none}
-.rd-ring-label b{font-size:24px;font-weight:800;color:var(--text-strong);line-height:1}
-.rd-ring-label span{font-size:11px;font-weight:600;color:var(--muted)}
-.rd-progress-side{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
-.rd-progress-txt{font-size:14px;font-weight:700;color:var(--text-strong);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rd-resume{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF7A59,#FFB020);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 20px -8px rgba(255,122,89,.6);font-family:inherit}
-.rd-resume:active{transform:scale(.97)}
-.rd-bars{display:flex;align-items:flex-end;gap:6px;height:52px}
-.rd-bar{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
-.rd-bar i{display:block;width:100%;max-width:22px;height:8%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#8B5CF6,#6C5CE7);transition:height .5s ease}
-.rd-bar.rd-bar-done i{background:linear-gradient(180deg,#22C55E,#12B5A5)}
-.rd-bar em{font-style:normal;font-size:10.5px;font-weight:700;color:var(--muted)}
-.rd-bars-lbl{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:600;color:var(--muted)}
-/* ---- stats bento (4 tiles; 2x2 on mobile) ---- */
-#view-list .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-#view-list .stat-tile{border-radius:18px;min-width:0}
-#view-list .stat-tile .st-val{white-space:nowrap}
-/* ---- series bento cards (Maths static; CA/GA JS-generated, styled by class) ---- */
-#view-list .series-card{border-radius:24px;padding:20px;box-shadow:0 2px 6px rgba(23,18,43,.05),0 16px 32px -18px rgba(108,92,231,.28)}
-#view-list #seriesFolder{background:linear-gradient(135deg,rgba(108,92,231,.10),rgba(139,92,246,.04))}
-#view-list #seriesFolder .sc-ico{background:linear-gradient(135deg,#6C5CE7,#8B5CF6);box-shadow:0 10px 20px -8px rgba(108,92,231,.6)}
-#view-list [data-ca-series]{background:linear-gradient(135deg,rgba(255,176,32,.12),rgba(255,122,89,.06))}
-#view-list [data-ca-series] .sc-ico{background:linear-gradient(135deg,#FFB020,#FF7A59);box-shadow:0 10px 20px -8px rgba(255,122,89,.55)}
-#view-list [data-ga-series]{background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(18,181,165,.06))}
-#view-list .series-card .fc-bar{background:linear-gradient(90deg,#6C5CE7,#8B5CF6)}
-#view-list [data-ca-series] .fc-bar{background:linear-gradient(90deg,#FFB020,#FF7A59)}
-#view-list [data-ga-series] .fc-bar{background:linear-gradient(90deg,#22C55E,#12B5A5)}
-/* ---- cards, topbar, quick actions ---- */
-#view-list .panel{border-radius:24px}
-#view-list .resume-card{border-radius:20px}
-#view-list .next-test-card{border-radius:20px}
-#view-list .feat-card{border-radius:24px}
-#view-list .qa-btn{border-radius:20px}
-#view-list .list-topbar .avatar{background:linear-gradient(135deg,#6C5CE7,#D946EF)}
-#view-list .list-topbar .icon-btn{border-radius:14px}
-/* ---- bottom nav: floating pill, active = gradient ---- */
-.bottom-nav{left:12px;right:12px;bottom:12px;border-radius:22px;border:1px solid var(--border);box-shadow:0 12px 32px -10px rgba(23,18,43,.35);padding:6px}
-.bottom-nav button{border-radius:16px;padding:8px 0 6px}
-.bottom-nav button.active{background:linear-gradient(135deg,#6C5CE7,#8B5CF6);color:#fff;box-shadow:0 8px 18px -6px rgba(108,92,231,.55)}
-.bottom-nav button.active::before{display:none}
-[data-theme="dark"] .bottom-nav button.active{color:#fff}
-[data-theme="dark"] .bottom-nav button.active::before{display:none}
-/* ---- responsive ---- */
-@media (max-width:1099px){
-  #view-list .hx-art{width:38%}
-}
-@media (max-width:560px){
-  #view-list .home-hero .hh-text{max-width:60%}
-  #view-list .hx-art{width:150px;right:2px;bottom:-6px}
-  #view-list .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .rd-progress{gap:14px}
-  .rd-ring-wrap,.rd-ring{width:104px;height:104px}
-  .rd-ring-label b{font-size:21px}
-  .rd-week-row{gap:6px}
-  .rd-day{border-radius:13px}
-}
-@media (prefers-reduced-motion:reduce){
-  .rd-ring-fg,.rd-bar i,.rd-resume{transition:none!important}
-}
-</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
@@ -3375,7 +3261,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
             <h2 id="homeGreeting">Hello, Student</h2>
             <p id="homeSub">RRB NTPC • Target score 91 / 100</p>
             <p class="hx-tag">Today's practice, tomorrow's selection.</p>
-            <div class="hx-chips"><span class="hx-chip hx-chip-target">&#127919; CCTS &bull; OBC &bull; Target 91/100</span><span class="hx-chip hx-chip-streak" id="rdStreakChip">&#128293; <b id="heroStreakNum">0</b>-day streak</span></div>
             <div class="hx-cta-row">
               <button class="hx-cta" id="heroCta" type="button">Start practising<svg class="i i-sm" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
               <button class="hx-ghost" id="heroSaved" type="button"><svg class="i i-sm" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved</button>
@@ -3389,80 +3274,97 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
           </div>
           <svg class="hx-art" viewBox="0 0 380 280" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="hx2Bk1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6C5CE7"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
-    <linearGradient id="hx2Bk2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF7A59"/><stop offset="1" stop-color="#FFB020"/></linearGradient>
-    <linearGradient id="hx2Bk3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#12B5A5"/><stop offset="1" stop-color="#22C55E"/></linearGradient>
-    <linearGradient id="hx2Card" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#EDE9FE"/></linearGradient>
-    <radialGradient id="hx2Glow" cx=".5" cy=".45" r=".55"><stop offset="0" stop-color="#ffffff" stop-opacity=".38"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="hxBk1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <linearGradient id="hxBk2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
+    <linearGradient id="hxBk3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/></linearGradient>
+    <linearGradient id="hxCard" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e3f2f8"/></linearGradient>
   </defs>
-  <circle cx="190" cy="128" r="112" fill="url(#hx2Glow)"/>
-  <ellipse cx="190" cy="258" rx="130" ry="10" fill="rgba(20,10,60,.25)"/>
+  <ellipse cx="190" cy="252" rx="132" ry="11" fill="rgba(0,20,40,.28)"/>
   <!-- book stack -->
-  <rect x="58" y="212" width="252" height="34" rx="8" fill="url(#hx2Bk1)"/>
-  <rect x="58" y="212" width="14" height="34" rx="8" fill="#fff" opacity=".18"/>
-  <rect x="292" y="218" width="18" height="22" rx="3" fill="#f8fafc"/><path d="M296 225h10M296 231h10M296 237h10" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
-  <rect x="76" y="182" width="216" height="30" rx="8" fill="url(#hx2Bk2)"/>
-  <rect x="76" y="182" width="14" height="30" rx="8" fill="#fff" opacity=".22"/>
-  <rect x="80" y="187" width="22" height="20" rx="3" fill="#fff7ed"/><path d="M84 194h14M84 200h14" stroke="#fdba74" stroke-width="2" stroke-linecap="round"/>
-  <rect x="64" y="152" width="228" height="28" rx="8" fill="url(#hx2Bk3)"/>
-  <rect x="64" y="152" width="14" height="28" rx="8" fill="#fff" opacity=".2"/>
-  <rect x="272" y="157" width="20" height="18" rx="3" fill="#f0fdf4"/><path d="M276 163h12M276 169h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+  <rect x="70" y="208" width="240" height="36" rx="7" fill="url(#hxBk1)"/>
+  <rect x="70" y="208" width="16" height="36" rx="7" fill="#fff" opacity=".18"/>
+  <rect x="286" y="214" width="20" height="24" rx="3" fill="#f8fafc"/><path d="M290 221h12M290 227h12M290 233h12" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+  <rect x="92" y="176" width="200" height="32" rx="7" fill="url(#hxBk2)"/>
+  <rect x="276" y="176" width="16" height="32" rx="7" fill="#fff" opacity=".22"/>
+  <rect x="96" y="181" width="22" height="22" rx="3" fill="#fffbeb"/><path d="M100 188h14M100 194h14M100 200h14" stroke="#fde68a" stroke-width="2" stroke-linecap="round"/>
+  <rect x="78" y="146" width="214" height="30" rx="7" fill="url(#hxBk3)"/>
+  <rect x="78" y="146" width="16" height="30" rx="7" fill="#fff" opacity=".2"/>
+  <rect x="268" y="151" width="20" height="20" rx="3" fill="#f0fdf4"/><path d="M272 158h12M272 164h12" stroke="#bbf7d0" stroke-width="2" stroke-linecap="round"/>
   <!-- graduation cap -->
   <g class="hx-cap"><g>
-    <polygon points="190,74 282,110 190,146 98,110" fill="#241B4D"/>
-    <polygon points="190,84 258,111 190,138 122,111" fill="#3B2D8F" opacity=".8"/>
-    <path d="M150 122l40 17 40-17v20c0 12-80 12-80 0z" fill="#17122B"/>
-    <path d="M282 110l10 2v28" fill="none" stroke="#FFB020" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="288" y="136" width="10" height="16" rx="5" fill="#FFB020"/>
-    <circle cx="190" cy="110" r="4.5" fill="#FFB020"/>
+    <path d="M150 124l40 17 40-17v22c0 11-80 11-80 0z" fill="#1e293b"/>
+    <polygon points="190,82 272,113 190,144 108,113" fill="#0f172a"/>
+    <polygon points="190,92 250,114 190,136 130,114" fill="#1e3a5f" opacity=".7"/>
+    <path d="M190 113l68 8v30" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="253" y="148" width="10" height="16" rx="4" fill="#fbbf24"/>
+    <circle cx="190" cy="113" r="4.5" fill="#fbbf24"/>
   </g></g>
-  <!-- floating target card -->
-  <g class="hx-float f1"><g>
-    <rect x="8" y="96" width="98" height="42" rx="10" fill="url(#hx2Card)" stroke="#E7E4F3"/>
-    <circle cx="22" cy="110" r="6" fill="#6C5CE7"/><path d="M19.5 110l1.8 1.8 3.4-3.6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="34" y="114" font-family="inherit" font-size="13" font-weight="800" fill="#17122B">Target 91</text>
-    <text x="14" y="131" font-family="inherit" font-size="9.5" font-weight="600" fill="#6B6580">CBT-1 &#8226; 100 marks</text>
-  </g></g>
-  <!-- floating score card -->
+  <!-- progress chart card -->
   <g class="hx-float f3"><g>
-    <rect x="272" y="88" width="100" height="42" rx="10" fill="url(#hx2Card)" stroke="#E7E4F3"/>
-    <circle cx="288" cy="102" r="6" fill="#22C55E"/><path d="M285.5 102l1.8 1.8 3.4-3.6" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="300" y="106" font-family="inherit" font-size="13" font-weight="800" fill="#17122B">91 / 100</text>
-    <text x="278" y="123" font-family="inherit" font-size="9.5" font-weight="600" fill="#6B6580">Target score</text>
+    <rect x="140" y="12" width="104" height="60" rx="11" fill="url(#hxCard)"/>
+    <rect x="154" y="44" width="11" height="18" rx="2.5" fill="#bae6fd"/>
+    <rect x="171" y="36" width="11" height="26" rx="2.5" fill="#38bdf8"/>
+    <rect x="188" y="28" width="11" height="34" rx="2.5" fill="#0096b5"/>
+    <rect x="205" y="20" width="11" height="42" rx="2.5" fill="#0b7196"/>
+    <path d="M154 38l17-9 17 5 28-15" fill="none" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="216" cy="19" r="3.6" fill="#22c55e"/>
+  </g></g>
+  <!-- OMR answer sheet -->
+  <g class="hx-float f1"><g transform="rotate(-8 59 124)">
+    <rect x="18" y="72" width="82" height="106" rx="11" fill="url(#hxCard)"/>
+    <rect x="30" y="86" width="38" height="7" rx="3.5" fill="#0b7196"/>
+    <rect x="30" y="98" width="24" height="5" rx="2.5" fill="#cbd5e1"/>
+    <g fill="none" stroke="#94a3b8" stroke-width="1.8">
+      <circle cx="35" cy="120" r="5.5"/><circle cx="50" cy="120" r="5.5"/><circle cx="65" cy="120" r="5.5"/><circle cx="80" cy="120" r="5.5"/>
+      <circle cx="35" cy="137" r="5.5"/><circle cx="50" cy="137" r="5.5"/><circle cx="65" cy="137" r="5.5"/><circle cx="80" cy="137" r="5.5"/>
+      <circle cx="35" cy="154" r="5.5"/><circle cx="50" cy="154" r="5.5"/><circle cx="65" cy="154" r="5.5"/><circle cx="80" cy="154" r="5.5"/>
+    </g>
+    <circle cx="50" cy="120" r="5.5" fill="#0096b5" stroke="#0096b5"/><circle cx="80" cy="137" r="5.5" fill="#0096b5" stroke="#0096b5"/><circle cx="35" cy="154" r="5.5" fill="#0096b5" stroke="#0096b5"/>
+    <circle cx="97" cy="76" r="13" fill="#22c55e"/><path d="M90.5 76.5l4.2 4.2 8-9.2" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g></g>
+  <!-- alarm clock -->
+  <g class="hx-float f2"><g>
+    <circle cx="294" cy="64" r="10" fill="#f97316"/><circle cx="342" cy="64" r="10" fill="#f97316"/>
+    <path d="M302 128l-7 10M334 128l7 10" stroke="#f97316" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="318" cy="98" r="35" fill="#fff"/>
+    <circle cx="318" cy="98" r="35" fill="none" stroke="#f97316" stroke-width="6"/>
+    <path d="M318 68v5M318 123v5M288 98h5M343 98h5" stroke="#94a3b8" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M318 98V79M318 98l12 7" stroke="#0f172a" stroke-width="3.6" stroke-linecap="round"/>
+    <circle cx="318" cy="98" r="3.8" fill="#0f172a"/>
+  </g></g>
+  <!-- trophy -->
+  <g class="hx-float f4"><g>
+    <path d="M314 168h34v16c0 13-8 21-17 21s-17-8-17-21z" fill="#fbbf24"/>
+    <path d="M314 174h-8c0 12 6 18 14 19M348 174h8c0 12-6 18-14 19" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+    <rect x="327" y="205" width="8" height="11" fill="#f59e0b"/>
+    <rect x="316" y="216" width="30" height="8" rx="3" fill="#d97706"/>
+    <path d="M331 177l3 6.2 6.8 1-4.9 4.8 1.2 6.8-6.1-3.2-6.1 3.2 1.2-6.8-4.9-4.8 6.8-1z" fill="#fff" opacity=".92"/>
   </g></g>
   <!-- pencil -->
-  <g class="hx-wiggle"><g transform="translate(308 176) rotate(38)">
-    <rect x="-5" y="0" width="10" height="44" rx="3" fill="#FF7A59"/>
-    <polygon points="-5,44 0,58 5,44" fill="#FDE68A"/>
-    <polygon points="-2.4,50 0,58 2.4,50" fill="#17122B"/>
-    <rect x="-5" y="-8" width="10" height="8" rx="3" fill="#8B5CF6"/>
-  </g></g>
-  <!-- check badge -->
-  <g class="hx-float f4"><g>
-    <circle cx="256" cy="64" r="14" fill="#22C55E" stroke="#fff" stroke-width="3"/>
-    <path d="M249 64l5 5 9-10" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <g class="hx-wiggle"><g transform="translate(28 238) rotate(-32)">
+    <rect x="-11" y="-6.5" width="11" height="13" rx="3" fill="#f472b6"/>
+    <rect x="0" y="-6.5" width="7" height="13" fill="#94a3b8"/>
+    <rect x="7" y="-6.5" width="70" height="13" fill="#fbbf24"/>
+    <rect x="7" y="-6.5" width="70" height="4" fill="#fde68a" opacity=".7"/>
+    <polygon points="77,-6.5 99,0 77,6.5" fill="#fde7c3"/>
+    <polygon points="92,-1.8 99,0 92,1.8" fill="#334155"/>
   </g></g>
   <!-- sparkles -->
-  <path class="hx-spark s1" d="M40 60l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#FFB020"/>
-  <path class="hx-spark s2" d="M336 52l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z" fill="#fff"/>
-  <path class="hx-spark s3" d="M52 150l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z" fill="#fff" opacity=".85"/>
-  <path class="hx-spark s4" d="M322 150l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z" fill="#FFB020"/>
-  <path class="hx-spark s5" d="M190 34l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z" fill="#fff"/>
+  <g class="hx-spark s1"><path transform="translate(112 52)" d="M0-9L2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z" fill="#fff"/></g>
+  <g class="hx-spark s2"><path transform="translate(268 48)" d="M0-7L1.9-1.9 7 0 1.9 1.9 0 7-1.9 1.9-7 0-1.9-1.9z" fill="#a5f3fc"/></g>
+  <g class="hx-spark s3"><path transform="translate(30 36)" d="M0-6L1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6z" fill="#fde68a"/></g>
+  <g class="hx-spark s4"><path transform="translate(366 150)" d="M0-8L2.1-2.1 8 0 2.1 2.1 0 8-2.1 2.1-8 0-2.1-2.1z" fill="#fff"/></g>
+  <g class="hx-spark s5"><path transform="translate(246 252)" d="M0-6L1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6z" fill="#a5f3fc"/></g>
+  <!-- edu: floating target score card -->
+  <g class="hx-float f2"><g>
+    <rect x="10" y="10" width="112" height="46" rx="11" fill="#ffffff" opacity=".96"/>
+    <circle cx="31" cy="33" r="11" fill="#22c55e"/><path d="M26 33l3.4 3.4 6.4-7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="49" y="30" font-size="13" font-weight="800" fill="#0b7196" font-family="Segoe UI,system-ui,sans-serif">Target 91</text>
+    <text x="49" y="46" font-size="10.5" font-weight="600" fill="#64748b" font-family="Segoe UI,system-ui,sans-serif">CBT-1 • 100 marks</text>
+  </g></g>
 </svg>
         </section>
         <div class="edu-strip" aria-hidden="true"><div class="edu-track"><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-target"/></svg>RRB NTPC CBT-1</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-check-circle"/></svg>Ad-Free Solutions</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-play"/></svg>Video Solution In-App</span><span class="edu-dot">•</span><span class="edu-item">Fully Offline</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-clock"/></svg>70 sec / Question</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-target"/></svg>RRB NTPC CBT-1</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-check-circle"/></svg>Ad-Free Solutions</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-play"/></svg>Video Solution In-App</span><span class="edu-dot">•</span><span class="edu-item">Fully Offline</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-globe"/></svg>Hindi + English</span><span class="edu-dot">•</span><span class="edu-item"><svg class="i i-sm" aria-hidden="true"><use href="#i-clock"/></svg>70 sec / Question</span><span class="edu-dot">•</span></div></div>
-          <div class="rd-week anim" aria-label="Daily task map">
-            <div class="rd-week-head"><h3>Daily task map</h3><span class="rd-week-sub" id="rdWeekSub"></span></div>
-            <div class="rd-week-row" id="rdWeekRow" role="group" aria-label="Days of this week">
-              <button type="button" class="rd-day" data-dow="0"><span>Sun</span><b>15</b></button>
-              <button type="button" class="rd-day" data-dow="1"><span>Mon</span><b>16</b></button>
-              <button type="button" class="rd-day" data-dow="2"><span>Tue</span><b>17</b></button>
-              <button type="button" class="rd-day" data-dow="3"><span>Wed</span><b>18</b></button>
-              <button type="button" class="rd-day" data-dow="4"><span>Thu</span><b>19</b></button>
-              <button type="button" class="rd-day" data-dow="5"><span>Fri</span><b>20</b></button>
-              <button type="button" class="rd-day" data-dow="6"><span>Sat</span><b>21</b></button>
-            </div>
-          </div>
         <div class="resume-card anim" id="resumeCard" style="display:none">
           <span class="rc-ico"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span>
           <div class="rc-body">
@@ -3531,35 +3433,10 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <!-- v67-A skel:progress end -->
               <div class="panel anim" style="--d:.16s" data-skel-for="skel-progress">
                 <h3>Your Progress</h3>
-                <div class="rd-progress">
-                  <div class="rd-ring-wrap">
-                    <svg class="rd-ring" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-                      <defs><linearGradient id="rdRingGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C5CE7"/><stop offset="1" stop-color="#D946EF"/></linearGradient></defs>
-                      <circle class="rd-ring-bg" cx="60" cy="60" r="52"/>
-                      <circle class="rd-ring-fg" id="rdRingFg" cx="60" cy="60" r="52" transform="rotate(-90 60 60)"/>
-                    </svg>
-                    <div class="rd-ring-label"><b id="rdRingPct">0%</b><span>Maths series</span></div>
-                  </div>
-                  <div class="rd-progress-side">
-                    <div class="rd-progress-txt" id="rdRingTxt">0/43 tests attempted</div>
-                    <button type="button" class="rd-resume" id="rdResumeBtn">Resume Task &#8594;</button>
-                    <div class="rd-bars" id="rdBars" aria-label="Tests attempted in the last 7 days">
-                      <span class="rd-bar"><i style="height:8%"></i><em>T</em></span>
-                      <span class="rd-bar"><i style="height:8%"></i><em>F</em></span>
-                      <span class="rd-bar"><i style="height:8%"></i><em>S</em></span>
-                      <span class="rd-bar"><i style="height:8%"></i><em>S</em></span>
-                      <span class="rd-bar"><i style="height:8%"></i><em>M</em></span>
-                      <span class="rd-bar"><i style="height:8%"></i><em>T</em></span>
-                      <span class="rd-bar"><i style="height:8%"></i><em>W</em></span>
-                    </div>
-                    <div class="rd-bars-lbl"><span>Last 7 days</span><span id="rdBarsNote"></span></div>
-                  </div>
-                </div>
                 <div class="stat-grid edu-stagger yp-total">
                   <div class="stat-tile"><span class="st-ico"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><div class="st-lbl">Tests Attempted</div><div class="st-val" id="homeStatAttempted">0</div></div>
                   <div class="stat-tile"><span class="st-ico"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><div class="st-lbl">Avg Best Score</div><div class="st-val" id="homeStatAvg">0%</div></div>
                   <div class="stat-tile"><span class="st-ico"><svg class="i" aria-hidden="true"><use href="#i-help"/></svg></span><div class="st-lbl">Total Questions</div><div class="st-val" id="homeStatTotal">0</div></div>
-                  <div class="stat-tile"><span class="st-ico"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg></span><div class="st-lbl">Coins</div><div class="st-val" id="homeStatCoins">0</div></div>
                 </div>
                 <div class="yp-breakdown">
                   <div class="yp-row yp-row-maths" data-series="maths"><span class="yp-series">📐 Maths</span><span class="yp-nums"><span><b id="ypMathsTests">0</b> tests</span><span><b id="ypMathsQs">0</b> Qs attempted</span><span>avg <b id="ypMathsAvg">0%</b></span></span></div>
@@ -14686,154 +14563,5 @@ function sync(){lb.classList.toggle('pm-tests-open',hs.style.display==='none')}
 sync();new MutationObserver(sync).observe(hs,{attributes:true,attributeFilter:['style']});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();})();
 </script>
-<script>
-/* redesign-premium: week strip + progress ring + streak chip + 7-day bars.
-   Isolated IIFE; reads only public globals (storeGet/getAttempts) and DOM ids
-   it owns (rd*) plus #fcBar/#fcProgTxt (read-only). Touches no existing function. */
-(function(){
-  'use strict';
-  function rdEl(id){ return document.getElementById(id); }
-  function rdStore(){
-    try { if (typeof storeGet === 'function') return storeGet(); } catch (e) {}
-    try { return JSON.parse(localStorage.getItem('super1000_v1') || '{}'); } catch (e) { return {}; }
-  }
-  function rdDayKey(d){ var m = d.getMonth() + 1, dd = d.getDate(); return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (dd < 10 ? '0' : '') + dd; }
-  /* ---- week strip: dates for the current week, today highlighted, pills selectable ---- */
-  function rdWeek(){
-    var row = rdEl('rdWeekRow'); if (!row) return;
-    var now = new Date();
-    var sun = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
-    var names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    var btns = row.querySelectorAll('.rd-day');
-    var sub = rdEl('rdWeekSub');
-    if (sub){
-      try {
-        var sat = new Date(sun.getFullYear(), sun.getMonth(), sun.getDate() + 6);
-        sub.textContent = sun.toLocaleDateString('en-IN', {day:'numeric', month:'short'}) + ' - ' + sat.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
-      } catch (e) {}
-    }
-    for (var i = 0; i < btns.length; i++){
-      var d = new Date(sun.getFullYear(), sun.getMonth(), sun.getDate() + i);
-      var sp = btns[i].querySelector('span'), b = btns[i].querySelector('b');
-      if (sp) sp.textContent = names[i];
-      if (b) b.textContent = d.getDate();
-      btns[i].classList.toggle('rd-today', d.toDateString() === now.toDateString());
-      if (d.toDateString() === now.toDateString() && !row.getAttribute('data-rd-sel')) btns[i].classList.add('rd-selected');
-    }
-    if (!row.getAttribute('data-rd-wired')){
-      row.setAttribute('data-rd-wired', '1');
-      row.addEventListener('click', function(ev){
-        var t = ev.target;
-        while (t && t !== row && !t.classList.contains('rd-day')) t = t.parentNode;
-        if (!t || t === row) return;
-        row.setAttribute('data-rd-sel', '1');
-        var all = row.querySelectorAll('.rd-day');
-        for (var j = 0; j < all.length; j++) all[j].classList.remove('rd-selected');
-        t.classList.add('rd-selected');
-      });
-    }
-  }
-  /* ---- progress ring: driven by the same value as the linear #fcBar (Maths series %) ---- */
-  function rdRing(){
-    var bar = rdEl('fcBar'); if (!bar) return;
-    var w = 0;
-    try { w = parseFloat((bar.style && bar.style.width) || '0') || 0; } catch (e) { w = 0; }
-    if (!w){
-      var ft0 = rdEl('fcProgTxt');
-      if (ft0){ var m = /(\d+)\s*\/\s*(\d+)/.exec(ft0.textContent || ''); if (m && +m[2] > 0) w = Math.round((+m[1] / +m[2]) * 100); }
-    }
-    if (!(w >= 0)) w = 0; if (w > 100) w = 100;
-    var C = 326.73;
-    var fg = rdEl('rdRingFg'); if (fg) fg.style.strokeDashoffset = (C * (1 - w / 100)).toFixed(2);
-    var pct = rdEl('rdRingPct'); if (pct) pct.textContent = Math.round(w) + '%';
-    var t = rdEl('rdRingTxt'), ft = rdEl('fcProgTxt');
-    if (t && ft) t.textContent = (ft.textContent || '').replace(' Tests', ' tests attempted');
-  }
-  /* ---- streak chip (store.coins.streak, the coins engine's own open-streak) + 7-day bars ---- */
-  function rdActivity(){
-    var store = rdStore();
-    var streak = 0;
-    try { if (store && store.coins && typeof store.coins.streak === 'number') streak = store.coins.streak; } catch (e) {}
-    var sn = rdEl('heroStreakNum'); if (sn) sn.textContent = streak;
-    var bars = rdEl('rdBars'); if (!bars) return;
-    var counts = [0,0,0,0,0,0,0], open = [false,false,false,false,false,false,false];
-    var now = new Date(); now.setHours(0,0,0,0);
-    var dayNames = ['S','M','T','W','T','F','S'];
-    function dayIdx(ts){
-      var d = new Date(ts); d.setHours(0,0,0,0);
-      var diff = Math.round((now - d) / 86400000);
-      return (diff >= 0 && diff < 7) ? 6 - diff : -1;
-    }
-    try {
-      var maps = [store.tests, store.tests_ca, store.tests_ga];
-      for (var mi = 0; mi < maps.length; mi++){
-        var map = maps[mi]; if (!map) continue;
-        for (var k in map){
-          if (!Object.prototype.hasOwnProperty.call(map, k)) continue;
-          var hist = (typeof getAttempts === 'function') ? getAttempts(map[k]) : [];
-          for (var a = 0; a < hist.length; a++){
-            var ts = hist[a] && hist[a].ts;
-            if (typeof ts === 'number'){ var ix = dayIdx(ts); if (ix >= 0) counts[ix]++; }
-          }
-        }
-      }
-      var days = (store.coins && store.coins.days) || {};
-      for (var dk in days){
-        var di = dayIdx(new Date(dk + 'T12:00:00').getTime());
-        if (di >= 0) open[di] = true;
-      }
-    } catch (e) {}
-    var items = bars.querySelectorAll('.rd-bar');
-    var max = 0, tot = 0;
-    for (var c = 0; c < 7; c++){ if (counts[c] > max) max = counts[c]; tot += counts[c]; }
-    for (var i = 0; i < items.length && i < 7; i++){
-      var dd = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (6 - i));
-      var em = items[i].querySelector('em');
-      if (em) em.textContent = dayNames[dd.getDay()];
-      var barI = items[i].querySelector('i');
-      var h = counts[i] > 0 ? Math.max(22, Math.round((counts[i] / (max || 1)) * 100)) : (open[i] ? 14 : 6);
-      if (barI) barI.style.height = h + '%';
-      items[i].classList.toggle('rd-bar-done', counts[i] > 0);
-      items[i].setAttribute('title', counts[i] + (counts[i] === 1 ? ' test' : ' tests') + (open[i] ? ' - app opened' : ''));
-    }
-    var note = rdEl('rdBarsNote');
-    if (note) note.textContent = tot + (tot === 1 ? ' test' : ' tests') + ' in 7 days';
-  }
-  /* ---- Resume Task button: resume in-progress test, else next test, else start practising ---- */
-  function rdResume(){
-    var b = rdEl('rdResumeBtn');
-    if (!b || b.getAttribute('data-rd-wired')) return;
-    b.setAttribute('data-rd-wired', '1');
-    b.addEventListener('click', function(){
-      var rc = rdEl('resumeCard'), rb = rdEl('resumeCardBtn');
-      if (rc && rb && rc.style.display !== 'none'){ rb.click(); return; }
-      var nc = rdEl('nextTestCard'), nb = rdEl('nextTestBtn');
-      if (nc && nb && !nc.hidden){ nb.click(); return; }
-      var hc = rdEl('heroCta'); if (hc) hc.click();
-    });
-  }
-  function rdRefresh(){
-    try { rdWeek(); } catch (e) {}
-    try { rdRing(); } catch (e) {}
-    try { rdActivity(); } catch (e) {}
-    try { rdResume(); } catch (e) {}
-  }
-  function rdObserve(){
-    try {
-      var bar = rdEl('fcBar');
-      if (bar && window.MutationObserver && !bar.getAttribute('data-rd-obs')){
-        bar.setAttribute('data-rd-obs', '1');
-        var mo = new MutationObserver(function(){ try { rdRing(); } catch (e) {} });
-        mo.observe(bar, {attributes: true, attributeFilter: ['style']});
-      }
-    } catch (e) {}
-  }
-  rdRefresh(); rdObserve();
-  setTimeout(function(){ rdRefresh(); rdObserve(); }, 800);
-  setTimeout(function(){ rdRefresh(); }, 2500);
-  window.addEventListener('pageshow', function(){ rdRefresh(); });
-})();
-</script>
-
 </body>
 </html>
