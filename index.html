@@ -12463,7 +12463,7 @@ async function ntfCheckTopper(list){
   var top = list[0];
   if (!top || !top.uid) return 'skip';
   var coins = entryCoins(top);
-  var sig = top.uid + ':' + coins;
+  var sig = top.uid; // only the uid matters — same user staying #1 (even with more coins) is NOT a topper change
   if (sig === NTF.lastTopperSig) return 'same';
   NTF.lastTopperSig = sig;
   if (NTF.topperBusy) return 'busy';
@@ -12478,7 +12478,13 @@ async function ntfCheckTopper(list){
       await withTimeout(m.setDoc(metaRef, {uid: top.uid, name: String(top.name || 'Student').slice(0, 24), coins: coins, updatedAt: Date.now()}, {merge: true}), 10000);
       return 'first-run';
     }
-    if (md.uid === top.uid && +md.coins === coins) return 'already-notified';
+    if (md.uid === top.uid){
+      // Same user still #1 — only their coins grew. Update the meta
+      // baseline, but send NO notification: a topper notification goes
+      // out only when a DIFFERENT user becomes #1.
+      await withTimeout(m.setDoc(metaRef, {uid: top.uid, name: String(top.name || 'Student').slice(0, 24), coins: coins, updatedAt: Date.now()}, {merge: true}), 10000);
+      return 'same-user';
+    }
     var title = 'New leaderboard topper!';
     var body = String(top.name || 'Student').slice(0, 24) + ' now leads with ' + coins + ' coins!';
     var docId = 'topper-' + top.uid + '-' + coins;
