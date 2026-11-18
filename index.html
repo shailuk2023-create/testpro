@@ -4890,6 +4890,141 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 [data-theme="dark"] #view-list .panel[data-skel-for="skel-progress"] .yp-row-ca .yp-series{color:#fcd34d;}
 [data-theme="dark"] #view-list .panel[data-skel-for="skel-progress"] .yp-row-ga .yp-series{color:#86efac;}
 </style>
+<style id="v12a-heroes">
+/* v12a-heroes — Worker A (v12, CSS only).
+   FIX 1 — LEADERBOARD HERO: DARK BLUE REMOVED. The fresh hero
+   (#view-leaderboard .fr-hb-hero, fr-hb-style) was
+   linear-gradient(120deg,#0e7490,#0891b2,#2563eb 66%,#0f766e) — the
+   #2563eb stop is the dark blue the user wants gone — and its 9s
+   breathing layer (fr-hero-anim-style ::before) was the same blue
+   gradient cross-fading at up to .55 opacity. Both are recoloured to
+   the app-matching premium teal already used by the home hero
+   (#04293c -> #0a6a8d -> #0096b5 -> #0d9488) with a warm gold radial
+   glow top-right, so the leaderboard hero now matches the home hero
+   in BOTH themes (no [data-theme="dark"] override exists for either
+   hero, and these rules are theme-agnostic by design). The 9s
+   frGmGradShift breathing is KEPT: same keyframes (untouched), same
+   9s duration, only the gradient stops changed (teal/gold, no blue).
+   The legacy .lb-hero (already teal) is harmonised to the same
+   gradient so both leaderboard hero variants match.
+   FIX 2 — GOLD WAVE, PROPERLY VISIBLE. v11's wave (#f59e0b @.22,
+   #fbbf24 @.16, #fde047 dots @.22, 130-140px) dissolved on the
+   saturated teal. v12 uses three terraced layers (@.55 / @.80 /
+   @.95, the front terrace near-opaque bright #fde047) + two bright
+   crest highlight strokes (#fef9c3 @.9, #fde68a @.7) + larger dots,
+   150px tall (120px on phones). The wave stays BEHIND the content
+   (z-index:-1 / 0, pointer-events:none) and never covers text,
+   buttons or art: home art is z-index:1, .hh-text is z-index:2,
+   leaderboard main/stats are position:relative and paint above the
+   ::before in tree order.
+   Why the leaderboard wave moved: in v11 the wave lived in
+   .fr-gm-hero::before, whose opacity is animated 0 <-> .55 by
+   frGmGradShift — so the wave itself pulsed in and out and was
+   invisible half the cycle. In v12 the wave is a background-image
+   layer on the HERO ELEMENT (static, always fully visible) and the
+   ::before holds ONLY the breathing gradient (gm) or the dot
+   sparkles (plain hero). The breathing gradient veils the wave at
+   most .55 with a teal/gold gradient, so the wave never disappears.
+   z-index:-1 is safe here: .home-hero has isolation:isolate and
+   .fr-hb-hero keeps its frHbHeroIn transform stacking context; under
+   prefers-reduced-motion the existing !important rule still kills the
+   breathing (this block declares the animation WITHOUT !important,
+   so that rule still wins) while the element-background wave
+   survives — exactly the right behaviour with motion off.
+   Readability guards (the wave is now strong gold at the bottom,
+   where the stats/CTA/quote sit): dark-teal text-shadows on hero
+   copy, stat tiles darkened to rgba(3,32,46,.42) so white numbers
+   stay legible over gold, coins box deepened, and a thin amber ring
+   on the gold CTA so it cannot melt into the gold wave.
+   NOT touched: .home-hero h2 gradient text (pm-premium sets
+   text-shadow:none!important + background-clip:text, so a shadow
+   there would smear through the transparent fill — the h2 sits at
+   the top, above the wave, and needs none); the home hero element
+   background (already teal in both themes); blobs, art, chips,
+   buttons; frGmGradShift keyframes; the sheen / avatar-glow / coin
+   animations. No !important in this block: inserted last in <head>,
+   source order + equal-or-higher specificity wins every override. */
+/* --- FIX 1a: fresh leaderboard hero — dark blue gone, teal/gold --- */
+#view-leaderboard .fr-hb-hero{background-color:#0a6a8d;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20140%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C52%20C70%2C26%20150%2C74%20220%2C48%20C290%2C26%20340%2C56%20400%2C40%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.55%27%2F%3E%3Cpath%20d%3D%27M0%2C78%20C90%2C56%20170%2C96%20260%2C74%20C320%2C60%20360%2C76%20400%2C66%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.80%27%2F%3E%3Cpath%20d%3D%27M0%2C104%20C80%2C86%20170%2C118%20250%2C100%20C310%2C88%20360%2C104%20400%2C94%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.95%27%2F%3E%3Cpath%20d%3D%27M0%2C104%20C80%2C86%20170%2C118%20250%2C100%20C310%2C88%20360%2C104%20400%2C94%27%20fill%3D%27none%27%20stroke%3D%27%23fef9c3%27%20stroke-width%3D%273%27%20stroke-opacity%3D%270.9%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M0%2C78%20C90%2C56%20170%2C96%20260%2C74%20C320%2C60%20360%2C76%20400%2C66%27%20fill%3D%27none%27%20stroke%3D%27%23fde68a%27%20stroke-width%3D%272%27%20stroke-opacity%3D%270.7%27%20stroke-linecap%3D%27round%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%27124%27%20r%3D%274%27%20fill%3D%27%23fef08a%27%20fill-opacity%3D%270.95%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27128%27%20r%3D%273.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.9%27%2F%3E%3Ccircle%20cx%3D%27200%27%20cy%3D%27132%27%20r%3D%272.5%27%20fill%3D%27%23fff7cc%27%20fill-opacity%3D%270.85%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27116%27%20r%3D%272%27%20fill%3D%27%23fef08a%27%20fill-opacity%3D%270.7%27%2F%3E%3C%2Fsvg%3E"),radial-gradient(420px 220px at 88% 0%,rgba(240,180,41,.38),transparent 60%),linear-gradient(120deg,#04293c 0%,#0a6a8d 42%,#0096b5 72%,#0d9488 100%);background-size:100% 150px,auto,auto;background-position:center bottom,0 0,0 0;background-repeat:no-repeat,no-repeat,no-repeat;box-shadow:0 24px 44px -26px rgba(10,106,141,.55),inset 0 1px 0 rgba(255,255,255,.18)}
+/* --- FIX 1b: plain (non-gm) hero ::before — dot sparkles only now; the wave lives on the element (FIX 1a) --- */
+#view-leaderboard .fr-hb-hero::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background-image:radial-gradient(2px 2px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 30% 70%,#a5f3fc,transparent),radial-gradient(2px 2px at 55% 18%,#fde68a,transparent),radial-gradient(1.5px 1.5px at 78% 62%,#fff,transparent),radial-gradient(2px 2px at 90% 25%,#fde68a,transparent),radial-gradient(1.5px 1.5px at 45% 88%,#fff,transparent);background-size:auto;background-position:0 0;background-repeat:no-repeat}
+/* --- FIX 1c: the 9s breathing layer — same animation, blue stops replaced with teal/gold --- */
+#view-leaderboard .fr-hb-hero.fr-gm-hero::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background-image:linear-gradient(120deg,#0f766e 0%,#0e7490 34%,#0891b2 62%,#d97706 100%);animation:frGmGradShift 9s ease-in-out infinite}
+/* --- FIX 1d: legacy .lb-hero — same teal/gold family + visible wave --- */
+.lb-hero{background-color:#0a6a8d;background-image:radial-gradient(420px 220px at 88% 0%,rgba(240,180,41,.38),transparent 60%),linear-gradient(135deg,#04293c 0%,#0a6a8d 45%,#0096b5 75%,#0d9488 100%);box-shadow:0 24px 44px -26px rgba(10,106,141,.55)}
+.lb-hero::before{content:"";position:absolute;left:0;right:0;bottom:0;height:150px;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20140%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C52%20C70%2C26%20150%2C74%20220%2C48%20C290%2C26%20340%2C56%20400%2C40%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.55%27%2F%3E%3Cpath%20d%3D%27M0%2C78%20C90%2C56%20170%2C96%20260%2C74%20C320%2C60%20360%2C76%20400%2C66%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.80%27%2F%3E%3Cpath%20d%3D%27M0%2C104%20C80%2C86%20170%2C118%20250%2C100%20C310%2C88%20360%2C104%20400%2C94%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.95%27%2F%3E%3Cpath%20d%3D%27M0%2C104%20C80%2C86%20170%2C118%20250%2C100%20C310%2C88%20360%2C104%20400%2C94%27%20fill%3D%27none%27%20stroke%3D%27%23fef9c3%27%20stroke-width%3D%273%27%20stroke-opacity%3D%270.9%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M0%2C78%20C90%2C56%20170%2C96%20260%2C74%20C320%2C60%20360%2C76%20400%2C66%27%20fill%3D%27none%27%20stroke%3D%27%23fde68a%27%20stroke-width%3D%272%27%20stroke-opacity%3D%270.7%27%20stroke-linecap%3D%27round%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%27124%27%20r%3D%274%27%20fill%3D%27%23fef08a%27%20fill-opacity%3D%270.95%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27128%27%20r%3D%273.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.9%27%2F%3E%3Ccircle%20cx%3D%27200%27%20cy%3D%27132%27%20r%3D%272.5%27%20fill%3D%27%23fff7cc%27%20fill-opacity%3D%270.85%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27116%27%20r%3D%272%27%20fill%3D%27%23fef08a%27%20fill-opacity%3D%270.7%27%2F%3E%3C%2Fsvg%3E");background-size:100% 100%;background-position:center bottom;background-repeat:no-repeat}
+/* --- FIX 2a: home hero wave — same v12 gold wave, behind content --- */
+#view-list .home-hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20140%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M0%2C52%20C70%2C26%20150%2C74%20220%2C48%20C290%2C26%20340%2C56%20400%2C40%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23f59e0b%27%20fill-opacity%3D%270.55%27%2F%3E%3Cpath%20d%3D%27M0%2C78%20C90%2C56%20170%2C96%20260%2C74%20C320%2C60%20360%2C76%20400%2C66%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23fbbf24%27%20fill-opacity%3D%270.80%27%2F%3E%3Cpath%20d%3D%27M0%2C104%20C80%2C86%20170%2C118%20250%2C100%20C310%2C88%20360%2C104%20400%2C94%20L400%2C140%20L0%2C140%20Z%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.95%27%2F%3E%3Cpath%20d%3D%27M0%2C104%20C80%2C86%20170%2C118%20250%2C100%20C310%2C88%20360%2C104%20400%2C94%27%20fill%3D%27none%27%20stroke%3D%27%23fef9c3%27%20stroke-width%3D%273%27%20stroke-opacity%3D%270.9%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M0%2C78%20C90%2C56%20170%2C96%20260%2C74%20C320%2C60%20360%2C76%20400%2C66%27%20fill%3D%27none%27%20stroke%3D%27%23fde68a%27%20stroke-width%3D%272%27%20stroke-opacity%3D%270.7%27%20stroke-linecap%3D%27round%27%2F%3E%3Ccircle%20cx%3D%2752%27%20cy%3D%27124%27%20r%3D%274%27%20fill%3D%27%23fef08a%27%20fill-opacity%3D%270.95%27%2F%3E%3Ccircle%20cx%3D%27348%27%20cy%3D%27128%27%20r%3D%273.5%27%20fill%3D%27%23fde047%27%20fill-opacity%3D%270.9%27%2F%3E%3Ccircle%20cx%3D%27200%27%20cy%3D%27132%27%20r%3D%272.5%27%20fill%3D%27%23fff7cc%27%20fill-opacity%3D%270.85%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%27116%27%20r%3D%272%27%20fill%3D%27%23fef08a%27%20fill-opacity%3D%270.7%27%2F%3E%3C%2Fsvg%3E"),radial-gradient(2px 2px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 30% 70%,#a5f3fc,transparent),radial-gradient(2px 2px at 55% 18%,#fde68a,transparent),radial-gradient(1.5px 1.5px at 78% 62%,#fff,transparent),radial-gradient(2px 2px at 90% 25%,#fde68a,transparent),radial-gradient(1.5px 1.5px at 45% 88%,#fff,transparent),radial-gradient(420px 220px at 88% 0%,rgba(253,224,71,.30),transparent 62%);background-size:100% 150px,auto,auto,auto,auto,auto,auto,auto;background-position:center bottom,0 0,0 0,0 0,0 0,0 0,0 0;background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat}
+/* --- FIX 2b: readability guards — white copy / tiles / CTA over strong gold --- */
+#view-list .home-hero p,#view-list .home-hero #homeSub{text-shadow:0 1px 3px rgba(3,32,46,.65),0 2px 12px rgba(3,32,46,.55)}
+#view-leaderboard .fr-hb-hero-txt h2,#view-leaderboard .fr-hb-hero-txt p,.lb-hero-txt h2,.lb-hero-txt p{text-shadow:0 1px 8px rgba(3,32,46,.5)}
+#view-leaderboard .fr-hb-hero .fr-hb-stats>div,.lb-hero .lb-hero-stats>div{background:rgba(3,32,46,.42);border-color:rgba(255,255,255,.30)}
+#view-leaderboard .fr-hb-hero .fr-hb-coins{background:rgba(0,0,0,.28)}
+#view-leaderboard .fr-hb-hero .fr-hb-cta{box-shadow:0 10px 20px -10px rgba(0,0,0,.5),0 0 0 1px rgba(146,64,14,.45)}
+/* --- phones: shorter wave so it never dominates the shorter cards (beats v11a's 100px rule: same specificity, later source order) --- */
+@media (max-width:640px){
+#view-list .home-hero::before{background-size:100% 120px,auto,auto,auto,auto,auto,auto,auto}
+#view-leaderboard .fr-hb-hero{background-size:100% 120px,auto,auto}
+.lb-hero::before{height:120px}
+}
+</style>
+<style id="v12b-mobile-hero">
+/* v12b-mobile-hero -- Worker B (v12): mobile home hero SHORTER + PNG BIGGER.
+   CSS only. Scope: #view-list .home-hero (home hero card) at <=640px /
+   <=560px. Nothing outside the hero is touched; no rule is removed.
+   Existing rules this beats (all read in base-b.html before writing):
+   - v6 #v6-hero-light @<=560px: card min-height:210px!important,
+     padding:20px 18px!important; img.hx-art height:200px!important,
+     max-width:44%!important, right:-4px, bottom:-6px.
+   - v11a #v11a-heroes @<=640px: card width:calc(100% - 28px),
+     padding:20px 16px!important; .hh-text max-width:52%.
+   - v7a: quote .hx-cta-row + .hx-tag margin-top:14px (specificity
+     (1,3,0) -- a plain .hx-tag rule would LOSE, so the same selector
+     is used here); @<=560px .hx-tag min-height:2.7em.
+   - v3: .hx-cta height:42px; .hx-chips margin-top:10px/8px.
+   Geometry (360px phone, card width calc(100% - 28px) = 332px):
+   - v11 card was ~264px tall: padding 40 + h2 ~26 + chips ~82 (the
+     target chip wraps to 2 lines in the 52% text column) + CTA 12+42
+     + quote 14+39. The image is position:absolute, so card height is
+     driven ONLY by the text column; the image can grow without making
+     the card taller.
+   - v11 image rendered ~146x146: height:200px capped by
+     max-width:44%. The PNG is square with wide transparent side
+     margins, so the drawn girl was only ~73x110px inside a 264px card.
+   - Text column is NOT narrowed below v11's 52%: at 52% the "Start
+     practising" button (~147px at 13px) just fits and the target chip
+     stays 2 lines; narrower would push the chip to 3 lines and push
+     the button over the image. The image grows by raising its own cap.
+   - .hh-text keeps z-index:2 over the image (z-index:1), so even a
+     1-2px graze of the button's right padding by the image's
+     transparent left margin can never cover text.
+   Result @<=560px: card ~221px tall (-43px, -16%), image box 173x173
+   (height:230px capped by max-width:52%), drawn girl ~86x130px (+18%
+   linear, +39% area); image is ~78% of card height (was ~55%). */
+@media (max-width:640px){
+  /* tighter card + tighter vertical rhythm (shared phone band) */
+  #view-list .home-hero{padding:16px 16px!important}
+  #view-list .home-hero .hx-chips{margin-top:6px;gap:5px}
+  #view-list .home-hero .hx-chip{padding:4px 8px;font-size:12px;line-height:1.35}
+  #view-list .home-hero .hx-cta-row{margin-top:8px}
+  #view-list .home-hero .hx-cta{height:38px;padding:0 12px;font-size:13px;gap:7px}
+  /* quote gap: same selector as v7a (see header note) */
+  #view-list .home-hero .hx-cta-row + .hx-tag{margin-top:8px}
+}
+@media (max-width:560px){
+  /* shorter card: kill v6's 210px min-height, cut vertical padding */
+  #view-list .home-hero{min-height:0!important;padding:14px 16px!important}
+  #view-list .home-hero h2{font-size:21px}
+  /* bigger art: height 230px, cap raised 44% -> 52% (box ~173x173 on a
+     332px card); width:auto + object-fit:contain keep the ratio, and
+     overflow:hidden on the card keeps it inside the card edge */
+  #view-list .home-hero img.hx-art{height:230px!important;width:auto!important;max-width:52%!important;right:-2px!important;bottom:-4px!important;object-fit:contain}
+  /* quote reserve: 2.7em -> 2.4em (a 2-line quote is ~39px, so this never
+     binds on the live quote; it only trims the 1-line rotation reserve) */
+  #view-list .home-hero .hx-tag{min-height:2.4em}
+}
+</style>
+
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
