@@ -3230,7 +3230,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <a href="#" id="navAttempted" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg><span>Attempted Tests</span></a>
         <a href="#" id="navSettings" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
         <a href="#" id="navRefresh" onclick="return false"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg><span>Refresh</span></a>
-        <a href="#" id="navPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="navPushLbl">System notifications</span></a>
+        <a href="#" id="navPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="navPushLbl">System notifications</span><label class="sm-push-toggle" id="navPushToggleWrap" for="navPushToggle"><input type="checkbox" id="navPushToggle" aria-label="System notifications on/off"><span class="sm-push-track"><span class="sm-push-knob"></span></span></label></a>
       </nav>
     </aside>
     <div class="list-main">
@@ -3679,7 +3679,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 
       <section class="card set-card">
         <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bell"/></svg></span>Notifications</h3>
-        <button class="fb-email-btn" id="setPushBtn" type="button">Enable system notifications</button>
+        <div style="display:flex;align-items:center;gap:10px"><button class="fb-email-btn" id="setPushBtn" type="button" style="flex:1">Enable system notifications</button><label class="sm-push-toggle" id="setPushToggleWrap" for="setPushToggle"><input type="checkbox" id="setPushToggle" aria-label="System notifications on/off"><span class="sm-push-track"><span class="sm-push-knob"></span></span></label></div>
         <p class="set-acct-status" id="setPushStatus">Topper, streak aur report fix ki khabar phone par bhi pao — button dabakar on karo.</p>
       </section>
 
@@ -10133,16 +10133,14 @@ var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', 
      'granted'. ntfEnablePush() is the explicit user-gesture entry (wire it to
      the bell / settings affordance): it asks once via requestPermission(),
      and never re-asks after a denial.
-   - SERVICE WORKER NOTE: the subscription binds to whichever SW is active
-     (today: the Progressier-registered SW). Push events are delivered to
-     THAT worker, so a raw Web Push payload only shows if that worker handles
-     `push` events. If a test push never arrives, the minimal fix is a
-     TESTPRO-owned SW file with `push` + `notificationclick` handlers
-     (mirroring skquizpro-ref/public/sw-extras.js) registered for the app —
-     which replaces the Progressier SW for the scope, so it must also keep a
-     fetch handler to preserve PWA installability. Coordinator decision at
-     go-live; do NOT silently swap the SW here. A runtime warning is logged
-     when the active SW URL contains 'progressier'.
+   - SERVICE WORKER NOTE: subscriptions bind to the TESTPRO-owned push
+     worker at sub-scope /testpro/push/ (push/sw.js) — it owns `push` +
+     `notificationclick` and shows system notifications even when the app
+     is closed (like SKQuizPro). Progressier's SW keeps controlling the app
+     pages and is never replaced or fought with; the push worker has no
+     fetch handler, so PWA install/offline via Progressier is untouched.
+     A runtime warning is logged when the active SW URL contains
+     'progressier'.
    - TOPPER (this block): ntfCheckTopper() runs on every leaderboard refresh
      (onSnapshot + lbRefresh). It writes ONE `notifications` doc per real
      topper change (deterministic id `topper-<uid>-<coins>`, createdAt = ms
@@ -10158,6 +10156,36 @@ var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', 
      and bypasses rules). */
 var NTF_VAPID_PUBLIC_KEY = 'BBEC37inGxK2DYBCFtLRLHdhT3geI5wRfJGm5vXSfI9kcdcag7rtngAsr0BNrso-HkknL7ZdTDF07SWiMuKLDoY'; /* VAPID PUBLIC key only (generated fresh for TESTPRO, 17 Nov 2026; 87-char base64url P-256). Its private counterpart was NOT stored anywhere — at go-live regenerate the pair in ONE session, paste the private key straight into the GitHub secret VAPID_PRIVATE_KEY, and replace this constant with the new public key. NEVER put a private key in this file. */
 var NTF = {lastTopperSig: '', topperBusy: false, pushBusy: false, deviceId: '', lastEndpoint: '', lastUid: null};
+/* TESTPRO-owned push worker (sub-scope /testpro/push/). Registers
+   push/sw.js — NEVER the root scope, so it never fights Progressier's SW
+   (Progressier re-registers its own SW whenever the active worker is not
+   its own). The push worker owns `push` + `notificationclick` only, so all
+   Web Push subscriptions bind to it and system notifications arrive even
+   when the app is closed. Returns the registration once activated (or
+   after a 5s cap), null when registration fails. */
+var NTF_PUSH_SW_URL = 'push/sw.js';
+var NTF_PUSH_SW_SCOPE = 'push/';
+async function ntfPushReg(){
+  if (!('serviceWorker' in navigator)) return null;
+  var reg = null;
+  try { reg = await navigator.serviceWorker.register(NTF_PUSH_SW_URL, { scope: NTF_PUSH_SW_SCOPE }); } catch (e) { return null; }
+  if (!reg) return null;
+  if (reg.active) return reg;
+  try {
+    await new Promise(function (resolve) {
+      var done = false;
+      var to = setTimeout(function(){ if (!done){ done = true; resolve(); } }, 5000);
+      var w = reg.installing || reg.waiting;
+      if (!w) { clearTimeout(to); resolve(); return; }
+      var onState = function(){
+        if (w.state === 'activated' || w.state === 'redundant'){ if (!done){ done = true; clearTimeout(to); resolve(); } }
+      };
+      w.addEventListener('statechange', onState);
+      onState();
+    });
+  } catch (e) {}
+  return reg;
+}
 function ntfFbUid(){ var u = fbUser(); return u ? u.uid : ''; }
 function ntfB64UrlToU8(s){
   var pad = '='.repeat((4 - (s.length % 4)) % 4);
@@ -10205,10 +10233,8 @@ async function ntfEnsurePushSubscription(uid){
   if (!fb || !fb.db || !navigator.onLine) return {ok: false, reason: 'no-db'};
   NTF.pushBusy = true;
   try {
-    var reg = await navigator.serviceWorker.ready;
-    if (reg && reg.active && reg.active.scriptURL && /progressier/i.test(reg.active.scriptURL)){
-      try { console.warn('[ntf-push] active service worker is Progressier-registered; a test push must confirm delivery — see the NTF block comment.'); } catch (e) {}
-    }
+    var reg = await ntfPushReg();
+    if (!reg) return {ok: false, reason: 'no-sw'};
     var sub = await reg.pushManager.getSubscription();
     if (!sub){
       sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: ntfB64UrlToU8(NTF_VAPID_PUBLIC_KEY).buffer});
@@ -10256,7 +10282,7 @@ async function ntfPushHasSub(){
   try {
     if (!ntfPushSupported()) return false;
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
-    var reg = await navigator.serviceWorker.ready;
+    var reg = await ntfPushReg();
     if (!reg || !reg.pushManager) return false;
     var sub = await reg.pushManager.getSubscription();
     return !!sub;
@@ -10275,14 +10301,20 @@ function ntfPushSetLabels(st){
   if (setStatus) setStatus.textContent = st.status;
   if (navA) navA.style.opacity = st.dim ? '0.55' : '';
   if (smA) smA.style.opacity = st.dim ? '0.55' : '';
-  /* Slide-in menu toggle: ON only when really subscribed; disabled when unsupported. */
-  var tg = document.getElementById('smPushToggle');
-  if (tg){
-    if (typeof st.toggle === 'boolean') tg.checked = st.toggle;
-    tg.disabled = !!st.toggleDisabled;
-  }
-  var tgWrap = document.getElementById('smPushToggleWrap');
-  if (tgWrap) tgWrap.style.opacity = (st.toggleDisabled || st.dim) ? '0.45' : '';
+  /* Toggles (slide-in / sidebar / Settings): ON only when really
+     subscribed; disabled when unsupported. The pill alone shows ON/OFF —
+     no ON/OFF text anywhere in the labels. */
+  ['smPushToggle', 'navPushToggle', 'setPushToggle'].forEach(function(id){
+    var t = document.getElementById(id);
+    if (t){
+      if (typeof st.toggle === 'boolean') t.checked = st.toggle;
+      t.disabled = !!st.toggleDisabled;
+    }
+  });
+  ['smPushToggleWrap', 'navPushToggleWrap', 'setPushToggleWrap'].forEach(function(id){
+    var w = document.getElementById(id);
+    if (w) w.style.opacity = (st.toggleDisabled || st.dim) ? '0.45' : '';
+  });
 }
 async function ntfRefreshPushBtns(){
   if (!ntfPushSupported()){
@@ -10292,13 +10324,13 @@ async function ntfRefreshPushBtns(){
   var perm = 'default';
   try { perm = Notification.permission || 'default'; } catch (e) {}
   if (perm === 'denied'){
-    ntfPushSetLabels({nav: 'System notifications • Blocked', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — browser ki site settings me jaakar notifications Allow karo, phir wapas aakar dekho.', dim: true, toggle: false, toggleDisabled: false});
+    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications blocked', btnDisabled: false, status: 'Blocked hai — browser ki site settings me jaakar notifications Allow karo, phir wapas aakar dekho.', dim: true, toggle: false, toggleDisabled: false});
     return;
   }
   var hasSub = false;
   try { hasSub = await ntfPushHasSub(); } catch (e) { hasSub = false; }
   if (perm === 'granted' && hasSub){
-    ntfPushSetLabels({nav: 'System notifications • ON', btn: 'System notifications ON ✓', btnDisabled: false, status: 'System notifications ON hain — topper, streak aur report fix ki khabar phone par bhi milegi.', dim: false, toggle: true, toggleDisabled: false});
+    ntfPushSetLabels({nav: 'System notifications', btn: 'System notifications', btnDisabled: false, status: 'System notifications ON hain — topper, streak aur report fix ki khabar phone par bhi milegi.', dim: false, toggle: true, toggleDisabled: false});
     return;
   }
   ntfPushSetLabels({nav: 'System notifications', btn: 'Enable system notifications', btnDisabled: false, status: (perm === 'granted') ? 'Permission mil gayi hai — button dabakar subscribe karo.' : 'Topper, streak aur report fix ki khabar phone par bhi pao — button dabakar on karo.', dim: false, toggle: false, toggleDisabled: false});
@@ -10309,7 +10341,7 @@ async function ntfRefreshPushBtns(){
 async function ntfDisablePush(){
   try {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
-    var reg = await navigator.serviceWorker.ready;
+    var reg = await ntfPushReg();
     if (!reg || !reg.pushManager) return false;
     var sub = null;
     try { sub = await reg.pushManager.getSubscription(); } catch (e) { sub = null; }
@@ -10335,7 +10367,7 @@ async function ntfDisablePush(){
    OFF = unsubscribe + delete the device's push_subscriptions doc.
    Reverts the switch + toasts when the operation fails. */
 async function ntfPushToggleChange(ev){
-  var tg = document.getElementById('smPushToggle');
+  var tg = (ev && ev.target) || document.getElementById('smPushToggle');
   if (!tg) return;
   if (!ntfPushSupported()){ tg.checked = false; ntfPushToast('Is browser me system notifications supported nahi hai.'); return; }
   if (tg.checked){
@@ -10350,6 +10382,8 @@ async function ntfPushToggleChange(ev){
       if (res && res.reason === 'denied') ntfPushToast('Notifications blocked hain — browser ki site settings me Allow karo.');
       else if (res && res.reason === 'not-granted') ntfPushToast('Permission nahi mili — system notifications on nahi hui.');
       else if (res && res.reason === 'unsupported') ntfPushToast('Is browser me system notifications supported nahi hai.');
+      else if (res && res.reason === 'no-sw') ntfPushToast('Push worker register nahi hua — app ko GitHub Pages link se kholo aur dobara try karo.');
+      else if (res && (res.reason === 'no-db' || res.reason === 'no-firestore')) ntfPushToast('App abhi poori tarah load nahi hui — thodi der baad dobara try karo.');
       else ntfPushToast('System notifications on nahi ho payi — dobara try karo.');
     }
   } else {
@@ -10385,6 +10419,10 @@ async function ntfPushBtnTap(ev){
     ntfPushToast('Permission nahi mili — system notifications on nahi hui.');
   } else if (res && res.reason === 'unsupported'){
     ntfPushToast('Is browser me system notifications supported nahi hai.');
+  } else if (res && res.reason === 'no-sw'){
+    ntfPushToast('Push worker register nahi hua — app ko GitHub Pages link se kholo aur dobara try karo.');
+  } else if (res && (res.reason === 'no-db' || res.reason === 'no-firestore')){
+    ntfPushToast('App abhi poori tarah load nahi hui — thodi der baad dobara try karo.');
   } else {
     ntfPushToast('System notifications on nahi ho payi — dobara try karo.');
   }
@@ -10396,15 +10434,19 @@ async function ntfPushBtnTap(ev){
       var el = document.getElementById(id);
       if (el) el.addEventListener('click', ntfPushBtnTap);
     });
-    /* Slide-in menu toggle: stop its clicks reaching #smPush (the toggle
-       lives inside the #smPush anchor); the change event drives ON/OFF. */
-    var tgWrap = document.getElementById('smPushToggleWrap');
-    if (tgWrap) tgWrap.addEventListener('click', function(ev){ if (ev && ev.stopPropagation) ev.stopPropagation(); });
-    var tg = document.getElementById('smPushToggle');
-    if (tg){
-      tg.addEventListener('click', function(ev){ if (ev && ev.stopPropagation) ev.stopPropagation(); });
-      tg.addEventListener('change', ntfPushToggleChange);
-    }
+    /* Toggles (slide-in / sidebar / Settings): stop their clicks reaching
+       the parent anchor/button; the change event drives ON/OFF. */
+    ['smPushToggleWrap', 'navPushToggleWrap', 'setPushToggleWrap'].forEach(function(id){
+      var w = document.getElementById(id);
+      if (w) w.addEventListener('click', function(ev){ if (ev && ev.stopPropagation) ev.stopPropagation(); });
+    });
+    ['smPushToggle', 'navPushToggle', 'setPushToggle'].forEach(function(id){
+      var t = document.getElementById(id);
+      if (t){
+        t.addEventListener('click', function(ev){ if (ev && ev.stopPropagation) ev.stopPropagation(); });
+        t.addEventListener('change', ntfPushToggleChange);
+      }
+    });
     var pr = ntfRefreshPushBtns();
     if (pr && pr.catch) pr.catch(function(){});
   } catch (e) {}
