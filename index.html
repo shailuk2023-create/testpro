@@ -5025,6 +5025,13 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 }
 </style>
 
+<style id="v12c-mobile-timebox">
+/* v12c: mobile topbar timer boxes were invisible (white numbers, transparent bg on white topbar) */
+@media (max-width:900px){
+  #view-test .test-topbar .time-left .tbox{background:#4b5563!important;color:#fff!important;border-radius:3px!important;padding:2px 5px!important;min-width:24px!important;font-size:15px!important;text-align:center!important}
+  #view-test .test-topbar .time-left.low .tbox{background:#da3d35!important}
+}
+</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
