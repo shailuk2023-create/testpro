@@ -5032,6 +5032,24 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
   #view-test .test-topbar .time-left.low .tbox{background:#da3d35!important}
 }
 </style>
+<style id="v12d-fullwidth-hero">
+/* v12d: home hero horizontally FULL SCREEN on mobile/tablet -- remove the v11a
+   14px gutters AND break out of .list-body padding so the card spans the full
+   viewport width, edge to edge, no side margins.
+   .list-body horizontal padding: 14px @<=560px, 18px @561-900px (later rules
+   beat the 32px desktop padding). Hero is border-box, so width calc(100% + 2*pad)
+   with negative side margins == exactly the .list-body (viewport) width; no overflow.
+   Desktop (>900px) unchanged: hero already spans the full .home-wrap content
+   width there (no v11a gutter exists on desktop) and the centred column is intentional.
+   Border-radius kept as-is (minimal change -- only width/margins). Text column and
+   PNG are %-based so they scale with the wider card; v12 bigger PNG kept. */
+@media (max-width:560px){
+  #view-list .home-hero{width:calc(100% + 28px)!important;margin-left:-14px!important;margin-right:-14px!important}
+}
+@media (min-width:561px) and (max-width:900px){
+  #view-list .home-hero{width:calc(100% + 36px)!important;margin-left:-18px!important;margin-right:-18px!important}
+}
+</style>
 </head>
 <body>
 <script>/* v38 register gate: hide the app until Firebase auth resolves. The
