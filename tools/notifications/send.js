@@ -6,7 +6,9 @@
      1. Inactivity — a user with no attempt in the last 2 days gets a nudge
         (target = their uid). At most once per user per 3 days, and only if
         their last attempt was within the last 30 days (no nagging quitters).
-     2. Topper change — the #1 user by total coins changed vs meta/topper.
+     2. Topper change — a DIFFERENT user became #1 vs meta/topper.
+        The same user staying #1 (even with more coins) sends nothing;
+        only the meta baseline is updated.
         Same doc id (topper-<uid>-<coins>) and same meta guard as the in-app
         fast path, so the two never double-send. First run records the
         baseline only — no notification.
@@ -234,8 +236,12 @@ async function main() {
         if (!md || !md.uid) {
           if (!dryRun) await metaRef.set({ uid: top.uid, name: top.name, coins: top.coins, updatedAt: now }, { merge: true });
           summary.topper = dryRun ? 'dry-run-baseline-would-record' : 'first-run-baseline-recorded';
-        } else if (md.uid === top.uid && +md.coins === top.coins) {
-          summary.topper = 'unchanged';
+        } else if (md.uid === top.uid) {
+          // Same user still #1 — only their coins grew. Update the meta
+          // baseline, but send NO notification: a topper notification goes
+          // out only when a DIFFERENT user becomes #1.
+          if (!dryRun) await metaRef.set({ uid: top.uid, name: top.name, coins: top.coins, updatedAt: now }, { merge: true });
+          summary.topper = 'unchanged-same-user';
         } else {
           var tTitle = 'New leaderboard topper!';
           var tBody = top.name + ' now leads with ' + top.coins + ' coins!';
