@@ -143,7 +143,7 @@ async function main() {
     }
     if (dryRun) return { sent: 0, failed: 0, deleted: 0, note: 'dry-run-would-send-' + list.length };
     webpush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate);
-    var payload = JSON.stringify({ title: title, body: body, url: APP_URL, icon: 'https://shailuk2023-create.github.io/testpro/icon-512.png', badge: 'https://shailuk2023-create.github.io/testpro/icon-192.png' });
+    var payload = JSON.stringify({ title: title, body: body, url: APP_URL });
     var sent = 0, failed = 0, deleted = 0;
     var BATCH = 25;
     for (var i = 0; i < list.length; i += BATCH) {
