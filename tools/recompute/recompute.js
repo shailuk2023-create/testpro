@@ -45,7 +45,8 @@ var CA_SLOW_SECS = 30;         /* GK/CA: t >= 30s -> 0 */
 var MATHS_FAST_SECS = 30;      /* Maths (all other tests): t <= 30s -> 1.0 */
 var MATHS_SLOW_SECS = 50;      /* Maths: t >= 50s -> 0 */
 
-var REATTEMPT_FACTOR = 0.5;    /* attempt no >= 2 earns 50% of its total */
+var REATTEMPT_FACTOR = 0.5;    /* attempt no >= 2 earns 50% of its total (v16: only when >= 48h after the previous attempt) */
+var REATTEMPT_LOCK_MS = 172800000; /* v16: 48 hours in ms — a re-attempt within this gap of the PREVIOUS attempt earns 0 */
 var FIRST_ATTEMPT_NO = 1;      /* no == 1 (or no missing) earns 100% */
 
 var ENG_MIGRATION_DIVISOR = 10; /* v68 rescale: old-scale engagement / 10 */
@@ -174,9 +175,43 @@ function attemptMarks(a){
   return ((+a.correct || 0) + (+a.wrong || 0) + (+a.skipped || 0));
 }
 
+/* v16 48h re-attempt factor — mirrors coinReattemptFactor() in the app
+   (tp-coins). no = this attempt's record no; curTs = this attempt's ts;
+   prevTs = the immediately preceding attempt's ts (null when none).
+   First attempt -> 1; re-attempt < 48h after the PREVIOUS attempt -> 0;
+   re-attempt >= 48h after the previous attempt -> 0.5. The gap is
+   anchored on the previous attempt, NOT the first attempt. Missing /
+   invalid ts, or a negative gap (clock skew / out-of-order), falls back
+   to 0.5 — never 0 on untrusted data. */
+function coinReattemptFactor(no, curTs, prevTs){
+  if (no == null || +no < 2) return 1;
+  var cur = +curTs, prev = +prevTs;
+  if (!isFinite(cur) || !isFinite(prev)) return REATTEMPT_FACTOR;
+  var gap = cur - prev;
+  if (gap < 0) return REATTEMPT_FACTOR;
+  return gap < REATTEMPT_LOCK_MS ? 0 : REATTEMPT_FACTOR;
+}
+/* Attempt history in time order — a COPY sorted by (no, ts), so the
+   entry before index i is always the immediately preceding attempt.
+   Never mutates the caller's array. Missing/invalid no sorts as 1. */
+function coinSortedHist(hist){
+  var arr = (hist || []).slice();
+  arr.sort(function(a, b){
+    var na = (a && a.no != null && isFinite(+a.no)) ? +a.no : 1;
+    var nb = (b && b.no != null && isFinite(+b.no)) ? +b.no : 1;
+    if (na !== nb) return na - nb;
+    var ta = (a && isFinite(+a.ts)) ? +a.ts : 0;
+    var tb = (b && isFinite(+b.ts)) ? +b.ts : 0;
+    return ta - tb;
+  });
+  return arr;
+}
+
 /* Best (max) factored total for ONE test across all its attempts.
    Mirrors testCoinsDetail(): coins are computed PER ATTEMPT (each with its
-   own factor — 1 for the first attempt, 0.5 for re-attempts) and the test
+   own factor — 1 for the first attempt, 0.5 for re-attempts made >= 48h
+   after the previous attempt, 0 for re-attempts within 48h of the
+   previous attempt — v16, see coinReattemptFactor) and the test
    total is the MAX over attempts, NOT just the best-by-score attempt's
    coins. Re-attempting can never reduce a test's coins.
    v71: the selection lives in selectBestAttempt() so the question-stats
@@ -185,12 +220,14 @@ function attemptMarks(a){
    thin wrapper over it — its return value is unchanged. */
 function selectBestAttempt(testId, attempts){
   var best = null;
-  (Array.isArray(attempts) ? attempts : []).forEach(function(a){
+  var sorted = coinSortedHist(Array.isArray(attempts) ? attempts : []);
+  sorted.forEach(function(a, i){
     if (!a) return;
     var marks = attemptMarks(a);
     var raw = coinsFromParts(a.score || 0, a.correct || 0, a.wrong || 0,
       marks, a.timeTaken || 0, a.accuracy, a.qs, testId);
-    var f = (a.no != null && +a.no >= 2) ? REATTEMPT_FACTOR : 1;
+    var prev = i > 0 ? sorted[i - 1] : null;
+    var f = coinReattemptFactor(a.no, a.ts, prev ? prev.ts : null);
     var d = coinApplyFactor(raw, f);
     if (!best || d.total > best.parts.total) best = {attempt: a, parts: d};
   });
@@ -386,6 +423,8 @@ module.exports = {
   MATHS_FAST_SECS: MATHS_FAST_SECS,
   MATHS_SLOW_SECS: MATHS_SLOW_SECS,
   REATTEMPT_FACTOR: REATTEMPT_FACTOR,
+  REATTEMPT_LOCK_MS: REATTEMPT_LOCK_MS,
+  coinReattemptFactor: coinReattemptFactor,
   FIRST_ATTEMPT_NO: FIRST_ATTEMPT_NO,
   ENG_MIGRATION_DIVISOR: ENG_MIGRATION_DIVISOR,
   ENG_OPEN: ENG_OPEN,
