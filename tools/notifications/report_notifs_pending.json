@@ -312,5 +312,20 @@
     "responseId": "ACYDBNgVogyDFkkw9kUgwci5CrRWnzxuHtB36VnNaX9FVc17PJ-kLZ7olypUxPD3ct5wEZI",
     "fixedSummary": "Geography 2 Q1 (Bhaga-Chandra -> Chenab): reporter ki di hui Himalayan river valley photo lagayi, offline base64 JPEG embed ki, Wikimedia CHENAB_VALLEY photo ki jagah",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q2 (GA Test Q2) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795093683004,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q2 (GA Test Q2)"
+    },
+    "responseId": "ACYDBNgGRkbZA2q7vckXY6GUVYeAbaG6Xr_HhCM5wBfVkQ_A-vO5mXzyhNllVQ3H_pNNgu4",
+    "fixedSummary": "Geography 2 Q2 (Indus right-bank tributary, Kabul) solution image replaced: generic Ladakh Indus photo -> reporter-supplied Sanskriti IAS Indus River System map, embedded offline as base64 JPEG",
+    "sent": false
   }
 ]
