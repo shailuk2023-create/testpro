@@ -12568,22 +12568,28 @@ function myEntry(){
       /* v50 contract: q counts BEST attempt only (reference summed every
          attempt — deliberately not copied). */
       q += (best.correct || 0) + (best.wrong || 0);
-      /* v62 re-attempt rule: the published t-map record carries the
-         attempt that MAXIMISES (coins x factor) — factor 1 for the
+      /* v62 re-attempt rule (v16 48h): the published t-map record carries
+         the attempt that MAXIMISES (coins x factor) — factor 1 for the
          first attempt (no == 1, or no missing), 0.5 for re-attempts
-         (no >= 2) — plus the factor as an OPTIONAL 6th element
-         (default 1 for old 5-element docs), so the leaderboard
-         derivation (testCoinsFromEntry) applies the same halving as
-         the local path and the two totals agree. q / avg / acc above
-         still use the best-by-score attempt (v50 contract
+         made >= 48h after the previous attempt, 0 for re-attempts
+         within 48h of the previous attempt (coinReattemptFactor, same
+         helper as the local testCoinsDetail path) — plus the factor as
+         an OPTIONAL 6th element (default 1 for old 5-element docs), so
+         the leaderboard derivation (testCoinsFromEntry) applies the same
+         factor as the local path and the two totals agree. q / avg / acc
+         above still use the best-by-score attempt (v50 contract
          unchanged). When the coin engine is absent, testCoins()
          returns 0 and the record falls back to the best-by-score
          attempt with factor 1. */
       var win = best, winF = 1;
       if (coinSys()){
         var winCoins = -1;
-        hist.forEach(function(a){
-          var f = (a.no != null && +a.no >= 2) ? 0.5 : 1;
+        var sortedHist = (typeof coinSortedHist === 'function') ? coinSortedHist(hist) : hist.slice();
+        sortedHist.forEach(function(a, i){
+          var prevA = i > 0 ? sortedHist[i - 1] : null;
+          var f = (typeof coinReattemptFactor === 'function')
+            ? coinReattemptFactor(a.no, a.ts, prevA ? prevA.ts : null)
+            : ((a.no != null && +a.no >= 2) ? 0.5 : 1);
           var c = testCoins([r2(a.score || 0), a.correct || 0, a.wrong || 0, marks, Math.round(a.timeTaken || 0), f], tid);
           if (c > winCoins){ win = a; winF = f; winCoins = c; }
         });
@@ -13001,7 +13007,7 @@ function lbRenderHero(sorted0){
 }
 /* v59: one-line "How coins work" note, shown above the board on both tabs. */
 function lbCoinsNote(){
-  return '<div class="lb-note lb-coins-note fr-hb-note"><span class="fr-hb-coin fr-hb-coin-sm" aria-hidden="true">₹</span><button type="button" class="lb-coins-toggle fr-hb-note-link" aria-expanded="false">How coins work</button><span class="lb-coins-full fr-hb-note-full" hidden>🪙 How coins work: per test (best attempt only) — Score up to 100, Accuracy up to 25 (100% = 25, 30% or less = 0), Time up to 25 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 150 per test. Re-attempt coins are halved because answers have been seen — plus daily app opens (+5, +10 on a 7+ day streak), time spent in the app (+1 per 10 min, max +10/day) and solutions viewed (+0.5 per solution, max +5/day).</span></div>';
+  return '<div class="lb-note lb-coins-note fr-hb-note"><span class="fr-hb-coin fr-hb-coin-sm" aria-hidden="true">₹</span><button type="button" class="lb-coins-toggle fr-hb-note-link" aria-expanded="false">How coins work</button><span class="lb-coins-full fr-hb-note-full" hidden>🪙 How coins work: per test (best attempt only) — Score up to 100, Accuracy up to 25 (100% = 25, 30% or less = 0), Time up to 25 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 150 per test. Re-attempt coins are halved because answers have been seen, and earn nothing if the re-attempt is within 48 hours of your last attempt on that test — plus daily app opens (+5, +10 on a 7+ day streak), time spent in the app (+1 per 10 min, max +10/day) and solutions viewed (+0.5 per solution, max +5/day).</span></div>';
 }
 /* fr-pd: winged-hexagon badges behind the podium toppers' avatars.
    SVG artwork is the USER's code (gemini-code-1794828608336.html,
@@ -13799,10 +13805,13 @@ notifEnsure();
        attempt keeps its time coins); (b) accPct < 30% (STRICT less-than,
        any test, any time). Note: acc exactly 30% on a rushed >= 25Q test
        is zeroed by guard (a) (30 < 50), NOT by guard (b).
-     Re-attempt rule: a test's coins are computed PER ATTEMPT, then
+     Re-attempt rule (v16 48h): a test's coins are computed PER ATTEMPT, then
        the test total = MAX over attempts of (coins x factor), factor
        = 1 for the FIRST attempt (attempt record no == 1, or no
-       missing) and 0.5 for every re-attempt (no >= 2). The 50%
+       missing), 0.5 for a re-attempt (no >= 2) made >= 48 hours after
+       the PREVIOUS attempt on that test, and 0 for a re-attempt made
+       within 48 hours of the previous attempt. The gap is anchored on
+       the immediately preceding attempt, not the first attempt. The 50%
        applies to the WHOLE per-attempt total (score + accuracy +
        time). Engagement coins are NOT halved. Re-attempting can
        never reduce a test's coins.
@@ -14154,7 +14163,45 @@ function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride, qs
    per part (rounded to 1 decimal — a halved 83.3 becomes 41.7, the v62
    halved integer 417 ÷ 10) and the total is the sum of the factored parts, so
    breakdowns always add up to the total. Engagement coins are NOT
-   halved (only test coins). */
+   halved (only test coins).
+   v16 48h rule: a re-attempt (no >= 2) earns 0 coins when it is made less
+   than 48 hours after the PREVIOUS attempt on the same test, and 0.5
+   otherwise. The gap is anchored on the immediately preceding attempt
+   (greatest no strictly less than this attempt's no), NOT on the first
+   attempt — so a 3rd attempt within 48h of the 2nd re-arms the lock to
+   2nd + 48h. When the previous attempt's ts is missing/invalid, or the
+   gap is negative (clock skew / out-of-order history), the old 0.5
+   factor is used — never 0 on untrusted data. */
+var COIN_REATTEMPT_LOCK_MS = 172800000; /* v16: 48 hours in ms */
+/* v16 48h re-attempt factor — THE single implementation used by both the
+   local path (testCoinsDetail) and the publish path (myEntry), so the
+   two can never disagree. no = this attempt's record no; curTs = this
+   attempt's ts; prevTs = the immediately preceding attempt's ts (null
+   when there is none). Returns 1 / 0.5 / 0. */
+function coinReattemptFactor(no, curTs, prevTs){
+  if (no == null || +no < 2) return 1;
+  var cur = +curTs, prev = +prevTs;
+  if (!isFinite(cur) || !isFinite(prev)) return 0.5;
+  var gap = cur - prev;
+  if (gap < 0) return 0.5;
+  return gap < COIN_REATTEMPT_LOCK_MS ? 0 : 0.5;
+}
+/* v16: attempt history in time order — a COPY sorted by (no, ts), so the
+   entry before index i is always the immediately preceding attempt.
+   Never mutates rec.history (getAttempts returns it by reference). An
+   attempt with a missing/invalid no sorts as no == 1 (first attempt). */
+function coinSortedHist(hist){
+  var arr = (hist || []).slice();
+  arr.sort(function(a, b){
+    var na = (a && a.no != null && isFinite(+a.no)) ? +a.no : 1;
+    var nb = (b && b.no != null && isFinite(+b.no)) ? +b.no : 1;
+    if (na !== nb) return na - nb;
+    var ta = (a && isFinite(+a.ts)) ? +a.ts : 0;
+    var tb = (b && isFinite(+b.ts)) ? +b.ts : 0;
+    return ta - tb;
+  });
+  return arr;
+}
 function coinApplyFactor(parts, factor){
   factor = (factor == null || isNaN(+factor)) ? 1 : +factor;
   var s = Math.round((+parts.score || 0) * factor * 10) / 10;
@@ -14180,15 +14227,19 @@ function testCoinsDetail(testId){
   if (!hist.length) return null;
   var t = null;
   try { t = findTestById(testId); } catch (e){ t = null; }
-  /* v62 re-attempt rule: coins are computed PER ATTEMPT (each with its
-     own factor — 1 for the first attempt, 0.5 for re-attempts) and the
+  /* v62 re-attempt rule (v16 48h): coins are computed PER ATTEMPT (each
+     with its own factor — 1 for the first attempt, 0.5 for re-attempts
+     made >= 48h after the previous attempt, 0 for re-attempts within
+     48h of the previous attempt — see coinReattemptFactor) and the
      test total is the MAX over attempts, NOT just the best-by-score
      attempt's coins. Re-attempting can never reduce a test's coins. */
   var best = null;
-  hist.forEach(function(a){
+  var sorted = coinSortedHist(hist);
+  sorted.forEach(function(a, i){
     var marks = t ? t.marks : ((+a.correct || 0) + (+a.wrong || 0) + (+a.skipped || 0));
     var raw = coinsFromParts(a.score || 0, a.correct || 0, a.wrong || 0, marks, a.timeTaken || 0, a.accuracy, a.qs, testId);
-    var f = (a.no != null && +a.no >= 2) ? 0.5 : 1;
+    var prev = i > 0 ? sorted[i - 1] : null;
+    var f = coinReattemptFactor(a.no, a.ts, prev ? prev.ts : null);
     var d = coinApplyFactor(raw, f);
     if (!best || d.total > best.total) best = d;
   });
@@ -16157,13 +16208,25 @@ function hideCelebration(){
   if (ov) ov.setAttribute('hidden', '');
   if (celebTimer){ clearTimeout(celebTimer); celebTimer = null; }
 }
-function showCoinCelebration(delta){
+/* v16: formats the 48h unlock moment for the celebration sub, e.g.
+   "21 Nov, 7:30 pm". */
+function coinFmtUnlock(ts){
+  try { return new Date(ts).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}); }
+  catch (e){ return String(new Date(ts)); }
+}
+/* v16: opts.unlockAt (epoch ms) is set ONLY by wrapSubmitTest when the
+   0-coin delta is BECAUSE of the 48h rule (a re-attempt within 48h of
+   the previous attempt that would otherwise have earned coins). A plain
+   non-improving re-attempt keeps the existing 'Beat your best score…'
+   sub — the unlock is never inferred from delta == 0 alone. */
+function showCoinCelebration(delta, opts){
   var ov = buildCelebration();
   var total = delta.score + delta.accuracy + delta.time;
   $('coinCelebTitle').textContent = total > 0 ? 'Coins earned!' : 'No new coins yet';
+  var unlockAt = opts && opts.unlockAt;
   $('coinCelebSub').textContent = total > 0
     ? 'Nice work — here is what this test earned.'
-    : 'Beat your best score on this test to earn coins.';
+    : (unlockAt ? 'Re-attempt coins unlock 48 hours after your last attempt — unlocks ' + coinFmtUnlock(unlockAt) : 'Beat your best score on this test to earn coins.');
   /* re-trigger the row pop animations on every show (fresh nodes each time
      would also work, but re-adding the class is cheaper) */
   var rows = ov.querySelectorAll('.coin-row');
@@ -16353,15 +16416,59 @@ function wrapSubmitTest(){
     var tid = (window.state && window.state.test && window.state.test.id) || null;
     var wasSubmitted = !!(window.state && window.state.submitted);
     var oldCoins = tid ? safeTestCoins(tid) : null;
+    /* v16: capture the previous attempt BEFORE orig() records the new
+       one — its ts anchors the 48h re-attempt lock, and its no tells
+       us the new attempt is a re-attempt. Last entry of the
+       time-ordered history = the immediately preceding attempt. */
+    var prevAtt = null;
+    try {
+      if (tid && window.state && window.state.test){
+        var _hist = getAttempts(getTestRec(window.state.test)) || [];
+        if (_hist.length){
+          var _s = (typeof coinSortedHist === 'function') ? coinSortedHist(_hist) : _hist;
+          prevAtt = _s[_s.length - 1];
+        }
+      }
+    } catch (e){ prevAtt = null; }
     var r = orig.apply(this, arguments);
     if (!wasSubmitted && tid && oldCoins && window.state && window.state.submitted){
       var newCoins = safeTestCoins(tid);
       if (newCoins){
-        showCoinCelebration({
+        var delta = {
           score: Math.max(0, newCoins.score - oldCoins.score),
           accuracy: Math.max(0, newCoins.accuracy - oldCoins.accuracy),
           time: Math.max(0, newCoins.time - oldCoins.time)
-        });
+        };
+        /* v16: pass the unlock info ONLY when the 0 delta is BECAUSE of
+           the 48h rule — all four must hold: (a) this is a re-attempt
+           (no >= 2), (b) the gap from the previous attempt's ts to this
+           attempt's ts is >= 0 and < 48h, (c) the delta is 0 (nothing
+           was actually earned), (d) the attempt WOULD have earned coins
+           at the old 0.5 factor (raw coins recomputed from the new
+           attempt record). If the coin engine helpers are unavailable,
+           opts stays null — no message rather than a wrong one. */
+        var opts = null;
+        try {
+          var newNo = window.state.attemptNo;
+          var deltaTotal = delta.score + delta.accuracy + delta.time;
+          if (newNo != null && +newNo >= 2 && prevAtt && isFinite(+prevAtt.ts) && deltaTotal === 0
+              && typeof coinReattemptFactor === 'function' && typeof coinsFromParts === 'function'
+              && typeof coinApplyFactor === 'function' && typeof findTestById === 'function'){
+            var _hist2 = getAttempts(getTestRec(window.state.test)) || [];
+            var newAtt = _hist2.length ? _hist2[_hist2.length - 1] : null;
+            if (newAtt && +newAtt.no === +newNo && isFinite(+newAtt.ts)){
+              var lockMs = (typeof COIN_REATTEMPT_LOCK_MS === 'number') ? COIN_REATTEMPT_LOCK_MS : 172800000;
+              var gapMs = (+newAtt.ts) - (+prevAtt.ts);
+              if (gapMs >= 0 && gapMs < lockMs && coinReattemptFactor(newNo, newAtt.ts, prevAtt.ts) === 0){
+                var _t = findTestById(tid);
+                var _marks = _t ? _t.marks : ((+newAtt.correct || 0) + (+newAtt.wrong || 0) + (+newAtt.skipped || 0));
+                var _raw = coinsFromParts(newAtt.score || 0, newAtt.correct || 0, newAtt.wrong || 0, _marks, newAtt.timeTaken || 0, newAtt.accuracy, newAtt.qs, tid);
+                if (coinApplyFactor(_raw, 0.5).total > 0) opts = {unlockAt: (+prevAtt.ts) + lockMs};
+              }
+            }
+          }
+        } catch (e){ opts = null; }
+        showCoinCelebration(delta, opts);
       }
     }
     return r;
