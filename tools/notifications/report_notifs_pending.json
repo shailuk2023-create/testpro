@@ -237,5 +237,20 @@
     "responseId": "ACYDBNiVU1kdoGStFj1Qmt_oP92pFjfvB2Sjk_fvRDiHcXjTLGEQ4Aap_gEeJPFwkRCTDYQ",
     "fixedSummary": "Geography 1 Q10 (Bhakra Nangal Dam): reporter's supplied image applied — dam with spillway release photo (reporter's link), embedded offline as base64 JPEG, replacing the Wikimedia Naina Devi view",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q26 (CA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795080039430,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 2",
+      "qnum": "Q26 (CA Test Q1)"
+    },
+    "responseId": "ACYDBNikOUG2Fh6grwXN00P2xh7K0bYlMP0tLWJodUXwfSPFRKHS4vxjFj5qKkNSwWL4-Hg",
+    "fixedSummary": "August Test 2 Q26 (Amaravati quantum & AI university campus): reporter's supplied ET Government campus image applied, embedded offline as base64 JPEG, replacing the Wikimedia APCRDA head-office photo",
+    "sent": false
   }
 ]
