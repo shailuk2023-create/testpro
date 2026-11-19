@@ -16576,9 +16576,16 @@ window.CoinAnim = {
   return null;
  }
  function upd(){
-  var a=$('homeStatAttempted'),s=$('irSavedCount'),t=$('nextTestTitle'),c=$('nextTestCard');
+  var a=$('homeStatAttempted'),t=$('nextTestTitle'),c=$('nextTestCard');
   if($('ttAttN')&&a)$('ttAttN').textContent=a.textContent;
-  if($('ttSavN')&&s)$('ttSavN').textContent=s.textContent;
+  /* saved-count fix (19 Nov): #irSavedCount element no longer exists in the
+     DOM, so the old copy always left #ttSavN at 0. Compute the count directly
+     (Maths + CA + GA), same formula as renderHome(). */
+  if($('ttSavN')){
+    var sv=0;
+    try{ sv=getSaved().length+getSavedCA().length+getSavedGA().length; }catch(e){}
+    $('ttSavN').textContent=sv;
+  }
   if($('ttNxtT'))$('ttNxtT').textContent=(c&&!c.hidden&&t&&t.textContent)?t.textContent:'Start';
  }
  function init(){
