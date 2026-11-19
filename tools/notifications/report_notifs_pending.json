@@ -222,5 +222,20 @@
     "responseId": "ACYDBNjOAfZMAO9mMZtSe3elHsTFlOB56-X6WVmf2CqqGF01ykmlojgvBXNDxm-kNFcnnTQ",
     "fixedSummary": "GA Geography, Geography 1, Q5 (Bhagirathi/Gangotri): solution me left/right tributaries wali table hata di gayi — wahi data upar ki do lines me pehle se tha (reporter: 'table wala data repeat ho gaya hai'). Question/options/key (B, Bhagirathi)/baaki solution unchanged.",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 1 • Q10 (GA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795051751044,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 1",
+      "qnum": "Q10 (GA Test Q10)"
+    },
+    "responseId": "ACYDBNiVU1kdoGStFj1Qmt_oP92pFjfvB2Sjk_fvRDiHcXjTLGEQ4Aap_gEeJPFwkRCTDYQ",
+    "fixedSummary": "Geography 1 Q10 (Bhakra Nangal Dam): reporter's supplied image applied — dam with spillway release photo (reporter's link), embedded offline as base64 JPEG, replacing the Wikimedia Naina Devi view",
+    "sent": false
   }
 ]
