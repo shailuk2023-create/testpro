@@ -207,5 +207,20 @@
     "responseId": "ACYDBNiCxMkPzYbMSrTEkmBFU0MeEtaVYpsWbIsCNvz0L2feqCgUaJjoWuDbr5swCEgTNrs",
     "fixedSummary": "GA Modern History, Modern 3, Q29 (SNDP Sabha founded in Kerala): no link supplied; present-day Sivagiri Mutt photo replaced with Sree Narayana Guru seated-meditation painting (from full-question image search), embedded offline as base64. Q/options/key (A, Kerala)/solution unchanged.",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 1 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795049922050,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 1",
+      "qnum": "Q5 (GA Test Q5)"
+    },
+    "responseId": "ACYDBNjOAfZMAO9mMZtSe3elHsTFlOB56-X6WVmf2CqqGF01ykmlojgvBXNDxm-kNFcnnTQ",
+    "fixedSummary": "GA Geography, Geography 1, Q5 (Bhagirathi/Gangotri): solution me left/right tributaries wali table hata di gayi — wahi data upar ki do lines me pehle se tha (reporter: 'table wala data repeat ho gaya hai'). Question/options/key (B, Bhagirathi)/baaki solution unchanged.",
+    "sent": false
   }
 ]
