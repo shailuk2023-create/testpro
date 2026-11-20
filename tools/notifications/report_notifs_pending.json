@@ -587,5 +587,19 @@
   },
   "responseId": "ACYDBNiMN8WCFPLbJni8nivXc9tZEb-xa6v8AebD__3DgEpaslgZJMl5ULSrD12JxLU-uMw",
   "fixedSummary": "Polity 1 Q15 image replaced with reporter-supplied photo of the President addressing a joint session of Parliament (embedded offline as base64); Lok Sabha chamber Wikimedia photo removed."
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795176214316,
+  "data": {
+   "chapter": "GA – Polity",
+   "test": "Polity 1",
+   "qnum": "Q19 (GA Test Q19)"
+  },
+  "responseId": "ACYDBNhNAJIQNRZ9iJK7qCnp1UwSPn84jq3xoqTJOukWmAPSw8auDvaBDc7cMrq7lZigdSQ",
+  "fixedSummary": "GA Polity 1 Q19 (Art 356): reporter ne 'hata do image' kaha - solution se Rashtrapati Bhavan generic place photo hata di (no replacement); q/options/key/solution text unchanged."
  }
 ]
