@@ -10186,7 +10186,10 @@ var _preloadedTestImgs = [];
    images/*.webp go through the permanent cache; on-demand http images go
    into the runtime cache (cleared on solution exit). */
 function preloadTestImages(t){
-  try { if (window.__tpImg) window.__tpImg.preloadNear(); } catch(e){}
+  /* v94-perf2: full-test preload on solutions open (pre-rebuild feel) — all
+     http solution images of the whole test load in the background via native
+     new Image() so navigating to any question shows its image instantly. */
+  try { if (window.__tpImg) window.__tpImg.preloadAll(); } catch(e){}
 }
 
 function openSolutions(idx){
@@ -17479,6 +17482,41 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     } catch(e){}
   }
 
+  function preloadAll(){
+    /* v94-perf2: full-test preload on solutions open (pre-rebuild feel).
+       Fires a native new Image() for EVERY http solution image in the whole
+       test, so they land in the browser HTTP cache and show instantly when
+       the user navigates to any question. Async only — creating an Image and
+       setting .src never blocks the UI; the browser throttles concurrent
+       fetches per host. Local images/... are skipped (the permanent precache
+       already covers them); data: URIs are skipped (already inline). */
+    try {
+      var st = null;
+      try { st = window.state || (typeof state !== 'undefined' ? state : null); } catch(e){}
+      var t = st ? st.test : null;
+      if (!t || !t.questions || !t.questions.length) return;
+      var re = /<img\b[^>]*>/g, seen = {}, j, q, m, sm, u;
+      for (j = 0; j < t.questions.length; j++){
+        if (typeof solMatches === 'function' && !solMatches(j)) continue;
+        q = t.questions[j];
+        if (!q || !q.sol) continue;
+        re.lastIndex = 0;
+        while ((m = re.exec(q.sol)) !== null){
+          if (m[0].indexOf('sol-img') === -1) continue;
+          sm = m[0].match(/src="([^"]+)"/) || m[0].match(/src='([^']+)'/);
+          if (!sm || !sm[1]) continue;
+          u = sm[1];
+          if (u.indexOf('data:') === 0) continue;
+          if (seen[u]) continue;
+          seen[u] = 1;
+          if (isHttp(u)){
+            try { var im = new Image(); im.src = u; } catch(e){}
+          }
+        }
+      }
+    } catch(e){}
+  }
+
   function afterSolutionRender(){
     try { hydrate(document.getElementById('view-solutions')); } catch(e){}
     preloadNear();
@@ -17510,7 +17548,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     PRECACHE: PRECACHE, RUNTIME: RUNTIME, IMG_LIST: IMG_LIST,
     hydrate: hydrate, hydrateDocument: hydrateDocument,
     clearRuntime: clearRuntime, runtimeAdd: runtimeAdd,
-    preloadNear: preloadNear, afterSolutionRender: afterSolutionRender,
+    preloadNear: preloadNear, preloadAll: preloadAll, afterSolutionRender: afterSolutionRender,
     precache: precache
   };
 
