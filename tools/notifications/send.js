@@ -136,7 +136,7 @@ async function main() {
   } catch (e) { summary.errors.push('subscriptions-load: ' + (e && e.message)); }
 
   /* ---- push helper: send to a list of subs, delete 404/410 ---- */
-  async function fanOut(title, body, targetUid, urgency) {
+  async function fanOut(title, body, targetUid, urgency, url) {
     var list = targetUid ? subs.filter(function (s) { return s.uid === targetUid; }) : subs.slice();
     if (!list.length) return { sent: 0, failed: 0, deleted: 0, note: 'no-subscribers' };
     if (!pushReady) {
@@ -145,7 +145,7 @@ async function main() {
     }
     if (dryRun) return { sent: 0, failed: 0, deleted: 0, note: 'dry-run-would-send-' + list.length };
     webpush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate);
-    var payload = JSON.stringify({ title: title, body: body, url: APP_URL });
+    var payload = JSON.stringify({ title: title, body: body, url: url || APP_URL });
     var sent = 0, failed = 0, deleted = 0;
     var BATCH = 25;
     for (var i = 0; i < list.length; i += BATCH) {
@@ -414,7 +414,9 @@ async function main() {
               data: (re.data && typeof re.data === 'object') ? re.data : {}
             });
             if (rWrote) {
-              await fanOut(rTitle, rBody, re.target, 'normal');
+              var rData = (re.data && typeof re.data === 'object') ? re.data : {};
+              var rUrl = APP_URL + '?fixCh=' + encodeURIComponent(rData.chapter || '') + '&fixTest=' + encodeURIComponent(rData.test || '') + '&fixQ=' + encodeURIComponent(rData.qnum || '') + '&t=' + Date.now();
+              await fanOut(rTitle, rBody, re.target, 'normal', rUrl);
               summary.report.push('sent:' + re.responseId);
             } else {
               summary.report.push('skipped-exists:' + re.responseId);
