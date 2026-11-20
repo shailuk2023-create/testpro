@@ -369,5 +369,33 @@
   },
   "responseId": "ACYDBNgQsPOGeqQpgPD1L863t-3OZm7MR_Vgjhdjzcdpi_Ffg4IlNOd3TjkJq6Inuk3iXt4",
   "fixedSummary": "May Test 2 Q39 image replaced with reporter-supplied Pixxel x Sarvam Pathfinder image, offline base64 JPEG embed (replaces generic ArabSat render)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q14 (GA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795152267868,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q14 (GA Test Q14)"
+  },
+  "responseId": "ACYDBNg0oOgHgKbH6Sv5FnVvAvxe-QNncss3kjGiTZBpctLF_NC-ewXnrb3VPFK6Kd-0cbs",
+  "fixedSummary": "Geography 2 Q14 image replaced with reporter-supplied Peninsular Plateau map, offline base64 PNG embed (replaces generic green-hills photo)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q15 (GA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795152267868,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q15 (GA Test Q15)"
+  },
+  "responseId": "ACYDBNgPkbkGoRJThZRZhphQFwXEZnkE6kYjNjsbHNF6QC4zw0JQEq4s5UQaSG8gDcyVVL0",
+  "fixedSummary": "Geography 2 Q15 image replaced with reporter-supplied India mountain-ranges map labelling Mahendragiri, offline base64 JPEG embed (replaces Mahendragiri hill photo)"
  }
 ]
