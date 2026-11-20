@@ -411,5 +411,33 @@
   },
   "responseId": "ACYDBNj28UKcKGCWWudH-TfA3ChQBDV9Sq3_HyA2AGqkQO2ViSY_NRhPNS_5YeyZTFFfoJA",
   "fixedSummary": "Geography 2 Q17 image replaced with reporter-supplied Britannica Purvanchal locator map, offline base64 JPEG embed (replaces Dzukou Valley photo)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795155301268,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q19 (GA Test Q19)"
+  },
+  "responseId": "ACYDBNg1u08R0cVuSFQDZyZQxg8tTZrDmWAQ3XaiJxrZ4ZLkHsTgPgUDjaUqWitagMk2ROE",
+  "fixedSummary": "Geography 2 Q19 solution duplicate sentence removed (Son river fact repeated twice); key unchanged (A Rohtas, verified vs Wikipedia/Testbook)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q20 (GA Test Q20) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795155301269,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q20 (GA Test Q20)"
+  },
+  "responseId": "ACYDBNjUvA_L-3IlMgeB_0xAQ8eidSUsmNUKbqTdM51_tccMLUwNrIpFLDpKe3M2CKtjGOs",
+  "fixedSummary": "Geography 2 Q20 image replaced with reporter-supplied Hindi meandering/oxbow diagram, offline base64 JPEG embed (replaces Wikimedia Vistula oxbow photo)"
  }
 ]
