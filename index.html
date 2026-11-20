@@ -7777,6 +7777,24 @@ window.addEventListener('popstate', function(e){
   }
   var name = e.state && e.state.appView;
   if (!name || !document.getElementById('view-' + name)){
+    var _onHome = (state.view === 'list' && !state.seriesOpen && !state.caView && !state.gaView);
+    if (!_onHome && state.view !== 'test'){
+      /* v94-perf2: back would exit from a non-Home tab (empty/ambiguous
+         stack) — go Home instead, and seed a Home guard so the next back
+         press hits the normal Home double-back exit. */
+      state.navTab = 'home';
+      state.seriesOpen = false;
+      state.seriesPicker = false;
+      state.caView = null; state.caMonth = null; state.gaView = null; state.gaSubject = null;
+      renderHome();
+      setView('list');
+      state.routeDepth = 0;
+      _viewAt = {0:'list'};
+      window.history.pushState({appView:'list', routeDepth:0, homeRoot:true, homeGuard:false}, '', '#view-list');
+      pushHomeBackGuard();
+      syncBottomNav();
+      return;
+    }
     state.routeDepth = 0;
     window.history.pushState({appView:state.view, routeDepth:state.routeDepth, homeRoot:state.view === 'list' && !state.seriesOpen, homeGuard:state.homeGuard}, '', '#view-' + state.view);
     return;
@@ -10922,6 +10940,15 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
     window.location.pathname + window.location.search + '#view-' + state.view
   );
   if (state.view === 'list') pushHomeBackGuard(); /* home-back guard is a Home-exit mechanism — only for a Home restore */
+  else if (state.view !== 'test'){
+    /* v94-perf2: restored to a non-Home tab (leaderboard/settings/saved/
+       attempted) — the stack has only this one entry, so system back would
+       exit the app instead of going Home. Seed a Home entry below it. */
+    window.history.replaceState({appView:'list', routeDepth:0, homeRoot:true, homeGuard:false}, '', '#view-list');
+    window.history.pushState({appView:state.view, routeDepth:1, homeRoot:false, homeGuard:false}, '', '#view-' + state.view);
+    state.routeDepth = 1;
+    _viewAt = {0:'list', 1:state.view};
+  }
   applyProfile();
   renderList();
   /* v94-perf: boot-render timestamp — Firebase boot()'s optimistic renderHome is skipped when it would re-render within 5 s of this paint. */
@@ -13772,6 +13799,18 @@ function notifSubscribe(){
     return false;
   });
 }
+var _notifQuickTimer = null;
+function notifScheduleQuickRetry(){
+  /* v94-perf2: Firebase is not ready yet at startup — retry in a few seconds
+     instead of waiting up to 60 s for the next interval tick, so the bell
+     resolves from "Connecting…" promptly once Firebase is up. Cheap (a few
+     property checks, no Firestore call) and stops once subscribed. */
+  if (_notifQuickTimer || N.subscribed || N.subscribing) return;
+  _notifQuickTimer = setTimeout(function(){
+    _notifQuickTimer = null;
+    notifEnsure();
+  }, 3000);
+}
 function notifEnsure(){
   var uid = notifUid();
   if (uid !== N.uid) {
@@ -13793,7 +13832,7 @@ function notifEnsure(){
   if (N.subscribed) { if (N.cloudDirty) notifFlushRead(); notifPullRead(); return; }
   if (N.subscribing) return;
   if (Date.now() < N.retryAfter) return;
-  if (!window.__fb || !window.__fb.db) return;
+  if (!window.__fb || !window.__fb.db) { notifScheduleQuickRetry(); return; }
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
   notifPullRead();
   notifSubscribe();
