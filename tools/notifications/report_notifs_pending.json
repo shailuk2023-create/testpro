@@ -529,5 +529,20 @@
     "responseId": "ACYDBNjHnVmypVb-hbFUlL_N0R7GMe-zdC7Ulk9fuVH-TQrnqXvRaXTpSkk3cQsHj3kskzY",
     "fixedSummary": "February Test 1 Q25 image replaced: 1901 Keystone stereoview card of Dilwara Temple interior -> Nakki Lake, Mount Abu photo (OdishaBytes image published for this exact renaming story, Feb 2026), embedded offline as base64 JPEG",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q4 (GA Test Q4) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795172092892,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q4 (GA Test Q4)"
+    },
+    "responseId": "ACYDBNho6JgNu3E-PKNYft7WEI1sxzw2EbbeWpO5Lva8gm8keSFHAmuBw28QiUdYwa8yXsE",
+    "fixedSummary": "Polity 1 Q4 image replaced: generic Supreme Court building interior photo -> reporter-supplied Kesavananda Bharati case judgement graphic (Basic Structure Doctrine), embedded offline as base64 JPEG",
+    "sent": false
   }
 ]
