@@ -13736,12 +13736,22 @@ function notifOnItem(nid, ntype){
     if (ntype === 'topper' && typeof window.openLeaderboard === 'function') window.openLeaderboard();
     else if (ntype === 'announcement' && typeof goHome === 'function') goHome();
     else if (ntype === 'report'){
-      /* Report-fix notification: open the fixed test/question via the same deep link the push notification uses, so the boot handler auto-refreshes and opens it. */
+      /* Report-fix notification: if the app already loaded after this fix was recorded, open the solution directly (no reload, instant). Otherwise navigate to the deep link, which reloads fresh and opens it. */
       var it = null;
       for (var i = 0; i < N.list.length; i++){ if (N.list[i].id === nid){ it = N.list[i]; break; } }
       var d = (it && it.data) || {};
       if (d.chapter && d.test && d.qnum){
-        location.href = location.pathname + '?fixCh=' + encodeURIComponent(d.chapter) + '&fixTest=' + encodeURIComponent(d.test) + '&fixQ=' + encodeURIComponent(d.qnum) + '&t=' + Date.now();
+        var opened = false;
+        try {
+          var fixMs = (it && typeof it.ms === 'number') ? it.ms : 0;
+          var loadMs = (typeof window.__appLoadTime === 'number') ? window.__appLoadTime : 0;
+          if (fixMs && loadMs && loadMs >= fixMs && typeof window.__openFixSolution === 'function'){
+            opened = window.__openFixSolution(d.chapter, d.test, d.qnum);
+          }
+        } catch (e) { opened = false; }
+        if (!opened){
+          location.href = location.pathname + '?fixCh=' + encodeURIComponent(d.chapter) + '&fixTest=' + encodeURIComponent(d.test) + '&fixQ=' + encodeURIComponent(d.qnum) + '&t=' + Date.now();
+        }
       }
     }
   } catch (e) {}
@@ -16936,6 +16946,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    silently does nothing and the app boots normally. Never throws. */
 (function(){
   'use strict';
+  /* App boot time (ms) — the bell uses it to decide if the app already loaded after a fix (then open directly, no reload). */
+  try { window.__appLoadTime = Date.now(); } catch (e) {}
   function findQIndex(t, qn){
     var qs = (t && t.questions) || [];
     for (var i = 0; i < qs.length; i++){ if (qs[i] && qs[i].n === qn) return i; }
@@ -16999,6 +17011,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       return (qi < 0) ? null : {test: t, qIndex: qi};
     } catch (e) { return null; }
   }
+  /* Open a fixed question in the SOLUTIONS view only — never starts a test attempt. Returns true if opened, false if it could not be resolved. Shared by the boot deep link and the bell tap. */
+  function openFixSolution(fixCh, fixTest, fixQ){
+    try {
+      var res = resolveFixLink(fixCh, fixTest, fixQ);
+      if (!res || !res.test || typeof res.qIndex !== 'number') return false;
+      if (typeof state === 'undefined' || typeof openSolutions !== 'function') return false;
+      var t = res.test;
+      var restored = false;
+      try { if (typeof restoreAttempt === 'function') restored = restoreAttempt(t); } catch (e) { restored = false; }
+      if (!restored){
+        /* No previous attempt: neutral view-only state (all unattempted). */
+        state.test = t;
+        state.attemptNo = null;
+        state.qStates = t.questions.map(function(){
+          return {status:'not_visited', selected:null, timeSpent:0, reattempt:null, marked:false, visited:false};
+        });
+      }
+      openSolutions(res.qIndex);
+      return true;
+    } catch (e) { return false; }
+  }
+  try { window.__openFixSolution = openFixSolution; } catch (e) {}
   function run(){
     try {
       var params = new URLSearchParams(window.location.search);
@@ -17007,18 +17041,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       var fixQ = params.get('fixQ');
       if (!fixCh && !fixTest && !fixQ) return;
       if (!fixCh || !fixTest || !fixQ) return;
-      if (params.get('fresh') !== '1'){
-        var u = new URL(window.location.href);
-        u.searchParams.set('fresh', '1');
-        window.location.replace(u.toString());
-        return;
-      }
-      var res = resolveFixLink(fixCh, fixTest, fixQ);
-      if (!res || !res.test || typeof res.qIndex !== 'number') return;
-      if (typeof state === 'undefined' || typeof startTest !== 'function' || typeof jumpToQuestion !== 'function') return;
-      state.test = res.test;
-      startTest();
-      jumpToQuestion(res.qIndex);
+      /* The deep-link URL carries a unique &t= timestamp, so this load already fetched fresh content — no extra refresh. Open the solution directly. */
+      openFixSolution(fixCh, fixTest, fixQ);
     } catch (e) { /* never break normal boot */ }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
