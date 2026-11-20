@@ -16914,6 +16914,109 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+<script>/* Report-fix notification deep link (20 Nov 2026).
+   When a report-fix notification is clicked, the push worker opens the app
+   at a URL like:
+     ?fixCh=CA%20%E2%80%93%20January%202026&fixTest=January%20Test%204&fixQ=Q100%20(CA%20Test%20Q25)&t=...
+   This handler runs on boot, resolves those params to the fixed test +
+   question, and opens the app directly there.
+   Freshness: on the first load (no fresh=1) it navigates once to the same
+   URL with &fresh=1, so the fixed content is fetched fresh from the
+   network instead of the cached app shell (auto-refresh in the transition).
+   If any param is missing or the test/question cannot be resolved, it
+   silently does nothing and the app boots normally. Never throws. */
+(function(){
+  'use strict';
+  function findQIndex(t, qn){
+    var qs = (t && t.questions) || [];
+    for (var i = 0; i < qs.length; i++){ if (qs[i] && qs[i].n === qn) return i; }
+    return -1;
+  }
+  function resolveFixLink(fixCh, fixTest, fixQ){
+    try {
+      var m = /^Q(\d+)/.exec(String(fixQ || '').trim());
+      if (!m) return null;
+      var qn = parseInt(m[1], 10);
+      if (!(qn > 0)) return null;
+      var ch = String(fixCh || '');
+      var tn = String(fixTest || '');
+      var i, t, qi;
+      var caM = /^CA\s*[\u2013-]\s*(.+)$/.exec(ch);
+      if (caM){
+        var monthEn = caM[1].trim();
+        t = null;
+        var caTests = (typeof CA_TESTS !== 'undefined') ? CA_TESTS : [];
+        for (i = 0; i < caTests.length; i++){
+          if (caTests[i].month_en === monthEn && caTests[i].nameEn === tn){ t = caTests[i]; break; }
+        }
+        if (!t) return null;
+        qi = findQIndex(t, qn);
+        return (qi < 0) ? null : {test: t, qIndex: qi};
+      }
+      var gaM = /^GA\s*[\u2013-]\s*(.+)$/.exec(ch);
+      if (gaM){
+        var subjEn = gaM[1].trim();
+        t = null;
+        var gaTests = (typeof GA_TESTS !== 'undefined') ? GA_TESTS : [];
+        for (i = 0; i < gaTests.length; i++){
+          if (gaTests[i].subject_en === subjEn && gaTests[i].nameEn === tn){ t = gaTests[i]; break; }
+        }
+        if (!t){
+          for (i = 0; i < gaTests.length; i++){
+            if (gaTests[i].nameEn === tn){ t = gaTests[i]; break; }
+          }
+        }
+        if (!t) return null;
+        qi = findQIndex(t, qn);
+        return (qi < 0) ? null : {test: t, qIndex: qi};
+      }
+      /* Maths: chapter 'Ch <num> - <nameEn>', test 'Test <num> (Part <p>/<parts>)' */
+      var cm = /^Ch\s+(\d+)/.exec(ch);
+      var tm = /^Test\s+(\d+)/.exec(tn);
+      var pm = /\(Part\s+(\d+)\s*\//.exec(tn);
+      var tests = (typeof TESTS !== 'undefined') ? TESTS : [];
+      t = null;
+      if (tm){
+        var num = parseInt(tm[1], 10);
+        for (i = 0; i < tests.length; i++){ if (tests[i].num === num){ t = tests[i]; break; } }
+      }
+      if (!t && cm && pm){
+        var chNum = parseInt(cm[1], 10);
+        var part = parseInt(pm[1], 10);
+        for (i = 0; i < tests.length; i++){ if (tests[i].chapter === chNum && tests[i].part === part){ t = tests[i]; break; } }
+      }
+      if (!t) return null;
+      qi = findQIndex(t, qn);
+      return (qi < 0) ? null : {test: t, qIndex: qi};
+    } catch (e) { return null; }
+  }
+  function run(){
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var fixCh = params.get('fixCh');
+      var fixTest = params.get('fixTest');
+      var fixQ = params.get('fixQ');
+      if (!fixCh && !fixTest && !fixQ) return;
+      if (!fixCh || !fixTest || !fixQ) return;
+      if (params.get('fresh') !== '1'){
+        var u = new URL(window.location.href);
+        u.searchParams.set('fresh', '1');
+        window.location.replace(u.toString());
+        return;
+      }
+      var res = resolveFixLink(fixCh, fixTest, fixQ);
+      if (!res || !res.test || typeof res.qIndex !== 'number') return;
+      if (typeof state === 'undefined' || typeof startTest !== 'function' || typeof jumpToQuestion !== 'function') return;
+      state.test = res.test;
+      startTest();
+      jumpToQuestion(res.qIndex);
+    } catch (e) { /* never break normal boot */ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+</script>
+
 <script>/* v7a: hero motivational-quote rotation (Worker A).
    ONLY the first line is the original hero tagline ("Today's practice,
    tomorrow's selection.", class .hx-tag, removed in v3). The other lines are
