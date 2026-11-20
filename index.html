@@ -7274,7 +7274,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 96; /* must match version.txt - bump on every release */
+var APP_VERSION = 97; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -8589,6 +8589,12 @@ function startTest(){
   showView('test');
   renderQuestion();
   startTimer();
+  /* v97: preload solution images when the test STARTS, not only when the
+     solutions view opens. On a slow connection the solution-open preload
+     alone finishes too late — the user reaches a question before its image
+     is cached. Starting at test start gives the whole test duration for
+     the images to land in the HTTP cache, so solutions open instantly. */
+  try { preloadTestImages(state.test); } catch(e){}
 }
 function startTimer(){
   stopTimer();
