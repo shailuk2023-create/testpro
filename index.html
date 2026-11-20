@@ -17455,6 +17455,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     } catch(e){}
     try { for (var i = 0; i < rtBlobUrls.length; i++){ try { URL.revokeObjectURL(rtBlobUrls[i]); } catch(e){} } } catch(e){}
     rtBlobUrls = [];
+    try { preloadHeld.length = 0; } catch(e){} /* v94-perf-fix2: drop any still-loading preload refs when the whole solutions view is closed (already-loaded images stay in the browser HTTP cache). */
     try { for (var k in blobByUrl){ if (k.indexOf('rt:') === 0) delete blobByUrl[k]; } } catch(e){}
     try { if ('caches' in window) caches.delete(RUNTIME).catch(function(){}); } catch(e){}
   }
@@ -17522,6 +17523,24 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     } catch(e){}
   }
 
+  function holdPreload(u){
+    /* v94-perf-fix2: keep the Image object alive in preloadHeld until it
+       finishes (load or error). A bare `var im = new Image(); im.src = u;`
+       loses its only reference at once, so the browser may garbage-collect
+       it mid-fetch and abort the preload — the image then loads only when
+       its question is reached, and again on going back. Holding it here
+       guarantees the fetch completes and lands in the browser HTTP cache,
+       so navigating to any question (and back) shows it instantly. */
+    try {
+      var im = new Image();
+      preloadHeld.push(im);
+      im.onload = im.onerror = function(){
+        try { var ix = preloadHeld.indexOf(im); if (ix !== -1) preloadHeld.splice(ix, 1); } catch(e){}
+      };
+      im.src = u;
+    } catch(e){}
+  }
+
   function preloadAll(){
     /* v94-perf2: full-test preload on solutions open (pre-rebuild feel).
        Fires a native new Image() for EVERY http solution image in the whole
@@ -17549,9 +17568,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           if (u.indexOf('data:') === 0) continue;
           if (seen[u]) continue;
           seen[u] = 1;
-          if (isHttp(u)){
-            try { var im = new Image(); im.src = u; } catch(e){}
-          }
+          if (isHttp(u)){ holdPreload(u); }
         }
       }
     } catch(e){}
