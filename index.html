@@ -7664,10 +7664,13 @@ function _v76ManualUpdateCheck(){
       _v67KickSwUpdate();
       _v67ShowUpdateToast(v);
     } else {
-      /* PERF (20 Nov 2026): already latest — do NOT reload. Reloading just
-         re-downloads/re-parses the same 16 MB file for nothing, and if the
-         user tapped Refresh mid-test it threw them out of the test. */
+      /* v94-perf-fix (20 Nov 2026): already latest — toast AND reload.
+         The perf rebuild removed the reload here, so the Refresh button
+         only showed a toast and visibly did nothing. A refresh button
+         must actually refresh. (The file is ~6.5 MB now, not 16 MB, so
+         the re-parse cost the old comment worried about is gone.) */
       toast('App already latest version par hai \u2713');
+      try { window.location.reload(); } catch(e){}
     }
   }).catch(function(){
     if (settled) return;
@@ -17323,12 +17326,36 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function hydrateImg(img){
     if (!img || img.tagName !== 'IMG') return;
     var src = img.getAttribute('src') || '';
-    if (!src || src.indexOf('blob:') === 0) return;
+    /* v94-perf-fix (20 Nov 2026): an img stuck on a DEAD blob: URL (its
+       blob was revoked by clearRuntime, or a stale blob survived a
+       re-render) must be restored to its original URL instead of being
+       left broken — the old early-return here left a dead image that the
+       v79 handler then hid with display:none. A LIVE blob: URL (one we
+       created for a precached local image and still hold in blobByUrl)
+       is fine and must be left alone. dataset.tpSrc always holds the
+       last real (non-blob) URL, set before any blob swap. */
+    if (src.indexOf('blob:') === 0){
+      var _live = false;
+      try { for (var _bk in blobByUrl){ if (blobByUrl[_bk] === src){ _live = true; break; } } } catch(e){}
+      if (_live) return;
+      var orig = img.dataset.tpSrc || '';
+      if (!orig || orig.indexOf('blob:') === 0) return;
+      try { img.setAttribute('src', orig); } catch(e){ return; }
+      src = orig;
+    }
+    if (!src) return;
     if (img.dataset.tpSrc === src) return;
     img.dataset.tpSrc = src;
     if (isLocalImg(src)){ resolveFromCache(img, PRECACHE, false); }
     else if (isHttp(src) && img.classList && img.classList.contains('sol-img')){
-      resolveFromCache(img, RUNTIME, true);
+      /* v94-perf-fix: NEVER blob-swap a cross-origin http image. It is
+         fetched no-cors, so the response is OPAQUE — body null, and
+         res.blob() yields an EMPTY blob. A blob: URL built from it can
+         never display the image, so the solution image vanished (and v79
+         hid it). Let the browser load http images natively from the
+         network exactly as before the rebuild; runtimeAdd still warms
+         the runtime cache in the background. Local images/... are
+         same-origin (readable body) and keep the blob-swap path. */
       runtimeAdd(src);
     }
   }
@@ -17369,6 +17396,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
 
   function clearRuntime(){
+    /* v94-perf-fix: BEFORE revoking, restore any img still showing a
+       runtime blob: URL to its original http src (recorded in
+       dataset.tpSrc), so it keeps loading from the network instead of
+       going dead the moment its blob is revoked. */
+    try {
+      var _ims = document.querySelectorAll('img');
+      for (var _i = 0; _i < _ims.length; _i++){
+        var _s = _ims[_i].getAttribute('src') || '';
+        if (_s.indexOf('blob:') === 0 && rtBlobUrls.indexOf(_s) !== -1){
+          var _o = _ims[_i].dataset.tpSrc || '';
+          if (_o && _o.indexOf('blob:') !== 0){ try { _ims[_i].setAttribute('src', _o); } catch(e){} }
+        }
+      }
+    } catch(e){}
     try { for (var i = 0; i < rtBlobUrls.length; i++){ try { URL.revokeObjectURL(rtBlobUrls[i]); } catch(e){} } } catch(e){}
     rtBlobUrls = [];
     try { for (var k in blobByUrl){ if (k.indexOf('rt:') === 0) delete blobByUrl[k]; } } catch(e){}
