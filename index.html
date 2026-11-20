@@ -3153,7 +3153,7 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 .rd-resume:active{transform:scale(.97)}
 .rd-bars{display:flex;align-items:flex-end;gap:6px;height:100px}
 .rd-bar{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
-.rd-bar i{display:block;width:100%;max-width:22px;height:8%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#0d9488,#0EA5A5);transition:height .5s ease}
+.rd-bar i{display:block;width:100%;max-width:22px;height:8%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#0d9488,#0EA5A5);transition:height .8s ease}
 .rd-bar.rd-bar-done i{background:linear-gradient(180deg,#22C55E,#12B5A5)}
 .rd-bar em{font-style:normal;font-size:10.5px;font-weight:700;color:var(--muted)}
 .rd-bars-lbl{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:600;color:var(--muted)}
@@ -16905,9 +16905,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     } catch (e) {}
   }
   rdRefresh(); rdObserve(); rdObserveList();
+  try { rdBarsGrow(); } catch (e) {}
   setTimeout(function(){ rdRefresh(); rdObserve(); rdObserveList(); }, 800);
   setTimeout(function(){ rdRefresh(); }, 2500);
-  setTimeout(function(){ try { rdBarsGrow(); } catch (e) {} }, 100);
   window.addEventListener('pageshow', function(){ rdRefresh(); });
 })();
 </script>
