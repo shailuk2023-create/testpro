@@ -6185,12 +6185,31 @@ function fmtMMSS(totalSec){
   return p(m) + ':' + p(s);
 }
 function fmtMins(totalSec){ return Math.round(totalSec / 60); }
+/* PERF (20 Nov 2026): memoised store — storeGet() used to JSON.parse the
+   whole super1000_v1 store on every call (~1,000 parses per boot, ~90 per
+   question step via renderPalette/isSaved). Now the parsed object is cached
+   and reused while the raw string in localStorage is unchanged; storeSet()
+   keeps the cache in sync. External writes (another tab / Firebase pull)
+   are picked up because the raw string then differs and we re-parse.
+   All in-app mutations go through storeSet, so the cached object is never
+   stale. */
+var _storeCache = null;
+var _storeCacheRaw = null;
 function storeGet(){
-  try { return JSON.parse(localStorage.getItem('super1000_v1') || '{"tests":{}}'); }
-  catch(e){ return {tests:{}}; }
+  var raw;
+  try { raw = localStorage.getItem('super1000_v1'); } catch(e){ raw = null; }
+  if (raw == null) raw = '{"tests":{}}';
+  if (_storeCache !== null && _storeCacheRaw === raw) return _storeCache;
+  var obj;
+  try { obj = JSON.parse(raw); } catch(e){ obj = {tests:{}}; }
+  _storeCache = obj; _storeCacheRaw = raw;
+  return obj;
 }
 function storeSet(d){
-  try { localStorage.setItem('super1000_v1', JSON.stringify(d)); } catch(e){}
+  var raw;
+  try { raw = JSON.stringify(d); } catch(e){ raw = '{"tests":{}}'; }
+  try { localStorage.setItem('super1000_v1', raw); } catch(e){}
+  _storeCache = d; _storeCacheRaw = raw;
   /* v37: Firebase sync hook — debounced shadow-diff push; guarded so the
      app works 100% from localStorage when the Firebase module never ran
      (offline / jsdom) or the SDK failed to load. */
@@ -7656,8 +7675,10 @@ function _v76ManualUpdateCheck(){
       _v67KickSwUpdate();
       _v67ShowUpdateToast(v);
     } else {
+      /* PERF (20 Nov 2026): already latest — do NOT reload. Reloading just
+         re-downloads/re-parses the same 16 MB file for nothing, and if the
+         user tapped Refresh mid-test it threw them out of the test. */
       toast('App already latest version par hai \u2713');
-      setTimeout(function(){ try{ window.location.reload(); }catch(e){} }, 600);
     }
   }).catch(function(){
     if (settled) return;
@@ -16939,9 +16960,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
      ?fixCh=CA%20%E2%80%93%20January%202026&fixTest=January%20Test%204&fixQ=Q100%20(CA%20Test%20Q25)&t=...
    This handler runs on boot, resolves those params to the fixed test +
    question, and opens the app directly there.
-   Freshness: on the first load (no fresh=1) it navigates once to the same
-   URL with &fresh=1, so the fixed content is fetched fresh from the
-   network instead of the cached app shell (auto-refresh in the transition).
+   Freshness: the deep-link URL carries a unique &t= timestamp, so this
+   load already fetched fresh content — no extra refresh. The bell opens
+   the solution directly (no reload) when the app already loaded after
+   the fix; it navigates to this URL only when the app is stale.
    If any param is missing or the test/question cannot be resolved, it
    silently does nothing and the app boots normally. Never throws. */
 (function(){
