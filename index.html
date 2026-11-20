@@ -7274,7 +7274,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 94; /* must match version.txt - bump on every release */
+var APP_VERSION = 95; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -7434,8 +7434,7 @@ function showView(name){
   setView(name);
 }
 function setView(name){
-  /* v94-perf: leaving the solutions view drops the on-demand runtime image cache (never the permanent precache). */
-  if (state.view === 'solutions' && name !== 'solutions'){ try { if (window.__tpImg) window.__tpImg.clearRuntime(); } catch(e){} }
+  /* v95 (user, 20 Nov 2026): NO cache deletion on leaving the solutions view — the runtime image cache is kept while the user is inside the app, and is deleted only when the whole app is closed (pagehide/beforeunload in the __tpImg block). */
   var _anaMap = false;
   if (name === 'result'){ if (state.lastResult && state.test){ name = 'analysis'; _anaMap = true; } else { name = 'list'; } }
   if (name === 'onboarding') name = 'list'; /* v40: onboarding removed — stale history entries land on HOME */
@@ -17608,6 +17607,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     preloadNear: preloadNear, preloadAll: preloadAll, afterSolutionRender: afterSolutionRender,
     precache: precache
   };
+
+  /* v95 (user, 20 Nov 2026): delete the online-images runtime cache ONLY when the whole app is closed (pagehide / beforeunload). Never on leaving the solutions view, and never while navigating questions — so preloaded images stay put like offline until the app itself closes. */
+  try {
+    var _tpClearOnClose = function(){ try { if (window.__tpImg) window.__tpImg.clearRuntime(); } catch(e){} };
+    window.addEventListener('pagehide', _tpClearOnClose);
+    window.addEventListener('beforeunload', _tpClearOnClose);
+  } catch(e){}
 
   setTimeout(function(){ hydrateDocument(false); }, 300);
   (function kickPrecache(){
