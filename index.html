@@ -3151,7 +3151,7 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 .rd-progress-txt{font-size:13.5px;font-weight:700;color:var(--text-strong);line-height:1.35;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;min-width:0}
 .rd-resume{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF7A59,#FFB020);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 20px -8px rgba(255,122,89,.6);font-family:inherit}
 .rd-resume:active{transform:scale(.97)}
-.rd-bars{display:flex;align-items:flex-end;gap:6px;height:52px}
+.rd-bars{display:flex;align-items:flex-end;gap:6px;height:100px}
 .rd-bar{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
 .rd-bar i{display:block;width:100%;max-width:22px;height:8%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#0d9488,#0EA5A5);transition:height .5s ease}
 .rd-bar.rd-bar-done i{background:linear-gradient(180deg,#22C55E,#12B5A5)}
@@ -5404,7 +5404,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
                   </div>
                   <div class="rd-progress-side">
                     <div class="rd-progress-txt" id="rdRingTxt">0/43 tests attempted</div>
-                    <button type="button" class="rd-resume" id="rdResumeBtn">Resume Task &#8594;</button>
                     <div class="rd-bars" id="rdBars" aria-label="Tests attempted in the last 7 days">
                       <span class="rd-bar"><i style="height:8%"></i><em>T</em></span>
                       <span class="rd-bar"><i style="height:8%"></i><em>F</em></span>
@@ -16748,6 +16747,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if (t && ft) t.textContent = (ft.textContent || '').replace(' Tests', ' tests attempted');
   }
   /* ---- streak chip (store.coins.streak, the coins engine's own open-streak) + 7-day bars ---- */
+  var rdBarTargets = [0,0,0,0,0,0,0];
   function rdActivity(){
     var store = rdStore();
     var streak = 0;
@@ -16782,14 +16782,15 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       }
     } catch (e) {}
     var items = bars.querySelectorAll('.rd-bar');
-    var tot = 0;
-    for (var c = 0; c < 7; c++){ tot += counts[c]; }
+    var tot = 0, max = 0;
+    for (var c = 0; c < 7; c++){ tot += counts[c]; if (counts[c] > max) max = counts[c]; }
     for (var i = 0; i < items.length && i < 7; i++){
       var dd = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (6 - i));
       var em = items[i].querySelector('em');
       if (em) em.textContent = dayNames[dd.getDay()];
       var barI = items[i].querySelector('i');
-      var h = counts[i] > 0 ? Math.min(100, counts[i] * 25) : (open[i] ? 14 : 6);
+      var h = counts[i] > 0 ? Math.round((counts[i] / (max || 1)) * 80) : (open[i] ? 10 : 5);
+      rdBarTargets[i] = h;
       if (barI) barI.style.height = h + '%';
       items[i].classList.toggle('rd-bar-done', counts[i] > 0);
       items[i].setAttribute('title', counts[i] + (counts[i] === 1 ? ' test' : ' tests') + (open[i] ? ' - app opened' : ''));
@@ -16797,6 +16798,39 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     }
     var note = rdEl('rdBarsNote');
     if (note) note.textContent = tot + (tot === 1 ? ' test' : ' tests') + ' in 7 days';
+  }
+  /* ---- 7-day bars grow animation: every time the home screen appears, bars grow from 4% up to their target heights ---- */
+  function rdBarsGrow(){
+    try { rdActivity(); } catch (e) {}
+    var bars = rdEl('rdBars'); if (!bars) return;
+    var items = bars.querySelectorAll('.rd-bar');
+    var i, b;
+    for (i = 0; i < items.length; i++){
+      b = items[i].querySelector('i');
+      if (b){ b.style.transition = 'none'; b.style.height = '4%'; }
+    }
+    void bars.offsetHeight;
+    requestAnimationFrame(function(){
+      for (var j = 0; j < items.length; j++){
+        var bj = items[j].querySelector('i');
+        if (bj && typeof rdBarTargets[j] === 'number'){ bj.style.transition = ''; bj.style.height = rdBarTargets[j] + '%'; }
+      }
+    });
+  }
+  function rdObserveList(){
+    try {
+      var vl = rdEl('view-list');
+      if (vl && window.MutationObserver && !vl.getAttribute('data-rd-bars-obs')){
+        vl.setAttribute('data-rd-bars-obs', '1');
+        var wasActive = vl.classList.contains('active');
+        var mo = new MutationObserver(function(){
+          var now = vl.classList.contains('active');
+          if (now && !wasActive){ try { rdBarsGrow(); } catch (e) {} }
+          wasActive = now;
+        });
+        mo.observe(vl, {attributes: true, attributeFilter: ['class']});
+      }
+    } catch (e) {}
   }
   /* ---- Resume Task button: resume in-progress test, else next test, else start practising ---- */
   function rdResume(){
@@ -16870,9 +16904,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       }
     } catch (e) {}
   }
-  rdRefresh(); rdObserve();
-  setTimeout(function(){ rdRefresh(); rdObserve(); }, 800);
+  rdRefresh(); rdObserve(); rdObserveList();
+  setTimeout(function(){ rdRefresh(); rdObserve(); rdObserveList(); }, 800);
   setTimeout(function(){ rdRefresh(); }, 2500);
+  setTimeout(function(){ try { rdBarsGrow(); } catch (e) {} }, 100);
   window.addEventListener('pageshow', function(){ rdRefresh(); });
 })();
 </script>
