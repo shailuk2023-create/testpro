@@ -7274,7 +7274,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 95; /* must match version.txt - bump on every release */
+var APP_VERSION = 96; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -17340,7 +17340,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   var blobByUrl = {};
   var rtBlobUrls = [];
   var precacheRunning = false;
-  var preloadHeld = []; /* v94-perf-fix2: holds preloadAll Image objects until they finish loading, so the browser cannot garbage-collect them mid-fetch and abort the preload. Released on load/error, and dropped when the solutions view is left. */
+  var _preloadedTestImgs = []; /* v92 (copied from the working v12 master): holds every preloaded Image for the whole test, released only when the next test preloads. An Image with no reference can be collected mid-fetch, so the array keeps them alive until the test's images are all cached. */
 
   function absUrl(u){ try { return new URL(u, document.baseURI).href; } catch(e){ return u; } }
   function isLocalImg(u){ return !!u && u.indexOf('images/') === 0; }
@@ -17454,7 +17454,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     } catch(e){}
     try { for (var i = 0; i < rtBlobUrls.length; i++){ try { URL.revokeObjectURL(rtBlobUrls[i]); } catch(e){} } } catch(e){}
     rtBlobUrls = [];
-    try { preloadHeld.length = 0; } catch(e){} /* v94-perf-fix2: drop any still-loading preload refs when the whole solutions view is closed (already-loaded images stay in the browser HTTP cache). */
     try { for (var k in blobByUrl){ if (k.indexOf('rt:') === 0) delete blobByUrl[k]; } } catch(e){}
     try { if ('caches' in window) caches.delete(RUNTIME).catch(function(){}); } catch(e){}
   }
@@ -17522,53 +17521,36 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     } catch(e){}
   }
 
-  function holdPreload(u){
-    /* v94-perf-fix2: keep the Image object alive in preloadHeld until it
-       finishes (load or error). A bare `var im = new Image(); im.src = u;`
-       loses its only reference at once, so the browser may garbage-collect
-       it mid-fetch and abort the preload — the image then loads only when
-       its question is reached, and again on going back. Holding it here
-       guarantees the fetch completes and lands in the browser HTTP cache,
-       so navigating to any question (and back) shows it instantly. */
-    try {
-      var im = new Image();
-      preloadHeld.push(im);
-      im.onload = im.onerror = function(){
-        try { var ix = preloadHeld.indexOf(im); if (ix !== -1) preloadHeld.splice(ix, 1); } catch(e){}
-      };
-      im.src = u;
-    } catch(e){}
-  }
-
   function preloadAll(){
-    /* v94-perf2: full-test preload on solutions open (pre-rebuild feel).
-       Fires a native new Image() for EVERY http solution image in the whole
-       test, so they land in the browser HTTP cache and show instantly when
-       the user navigates to any question. Async only — creating an Image and
-       setting .src never blocks the UI; the browser throttles concurrent
-       fetches per host. Local images/... are skipped (the permanent precache
-       already covers them); data: URIs are skipped (already inline). */
+    /* v92 (copied verbatim from the working v12 master): preload ALL solution images of a test when the solution view opens. Previously an image fetched only when its own question rendered, so a quick question change could leave it unloaded (or load-failed). Now, as soon as the 1st question's solution opens, every image URL in the whole test starts loading, so each is already cached when its question is reached. data: URIs are already embedded in the file and need no fetch, so they are skipped. Preload Image objects are separate from the displayed <img> elements — the v79 failed-image hiding and the lightbox are untouched. */
     try {
       var st = null;
       try { st = window.state || (typeof state !== 'undefined' ? state : null); } catch(e){}
       var t = st ? st.test : null;
       if (!t || !t.questions || !t.questions.length) return;
-      var re = /<img\b[^>]*>/g, seen = {}, j, q, m, sm, u;
-      for (j = 0; j < t.questions.length; j++){
-        if (typeof solMatches === 'function' && !solMatches(j)) continue;
-        q = t.questions[j];
+      var seen = {}, urls = [], i, q, m, sm;
+      /* Every <img class="sol-img" src="..."> in every question's solution. */
+      var re = /<img\b[^>]*>/g;
+      for (i = 0; i < t.questions.length; i++){
+        q = t.questions[i];
         if (!q || !q.sol) continue;
         re.lastIndex = 0;
         while ((m = re.exec(q.sol)) !== null){
           if (m[0].indexOf('sol-img') === -1) continue;
           sm = m[0].match(/src="([^"]+)"/) || m[0].match(/src='([^']+)'/);
           if (!sm || !sm[1]) continue;
-          u = sm[1];
-          if (u.indexOf('data:') === 0) continue;
-          if (seen[u]) continue;
-          seen[u] = 1;
-          if (isHttp(u)){ holdPreload(u); }
+          /* data: URIs are embedded — no fetch needed, skip them. */
+          if (sm[1].indexOf('data:') === 0) continue;
+          if (!seen[sm[1]]){ seen[sm[1]] = true; urls.push(sm[1]); }
         }
+      }
+      /* Drop the previous test's preloads (lets the browser release them)
+         and start fetching this test's images. */
+      _preloadedTestImgs = [];
+      for (i = 0; i < urls.length; i++){
+        var im = new Image();
+        im.src = urls[i];
+        _preloadedTestImgs.push(im);
       }
     } catch(e){}
   }
