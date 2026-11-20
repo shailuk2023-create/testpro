@@ -13735,6 +13735,15 @@ function notifOnItem(nid, ntype){
   try {
     if (ntype === 'topper' && typeof window.openLeaderboard === 'function') window.openLeaderboard();
     else if (ntype === 'announcement' && typeof goHome === 'function') goHome();
+    else if (ntype === 'report'){
+      /* Report-fix notification: open the fixed test/question via the same deep link the push notification uses, so the boot handler auto-refreshes and opens it. */
+      var it = null;
+      for (var i = 0; i < N.list.length; i++){ if (N.list[i].id === nid){ it = N.list[i]; break; } }
+      var d = (it && it.data) || {};
+      if (d.chapter && d.test && d.qnum){
+        location.href = location.pathname + '?fixCh=' + encodeURIComponent(d.chapter) + '&fixTest=' + encodeURIComponent(d.test) + '&fixQ=' + encodeURIComponent(d.qnum) + '&t=' + Date.now();
+      }
+    }
   } catch (e) {}
 }
 function notifWire(){
