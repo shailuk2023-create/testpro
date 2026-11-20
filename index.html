@@ -16817,18 +16817,21 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       }
     });
   }
-  function rdObserveList(){
+  /* ---- 7-day bars: animate ONLY when the graph card is actually visible on screen (scroll into view / home screen comes to front); background refreshes never animate ---- */
+  function rdObserveBars(){
     try {
-      var vl = rdEl('view-list');
-      if (vl && window.MutationObserver && !vl.getAttribute('data-rd-bars-obs')){
-        vl.setAttribute('data-rd-bars-obs', '1');
-        var wasActive = vl.classList.contains('active');
-        var mo = new MutationObserver(function(){
-          var now = vl.classList.contains('active');
-          if (now && !wasActive){ try { rdBarsGrow(); } catch (e) {} }
-          wasActive = now;
-        });
-        mo.observe(vl, {attributes: true, attributeFilter: ['class']});
+      var bars = rdEl('rdBars');
+      if (bars && window.IntersectionObserver && !bars.getAttribute('data-rd-io')){
+        bars.setAttribute('data-rd-io', '1');
+        var wasVisible = false;
+        var io = new IntersectionObserver(function(entries){
+          for (var e = 0; e < entries.length; e++){
+            var vis = !!entries[e].isIntersecting;
+            if (vis && !wasVisible){ try { rdBarsGrow(); } catch (err) {} }
+            wasVisible = vis;
+          }
+        }, {threshold: 0.25});
+        io.observe(bars);
       }
     } catch (e) {}
   }
@@ -16904,9 +16907,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       }
     } catch (e) {}
   }
-  rdRefresh(); rdObserve(); rdObserveList();
-  try { rdBarsGrow(); } catch (e) {}
-  setTimeout(function(){ rdRefresh(); rdObserve(); rdObserveList(); }, 800);
+  rdRefresh(); rdObserve(); rdObserveBars();
+  setTimeout(function(){ rdRefresh(); rdObserve(); rdObserveBars(); }, 800);
   setTimeout(function(){ rdRefresh(); }, 2500);
   window.addEventListener('pageshow', function(){ rdRefresh(); });
 })();
