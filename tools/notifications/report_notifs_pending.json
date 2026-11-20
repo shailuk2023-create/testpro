@@ -484,5 +484,20 @@
     "responseId": "ACYDBNieLXcUTec5OnG9sDQUqIo2DS6tPG-5a0nsoCYU2dD6EwCmJLx-RnniyOlWlKlkwzs",
     "fixedSummary": "Geography 2 Q30 image replaced: wrong Lakshadweep map (Nine Degree Channel) -> Wikimedia Commons Andaman and Nicobar Islands map with Ten Degree Channel labelled (thumb.wikimedia.org URL)",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q31 (GA Test Q31) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795162003305,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q31 (GA Test Q31)"
+    },
+    "responseId": "ACYDBNjs_Gm3ihhZx3UJp_lV3C5B-2s8w5wBS14EgkHFuaZjH1timWO_EJ_ThjPaKVTSdiY",
+    "fixedSummary": "Geography 2 Q31 image replaced: reporter-supplied Lakshadweep/Malabar Coast map (komododecks link, 1357x768 JPEG) embedded offline as base64, replacing raahchal.com photo",
+    "sent": false
   }
 ]
