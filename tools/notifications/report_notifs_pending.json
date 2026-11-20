@@ -514,5 +514,20 @@
     "responseId": "ACYDBNh-a2ra76T7BWMW169NkGEfj8glokYq8Vo8kOc0PmHM2plW7R9SaplyGlTw3p4FD0I",
     "fixedSummary": "Geography 2 Q32 image replaced: reporter-supplied Andaman/Nicobar/Malacca Strait map (encrypted-tbn0 thumbnail, 250x245 PNG) embedded offline as base64, replacing Wikimedia relief map",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 1 • Q25 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795170062411,
+    "data": {
+      "chapter": "CA – February 2026",
+      "test": "February Test 1",
+      "qnum": "Q25 (CA Test Q25)"
+    },
+    "responseId": "ACYDBNjHnVmypVb-hbFUlL_N0R7GMe-zdC7Ulk9fuVH-TQrnqXvRaXTpSkk3cQsHj3kskzY",
+    "fixedSummary": "February Test 1 Q25 image replaced: 1901 Keystone stereoview card of Dilwara Temple interior -> Nakki Lake, Mount Abu photo (OdishaBytes image published for this exact renaming story, Feb 2026), embedded offline as base64 JPEG",
+    "sent": false
   }
 ]
