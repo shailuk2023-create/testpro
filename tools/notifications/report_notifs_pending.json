@@ -439,5 +439,20 @@
   },
   "responseId": "ACYDBNjUvA_L-3IlMgeB_0xAQ8eidSUsmNUKbqTdM51_tccMLUwNrIpFLDpKe3M2CKtjGOs",
   "fixedSummary": "Geography 2 Q20 image replaced with reporter-supplied Hindi meandering/oxbow diagram, offline base64 JPEG embed (replaces Wikimedia Vistula oxbow photo)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q26 (GA Test Q26) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795159331292,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q26 (GA Test Q26)"
+  },
+  "responseId": "ACYDBNgi-nSvBInBvMR69sYb6h5qLkJ2qxgzZVKagBmplN8OXEsBU86Ypgq5hciXt5AX_4I",
+  "fixedSummary": "Geography 2 Q26 image replaced: generic Western Ghats scenic photo (breathedreamgo) -> Coastal Plain of India map (Western Coastal Plain yellow: Kathiawar/Konkan/Malabar; Eastern orange; legend; LotusArise), embedded offline as base64 JPEG",
+  "sent": false
  }
 ]
