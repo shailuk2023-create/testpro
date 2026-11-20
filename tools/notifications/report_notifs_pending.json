@@ -327,5 +327,19 @@
     "responseId": "ACYDBNgGRkbZA2q7vckXY6GUVYeAbaG6Xr_HhCM5wBfVkQ_A-vO5mXzyhNllVQ3H_pNNgu4",
     "fixedSummary": "Geography 2 Q2 (Indus right-bank tributary, Kabul) solution image replaced: generic Ladakh Indus photo -> reporter-supplied Sanskriti IAS Indus River System map, embedded offline as base64 JPEG",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 1 • Q3 (CA Test Q3) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1795137340451,
+    "data": {
+      "chapter": "CA – May 2026",
+      "test": "May Test 1",
+      "qnum": "Q3 (CA Test Q3)"
+    },
+    "responseId": "ACYDBNh74MGdJQii2ZIwgLwVW7Pt2FiTpfMuL0TOkbP2PmV9blCbOPIUB7BrD5lVA3I2crc",
+    "fixedSummary": "May Test 1 Q3 image replaced: 1958 Thomas Cup stamp -> 2026 final photo of China team lifting the trophy (offline base64 JPEG embed)"
   }
 ]
