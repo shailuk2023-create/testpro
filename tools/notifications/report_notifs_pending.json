@@ -355,5 +355,19 @@
   },
   "responseId": "ACYDBNhfJ0nq9Z75v4Ehye-wbv3PGMXdyHnOHmh3TPBY-V4TlVvs26CW5gkTlB-41rmxL58",
   "fixedSummary": "May Test 1 Q22 image replaced with reporter-supplied news graphic (Hazaribag becomes India's first pearl farming cluster), offline base64 JPEG embed"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 2 • Q39 (CA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+  "createdAt": 1795141834436,
+  "data": {
+   "chapter": "CA – May 2026",
+   "test": "May Test 2",
+   "qnum": "Q39 (CA Test Q14)"
+  },
+  "responseId": "ACYDBNgQsPOGeqQpgPD1L863t-3OZm7MR_Vgjhdjzcdpi_Ffg4IlNOd3TjkJq6Inuk3iXt4",
+  "fixedSummary": "May Test 2 Q39 image replaced with reporter-supplied Pixxel x Sarvam Pathfinder image, offline base64 JPEG embed (replaces generic ArabSat render)"
  }
 ]
