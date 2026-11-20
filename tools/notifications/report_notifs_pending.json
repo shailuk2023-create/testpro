@@ -397,5 +397,19 @@
   },
   "responseId": "ACYDBNgPkbkGoRJThZRZhphQFwXEZnkE6kYjNjsbHNF6QC4zw0JQEq4s5UQaSG8gDcyVVL0",
   "fixedSummary": "Geography 2 Q15 image replaced with reporter-supplied India mountain-ranges map labelling Mahendragiri, offline base64 JPEG embed (replaces Mahendragiri hill photo)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q17 (GA Test Q17) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795152552506,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q17 (GA Test Q17)"
+  },
+  "responseId": "ACYDBNj28UKcKGCWWudH-TfA3ChQBDV9Sq3_HyA2AGqkQO2ViSY_NRhPNS_5YeyZTFFfoJA",
+  "fixedSummary": "Geography 2 Q17 image replaced with reporter-supplied Britannica Purvanchal locator map, offline base64 JPEG embed (replaces Dzukou Valley photo)"
  }
 ]
