@@ -544,5 +544,20 @@
     "responseId": "ACYDBNho6JgNu3E-PKNYft7WEI1sxzw2EbbeWpO5Lva8gm8keSFHAmuBw28QiUdYwa8yXsE",
     "fixedSummary": "Polity 1 Q4 image replaced: generic Supreme Court building interior photo -> reporter-supplied Kesavananda Bharati case judgement graphic (Basic Structure Doctrine), embedded offline as base64 JPEG",
     "sent": false
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q13 (GA Test Q13) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795175434774,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q13 (GA Test Q13)"
+    },
+    "responseId": "ACYDBNjV5IL46GBUszeA2shTPjAqAMpCgujliV09AHNSjdEuQDJfhnx7boa6JJdHWiZBVho",
+    "fixedSummary": "Polity 1 Q13 image removed: generic Rashtrapati Bhavan place photo removed from the solution at the reporter's request ('hata do image isme se'); no specific PIB/news image exists for this 2022 pardon event and President face photos are not allowed, so no replacement image was used",
+    "sent": false
   }
 ]
