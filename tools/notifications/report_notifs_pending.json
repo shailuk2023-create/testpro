@@ -454,5 +454,20 @@
   "responseId": "ACYDBNgi-nSvBInBvMR69sYb6h5qLkJ2qxgzZVKagBmplN8OXEsBU86Ypgq5hciXt5AX_4I",
   "fixedSummary": "Geography 2 Q26 image replaced: generic Western Ghats scenic photo (breathedreamgo) -> Coastal Plain of India map (Western Coastal Plain yellow: Kathiawar/Konkan/Malabar; Eastern orange; legend; LotusArise), embedded offline as base64 JPEG",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q28 (GA Test Q28) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795160058507,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 2",
+   "qnum": "Q28 (GA Test Q28)"
+  },
+  "responseId": "ACYDBNi2KIndeDxVxrVKIZeloB_WpPY-U-yBRy5eX2SdcfCKgk31eYYPa0xld1CKpgDEAf4",
+  "fixedSummary": "Geography 2 Q28 image replaced: Chilika photo (curlytales.com) -> reporter-supplied Wikimedia satellite image of Kara-Bogaz Gol lagoon from space (direct upload.wikimedia.org URL)",
+  "sent": false
  }
 ]
