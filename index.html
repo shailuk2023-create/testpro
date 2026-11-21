@@ -7317,7 +7317,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 99; /* must match version.txt - bump on every release */
+var APP_VERSION = 100; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -7939,11 +7939,11 @@ function caSolHTML(keyLines, relLines, showPYQ){
   var docIco = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12h6M9 16h6M9 8h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   var out = '<div class="ca-sol">';
   out += '<div class="ca-sol-sec"><div class="ca-sol-head">' + keyIco + 'Key Facts</div><ul class="ca-sol-list">';
-  keyLines.forEach(function(ln){ out += '<li>' + caBoldHTML(ln) + '</li>'; });
+  keyLines.forEach(function(ln){ out += '<li>' + (ln.indexOf('√') >= 0 && typeof mathRender === 'function' ? mathRender(caBoldHTML(ln)) : caBoldHTML(ln)) + '</li>'; });
   out += '</ul></div>';
   if (relLines.length){
     out += '<div class="ca-sol-sec"><div class="ca-sol-head">' + docIco + 'Related Facts</div><ul class="ca-sol-list">';
-    relLines.forEach(function(ln){ out += '<li>' + caBoldHTML(ln) + '</li>'; });
+    relLines.forEach(function(ln){ out += '<li>' + (ln.indexOf('√') >= 0 && typeof mathRender === 'function' ? mathRender(caBoldHTML(ln)) : caBoldHTML(ln)) + '</li>'; });
     out += '</ul></div>';
   }
   /* GA render tags (v14): PYQ tag at the end of the one-liner section
@@ -8434,8 +8434,8 @@ $('beginBtn').addEventListener('click', function(){
     '.mr-mixed>.mr-whole{margin-right:.02em}',
     '.mr-sup{font-size:.78em;line-height:0;vertical-align:super}',
     '.mr-sub{font-size:.78em;line-height:0;vertical-align:sub}',
-    '.mr-root{white-space:nowrap}',
-    '.mr-root>.mr-rad{border-top:1.5px solid currentColor;padding:0 .08em}',
+    '.mr-root{display:inline-block;white-space:nowrap;line-height:1}',
+    '.mr-root>.mr-rad{display:inline-block;border-top:1.5px solid currentColor;padding:0 .08em 0 0;line-height:1;margin-left:-.05em}',
     '.mr-sym{font-family:Georgia,"Times New Roman",serif;font-style:italic}',
     '.mr-sym-x{font-family:Georgia,"Times New Roman",serif;font-style:italic}'
   ].join('\n');
@@ -8470,6 +8470,35 @@ $('beginBtn').addEventListener('click', function(){
     for (var j = i; j < s.length; j++) {
       if (s[j] === '(') depth++;
       else if (s[j] === ')') { depth--; if (depth === 0) return [s.slice(i + 1, j), j]; }
+    }
+    return null;
+  }
+
+  /* Balanced-bracket reader: returns [inside, endIndex] for '[' at i, or null.
+     Tracks [] and () depth so √[(a)² × (b)²] nests safely. */
+  function readBracket(s, i) {
+    var db = 0, dp = 0;
+    for (var j = i; j < s.length; j++) {
+      var c = s[j];
+      if (c === '[') db++;
+      else if (c === ']') { db--; if (db === 0 && dp === 0) return [s.slice(i + 1, j), j]; }
+      else if (c === '(') dp++;
+      else if (c === ')') dp--;
+    }
+    return null;
+  }
+
+  /* Balanced-tag reader: for markup steps 2-3 already produced, return the
+     whole <span…>…</span> / <sup…>…</sup> starting at i, or null. openAny is
+     the generic open tag counted for nesting ('<span' / '<sup'). */
+  function readTagSpan(s, i, openTag, openAny, closeTag) {
+    if (s.slice(i, i + openTag.length) !== openTag) return null;
+    var depth = 0, j = i;
+    while (j < s.length) {
+      var o = s.indexOf(openAny, j), c = s.indexOf(closeTag, j);
+      if (c === -1) return null;
+      if (o !== -1 && o < c) { depth++; j = o + openAny.length; }
+      else { depth--; j = c + closeTag.length; if (depth === 0) return [s.slice(i, j), j]; }
     }
     return null;
   }
@@ -8522,9 +8551,12 @@ $('beginBtn').addEventListener('click', function(){
       return b + '<sup class="mr-sup">' + p + '</sup>';
     });
 
-    /* 4. Roots: √(...) with balanced parens (nested √ allowed), else √ + one
-       number/variable token. The radicand is rendered recursively so a
-       fraction inside a root also stacks. */
+    /* 4. Roots: √(...) with balanced parens, √[...] with balanced brackets,
+       √ + a number/variable/Greek atom (decimals included: √0.25), or √ +
+       an already-rendered fraction/sup span (steps 2-3 ran first, so √2/3
+       arrives as √<span class="mr-frac">…). The radicand is rendered
+       recursively so a fraction/power inside a root also stacks. Anything
+       ambiguous is left as a bare √ rather than breaking text. */
     var res = '', i = 0;
     while (i < out.length) {
       var k = out.indexOf('√', i);
@@ -8537,10 +8569,30 @@ $('beginBtn').addEventListener('click', function(){
           res += '<span class="mr-root">√<span class="mr-rad">' + renderText(r[0]) + '</span></span>';
           i = r[1] + 1;
         } else { res += '√'; i = k + 1; }
-      } else if (nxt && /[0-9A-Za-zπ]/.test(nxt)) {
+      } else if (nxt === '[') {
+        var rb = readBracket(out, k + 1);
+        if (rb) {
+          res += '<span class="mr-root">√<span class="mr-rad">' + renderText(rb[0]) + '</span></span>';
+          i = rb[1] + 1;
+        } else { res += '√'; i = k + 1; }
+      } else if (nxt === '<') {
+        var mspan = readTagSpan(out, k + 1, '<span class="mr-frac">', '<span', '</span>') ||
+          readTagSpan(out, k + 1, '<sup class="mr-sup">', '<sup', '</sup>');
+        if (mspan) {
+          res += '<span class="mr-root">√<span class="mr-rad">' + mspan[0] + '</span></span>';
+          i = mspan[1];
+        } else { res += '√'; i = k + 1; }
+      } else if ((nxt && /[0-9A-Za-zπ\u0370-\u03FF]/.test(nxt)) || (nxt === '.' && /[0-9]/.test(out[k + 2] || ''))) {
         var j = k + 1;
-        while (j < out.length && /[0-9A-Za-z]/.test(out[j])) j++;
-        res += '<span class="mr-root">√<span class="mr-rad">' + out.slice(k + 1, j) + '</span></span>';
+        while (j < out.length && /[0-9A-Za-zπ\u0370-\u03FF]/.test(out[j])) j++;
+        while (j + 1 < out.length && out[j] === '.' && /[0-9]/.test(out[j + 1])) {
+          j++;
+          while (j < out.length && /[0-9]/.test(out[j])) j++;
+        }
+        var atom = out.slice(k + 1, j), tail = '';
+        var tsp = readTagSpan(out, j, '<sup class="mr-sup">', '<sup', '</sup>');
+        if (tsp) { tail = tsp[0]; j = tsp[1]; }
+        res += '<span class="mr-root">√<span class="mr-rad">' + renderText(atom) + tail + '</span></span>';
         i = j;
       } else { res += '√'; i = k + 1; }
     }
@@ -8579,7 +8631,7 @@ $('beginBtn').addEventListener('click', function(){
   }
 
   global.mathRender = mathRender;
-  global.MathRenderer = { render: mathRender, renderText: renderText, version: 'p5-v4.1' };
+  global.MathRenderer = { render: mathRender, renderText: renderText, version: 'p5-v4.2' };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -11427,7 +11479,7 @@ function savedTestInfo(it, series){
 }
 function savedItemHTML(it, idx, txt, attr, series){
   return '<div class="saved-item sv-'+series+'" data-sq="'+idx+'"><div class="sq-top"><span class="sq-ch">'+esc(it.chapter.name_en)+'</span><span class="sq-qn">Q'+it.q.n+'</span></div>'+
-    '<div class="sq-q">'+esc(txt)+'</div>'+
+    '<div class="sq-q">'+mathRender(esc(txt))+'</div>'+
     '<div class="sq-test"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5"/></svg><span>'+esc(savedTestInfo(it, series))+'</span></div>'+
     '<div class="sq-foot"><span class="sq-tap">Tap to attempt \u2192</span><button class="unsave-btn" '+attr+'="'+it.chapter.chapter+':'+it.q.n+'" title="Remove">\u2715</button></div></div>';
 }
