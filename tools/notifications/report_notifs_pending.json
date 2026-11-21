@@ -687,5 +687,19 @@
     },
     "responseId": "ACYDBNipXJh3ZPTCizTpYr9aCR0nSj2chtMj1Vun5VwSzKy33JdCRBgHhFeRm1Q0G6giS0w",
     "fixedSummary": "CA July Test 1 Q12 (Wimbledon 2026 women's singles) image replaced with reporter-supplied Noskova champion graphic, offline base64 embed"
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q15 (CA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795245191323,
+    "data": {
+      "chapter": "CA – July 2026",
+      "test": "July Test 1",
+      "qnum": "Q15 (CA Test Q15)"
+    },
+    "responseId": "ACYDBNjLI_pJBhuWFILGKycehRzMFFxsrEPBz5I21iOe_kfgiZq7A7lrJN7BS4SsLqW97VM",
+    "fixedSummary": "CA July Test 1 Q15 (Borjuli Biodiversity Heritage Site, Assam) image replaced with reporter-supplied AIR News graphic, offline base64 embed"
   }
 ]
