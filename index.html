@@ -6672,17 +6672,55 @@ function wireCAListButtons(root){
   });
 }
 
-/* ---- GA saved questions (separate store key, separate resolver) ---- */
+/* ---- GA saved questions (separate store key, separate resolver) ----
+   v99: keys are PER TEST ('ga-<subject>-<num>:<n>'), NOT per subject.
+   GA tests repeat q.n across tests of one subject (963/1137 GA questions
+   share their n with another test — e.g. Polity 1..4 all have Q1..Q30),
+   so the old subject key ('ga-polity:5') marked the same question number
+   in EVERY test of that subject, including tests never attempted. */
 function getSavedGA(){
   var st = storeGet();
-  return Array.isArray(st.saved_ga) ? st.saved_ga.slice() : [];
+  var arr = Array.isArray(st.saved_ga) ? st.saved_ga.slice() : [];
+  var m = migrateSavedGAKeys(arr);
+  if (m.changed){ st.saved_ga = m.list; storeSet(st); }
+  return m.list;
 }
-function savedKeyGA(gaKey, n){ return gaKey + ':' + n; }
-function isSavedGA(gaKey, n){ return getSavedGA().indexOf(savedKeyGA(gaKey, n)) !== -1; }
-function toggleSavedGA(gaKey, n){
+/* One-time, idempotent migration of legacy subject keys ('ga-polity:5')
+   to per-test keys. A legacy key resolves to the test the OLD resolver
+   showed (last test in subject order containing that n), so the Saved
+   Questions list is identical to before the fix. Keys that resolve
+   nowhere are dropped (they were invisible already). */
+function migrateSavedGAKeys(arr){
+  var out = [], changed = false;
+  arr.forEach(function(k){
+    var parts = String(k).split(':');
+    if (parts.length !== 2) return;
+    var head = parts[0], n = parseInt(parts[1], 10);
+    if (isNaN(n)) return;
+    if (/^ga-[a-z]+-\d+$/.test(head)){ if (out.indexOf(k) === -1) out.push(k); return; }
+    if (/^ga-[a-z]+$/.test(head)){
+      var subj = (GABANK || []).filter(function(s){ return ('ga-' + s.subject) === head; })[0];
+      if (!subj) return;
+      var testId = null;
+      (subj.tests || []).forEach(function(t, idx){
+        if ((t.questions || []).some(function(x){ return x.n === n; })) testId = 'ga-' + subj.subject + '-' + (idx + 1);
+      });
+      if (!testId) return;
+      var nk = testId + ':' + n;
+      if (out.indexOf(nk) === -1) out.push(nk);
+      changed = true;
+      return;
+    }
+    if (out.indexOf(k) === -1) out.push(k);
+  });
+  return {list: out, changed: changed};
+}
+function savedKeyGA(testId, n){ return testId + ':' + n; }
+function isSavedGA(testId, n){ return getSavedGA().indexOf(savedKeyGA(testId, n)) !== -1; }
+function toggleSavedGA(testId, n){
   var st = storeGet();
   if (!Array.isArray(st.saved_ga)) st.saved_ga = [];
-  var k = savedKeyGA(gaKey, n), i = st.saved_ga.indexOf(k);
+  var k = savedKeyGA(testId, n), i = st.saved_ga.indexOf(k);
   if (i === -1){ st.saved_ga.push(k); } else { st.saved_ga.splice(i, 1); }
   storeSet(st);
   return i === -1;
@@ -6691,12 +6729,13 @@ function resolveSavedGA(){
   var out = [];
   getSavedGA().forEach(function(k){
     var parts = k.split(':');
-    var gaKey = parts[0], n = parseInt(parts[1], 10);
-    var subj = (GABANK || []).filter(function(s){ return ('ga-' + s.subject) === gaKey; })[0];
-    if (!subj) return;
-    var q = null;
-    (subj.tests || []).forEach(function(t){ (t.questions || []).forEach(function(x){ if (x.n === n) q = x; }); });
-    if (q) out.push({subject: subj, chapter: {chapter: gaKey, name_en: subj.subject_en, name_hi: subj.subject_hi}, q: q});
+    var testId = parts[0], n = parseInt(parts[1], 10);
+    var t = findTestById(testId);
+    if (!t) return;
+    var q = (t.questions || []).filter(function(x){ return x.n === n; })[0];
+    if (!q) return;
+    var subj = (GABANK || []).filter(function(s){ return ('ga-' + s.subject) === t.chapter; })[0];
+    out.push({subject: subj, test: t, testId: t.id, chapter: {chapter: t.id, name_en: subj ? subj.subject_en : (t.subject_en || ''), name_hi: subj ? subj.subject_hi : (t.subject_hi || '')}, q: q});
   });
   return out;
 }
@@ -7274,7 +7313,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 98; /* must match version.txt - bump on every release */
+var APP_VERSION = 99; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -8704,7 +8743,7 @@ function renderPalette(){
   var nAtt = counts.answered + counts.marked_answered;
   var nUnatt = counts.not_answered + counts.marked;
   var nSaved = 0;
-  state.test.questions.forEach(function(q){ if (isSaved(state.test.chapter, q.n)) nSaved++; });
+  state.test.questions.forEach(function(q){ if (isSaved(saveScope(state.test), q.n)) nSaved++; });
   if (window.innerWidth < 900){
     $('paletteLegend').innerHTML =
       '<div class="li"><span class="mk mk-star">★</span><span>Marked</span><b>' + nMarked + '</b></div>' +
@@ -8724,7 +8763,7 @@ function renderPalette(){
   var html = '';
   state.qStates.forEach(function(st, i){
     var q = state.test.questions[i];
-    var sv = isSaved(state.test.chapter, q.n);
+    var sv = isSaved(saveScope(state.test), q.n);
     html += '<button class="pal-btn ' + st.status + (sv ? ' saved' : '') + (i === state.cur ? ' current' : '') + '" data-q="' + i + '">' + (i + 1) + ((st.status === 'marked' || st.status === 'marked_answered') ? '<span class="pal-star">★</span>' : '') + (sv ? '<span class="pal-saved"><svg class="bm-ico" viewBox="0 0 12 16" aria-hidden="true"><path d="M0 0h12v16L6 11.5 0 16z"/></svg></span>' : '') + '</button>';
   });
   $('paletteGrid').innerHTML = html;
@@ -8749,7 +8788,7 @@ function renderPalette(){
   var lh = '';
   state.qStates.forEach(function(st, i){
     var lbl = st.status === 'answered' ? 'Attempted' : st.status === 'marked' ? '★ Unattempted' : st.status === 'marked_answered' ? '★ Attempted' : st.status === 'not_answered' ? 'Unattempted' : 'Unseen';
-    if (isSaved(state.test.chapter, state.test.questions[i].n)) lbl += ' <svg class="bm-ico" viewBox="0 0 12 16" aria-hidden="true"><path d="M0 0h12v16L6 11.5 0 16z"/></svg>';
+    if (isSaved(saveScope(state.test), state.test.questions[i].n)) lbl += ' <svg class="bm-ico" viewBox="0 0 12 16" aria-hidden="true"><path d="M0 0h12v16L6 11.5 0 16z"/></svg>';
     lh += '<div class="pl-row" data-plq="' + i + '"><span>Q' + (i + 1) + '</span><span class="st">' + lbl + '</span></div>';
   });
   var pl = $('paletteList'); if (pl) pl.innerHTML = lh;
@@ -10486,7 +10525,7 @@ function renderSolution(keepOpen){
   if (solBookmarkBtn){
     syncSolSaveBtn();
     solBookmarkBtn.onclick = function(){
-      var chapter = savedQuizMode ? sq.items[i].chapter.chapter : t.chapter;
+      var chapter = savedQuizMode ? sq.items[i].chapter.chapter : saveScope(t);
       var saved = toggleSaved(chapter, q.n);
       syncSolSaveBtn();
       renderSolPalette();
@@ -10631,7 +10670,7 @@ function solMatches(i){
   var f = state.solFilter;
   if (!f || !f.length) return true;
   var q = state.test.questions[i], status = solStatus(i);
-  var ch = state.savedQuizMode ? sq.items[i].chapter.chapter : state.test.chapter;
+  var ch = state.savedQuizMode ? sq.items[i].chapter.chapter : saveScope(state.test);
   return f.some(function(k){ return k === 'saved' ? isSaved(ch, q.n) : k === status; });
 }
 function solNeighbor(dir){
@@ -10667,7 +10706,7 @@ function renderSolPalette(){
   var counts = {correct:0, incorrect:0, skipped:0, saved:0};
   t.questions.forEach(function(q, i){
     counts[solStatus(i)]++;
-    var ch = state.savedQuizMode ? sq.items[i].chapter.chapter : t.chapter;
+    var ch = state.savedQuizMode ? sq.items[i].chapter.chapter : saveScope(t);
     if (isSaved(ch, q.n)) counts.saved++;
   });
   $('solCounts').innerHTML =
@@ -10685,7 +10724,7 @@ function renderSolPalette(){
   var html = '';
   t.questions.forEach(function(q, i){
     var status = solStatus(i);
-    var ch = state.savedQuizMode ? sq.items[i].chapter.chapter : t.chapter;
+    var ch = state.savedQuizMode ? sq.items[i].chapter.chapter : saveScope(t);
     var sv = isSaved(ch, q.n);
     var dim = '';
     if (!solMatches(i)) dim = ' dim';
@@ -11017,6 +11056,12 @@ function toast(msg){
   clearTimeout(t._tid);
   t._tid = setTimeout(function(){ t.style.display = 'none'; }, 2200);
 }
+/* v99: saved-mark scope — GA saves are keyed per TEST (test id); Maths
+   (chapter) and CA (month) keep their existing keys because their q.n is
+   unique per chapter/month, so no leak there. Call sites must pass
+   saveScope(test), never test.chapter, so a GA mark lands in exactly the
+   test it was saved in. */
+function saveScope(t){ return isGATest(t) ? t.id : t.chapter; }
 /* ---- saved questions storage (same super1000_v1 store) ---- */
 function getSaved(){
   var st = storeGet();
@@ -11368,10 +11413,10 @@ function savedTestInfo(it, series){
     var arr = series==='ca' ? CA_TESTS : (series==='ga' ? GA_TESTS : TESTS), q = it.q, ch = it.chapter.chapter, found = null;
     for (var i=0;i<arr.length && !found;i++){
       var t = arr[i];
-      if (t.chapter !== ch && !(series==='ca' && ('ca-'+t.month)===ch)) continue;
+      if (t.chapter !== ch && t.id !== ch && !(series==='ca' && ('ca-'+t.month)===ch)) continue;
       if ((t.questions||[]).indexOf(q) !== -1) found = t;
     }
-    if (!found) for (var j=0;j<arr.length && !found;j++){ var t2=arr[j]; if ((t2.chapter===ch || (series==='ca' && ('ca-'+t2.month)===ch)) && (t2.questions||[]).some(function(x){return x.n===q.n;})) found=t2; }
+    if (!found) for (var j=0;j<arr.length && !found;j++){ var t2=arr[j]; if ((t2.chapter===ch || t2.id===ch || (series==='ca' && ('ca-'+t2.month)===ch)) && (t2.questions||[]).some(function(x){return x.n===q.n;})) found=t2; }
     var sl = series==='ca' ? 'Current Affairs' : (series==='ga' ? 'General Awareness' : 'Maths');
     return sl + ' \u00b7 ' + (found ? testTitlePart(found) : it.chapter.name_en);
   }catch(e){ return it.chapter.name_en; }
@@ -11598,13 +11643,13 @@ function syncSaveBtn(){
   var b = $('bookmarkBtn');
   if (!b || !state.test) return;
   var q = state.test.questions[state.cur];
-  b.classList.toggle('on', isSaved(state.test.chapter, q.n));
+  b.classList.toggle('on', isSaved(saveScope(state.test), q.n));
 }
 function syncSolSaveBtn(){
   var b = $('solBookmarkBtn');
   if (!b || !state.test) return;
   var q = state.test.questions[state.solIdx];
-  var chapter = state.savedQuizMode ? sq.items[state.solIdx].chapter.chapter : state.test.chapter;
+  var chapter = state.savedQuizMode ? sq.items[state.solIdx].chapter.chapter : saveScope(state.test);
   var on = isSaved(chapter, q.n);
   b.classList.toggle('on', on);
   b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -11715,7 +11760,7 @@ function closeMenu(){ $('sideMenu').classList.remove('open'); $('menuBackdrop').
   on('bookmarkBtn', 'click', function(){
     if (!state.test) return;
     var q = state.test.questions[state.cur];
-    var saved = toggleSaved(state.test.chapter, q.n);
+    var saved = toggleSaved(saveScope(state.test), q.n);
     syncSaveBtn();
     renderPalette();
     toast(saved ? 'Question saved ✓' : 'Removed from saved');
