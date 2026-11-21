@@ -630,5 +630,20 @@
   "responseId": "ACYDBNix2KR4NI8IgVyjX-LG-Kjs3RapTXhAzeH8QJkQrfBFGbPwQwoaWVSyLFIdey4Kysk",
   "fixedSummary": "GA Ancient 4 Q5 (Shunga ke baad Magadha): option C Hindi spelling कनवास -> कण्व (key unchanged, C); reporter ne sahi kaha tha — solution me bhi कण्व वंश hai, English option Kanva",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q5 (CA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795244202326,
+  "data": {
+   "chapter": "CA – July 2026",
+   "test": "July Test 1",
+   "qnum": "Q5 (CA Test Q5)"
+  },
+  "responseId": "ACYDBNh7MeCId0nQbxGgBQhNpj-BCe_VV3V0WZv2Y2I1dCmOfLVjFPa_020xEK3oAa5ZzMU",
+  "fixedSummary": "CA July Test 1 Q5 (BHAVYA Rasayan outlay): option A ₹330 crore -> ₹3,030 crore (key stays A); solution rewritten — ₹3,000 cr infra + ₹30 cr admin, Cabinet 24 Jul 2026. Reporter sahi tha — PIB/PTI ne ₹3,030 crore confirm kiya; July transcript ka 330 galat tha.",
+  "sent": false
  }
 ]
