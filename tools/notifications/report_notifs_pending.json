@@ -1,649 +1,677 @@
 [
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – January 2026 • January Test 4 • Q100 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1794904110163,
-  "data": {
-   "chapter": "CA – January 2026",
-   "test": "January Test 4",
-   "qnum": "Q100 (CA Test Q25)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – January 2026 • January Test 4 • Q100 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794904110163,
+    "data": {
+      "chapter": "CA – January 2026",
+      "test": "January Test 4",
+      "qnum": "Q100 (CA Test Q25)"
+    },
+    "responseId": "ACYDBNibmfOCNjVN4XnmKkD-WAhD10AiXnAI-0A2cQOMy444Ey5h07Pndgx8RnDAcpvQMQk",
+    "fixedSummary": "January Test 4 Q100 image replaced: flooded-field photo -> ripe golden rice paddy (The Hindu BusinessLine news illustration, embedded offline as base64 JPEG)",
+    "sent": false
   },
-  "responseId": "ACYDBNibmfOCNjVN4XnmKkD-WAhD10AiXnAI-0A2cQOMy444Ey5h07Pndgx8RnDAcpvQMQk",
-  "fixedSummary": "January Test 4 Q100 image replaced: flooded-field photo -> ripe golden rice paddy (The Hindu BusinessLine news illustration, embedded offline as base64 JPEG)",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 2 • Q30 (CA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1794913075493,
-  "data": {
-   "chapter": "CA – February 2026",
-   "test": "February Test 2",
-   "qnum": "Q30 (CA Test Q5)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 2 • Q30 (CA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794913075493,
+    "data": {
+      "chapter": "CA – February 2026",
+      "test": "February Test 2",
+      "qnum": "Q30 (CA Test Q5)"
+    },
+    "responseId": "ACYDBNjoZiXh8v5mbxRNRt5werWeM7tv5oJE6Q2IuecvgrAOAfK6VR-VpQ3rtIvdtczdSA4",
+    "fixedSummary": "February Test 2 Q30 (Rob Jetten) solution image replaced: Binnenhof building photo -> official swearing-in photo (Jetten + King Willem-Alexander signing royal decrees, Huis ten Bosch, 23 Feb 2026; government.nl), embedded offline as base64 JPEG",
+    "sent": false
   },
-  "responseId": "ACYDBNjoZiXh8v5mbxRNRt5werWeM7tv5oJE6Q2IuecvgrAOAfK6VR-VpQ3rtIvdtczdSA4",
-  "fixedSummary": "February Test 2 Q30 (Rob Jetten) solution image replaced: Binnenhof building photo -> official swearing-in photo (Jetten + King Willem-Alexander signing royal decrees, Huis ten Bosch, 23 Feb 2026; government.nl), embedded offline as base64 JPEG",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 2 • Q40 (CA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1794916716738,
-  "data": {
-   "chapter": "CA – February 2026",
-   "test": "February Test 2",
-   "qnum": "Q40 (CA Test Q15)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 2 • Q40 (CA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794916716738,
+    "data": {
+      "chapter": "CA – February 2026",
+      "test": "February Test 2",
+      "qnum": "Q40 (CA Test Q15)"
+    },
+    "responseId": "ACYDBNg-UTzV5lf_4r7t07iQlUMZb6DA0qlfxn83QYmMUPRRJv9GW2ZqcYyTxJKIyfLMils",
+    "fixedSummary": "February Test 2 Q40 (World Government Summit 2026, Dubai) solution image replaced: generic Dubai skyline sunset photo -> WGS 2026 panel photo with 'WORLD GOVERNMENT SUMMIT / SHAPING FUTURE GOVERNMENTS 3-5 FEBRUARY 2026' backdrop (An-Nahar photo, embedded offline as base64 JPEG). Q/options/key/solution unchanged (key C Dubai verified)."
   },
-  "responseId": "ACYDBNg-UTzV5lf_4r7t07iQlUMZb6DA0qlfxn83QYmMUPRRJv9GW2ZqcYyTxJKIyfLMils",
-  "fixedSummary": "February Test 2 Q40 (World Government Summit 2026, Dubai) solution image replaced: generic Dubai skyline sunset photo -> WGS 2026 panel photo with 'WORLD GOVERNMENT SUMMIT / SHAPING FUTURE GOVERNMENTS 3-5 FEBRUARY 2026' backdrop (An-Nahar photo, embedded offline as base64 JPEG). Q/options/key/solution unchanged (key C Dubai verified)."
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – August 2026 • Saved Questions • Q13 (Saved Q2) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1794917640553,
-  "data": {
-   "chapter": "CA – August 2026",
-   "test": "Saved Questions",
-   "qnum": "Q13 (Saved Q2)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • Saved Questions • Q13 (Saved Q2) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794917640553,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "Saved Questions",
+      "qnum": "Q13 (Saved Q2)"
+    },
+    "responseId": "ACYDBNgfhB2p_JDhNd8pSWxfK9XxymJeF1XC_RoZpHYOQqsaabSiRTK4PaqPls5rbUQpD1g",
+    "fixedSummary": "Saved Questions Q13 (Aug CA, 2026 Commonwealth Games India 39 medals) image replaced: St Andrew's Cathedral garden photo, Glasgow -> Glasgow 2026 Commonwealth Games mural at Glasgow Airport (Wikimedia Commons, direct URL)",
+    "sent": false
   },
-  "responseId": "ACYDBNgfhB2p_JDhNd8pSWxfK9XxymJeF1XC_RoZpHYOQqsaabSiRTK4PaqPls5rbUQpD1g",
-  "fixedSummary": "Saved Questions Q13 (Aug CA, 2026 Commonwealth Games India 39 medals) image replaced: St Andrew's Cathedral garden photo, Glasgow -> Glasgow 2026 Commonwealth Games mural at Glasgow Airport (Wikimedia Commons, direct URL)",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 1 • Q13 (CA Test Q13) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1794918551966,
-  "data": {
-   "chapter": "CA – August 2026",
-   "test": "August Test 1",
-   "qnum": "Q13 (CA Test Q13)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 1 • Q13 (CA Test Q13) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794918551966,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 1",
+      "qnum": "Q13 (CA Test Q13)"
+    },
+    "responseId": "ACYDBNjiM9Esz8qwmnxi5hgG_pTsOUf2rYOhci4YFSWRW242lWOEwalx0LgpuH51Tu0eti4",
+    "fixedSummary": "CA Aug 2026, August Test 1, Q13 (Commonwealth Games 2026, India 39 medals): solution image replaced with reporter-supplied link image (Hindi infographic, 13 gold/17 silver/9 bronze), embedded offline as base64. Q/options/key (B, 39)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNjiM9Esz8qwmnxi5hgG_pTsOUf2rYOhci4YFSWRW242lWOEwalx0LgpuH51Tu0eti4",
-  "fixedSummary": "CA Aug 2026, August Test 1, Q13 (Commonwealth Games 2026, India 39 medals): solution image replaced with reporter-supplied link image (Hindi infographic, 13 gold/17 silver/9 bronze), embedded offline as base64. Q/options/key (B, 39)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – January 2026 • January Test 3 • Q56 (CA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1794926312130,
-  "data": {
-   "chapter": "CA – January 2026",
-   "test": "January Test 3",
-   "qnum": "Q56 (CA Test Q6)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – January 2026 • January Test 3 • Q56 (CA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1794926312130,
+    "data": {
+      "chapter": "CA – January 2026",
+      "test": "January Test 3",
+      "qnum": "Q56 (CA Test Q6)"
+    },
+    "responseId": "ACYDBNiYjh4CwyI2IAMb7sTKqDkRR0spLSflYzQZnwxsAJ3Rrv2DQSEilOHPHNdKsLPHHHs",
+    "fixedSummary": "CA Jan 2026, January Test 3, Q56 (India AI Impact Summit 2026): solution image replaced with reporter-supplied Amar Ujala banner link image, embedded offline as base64. Q/options/key/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNiYjh4CwyI2IAMb7sTKqDkRR0spLSflYzQZnwxsAJ3Rrv2DQSEilOHPHNdKsLPHHHs",
-  "fixedSummary": "CA Jan 2026, January Test 3, Q56 (India AI Impact Summit 2026): solution image replaced with reporter-supplied Amar Ujala banner link image, embedded offline as base64. Q/options/key/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Medieval History • Medieval 2 • Q6 (GA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794929213005,
-  "data": {
-   "chapter": "GA – Medieval History",
-   "test": "Medieval 2",
-   "qnum": "Q6 (GA Test Q6)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Medieval History • Medieval 2 • Q6 (GA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794929213005,
+    "data": {
+      "chapter": "GA – Medieval History",
+      "test": "Medieval 2",
+      "qnum": "Q6 (GA Test Q6)"
+    },
+    "responseId": "ACYDBNhfHBRdLs0YQgj7oip3FPlunim0dx598DB1VMJvlduMGHsRR-IqqBxMCF3QgKwmROo",
+    "fixedSummary": "GA Medieval History, Medieval 2, Q6 (Rashtrakuta not related to Tamil Nadu): solution image replaced — Meenakshi Temple photo (generic Tamil Nadu place photo) replaced with Wikimedia Rashtrakuta Empire map. Q/options/key (B, Rashtrakuta)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNhfHBRdLs0YQgj7oip3FPlunim0dx598DB1VMJvlduMGHsRR-IqqBxMCF3QgKwmROo",
-  "fixedSummary": "GA Medieval History, Medieval 2, Q6 (Rashtrakuta not related to Tamil Nadu): solution image replaced — Meenakshi Temple photo (generic Tamil Nadu place photo) replaced with Wikimedia Rashtrakuta Empire map. Q/options/key (B, Rashtrakuta)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Medieval History • Medieval 2 • Q11 (GA Test Q11) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794929213005,
-  "data": {
-   "chapter": "GA – Medieval History",
-   "test": "Medieval 2",
-   "qnum": "Q11 (GA Test Q11)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Medieval History • Medieval 2 • Q11 (GA Test Q11) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794929213005,
+    "data": {
+      "chapter": "GA – Medieval History",
+      "test": "Medieval 2",
+      "qnum": "Q11 (GA Test Q11)"
+    },
+    "responseId": "ACYDBNjHMXv4muv8xt8T-JlN30eCZ_4fDRS6BsaEsVD7W39y3qGJb9un0mNnKn_nkN4GKLU",
+    "fixedSummary": "GA Medieval History, Medieval 2, Q11 (Basavanna, Vachana movement, Kannada): solution image replaced with reporter-supplied link image (painting of Basavanna in Anubhava Mantapa with devotees), embedded offline as base64. Q/options/key (A, Kannada)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNjHMXv4muv8xt8T-JlN30eCZ_4fDRS6BsaEsVD7W39y3qGJb9un0mNnKn_nkN4GKLU",
-  "fixedSummary": "GA Medieval History, Medieval 2, Q11 (Basavanna, Vachana movement, Kannada): solution image replaced with reporter-supplied link image (painting of Basavanna in Anubhava Mantapa with devotees), embedded offline as base64. Q/options/key (A, Kannada)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794929213005,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 3",
-   "qnum": "Q5 (GA Test Q5)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794929213005,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q5 (GA Test Q5)"
+    },
+    "responseId": "ACYDBNjTTUHS_Su8FWqtQwZLwPUVgeCj3D0T0OI3JjgmypDylm2osIX8SpByYTicKibHWqQ",
+    "fixedSummary": "GA Modern History, Modern 3, Q5 (Santhal rebellion led by Sidhu and Kanhu): solution image replaced with reporter-supplied link image (Santhal rebels illustration, 1855–56), embedded offline as base64. Q/options/key (A, Sidhu and Kanhu)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNjTTUHS_Su8FWqtQwZLwPUVgeCj3D0T0OI3JjgmypDylm2osIX8SpByYTicKibHWqQ",
-  "fixedSummary": "GA Modern History, Modern 3, Q5 (Santhal rebellion led by Sidhu and Kanhu): solution image replaced with reporter-supplied link image (Santhal rebels illustration, 1855–56), embedded offline as base64. Q/options/key (A, Sidhu and Kanhu)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q8 (GA Test Q8) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794930135866,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 3",
-   "qnum": "Q8 (GA Test Q8)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q8 (GA Test Q8) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794930135866,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q8 (GA Test Q8)"
+    },
+    "responseId": "ACYDBNg8kuCZjFHIct3G6jaG30DNMcRGcIzYAgwq868fkMgOxVfv3AJic3IjXLrI1oJ2_6A",
+    "fixedSummary": "GA Modern History, Modern 3, Q8 (Paika Rebellion 1817, Odisha): solution image replaced with reporter-supplied link image (historical battle engraving), embedded offline as base64. Q/options/key (A, Odisha)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNg8kuCZjFHIct3G6jaG30DNMcRGcIzYAgwq868fkMgOxVfv3AJic3IjXLrI1oJ2_6A",
-  "fixedSummary": "GA Modern History, Modern 3, Q8 (Paika Rebellion 1817, Odisha): solution image replaced with reporter-supplied link image (historical battle engraving), embedded offline as base64. Q/options/key (A, Odisha)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q18 (GA Test Q18) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794930135866,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 3",
-   "qnum": "Q18 (GA Test Q18)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q18 (GA Test Q18) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794930135866,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q18 (GA Test Q18)"
+    },
+    "responseId": "ACYDBNjULmUrS6W5ji96f_YaQ9NHn1H6B4xyEqww7Ujk41qubjLpSFsiKzq7mmSilMjLAxs",
+    "fixedSummary": "GA Modern History, Modern 3, Q18 (Ahom Rebellion 1828-33, Gomdhar Konwar): solution image replaced with reporter-supplied link image (Ahom warriors statue thumbnail), embedded offline as base64. Q/options/key (C, Gomdhar Konwar)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNjULmUrS6W5ji96f_YaQ9NHn1H6B4xyEqww7Ujk41qubjLpSFsiKzq7mmSilMjLAxs",
-  "fixedSummary": "GA Modern History, Modern 3, Q18 (Ahom Rebellion 1828-33, Gomdhar Konwar): solution image replaced with reporter-supplied link image (Ahom warriors statue thumbnail), embedded offline as base64. Q/options/key (C, Gomdhar Konwar)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q22 (GA Test Q22) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794930135866,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 3",
-   "qnum": "Q22 (GA Test Q22)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q22 (GA Test Q22) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794930135866,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q22 (GA Test Q22)"
+    },
+    "responseId": "ACYDBNhMvDdtWOLfyICpidcn6Qye5TyI-3G_gyEAPml0Us8B-6AG_30vbugXGL96UJuYPjY",
+    "fixedSummary": "GA Modern History, Modern 3, Q22 (1857 largest armed resistance, Sepoy Mutiny): solution image replaced with reporter-supplied Wikimedia link (Sepoy Mutiny 1857 painting by Jean-Pierre Granger, verified via Commons API), online Special:FilePath URL. Q/options/key (A, Sepoy Mutiny)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNhMvDdtWOLfyICpidcn6Qye5TyI-3G_gyEAPml0Us8B-6AG_30vbugXGL96UJuYPjY",
-  "fixedSummary": "GA Modern History, Modern 3, Q22 (1857 largest armed resistance, Sepoy Mutiny): solution image replaced with reporter-supplied Wikimedia link (Sepoy Mutiny 1857 painting by Jean-Pierre Granger, verified via Commons API), online Special:FilePath URL. Q/options/key (A, Sepoy Mutiny)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q25 (GA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794930135866,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 3",
-   "qnum": "Q25 (GA Test Q25)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q25 (GA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794930135866,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q25 (GA Test Q25)"
+    },
+    "responseId": "ACYDBNho7Fja3XGtgo1jihSKQoeQP0Ty6eVexHt-aHvxesxcpqEiacgEfZlBWn3b6ks-hLY",
+    "fixedSummary": "GA Modern History, Modern 3, Q25 (Rani Avantibai Lodhi, Mandla): no link supplied; present-day Moti Mahal photo replaced with Rani Avantibai portrait illustration (painting-style, from full-question image search), embedded offline as base64. Q/options/key (A, Mandla)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNho7Fja3XGtgo1jihSKQoeQP0Ty6eVexHt-aHvxesxcpqEiacgEfZlBWn3b6ks-hLY",
-  "fixedSummary": "GA Modern History, Modern 3, Q25 (Rani Avantibai Lodhi, Mandla): no link supplied; present-day Moti Mahal photo replaced with Rani Avantibai portrait illustration (painting-style, from full-question image search), embedded offline as base64. Q/options/key (A, Mandla)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q29 (GA Test Q29) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1794930135866,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 3",
-   "qnum": "Q29 (GA Test Q29)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Modern History • Modern 3 • Q29 (GA Test Q29) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1794930135866,
+    "data": {
+      "chapter": "GA – Modern History",
+      "test": "Modern 3",
+      "qnum": "Q29 (GA Test Q29)"
+    },
+    "responseId": "ACYDBNiCxMkPzYbMSrTEkmBFU0MeEtaVYpsWbIsCNvz0L2feqCgUaJjoWuDbr5swCEgTNrs",
+    "fixedSummary": "GA Modern History, Modern 3, Q29 (SNDP Sabha founded in Kerala): no link supplied; present-day Sivagiri Mutt photo replaced with Sree Narayana Guru seated-meditation painting (from full-question image search), embedded offline as base64. Q/options/key (A, Kerala)/solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNiCxMkPzYbMSrTEkmBFU0MeEtaVYpsWbIsCNvz0L2feqCgUaJjoWuDbr5swCEgTNrs",
-  "fixedSummary": "GA Modern History, Modern 3, Q29 (SNDP Sabha founded in Kerala): no link supplied; present-day Sivagiri Mutt photo replaced with Sree Narayana Guru seated-meditation painting (from full-question image search), embedded offline as base64. Q/options/key (A, Kerala)/solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 1 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795049922050,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 1",
-   "qnum": "Q5 (GA Test Q5)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 1 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795049922050,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 1",
+      "qnum": "Q5 (GA Test Q5)"
+    },
+    "responseId": "ACYDBNjOAfZMAO9mMZtSe3elHsTFlOB56-X6WVmf2CqqGF01ykmlojgvBXNDxm-kNFcnnTQ",
+    "fixedSummary": "GA Geography, Geography 1, Q5 (Bhagirathi/Gangotri): solution me left/right tributaries wali table hata di gayi — wahi data upar ki do lines me pehle se tha (reporter: 'table wala data repeat ho gaya hai'). Question/options/key (B, Bhagirathi)/baaki solution unchanged.",
+    "sent": false
   },
-  "responseId": "ACYDBNjOAfZMAO9mMZtSe3elHsTFlOB56-X6WVmf2CqqGF01ykmlojgvBXNDxm-kNFcnnTQ",
-  "fixedSummary": "GA Geography, Geography 1, Q5 (Bhagirathi/Gangotri): solution me left/right tributaries wali table hata di gayi — wahi data upar ki do lines me pehle se tha (reporter: 'table wala data repeat ho gaya hai'). Question/options/key (B, Bhagirathi)/baaki solution unchanged.",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 1 • Q10 (GA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795051751044,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 1",
-   "qnum": "Q10 (GA Test Q10)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 1 • Q10 (GA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795051751044,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 1",
+      "qnum": "Q10 (GA Test Q10)"
+    },
+    "responseId": "ACYDBNiVU1kdoGStFj1Qmt_oP92pFjfvB2Sjk_fvRDiHcXjTLGEQ4Aap_gEeJPFwkRCTDYQ",
+    "fixedSummary": "Geography 1 Q10 (Bhakra Nangal Dam): reporter's supplied image applied — dam with spillway release photo (reporter's link), embedded offline as base64 JPEG, replacing the Wikimedia Naina Devi view",
+    "sent": false
   },
-  "responseId": "ACYDBNiVU1kdoGStFj1Qmt_oP92pFjfvB2Sjk_fvRDiHcXjTLGEQ4Aap_gEeJPFwkRCTDYQ",
-  "fixedSummary": "Geography 1 Q10 (Bhakra Nangal Dam): reporter's supplied image applied — dam with spillway release photo (reporter's link), embedded offline as base64 JPEG, replacing the Wikimedia Naina Devi view",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q26 (CA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795080039430,
-  "data": {
-   "chapter": "CA – August 2026",
-   "test": "August Test 2",
-   "qnum": "Q26 (CA Test Q1)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q26 (CA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795080039430,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 2",
+      "qnum": "Q26 (CA Test Q1)"
+    },
+    "responseId": "ACYDBNikOUG2Fh6grwXN00P2xh7K0bYlMP0tLWJodUXwfSPFRKHS4vxjFj5qKkNSwWL4-Hg",
+    "fixedSummary": "August Test 2 Q26 (Amaravati quantum & AI university campus): reporter's supplied ET Government campus image applied, embedded offline as base64 JPEG, replacing the Wikimedia APCRDA head-office photo",
+    "sent": false
   },
-  "responseId": "ACYDBNikOUG2Fh6grwXN00P2xh7K0bYlMP0tLWJodUXwfSPFRKHS4vxjFj5qKkNSwWL4-Hg",
-  "fixedSummary": "August Test 2 Q26 (Amaravati quantum & AI university campus): reporter's supplied ET Government campus image applied, embedded offline as base64 JPEG, replacing the Wikimedia APCRDA head-office photo",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q35 (CA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795080723647,
-  "data": {
-   "chapter": "CA – August 2026",
-   "test": "August Test 2",
-   "qnum": "Q35 (CA Test Q10)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q35 (CA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795080723647,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 2",
+      "qnum": "Q35 (CA Test Q10)"
+    },
+    "responseId": "ACYDBNigI0uLjGR5nGfyfC9v1HBfZujApj6bxLF6VH8Kpk0S7mJ1H9SiFus6WLNXpCGaqUI",
+    "fixedSummary": "August Test 2 Q35 (Asia ki pehli desert night safari, Gujarat): reporter ki di hui Deesa Desert Zoological Park and Night Safari ki image lagayi, offline base64 JPEG embed ki, Wikimedia desert fox photo ki jagah",
+    "sent": false
   },
-  "responseId": "ACYDBNigI0uLjGR5nGfyfC9v1HBfZujApj6bxLF6VH8Kpk0S7mJ1H9SiFus6WLNXpCGaqUI",
-  "fixedSummary": "August Test 2 Q35 (Asia ki pehli desert night safari, Gujarat): reporter ki di hui Deesa Desert Zoological Park and Night Safari ki image lagayi, offline base64 JPEG embed ki, Wikimedia desert fox photo ki jagah",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q37 (CA Test Q12) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795080723647,
-  "data": {
-   "chapter": "CA – August 2026",
-   "test": "August Test 2",
-   "qnum": "Q37 (CA Test Q12)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q37 (CA Test Q12) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795080723647,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 2",
+      "qnum": "Q37 (CA Test Q12)"
+    },
+    "responseId": "ACYDBNi--36UZDN7Gou-MOzqC5mgZYlKjJGfloUdYlDbLXDplxLagKyj9K1Q6C-R2VmLCXo",
+    "fixedSummary": "August Test 2 Q37 (Pitch Black 2026, Australia): reporter ki di hui PIB official photo lagayi (multinational aircrew, flags), offline base64 JPEG embed ki, Wikimedia flying-display photo ki jagah",
+    "sent": false
   },
-  "responseId": "ACYDBNi--36UZDN7Gou-MOzqC5mgZYlKjJGfloUdYlDbLXDplxLagKyj9K1Q6C-R2VmLCXo",
-  "fixedSummary": "August Test 2 Q37 (Pitch Black 2026, Australia): reporter ki di hui PIB official photo lagayi (multinational aircrew, flags), offline base64 JPEG embed ki, Wikimedia flying-display photo ki jagah",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q49 (CA Test Q24) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795080723647,
-  "data": {
-   "chapter": "CA – August 2026",
-   "test": "August Test 2",
-   "qnum": "Q49 (CA Test Q24)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – August 2026 • August Test 2 • Q49 (CA Test Q24) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795080723647,
+    "data": {
+      "chapter": "CA – August 2026",
+      "test": "August Test 2",
+      "qnum": "Q49 (CA Test Q24)"
+    },
+    "responseId": "ACYDBNhpOAdyWNqXxbQ3loN86SgToOGUdvP9iGAhiQkNWWZ3H94ddcqRQHILBqOvpNVlWpI",
+    "fixedSummary": "August Test 2 Q49 (tribal languages conclave, Mysuru): reporter ki di hui PIB conclave photo lagayi, offline base64 JPEG embed ki, Wikimedia Mysore Palace photo ki jagah",
+    "sent": false
   },
-  "responseId": "ACYDBNhpOAdyWNqXxbQ3loN86SgToOGUdvP9iGAhiQkNWWZ3H94ddcqRQHILBqOvpNVlWpI",
-  "fixedSummary": "August Test 2 Q49 (tribal languages conclave, Mysuru): reporter ki di hui PIB conclave photo lagayi, offline base64 JPEG embed ki, Wikimedia Mysore Palace photo ki jagah",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q1 (GA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795093332422,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q1 (GA Test Q1)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q1 (GA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795093332422,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q1 (GA Test Q1)"
+    },
+    "responseId": "ACYDBNgVogyDFkkw9kUgwci5CrRWnzxuHtB36VnNaX9FVc17PJ-kLZ7olypUxPD3ct5wEZI",
+    "fixedSummary": "Geography 2 Q1 (Bhaga-Chandra -> Chenab): reporter ki di hui Himalayan river valley photo lagayi, offline base64 JPEG embed ki, Wikimedia CHENAB_VALLEY photo ki jagah",
+    "sent": false
   },
-  "responseId": "ACYDBNgVogyDFkkw9kUgwci5CrRWnzxuHtB36VnNaX9FVc17PJ-kLZ7olypUxPD3ct5wEZI",
-  "fixedSummary": "Geography 2 Q1 (Bhaga-Chandra -> Chenab): reporter ki di hui Himalayan river valley photo lagayi, offline base64 JPEG embed ki, Wikimedia CHENAB_VALLEY photo ki jagah",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q2 (GA Test Q2) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795093683004,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q2 (GA Test Q2)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q2 (GA Test Q2) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795093683004,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q2 (GA Test Q2)"
+    },
+    "responseId": "ACYDBNgGRkbZA2q7vckXY6GUVYeAbaG6Xr_HhCM5wBfVkQ_A-vO5mXzyhNllVQ3H_pNNgu4",
+    "fixedSummary": "Geography 2 Q2 (Indus right-bank tributary, Kabul) solution image replaced: generic Ladakh Indus photo -> reporter-supplied Sanskriti IAS Indus River System map, embedded offline as base64 JPEG",
+    "sent": false
   },
-  "responseId": "ACYDBNgGRkbZA2q7vckXY6GUVYeAbaG6Xr_HhCM5wBfVkQ_A-vO5mXzyhNllVQ3H_pNNgu4",
-  "fixedSummary": "Geography 2 Q2 (Indus right-bank tributary, Kabul) solution image replaced: generic Ladakh Indus photo -> reporter-supplied Sanskriti IAS Indus River System map, embedded offline as base64 JPEG",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 1 • Q3 (CA Test Q3) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1795137340451,
-  "data": {
-   "chapter": "CA – May 2026",
-   "test": "May Test 1",
-   "qnum": "Q3 (CA Test Q3)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 1 • Q3 (CA Test Q3) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1795137340451,
+    "data": {
+      "chapter": "CA – May 2026",
+      "test": "May Test 1",
+      "qnum": "Q3 (CA Test Q3)"
+    },
+    "responseId": "ACYDBNh74MGdJQii2ZIwgLwVW7Pt2FiTpfMuL0TOkbP2PmV9blCbOPIUB7BrD5lVA3I2crc",
+    "fixedSummary": "May Test 1 Q3 image replaced: 1958 Thomas Cup stamp -> 2026 final photo of China team lifting the trophy (offline base64 JPEG embed)"
   },
-  "responseId": "ACYDBNh74MGdJQii2ZIwgLwVW7Pt2FiTpfMuL0TOkbP2PmV9blCbOPIUB7BrD5lVA3I2crc",
-  "fixedSummary": "May Test 1 Q3 image replaced: 1958 Thomas Cup stamp -> 2026 final photo of China team lifting the trophy (offline base64 JPEG embed)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 1 • Q22 (CA Test Q22) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1795141294959,
-  "data": {
-   "chapter": "CA – May 2026",
-   "test": "May Test 1",
-   "qnum": "Q22 (CA Test Q22)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 1 • Q22 (CA Test Q22) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1795141294959,
+    "data": {
+      "chapter": "CA – May 2026",
+      "test": "May Test 1",
+      "qnum": "Q22 (CA Test Q22)"
+    },
+    "responseId": "ACYDBNhfJ0nq9Z75v4Ehye-wbv3PGMXdyHnOHmh3TPBY-V4TlVvs26CW5gkTlB-41rmxL58",
+    "fixedSummary": "May Test 1 Q22 image replaced with reporter-supplied news graphic (Hazaribag becomes India's first pearl farming cluster), offline base64 JPEG embed"
   },
-  "responseId": "ACYDBNhfJ0nq9Z75v4Ehye-wbv3PGMXdyHnOHmh3TPBY-V4TlVvs26CW5gkTlB-41rmxL58",
-  "fixedSummary": "May Test 1 Q22 image replaced with reporter-supplied news graphic (Hazaribag becomes India's first pearl farming cluster), offline base64 JPEG embed"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 2 • Q39 (CA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1795141834436,
-  "data": {
-   "chapter": "CA – May 2026",
-   "test": "May Test 2",
-   "qnum": "Q39 (CA Test Q14)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – May 2026 • May Test 2 • Q39 (CA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1795141834436,
+    "data": {
+      "chapter": "CA – May 2026",
+      "test": "May Test 2",
+      "qnum": "Q39 (CA Test Q14)"
+    },
+    "responseId": "ACYDBNgQsPOGeqQpgPD1L863t-3OZm7MR_Vgjhdjzcdpi_Ffg4IlNOd3TjkJq6Inuk3iXt4",
+    "fixedSummary": "May Test 2 Q39 image replaced with reporter-supplied Pixxel x Sarvam Pathfinder image, offline base64 JPEG embed (replaces generic ArabSat render)"
   },
-  "responseId": "ACYDBNgQsPOGeqQpgPD1L863t-3OZm7MR_Vgjhdjzcdpi_Ffg4IlNOd3TjkJq6Inuk3iXt4",
-  "fixedSummary": "May Test 2 Q39 image replaced with reporter-supplied Pixxel x Sarvam Pathfinder image, offline base64 JPEG embed (replaces generic ArabSat render)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q14 (GA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795152267868,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q14 (GA Test Q14)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q14 (GA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795152267868,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q14 (GA Test Q14)"
+    },
+    "responseId": "ACYDBNg0oOgHgKbH6Sv5FnVvAvxe-QNncss3kjGiTZBpctLF_NC-ewXnrb3VPFK6Kd-0cbs",
+    "fixedSummary": "Geography 2 Q14 image replaced with reporter-supplied Peninsular Plateau map, offline base64 PNG embed (replaces generic green-hills photo)"
   },
-  "responseId": "ACYDBNg0oOgHgKbH6Sv5FnVvAvxe-QNncss3kjGiTZBpctLF_NC-ewXnrb3VPFK6Kd-0cbs",
-  "fixedSummary": "Geography 2 Q14 image replaced with reporter-supplied Peninsular Plateau map, offline base64 PNG embed (replaces generic green-hills photo)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q15 (GA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795152267868,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q15 (GA Test Q15)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q15 (GA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795152267868,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q15 (GA Test Q15)"
+    },
+    "responseId": "ACYDBNgPkbkGoRJThZRZhphQFwXEZnkE6kYjNjsbHNF6QC4zw0JQEq4s5UQaSG8gDcyVVL0",
+    "fixedSummary": "Geography 2 Q15 image replaced with reporter-supplied India mountain-ranges map labelling Mahendragiri, offline base64 JPEG embed (replaces Mahendragiri hill photo)"
   },
-  "responseId": "ACYDBNgPkbkGoRJThZRZhphQFwXEZnkE6kYjNjsbHNF6QC4zw0JQEq4s5UQaSG8gDcyVVL0",
-  "fixedSummary": "Geography 2 Q15 image replaced with reporter-supplied India mountain-ranges map labelling Mahendragiri, offline base64 JPEG embed (replaces Mahendragiri hill photo)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q17 (GA Test Q17) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795152552506,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q17 (GA Test Q17)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q17 (GA Test Q17) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795152552506,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q17 (GA Test Q17)"
+    },
+    "responseId": "ACYDBNj28UKcKGCWWudH-TfA3ChQBDV9Sq3_HyA2AGqkQO2ViSY_NRhPNS_5YeyZTFFfoJA",
+    "fixedSummary": "Geography 2 Q17 image replaced with reporter-supplied Britannica Purvanchal locator map, offline base64 JPEG embed (replaces Dzukou Valley photo)"
   },
-  "responseId": "ACYDBNj28UKcKGCWWudH-TfA3ChQBDV9Sq3_HyA2AGqkQO2ViSY_NRhPNS_5YeyZTFFfoJA",
-  "fixedSummary": "Geography 2 Q17 image replaced with reporter-supplied Britannica Purvanchal locator map, offline base64 JPEG embed (replaces Dzukou Valley photo)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795155301268,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q19 (GA Test Q19)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795155301268,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q19 (GA Test Q19)"
+    },
+    "responseId": "ACYDBNg1u08R0cVuSFQDZyZQxg8tTZrDmWAQ3XaiJxrZ4ZLkHsTgPgUDjaUqWitagMk2ROE",
+    "fixedSummary": "Geography 2 Q19 solution duplicate sentence removed (Son river fact repeated twice); key unchanged (A Rohtas, verified vs Wikipedia/Testbook)"
   },
-  "responseId": "ACYDBNg1u08R0cVuSFQDZyZQxg8tTZrDmWAQ3XaiJxrZ4ZLkHsTgPgUDjaUqWitagMk2ROE",
-  "fixedSummary": "Geography 2 Q19 solution duplicate sentence removed (Son river fact repeated twice); key unchanged (A Rohtas, verified vs Wikipedia/Testbook)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q20 (GA Test Q20) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795155301269,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q20 (GA Test Q20)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q20 (GA Test Q20) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795155301269,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q20 (GA Test Q20)"
+    },
+    "responseId": "ACYDBNjUvA_L-3IlMgeB_0xAQ8eidSUsmNUKbqTdM51_tccMLUwNrIpFLDpKe3M2CKtjGOs",
+    "fixedSummary": "Geography 2 Q20 image replaced with reporter-supplied Hindi meandering/oxbow diagram, offline base64 JPEG embed (replaces Wikimedia Vistula oxbow photo)"
   },
-  "responseId": "ACYDBNjUvA_L-3IlMgeB_0xAQ8eidSUsmNUKbqTdM51_tccMLUwNrIpFLDpKe3M2CKtjGOs",
-  "fixedSummary": "Geography 2 Q20 image replaced with reporter-supplied Hindi meandering/oxbow diagram, offline base64 JPEG embed (replaces Wikimedia Vistula oxbow photo)"
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q26 (GA Test Q26) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795159331292,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q26 (GA Test Q26)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q26 (GA Test Q26) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795159331292,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q26 (GA Test Q26)"
+    },
+    "responseId": "ACYDBNgi-nSvBInBvMR69sYb6h5qLkJ2qxgzZVKagBmplN8OXEsBU86Ypgq5hciXt5AX_4I",
+    "fixedSummary": "Geography 2 Q26 image replaced: generic Western Ghats scenic photo (breathedreamgo) -> Coastal Plain of India map (Western Coastal Plain yellow: Kathiawar/Konkan/Malabar; Eastern orange; legend; LotusArise), embedded offline as base64 JPEG",
+    "sent": false
   },
-  "responseId": "ACYDBNgi-nSvBInBvMR69sYb6h5qLkJ2qxgzZVKagBmplN8OXEsBU86Ypgq5hciXt5AX_4I",
-  "fixedSummary": "Geography 2 Q26 image replaced: generic Western Ghats scenic photo (breathedreamgo) -> Coastal Plain of India map (Western Coastal Plain yellow: Kathiawar/Konkan/Malabar; Eastern orange; legend; LotusArise), embedded offline as base64 JPEG",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q28 (GA Test Q28) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795160058507,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q28 (GA Test Q28)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q28 (GA Test Q28) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795160058507,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q28 (GA Test Q28)"
+    },
+    "responseId": "ACYDBNi2KIndeDxVxrVKIZeloB_WpPY-U-yBRy5eX2SdcfCKgk31eYYPa0xld1CKpgDEAf4",
+    "fixedSummary": "Geography 2 Q28 image replaced: Chilika photo (curlytales.com) -> reporter-supplied Wikimedia satellite image of Kara-Bogaz Gol lagoon from space (direct upload.wikimedia.org URL)",
+    "sent": false
   },
-  "responseId": "ACYDBNi2KIndeDxVxrVKIZeloB_WpPY-U-yBRy5eX2SdcfCKgk31eYYPa0xld1CKpgDEAf4",
-  "fixedSummary": "Geography 2 Q28 image replaced: Chilika photo (curlytales.com) -> reporter-supplied Wikimedia satellite image of Kara-Bogaz Gol lagoon from space (direct upload.wikimedia.org URL)",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q30 (GA Test Q30) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795161545812,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q30 (GA Test Q30)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q30 (GA Test Q30) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795161545812,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q30 (GA Test Q30)"
+    },
+    "responseId": "ACYDBNieLXcUTec5OnG9sDQUqIo2DS6tPG-5a0nsoCYU2dD6EwCmJLx-RnniyOlWlKlkwzs",
+    "fixedSummary": "Geography 2 Q30 image replaced: wrong Lakshadweep map (Nine Degree Channel) -> Wikimedia Commons Andaman and Nicobar Islands map with Ten Degree Channel labelled (thumb.wikimedia.org URL)",
+    "sent": false
   },
-  "responseId": "ACYDBNieLXcUTec5OnG9sDQUqIo2DS6tPG-5a0nsoCYU2dD6EwCmJLx-RnniyOlWlKlkwzs",
-  "fixedSummary": "Geography 2 Q30 image replaced: wrong Lakshadweep map (Nine Degree Channel) -> Wikimedia Commons Andaman and Nicobar Islands map with Ten Degree Channel labelled (thumb.wikimedia.org URL)",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q31 (GA Test Q31) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795162003305,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q31 (GA Test Q31)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q31 (GA Test Q31) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795162003305,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q31 (GA Test Q31)"
+    },
+    "responseId": "ACYDBNjs_Gm3ihhZx3UJp_lV3C5B-2s8w5wBS14EgkHFuaZjH1timWO_EJ_ThjPaKVTSdiY",
+    "fixedSummary": "Geography 2 Q31 image replaced: reporter-supplied Lakshadweep/Malabar Coast map (komododecks link, 1357x768 JPEG) embedded offline as base64, replacing raahchal.com photo",
+    "sent": false
   },
-  "responseId": "ACYDBNjs_Gm3ihhZx3UJp_lV3C5B-2s8w5wBS14EgkHFuaZjH1timWO_EJ_ThjPaKVTSdiY",
-  "fixedSummary": "Geography 2 Q31 image replaced: reporter-supplied Lakshadweep/Malabar Coast map (komododecks link, 1357x768 JPEG) embedded offline as base64, replacing raahchal.com photo",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q32 (GA Test Q32) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795163652272,
-  "data": {
-   "chapter": "GA – Geography",
-   "test": "Geography 2",
-   "qnum": "Q32 (GA Test Q32)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Geography • Geography 2 • Q32 (GA Test Q32) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795163652272,
+    "data": {
+      "chapter": "GA – Geography",
+      "test": "Geography 2",
+      "qnum": "Q32 (GA Test Q32)"
+    },
+    "responseId": "ACYDBNh-a2ra76T7BWMW169NkGEfj8glokYq8Vo8kOc0PmHM2plW7R9SaplyGlTw3p4FD0I",
+    "fixedSummary": "Geography 2 Q32 image replaced: reporter-supplied Andaman/Nicobar/Malacca Strait map (encrypted-tbn0 thumbnail, 250x245 PNG) embedded offline as base64, replacing Wikimedia relief map",
+    "sent": false
   },
-  "responseId": "ACYDBNh-a2ra76T7BWMW169NkGEfj8glokYq8Vo8kOc0PmHM2plW7R9SaplyGlTw3p4FD0I",
-  "fixedSummary": "Geography 2 Q32 image replaced: reporter-supplied Andaman/Nicobar/Malacca Strait map (encrypted-tbn0 thumbnail, 250x245 PNG) embedded offline as base64, replacing Wikimedia relief map",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 1 • Q25 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795170062411,
-  "data": {
-   "chapter": "CA – February 2026",
-   "test": "February Test 1",
-   "qnum": "Q25 (CA Test Q25)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – February 2026 • February Test 1 • Q25 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795170062411,
+    "data": {
+      "chapter": "CA – February 2026",
+      "test": "February Test 1",
+      "qnum": "Q25 (CA Test Q25)"
+    },
+    "responseId": "ACYDBNjHnVmypVb-hbFUlL_N0R7GMe-zdC7Ulk9fuVH-TQrnqXvRaXTpSkk3cQsHj3kskzY",
+    "fixedSummary": "February Test 1 Q25 image replaced: 1901 Keystone stereoview card of Dilwara Temple interior -> Nakki Lake, Mount Abu photo (OdishaBytes image published for this exact renaming story, Feb 2026), embedded offline as base64 JPEG",
+    "sent": false
   },
-  "responseId": "ACYDBNjHnVmypVb-hbFUlL_N0R7GMe-zdC7Ulk9fuVH-TQrnqXvRaXTpSkk3cQsHj3kskzY",
-  "fixedSummary": "February Test 1 Q25 image replaced: 1901 Keystone stereoview card of Dilwara Temple interior -> Nakki Lake, Mount Abu photo (OdishaBytes image published for this exact renaming story, Feb 2026), embedded offline as base64 JPEG",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q4 (GA Test Q4) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795172092892,
-  "data": {
-   "chapter": "GA – Polity",
-   "test": "Polity 1",
-   "qnum": "Q4 (GA Test Q4)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q4 (GA Test Q4) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795172092892,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q4 (GA Test Q4)"
+    },
+    "responseId": "ACYDBNho6JgNu3E-PKNYft7WEI1sxzw2EbbeWpO5Lva8gm8keSFHAmuBw28QiUdYwa8yXsE",
+    "fixedSummary": "Polity 1 Q4 image replaced: generic Supreme Court building interior photo -> reporter-supplied Kesavananda Bharati case judgement graphic (Basic Structure Doctrine), embedded offline as base64 JPEG",
+    "sent": false
   },
-  "responseId": "ACYDBNho6JgNu3E-PKNYft7WEI1sxzw2EbbeWpO5Lva8gm8keSFHAmuBw28QiUdYwa8yXsE",
-  "fixedSummary": "Polity 1 Q4 image replaced: generic Supreme Court building interior photo -> reporter-supplied Kesavananda Bharati case judgement graphic (Basic Structure Doctrine), embedded offline as base64 JPEG",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q13 (GA Test Q13) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795175434774,
-  "data": {
-   "chapter": "GA – Polity",
-   "test": "Polity 1",
-   "qnum": "Q13 (GA Test Q13)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q13 (GA Test Q13) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795175434774,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q13 (GA Test Q13)"
+    },
+    "responseId": "ACYDBNjV5IL46GBUszeA2shTPjAqAMpCgujliV09AHNSjdEuQDJfhnx7boa6JJdHWiZBVho",
+    "fixedSummary": "Polity 1 Q13 image removed: generic Rashtrapati Bhavan place photo removed from the solution at the reporter's request ('hata do image isme se'); no specific PIB/news image exists for this 2022 pardon event and President face photos are not allowed, so no replacement image was used",
+    "sent": false
   },
-  "responseId": "ACYDBNjV5IL46GBUszeA2shTPjAqAMpCgujliV09AHNSjdEuQDJfhnx7boa6JJdHWiZBVho",
-  "fixedSummary": "Polity 1 Q13 image removed: generic Rashtrapati Bhavan place photo removed from the solution at the reporter's request ('hata do image isme se'); no specific PIB/news image exists for this 2022 pardon event and President face photos are not allowed, so no replacement image was used",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q14 (GA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795175808159,
-  "data": {
-   "chapter": "GA – Polity",
-   "test": "Polity 1",
-   "qnum": "Q14 (GA Test Q14)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q14 (GA Test Q14) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795175808159,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q14 (GA Test Q14)"
+    },
+    "responseId": "ACYDBNhIiiH3lf5XjqnOJu3_iEGBgkA0wFaNAq57iZYSQAnkbdkoVyNZTQNAniYRVH9ggfo",
+    "fixedSummary": "Polity 1 Q14 image replaced with reporter-supplied Lok Sabha chamber photo (embedded offline as base64); generic Old Parliament House place photo removed."
   },
-  "responseId": "ACYDBNhIiiH3lf5XjqnOJu3_iEGBgkA0wFaNAq57iZYSQAnkbdkoVyNZTQNAniYRVH9ggfo",
-  "fixedSummary": "Polity 1 Q14 image replaced with reporter-supplied Lok Sabha chamber photo (embedded offline as base64); generic Old Parliament House place photo removed."
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q15 (GA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795175808159,
-  "data": {
-   "chapter": "GA – Polity",
-   "test": "Polity 1",
-   "qnum": "Q15 (GA Test Q15)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q15 (GA Test Q15) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795175808159,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q15 (GA Test Q15)"
+    },
+    "responseId": "ACYDBNiMN8WCFPLbJni8nivXc9tZEb-xa6v8AebD__3DgEpaslgZJMl5ULSrD12JxLU-uMw",
+    "fixedSummary": "Polity 1 Q15 image replaced with reporter-supplied photo of the President addressing a joint session of Parliament (embedded offline as base64); Lok Sabha chamber Wikimedia photo removed."
   },
-  "responseId": "ACYDBNiMN8WCFPLbJni8nivXc9tZEb-xa6v8AebD__3DgEpaslgZJMl5ULSrD12JxLU-uMw",
-  "fixedSummary": "Polity 1 Q15 image replaced with reporter-supplied photo of the President addressing a joint session of Parliament (embedded offline as base64); Lok Sabha chamber Wikimedia photo removed."
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795176214316,
-  "data": {
-   "chapter": "GA – Polity",
-   "test": "Polity 1",
-   "qnum": "Q19 (GA Test Q19)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 1 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795176214316,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 1",
+      "qnum": "Q19 (GA Test Q19)"
+    },
+    "responseId": "ACYDBNhNAJIQNRZ9iJK7qCnp1UwSPn84jq3xoqTJOukWmAPSw8auDvaBDc7cMrq7lZigdSQ",
+    "fixedSummary": "GA Polity 1 Q19 (Art 356): reporter ne 'hata do image' kaha - solution se Rashtrapati Bhavan generic place photo hata di (no replacement); q/options/key/solution text unchanged."
   },
-  "responseId": "ACYDBNhNAJIQNRZ9iJK7qCnp1UwSPn84jq3xoqTJOukWmAPSw8auDvaBDc7cMrq7lZigdSQ",
-  "fixedSummary": "GA Polity 1 Q19 (Art 356): reporter ne 'hata do image' kaha - solution se Rashtrapati Bhavan generic place photo hata di (no replacement); q/options/key/solution text unchanged."
- },
- {
-  "responseId": "ACYDBNjvhuIeeGhIjtwwI_MefjLNUOX7Zl6wvD3BBZ708sFCxzdS6rKzHcCoyZEJLawkpqo",
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Polity • Polity 2 • Q1 (GA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795224459199,
-  "data": {
-   "chapter": "GA – Polity",
-   "test": "Polity 2",
-   "qnum": "Q1 (GA Test Q1)"
+  {
+    "responseId": "ACYDBNjvhuIeeGhIjtwwI_MefjLNUOX7Zl6wvD3BBZ708sFCxzdS6rKzHcCoyZEJLawkpqo",
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Polity • Polity 2 • Q1 (GA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795224459199,
+    "data": {
+      "chapter": "GA – Polity",
+      "test": "Polity 2",
+      "qnum": "Q1 (GA Test Q1)"
+    },
+    "fixedSummary": "GA Polity 2 Q1 (Puttaswamy, privacy right) ki image hata di gayi — reporter ne 'hata do' kaha tha; generic Supreme Court building photo thi, is sawal ki koi specific PIB/news image nahi hai."
   },
-  "fixedSummary": "GA Polity 2 Q1 (Puttaswamy, privacy right) ki image hata di gayi — reporter ne 'hata do' kaha tha; generic Supreme Court building photo thi, is sawal ki koi specific PIB/news image nahi hai."
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Ancient History • Ancient 4 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
-  "createdAt": 1795237656783,
-  "data": {
-   "chapter": "GA – Ancient History",
-   "test": "Ancient 4",
-   "qnum": "Q5 (GA Test Q5)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: GA – Ancient History • Ancient 4 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+    "createdAt": 1795237656783,
+    "data": {
+      "chapter": "GA – Ancient History",
+      "test": "Ancient 4",
+      "qnum": "Q5 (GA Test Q5)"
+    },
+    "responseId": "ACYDBNix2KR4NI8IgVyjX-LG-Kjs3RapTXhAzeH8QJkQrfBFGbPwQwoaWVSyLFIdey4Kysk",
+    "fixedSummary": "GA Ancient 4 Q5 (Shunga ke baad Magadha): option C Hindi spelling कनवास -> कण्व (key unchanged, C); reporter ne sahi kaha tha — solution me bhi कण्व वंश hai, English option Kanva",
+    "sent": false
   },
-  "responseId": "ACYDBNix2KR4NI8IgVyjX-LG-Kjs3RapTXhAzeH8QJkQrfBFGbPwQwoaWVSyLFIdey4Kysk",
-  "fixedSummary": "GA Ancient 4 Q5 (Shunga ke baad Magadha): option C Hindi spelling कनवास -> कण्व (key unchanged, C); reporter ne sahi kaha tha — solution me bhi कण्व वंश hai, English option Kanva",
-  "sent": false
- },
- {
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q5 (CA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795244202326,
-  "data": {
-   "chapter": "CA – July 2026",
-   "test": "July Test 1",
-   "qnum": "Q5 (CA Test Q5)"
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q5 (CA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795244202326,
+    "data": {
+      "chapter": "CA – July 2026",
+      "test": "July Test 1",
+      "qnum": "Q5 (CA Test Q5)"
+    },
+    "responseId": "ACYDBNh7MeCId0nQbxGgBQhNpj-BCe_VV3V0WZv2Y2I1dCmOfLVjFPa_020xEK3oAa5ZzMU",
+    "fixedSummary": "CA July Test 1 Q5 (BHAVYA Rasayan outlay): option A ₹330 crore -> ₹3,030 crore (key stays A); solution rewritten — ₹3,000 cr infra + ₹30 cr admin, Cabinet 24 Jul 2026. Reporter sahi tha — PIB/PTI ne ₹3,030 crore confirm kiya; July transcript ka 330 galat tha.",
+    "sent": false
   },
-  "responseId": "ACYDBNh7MeCId0nQbxGgBQhNpj-BCe_VV3V0WZv2Y2I1dCmOfLVjFPa_020xEK3oAa5ZzMU",
-  "fixedSummary": "CA July Test 1 Q5 (BHAVYA Rasayan outlay): option A ₹330 crore -> ₹3,030 crore (key stays A); solution rewritten — ₹3,000 cr infra + ₹30 cr admin, Cabinet 24 Jul 2026. Reporter sahi tha — PIB/PTI ne ₹3,030 crore confirm kiya; July transcript ka 330 galat tha.",
-  "sent": false
- }
+  {
+    "responseId": "ACYDBNhPlr4G_u0JT9kagkmC3mPo1hXiVX9AlPUAkXd5exg4KbVT0scVJ0Ri7zqyJ57rrE4",
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q8 (CA Test Q8) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795244535527,
+    "data": {
+      "chapter": "CA – July 2026",
+      "test": "July Test 1",
+      "qnum": "Q8 (CA Test Q8)"
+    },
+    "fixedSummary": "CA July Test 1 Q8 image replaced with reporter-supplied photo (Ajit Doval honoured with Lokmanya Tilak National Award 2026), offline base64 embed"
+  },
+  {
+    "responseId": "ACYDBNgOQM7_BgaKzXrpxwnQ_J_Y8rY78ty5GL5Qo0AjQUn-wlxd77zQRvCjTjcA4DOetgk",
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q9 (CA Test Q9) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795244535527,
+    "data": {
+      "chapter": "CA – July 2026",
+      "test": "July Test 1",
+      "qnum": "Q9 (CA Test Q9)"
+    },
+    "fixedSummary": "CA July Test 1 Q9 image replaced with reporter-supplied photo (Australia Women T20 World Cup 2026 champions), offline base64 embed"
+  }
 ]
