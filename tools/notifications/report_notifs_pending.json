@@ -701,5 +701,19 @@
     },
     "responseId": "ACYDBNjLI_pJBhuWFILGKycehRzMFFxsrEPBz5I21iOe_kfgiZq7A7lrJN7BS4SsLqW97VM",
     "fixedSummary": "CA July Test 1 Q15 (Borjuli Biodiversity Heritage Site, Assam) image replaced with reporter-supplied AIR News graphic, offline base64 embed"
+  },
+  {
+    "type": "report",
+    "title": "Report fix ho gayi",
+    "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 1 • Q16 (CA Test Q16) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+    "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+    "createdAt": 1795246247171,
+    "data": {
+      "chapter": "CA – July 2026",
+      "test": "July Test 1",
+      "qnum": "Q16 (CA Test Q16)"
+    },
+    "responseId": "ACYDBNjr1TBYViAu8mZOF5QqVli0teHAujrL2jzTgU4HW14wPy6l8JBjklxE7TQqQ_zkwjM",
+    "fixedSummary": "CA July Test 1 Q16 (Fields Medal — Hong Wang) image replaced with reporter-supplied 2026 Fields Medal winners collage, offline base64 embed"
   }
 ]
