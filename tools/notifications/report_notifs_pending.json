@@ -615,5 +615,20 @@
    "qnum": "Q1 (GA Test Q1)"
   },
   "fixedSummary": "GA Polity 2 Q1 (Puttaswamy, privacy right) ki image hata di gayi — reporter ne 'hata do' kaha tha; generic Supreme Court building photo thi, is sawal ki koi specific PIB/news image nahi hai."
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Ancient History • Ancient 4 • Q5 (GA Test Q5) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "33WzWnIhppgFKdKnggNb3rzzUP53",
+  "createdAt": 1795237656783,
+  "data": {
+   "chapter": "GA – Ancient History",
+   "test": "Ancient 4",
+   "qnum": "Q5 (GA Test Q5)"
+  },
+  "responseId": "ACYDBNix2KR4NI8IgVyjX-LG-Kjs3RapTXhAzeH8QJkQrfBFGbPwQwoaWVSyLFIdey4Kysk",
+  "fixedSummary": "GA Ancient 4 Q5 (Shunga ke baad Magadha): option C Hindi spelling कनवास -> कण्व (key unchanged, C); reporter ne sahi kaha tha — solution me bhi कण्व वंश hai, English option Kanva",
+  "sent": false
  }
 ]
