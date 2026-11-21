@@ -729,5 +729,19 @@
   },
   "responseId": "ACYDBNjM_uOvWpNWfaTPzjNEU3J8KrWnUsFjqTmSWDrWxTeN0B6aeMpLVioBVSyvsN6mTOY",
   "fixedSummary": "CA July Test 1 Q19 (Qdenga dengue vaccine) image replaced with reporter-supplied Qdenga vial photo, offline base64 embed"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: Ch 3 - Profit & Loss • Test 7 (Part 3/4) • Q81 (Test Q21) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "Olr3ZPirnOgz41PBfjuvXQfzN3s2",
+  "createdAt": 1795259156823,
+  "data": {
+   "chapter": "Ch 3 - Profit & Loss",
+   "test": "Test 7 (Part 3/4)",
+   "qnum": "Q81 (Test Q21)"
+  },
+  "responseId": "ACYDBNjsIVFGyOkfqLzcdyQcNDDe_kVXi1PyuR5mSlNr2-US1bini4zsi0QS4S5S7cIH_JU",
+  "fixedSummary": "Ch3 Q81 duplicate option D 4,760 -> 3,570 (key B=4,760 unchanged; book itself had the duplicate)"
  }
 ]
