@@ -601,5 +601,19 @@
   },
   "responseId": "ACYDBNhNAJIQNRZ9iJK7qCnp1UwSPn84jq3xoqTJOukWmAPSw8auDvaBDc7cMrq7lZigdSQ",
   "fixedSummary": "GA Polity 1 Q19 (Art 356): reporter ne 'hata do image' kaha - solution se Rashtrapati Bhavan generic place photo hata di (no replacement); q/options/key/solution text unchanged."
+ },
+ {
+  "responseId": "ACYDBNjvhuIeeGhIjtwwI_MefjLNUOX7Zl6wvD3BBZ708sFCxzdS6rKzHcCoyZEJLawkpqo",
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Polity • Polity 2 • Q1 (GA Test Q1) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795224459199,
+  "data": {
+   "chapter": "GA – Polity",
+   "test": "Polity 2",
+   "qnum": "Q1 (GA Test Q1)"
+  },
+  "fixedSummary": "GA Polity 2 Q1 (Puttaswamy, privacy right) ki image hata di gayi — reporter ne 'hata do' kaha tha; generic Supreme Court building photo thi, is sawal ki koi specific PIB/news image nahi hai."
  }
 ]
