@@ -7317,7 +7317,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 103; /* must match version.txt - bump on every release */
+var APP_VERSION = 104; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -13552,7 +13552,7 @@ function fillSeriesToppers(){
   [['maths', 'spMathsTopper'], ['ca', 'spCaTopper'], ['ga', 'spGaTopper']].forEach(function(pair){
     var el = $(pair[1]); if (!el) return;
     var b = seriesBoard(pair[0]), top = b[0];
-    if (top){ el.style.display = ''; el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">' + esc(top.e.name) + '</span> <span class="fc-topper-sc">' + fmtN(top.s) + ' marks</span>'; }
+    if (top){ el.style.display = ''; el.innerHTML = '<span class="fc-topper-lbl">TOPPER</span> <span class="fc-topper-nm">' + esc(top.e.name) + '</span>'; }
     else { el.innerHTML = ''; el.style.display = 'none'; }
   });
 }
