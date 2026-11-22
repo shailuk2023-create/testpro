@@ -799,5 +799,20 @@
   },
   "responseId": "ACYDBNg1GRbIxpeFmP1KNu9cCE7eoNcgX7x3Mu9Lw0NWgZM0YRn4Xprx6Gv-EZXXGY_Kdw8",
   "fixedSummary": "CA July Test 2 Q37 image replaced with reporter-supplied news image (Gwalior telecom manufacturing zone MoU signing, offline base64 embed); question/key/solution text unchanged"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 2 • Q50 (CA Test Q25) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795349098548,
+  "data": {
+   "chapter": "CA – July 2026",
+   "test": "July Test 2",
+   "qnum": "Q50 (CA Test Q25)"
+  },
+  "responseId": "ACYDBNi6iL4RcqPll4aQbucayqCK-GiqkQDzq7z07BKpWBM1M2jv_Mk5-G6wHL2Es1fG5Ro",
+  "fixedSummary": "July Test 2 Q50 (Kargil Vijay Diwas) image replaced: Kargil War Memorial Dras photo -> reporter-supplied 'KARGIL VIJAY DIWAS 26 JULY 2026' graphic, embedded offline as base64 JPEG",
+  "sent": false
  }
 ]
