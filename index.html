@@ -7317,7 +7317,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 102; /* must match version.txt - bump on every release */
+var APP_VERSION = 103; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -13263,7 +13263,7 @@ function lbRenderHero(sorted0){
 }
 /* v59: one-line "How coins work" note, shown above the board on both tabs. */
 function lbCoinsNote(){
-  return '<div class="lb-note lb-coins-note fr-hb-note"><span class="fr-hb-coin fr-hb-coin-sm" aria-hidden="true">₹</span><button type="button" class="lb-coins-toggle fr-hb-note-link" aria-expanded="false">How coins work</button><span class="lb-coins-full fr-hb-note-full" hidden>🪙 How coins work: per test (best attempt only) — Score up to 100, Accuracy up to 25 (100% = 25, 30% or less = 0), Time up to 25 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 150 per test. Re-attempt coins are halved because answers have been seen, and earn nothing if the re-attempt is within 48 hours of your last attempt on that test — plus daily app opens (+5, +10 on a 7+ day streak), time spent in the app (+1 per 10 min, max +10/day) and solutions viewed (+0.5 per solution, max +5/day).</span></div>';
+  return '<div class="lb-note lb-coins-note fr-hb-note"><span class="fr-hb-coin fr-hb-coin-sm" aria-hidden="true">₹</span><button type="button" class="lb-coins-toggle fr-hb-note-link" aria-expanded="false">How coins work</button><span class="lb-coins-full fr-hb-note-full" hidden>🪙 How coins work: per test (best attempt only) — Score up to 100, Accuracy up to 25 (100% = 25, 30% or less = 0), Time up to 25 (fast + accurate answers earn more; no time coins below 30% accuracy, or for a 25+ question test finished in under 2.5 min with accuracy below 50%). Max 150 per 25-question test — coins scale with test length (13 questions: 78, 43 questions: 258). Re-attempt coins are halved because answers have been seen, and earn nothing if the re-attempt is within 48 hours of your last attempt on that test — plus daily app opens (+5, +10 on a 7+ day streak), time spent in the app (+1 per 10 min, max +10/day) and solutions viewed (+0.5 per solution, max +5/day).</span></div>';
 }
 /* fr-pd: winged-hexagon badges behind the podium toppers' avatars.
    SVG artwork is the USER's code (gemini-code-1794828608336.html,
@@ -13395,7 +13395,7 @@ function coinBreakdownHTML(){
   if (!b) return '<div class="lb-breakdown fr-rw-bd" hidden><div class="fr-rw-bd-note">Coin breakdown will appear once the coin engine loads.</div></div>';
   var row = function(lbl, v){ return '<div class="fr-rw-bd-row"><span>' + lbl + '</span><b>🪙 ' + fmtN(v) + '</b></div>'; };
   return '<div class="lb-breakdown fr-rw-bd" hidden><div class="fr-rw-bd-title">Your coin breakdown</div>' +
-    row('Score coins · max 100', b.score) + row('Accuracy coins · max 25', b.accuracy) + row('Time coins · max 25', b.time) + row('Engagement coins', b.engagement) +
+    row('Score coins', b.score) + row('Accuracy coins', b.accuracy) + row('Time coins', b.time) + row('Engagement coins', b.engagement) +
     '<div class="fr-rw-bd-row fr-rw-bd-total"><span>Total</span><b>🪙 ' + fmtN(b.total) + '</b></div></div>';
 }
 /* fr-rw: fresh ranking-row markup (data logic unchanged).
@@ -14071,6 +14071,13 @@ notifEnsure();
 /* ================= TESTPRO v68 — Coin System (engine + data) =================
    Formula v68 = v62 ÷ 10 (per test, BEST attempt only — re-attempts can only improve,
    never add; anti-farming):
+   v103 LENGTH SCALING (user-approved): per-test coins scale with test
+   length, factor f = marks/25 (a 25-question test = 1) — score max 100f,
+   accuracy max 25f, time max 25f (cap = marks), total max 150f. 13-Q: 78,
+   25-Q: 150, 43-Q: 258. One question is worth the same coins in every
+   test and one mistake costs the same everywhere (~7.8: score ~5.3 +
+   accuracy ~1.4 + time 1). The 48h re-attempt rule and engagement coins
+   are UNCHANGED.
      scorePct = best.score / marks * 100; score coins = round(scorePct * 10)
        (0-100). v68 RESCALE: every v62 integer coin value is computed exactly as
        before, then divided by 10 — all coin values carry exactly 1 decimal
@@ -14102,7 +14109,7 @@ notifEnsure();
        applies to the WHOLE per-attempt total (score + accuracy +
        time). Engagement coins are NOT halved. Re-attempting can
        never reduce a test's coins.
-     Per-test coins = score + accuracy + time (max 150). Negative scores
+     Per-test coins = score + accuracy + time (max 150f — v103 scaling above). Negative scores
      clamp to 0 score coins (the formula ranges start at 0).
    Engagement coins (daily caps, local calendar dates YYYY-MM-DD):
      open: +5 on the first open of the day; +10/day when the streak is
@@ -14399,7 +14406,7 @@ function coinTimePerQ(secs, isCA){
   if (secs >= 50) return 0;
   return Math.round(10 * (50 - secs) / 20) / 10;
 }
-/* v68: time coins for one best attempt (max 25, capped).
+/* v68: time coins for one best attempt (max 25f = marks, capped — v103).
    qs: the best attempt's qs[] entries {sel, secs} — a question counts
    only when attempted (sel != null; skipped attempts are recorded with
    sel: null — see submitTest). Skipped questions earn 0 time coins.
@@ -14429,19 +14436,31 @@ function coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId){
   } else {
     for (i = 0; i < attempted; i++) total += coinTimePerQ(avgSecs, isCA);
   }
-  return Math.min(25, Math.round(total * 10) / 10); /* v68: sum of 1-decimal
+  /* v103: time cap scales with test length — cap = 25f = marks, so every
+     fast question keeps its full 1.0 value (a fixed 25 cap would pay a
+     short test's fast questions less per question). The raw sum can never
+     exceed marks (<= 1 per question), so the cap binds only defensively. */
+  var timeCap = (+marks || 0) > 0 ? +marks : 25;
+  return Math.min(timeCap, Math.round(total * 10) / 10); /* v68: sum of 1-decimal
      per-question values, re-rounded to 1 decimal to clear float dust */
 }
 function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride, qs, testId){
   marks = +marks || 0;
   if (!marks) return {score: 0, accuracy: 0, time: 0, total: 0};
-  var scoreC = Math.max(0, Math.round((+score || 0) / marks * 100 * 10) / 10); /* v68: max 100 */
+  /* v103 LENGTH SCALING: factor f = marks/25 (a 25-question test = 1).
+     Score max 100f, accuracy max 25f, time max 25f (cap = marks), total
+     max 150f — 13-Q: 78, 25-Q: 150, 43-Q: 258. One question is worth the
+     same coins in every test and one mistake costs the same everywhere
+     (~7.8: score ~5.3 + accuracy ~1.4 + time 1). 48h re-attempt rule and
+     engagement coins are UNCHANGED. */
+  var f = marks / 25;
+  var scoreC = Math.max(0, Math.round((+score || 0) / marks * 100 * f * 10) / 10); /* v103: max 100f */
   var att = (+correct || 0) + (+wrong || 0);
   var accPct = (accOverride != null && !isNaN(+accOverride)) ? +accOverride : (att > 0 ? (+correct || 0) / att * 100 : 0);
   var accC = 0;
-  if (accPct > 30) accC = Math.min(25, Math.round((accPct - 30) / 70 * 250) / 10); /* v68: max 25 */
+  if (accPct > 30) accC = Math.min(25 * f, Math.round((accPct - 30) / 70 * 250 * f) / 10); /* v103: max 25f */
   var timeC = coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId);
-  return {score: scoreC, accuracy: accC, time: timeC, total: Math.round((scoreC + accC + timeC) * 10) / 10}; /* v68: max 150 */
+  return {score: scoreC, accuracy: accC, time: timeC, total: Math.round((scoreC + accC + timeC) * 10) / 10}; /* v103: max 150f */
 }
 /* v68 re-attempt rule (v62 ÷ 10): the FIRST attempt (attempt record no == 1, or no
    missing) earns 100% of its test coins; every re-attempt (no >= 2)
