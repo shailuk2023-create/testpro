@@ -22,6 +22,12 @@
 
    All coin values carry exactly 1 decimal (v68 rescale = v62 values / 10).
 
+   v103 LENGTH SCALING (mirrors app APP_VERSION 103): per-test coins scale
+   with test length, factor f = marks/25 (25-question test = 1) — score
+   max 100f, accuracy max 25f, time max 25f (cap = marks), total max
+   150f (13-Q: 78, 25-Q: 150, 43-Q: 258). 48h re-attempt rule and
+   engagement coins UNCHANGED.
+
    v71 addition (pure functions only, formula untouched): bestAttemptsByTest
    / aggregateQuestionStats / questionStatsPct — per-question "% answered
    correctly" aggregates, reusing the coin best-attempt selection. See the
@@ -29,10 +35,10 @@
    ========================================================================== */
 
 /* ---- Formula constants (v69) ---- */
-var MAX_TEST_COINS = 150;      /* per-test cap: score + accuracy + time */
-var MAX_SCORE = 100;           /* score coins cap */
-var MAX_ACCURACY = 25;         /* accuracy coins cap */
-var MAX_TIME = 25;             /* time coins cap (per test) */
+var MAX_TEST_COINS = 150;      /* per-test cap for a 25-question test: score + accuracy + time (v103: max = 150 * marks/25) */
+var MAX_SCORE = 100;           /* score coins cap for a 25-question test (v103: max = 100 * marks/25) */
+var MAX_ACCURACY = 25;         /* accuracy coins cap for a 25-question test (v103: max = 25 * marks/25) */
+var MAX_TIME = 25;             /* time coins cap for a 25-question test (v103: cap = 25 * marks/25 = marks) */
 
 var ACCURACY_FLOOR = 30;       /* acc <= 30% -> 0 accuracy coins (strict >30 pays) */
 var ACCURACY_RUSH = 50;        /* rush guard only applies while acc < 50% */
@@ -104,26 +110,32 @@ function coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId){
   } else {
     for (i = 0; i < attempted; i++) total += coinTimePerQ(avgSecs, isCA);
   }
-  return Math.min(MAX_TIME, r1(total)); /* v68: sum of 1-decimal
+  /* v103: time cap scales with test length — cap = MAX_TIME * marks/25
+     (= marks), so every fast question keeps its full 1.0 value. */
+  var timeCap = (+marks || 0) > 0 ? (+marks * MAX_TIME / 25) : MAX_TIME;
+  return Math.min(timeCap, r1(total)); /* v68: sum of 1-decimal
      per-question values, re-rounded to 1 decimal to clear float dust */
 }
 
 /* coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride, qs,
    testId) — verbatim from tp-coins.
-   score coins = max(0, round(score/marks*100*10)/10) (max 100).
-   accuracy coins: acc <= 30% -> 0, acc = 100% -> 25, between ->
-   min(25, round((acc-30)/70*250)/10). accPct is the attempt's accuracy
-   field when present, else correct/(correct+wrong)*100. */
+   v103 LENGTH SCALING: factor f = marks/25 (25-question test = 1).
+   score coins = max(0, round(score/marks*100*f*10)/10) (max 100f).
+   accuracy coins: acc <= 30% -> 0, acc = 100% -> 25f, between ->
+   min(25f, round((acc-30)/70*250*f)/10). accPct is the attempt's accuracy
+   field when present, else correct/(correct+wrong)*100. Time coins max
+   25f (cap = marks). Total max 150f. */
 function coinsFromParts(score, correct, wrong, marks, timeTaken, accOverride, qs, testId){
   marks = +marks || 0;
   if (!marks) return {score: 0, accuracy: 0, time: 0, total: 0};
-  var scoreC = Math.max(0, r1((+score || 0) / marks * 100)); /* v68: max 100 */
+  var scaleF = marks / 25;
+  var scoreC = Math.max(0, r1((+score || 0) / marks * 100 * scaleF)); /* v103: max 100f */
   var att = (+correct || 0) + (+wrong || 0);
   var accPct = (accOverride != null && !isNaN(+accOverride)) ? +accOverride : (att > 0 ? (+correct || 0) / att * 100 : 0);
   var accC = 0;
-  if (accPct > ACCURACY_FLOOR) accC = Math.min(MAX_ACCURACY, Math.round((accPct - ACCURACY_FLOOR) / 70 * 250) / 10); /* v68: max 25 — NOTE: round the 250-scale value to an integer FIRST, then /10 (NOT a 1-decimal round of the 250-scale value) */
+  if (accPct > ACCURACY_FLOOR) accC = Math.min(MAX_ACCURACY * scaleF, Math.round((accPct - ACCURACY_FLOOR) / 70 * 250 * scaleF) / 10); /* v103: max 25f — NOTE: round the 250-scale value to an integer FIRST, then /10 (NOT a 1-decimal round of the 250-scale value) */
   var timeC = coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId);
-  return {score: scoreC, accuracy: accC, time: timeC, total: r1(scoreC + accC + timeC)}; /* v68: max 150 */
+  return {score: scoreC, accuracy: accC, time: timeC, total: r1(scoreC + accC + timeC)}; /* v103: max 150f */
 }
 
 /* coinApplyFactor(parts, factor) — verbatim from tp-coins.
