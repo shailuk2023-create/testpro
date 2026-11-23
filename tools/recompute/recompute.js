@@ -96,7 +96,7 @@ function coinTimePerQ(secs, isCA){
 function coinsTimeCoins(correct, wrong, marks, timeTaken, accPct, qs, testId){
   if (accPct < ACCURACY_TIME_CUTOFF) return 0;
   if (marks >= RUSH_MIN_MARKS && (+timeTaken || 0) <= RUSH_MAX_TIME_SECS && accPct < ACCURACY_RUSH) return 0;
-  var isCA = (typeof testId === 'string' && testId.indexOf('ca-') === 0);
+  var isCA = (typeof testId === 'string' && (testId.indexOf('ca-') === 0 || testId.indexOf('ga-') === 0));
   var attempted = (+correct || 0) + (+wrong || 0);
   if (attempted <= 0) return 0;
   var avgSecs = marks ? (+timeTaken || 0) / marks : 0;
