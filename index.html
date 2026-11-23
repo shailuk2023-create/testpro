@@ -8,12 +8,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TESTPRO">
-<link rel="manifest" href="https://progressier.app/XI0kRddwFU4ZoDYaXp2f/progressier.json"/>
-<script defer src="https://progressier.app/XI0kRddwFU4ZoDYaXp2f/script.js"></script>
+<link rel="manifest" href="manifest.json"/>
 <!-- Worker B (Web Push + VAPID, NOT Progressier): push notifications use the
      browser-native Web Push API + VAPID (see the NTF_* block in the
-     leaderboard script). The Progressier script above is kept ONLY for PWA
-     install/offline — it is NOT the push transport. The SKQuizPro zip the
+     leaderboard script). PWA install/offline is now the app's own
+     manifest.json + sw.js (registered below, v106) — Progressier is fully
+     removed and is NOT the push transport. The SKQuizPro zip the
      user sent contains zero Progressier code; its push works via Web Push +
      VAPID, and TESTPRO mirrors that proven design with Firestore
      (push_subscriptions collection) as the subscription store. -->
@@ -117,8 +117,8 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 .bottom-nav button.active{color:var(--teal)}
 @media (max-width:900px){
   .bottom-nav.show{display:flex}
-  .list-body{padding-bottom:148px!important}
-  .settings-wrap{padding-bottom:148px!important}
+  .list-body{padding-bottom:92px!important}
+  .settings-wrap{padding-bottom:92px!important}
 }
 /* ---------- SETTINGS ---------- */
 #view-settings{min-height:100vh}
@@ -285,7 +285,7 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 /* modals */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.show{display:flex}
-#reportToast{position:fixed;left:50%;bottom:152px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center}
+#reportToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center}
 #reportToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #modalReport .rep-type{width:100%;text-align:left;justify-content:flex-start}
 #modalReport .rep-type.selected{border:2px solid #0b7196;background:#e0f2f7;color:#0b7196;font-weight:700}
@@ -863,7 +863,7 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 }
 
 /* ============ TESTPRO mobile redesign + saved + folder home ============ */
-.toast{position:fixed;left:50%;bottom:152px;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:300;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:300;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:90vw;text-align:center}
 [data-theme="dark"] .toast{background:#e2e8f0;color:#0f172a}
 .logo-mark{height:28px;width:auto;flex-shrink:0}
 .mob-only{display:none!important}
@@ -3181,7 +3181,7 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 #view-list .list-topbar .avatar{background:linear-gradient(135deg,#0EA5A5,#f0b429)}
 #view-list .list-topbar .icon-btn{border-radius:14px}
 /* ---- bottom nav: floating pill, active = gradient ---- */
-.bottom-nav{left:12px;right:12px;bottom:68px;border-radius:22px;border:1px solid var(--border);box-shadow:0 12px 32px -10px rgba(23,18,43,.35);padding:6px}
+.bottom-nav{left:12px;right:12px;bottom:12px;border-radius:22px;border:1px solid var(--border);box-shadow:0 12px 32px -10px rgba(23,18,43,.35);padding:6px}
 .bottom-nav button{border-radius:16px;padding:8px 0 6px}
 .bottom-nav button.active{background:linear-gradient(135deg,#0EA5A5,#0d9488);color:#fff;box-shadow:0 8px 18px -6px rgba(14,165,165,.55)}
 .bottom-nav button.active::before{display:none}
@@ -7317,7 +7317,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 105; /* must match version.txt - bump on every release */
+var APP_VERSION = 106; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -7531,8 +7531,8 @@ function exitHomeBack(){
    AbortController timeout; slow / failed / offline fetch = silently keep
    the cached version (no error, no hang, no blank screen).
    New version found -> NO forced reload. We kick reg.update() so the
-   service worker (registered by the Progressier script — there is no
-   serviceWorker.register() in this file) re-fetches and caches the new
+   service worker (registered by the app itself — _tpRegisterAppSw, v106)
+   re-fetches and caches the new
    single-file app, then show a small dismissible bottom toast
    "Naya version aa gaya — Refresh karo" with a Refresh button. Tapping
    Refresh re-runs reg.update(), waits briefly for a waiting worker
@@ -7546,7 +7546,7 @@ var _v67UpdateToastFor = 0; /* version number the toast is shown for (0 = hidden
 var _v67UpdateToastDismissedFor = 0; /* version the user manually dismissed this session */
 var _v67UpdateToastTimer = 0;
 function _v67KickSwUpdate(){
-  /* Ask the SW (Progressier-registered) to fetch + cache the newest file.
+  /* Ask the SW (app-registered) to fetch + cache the newest file.
      Returns a promise of the registration (or null). Never throws. */
   try{
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistration){
@@ -7676,6 +7676,17 @@ function checkAppUpdate(){
   });
 }
 /* ===== v67-B END ===== */
+/* v106: register our own app-scope service worker (replaces Progressier).
+   Non-blocking, never throws; the update flow above uses getRegistration(),
+   which returns this registration once installed. */
+function _tpRegisterAppSw(){
+  try{
+    if ('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    }
+  }catch(e){}
+}
+_tpRegisterAppSw();
 /* ===== v76-K BEGIN: sidebar Refresh button =====
    Immediate version check (bypasses the 10-min throttle in
    checkAppUpdate). Newer version -> SW update + existing update toast
@@ -12405,11 +12416,9 @@ var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', 
    - SERVICE WORKER NOTE: subscriptions bind to the TESTPRO-owned push
      worker at sub-scope /testpro/push/ (push/sw.js) — it owns `push` +
      `notificationclick` and shows system notifications even when the app
-     is closed (like SKQuizPro). Progressier's SW keeps controlling the app
-     pages and is never replaced or fought with; the push worker has no
-     fetch handler, so PWA install/offline via Progressier is untouched.
-     A runtime warning is logged when the active SW URL contains
-     'progressier'.
+     is closed (like SKQuizPro). The app-scope SW (root sw.js) controls the
+     app pages; the push worker has no fetch handler and owns only
+     /testpro/push/, so it never fights the app-scope SW.
    - TOPPER (this block): ntfCheckTopper() runs on every leaderboard refresh
      (onSnapshot + lbRefresh). It writes ONE `notifications` doc per real
      topper change (deterministic id `topper-<uid>-<coins>`, createdAt = ms
@@ -12426,9 +12435,8 @@ var LB = {tab: 'overall', series: 'maths', detail: null, detailFrom: 'overall', 
 var NTF_VAPID_PUBLIC_KEY = 'BBEC37inGxK2DYBCFtLRLHdhT3geI5wRfJGm5vXSfI9kcdcag7rtngAsr0BNrso-HkknL7ZdTDF07SWiMuKLDoY'; /* VAPID PUBLIC key only (generated fresh for TESTPRO, 17 Nov 2026; 87-char base64url P-256). Its private counterpart was NOT stored anywhere — at go-live regenerate the pair in ONE session, paste the private key straight into the GitHub secret VAPID_PRIVATE_KEY, and replace this constant with the new public key. NEVER put a private key in this file. */
 var NTF = {lastTopperSig: '', topperBusy: false, pushBusy: false, deviceId: '', lastEndpoint: '', lastUid: null};
 /* TESTPRO-owned push worker (sub-scope /testpro/push/). Registers
-   push/sw.js — NEVER the root scope, so it never fights Progressier's SW
-   (Progressier re-registers its own SW whenever the active worker is not
-   its own). The push worker owns `push` + `notificationclick` only, so all
+   push/sw.js — NEVER the root scope, so it never fights the app-scope SW.
+   The push worker owns `push` + `notificationclick` only, so all
    Web Push subscriptions bind to it and system notifications arrive even
    when the app is closed. Returns the registration once activated (or
    after a 5s cap), null when registration fails. */
@@ -17380,9 +17388,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    (precached below) instead of data URIs.
    - PERMANENT cache 'testpro-images-v1': all 106 WebP files, downloaded once
      in the background after first paint (even if never viewed), served from
-     Cache Storage via blob URLs so they work offline permanently. There is
-     NO app service worker with fetch control (Progressier owns the app scope),
-     so the Cache API + blob/object URLs do the serving; a MutationObserver
+     Cache Storage via blob URLs so they work offline permanently. The app-scope
+     service worker (own sw.js, v106) also caches the images at the network
+     layer, but the Cache API + blob/object URLs still do the serving; a MutationObserver
      hydrates every <img src="images/...">, static or dynamically rendered.
    - RUNTIME cache 'testpro-runtime-v1': on-demand http(s) solution images
      only, added when a solution opens, DELETED when the solutions view is
