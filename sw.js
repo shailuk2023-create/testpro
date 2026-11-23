@@ -1,8 +1,8 @@
-/* TESTPRO service worker (v106) — own PWA worker, replaces Progressier.
+/* TESTPRO service worker (v107) — own PWA worker, replaces Progressier.
  *
  * Purpose: make the whole TESTPRO app work offline after first visit.
  *   - Precaches the app shell (index.html, manifest.json, icons)
- *     plus ALL 587 images/ files (Maths solution screenshots, CA/GA bank
+ *     plus ALL 533 images/ files (Maths solution screenshots, CA/GA bank
  *     and solution images, question figures, UI art and avatars).
  *   - Navigations are network-first so a new app version arrives when
  *     online; the cached copy serves when offline.
@@ -12,16 +12,30 @@
  *   - Cross-origin requests (Firebase, Google APIs, fonts, hotlinked news
  *     images) are never intercepted.
  *
- * Cache name: 'testpro-v106'. On activate, ONLY caches whose name starts
+ * Cache name: 'testpro-v107'. On activate, ONLY caches whose name starts
  * with 'testpro-v' (other than this one) are deleted — this removes the
  * old 'testpro-v17' / 'testpro-v20' shells but NEVER touches the app's
  * in-page image cache 'testpro-images-v1' or any other cache.
  *
+ * v107 change vs v106: the 54 orphan images (36 CA solution photos +
+ * 18 GA solution images, 3,890,077 B) are DELETED from the repo and
+ * removed from the precache. They had zero references in the app
+ * (those filenames occur 0 times in index.html, which uses cabank-
+ * and gabank- images instead) and were precached in v106 only because
+ * the orphan question was still open (see v106 build-sw-note.md M-1).
+ * Logo restore (same v107 release): icon-192.png / icon-512.png are
+ * replaced by the user's actual TESTPRO logo (full lockup on white);
+ * manifest background_color is now #ffffff to match. The two icon
+ * revisions below are the first 12 chars of the NEW files' git blob
+ * SHAs (computed locally — the files are not in the repo yet).
+ * Precache is now 537 entries (was 591); install is about 15.52 MiB
+ * (was about 18.29 MiB).
+ *
  * Revisions: every precache entry has a content revision recorded in
- * precache-list.json (591 entries). Image and icon revisions are the
+ * precache-list.json (537 entries). Image and icon revisions are the
  * first 12 chars of the file's git blob SHA in repo
- * shailuk2023-create/testpro @ main (tree a2b817ca...);
- * 'index.html' and 'manifest.json' use revision 'v106' because the v106
+ * shailuk2023-create/testpro @ main (tree bc5743ea...);
+ * 'index.html' and 'manifest.json' use revision 'v107' because the v107
  * file content does not exist in the repo yet. PRECACHE_REV below is a
  * copy of that same mapping, so this file changes whenever the list
  * changes and the browser re-installs it. If any precache fetch fails,
@@ -33,51 +47,15 @@
  */
 'use strict';
 
-var CACHE = 'testpro-v106';
+var CACHE = 'testpro-v107';
 
-/* Full precache URL list (591 entries). Revisions live in
+/* Full precache URL list (537 entries). Revisions live in
    precache-list.json and are mirrored in PRECACHE_REV below. */
 var PRECACHE = [
   'index.html',
   'manifest.json',
   'icon-192.png',
   'icon-512.png',
-  'images/ca-q100-10a5ac93.jpg',
-  'images/ca-q100-1e489cc1.jpg',
-  'images/ca-q103-81b1bf85.jpg',
-  'images/ca-q122-6ead4dc4.jpg',
-  'images/ca-q13-b0eef985.jpg',
-  'images/ca-q17-d4c90ce4.jpg',
-  'images/ca-q19-a3b0365d.jpg',
-  'images/ca-q20-b3bb99d9.jpg',
-  'images/ca-q22-ff85242d.jpg',
-  'images/ca-q25-72b452dc.jpg',
-  'images/ca-q26-0319d95e.jpg',
-  'images/ca-q29-7db6b149.jpg',
-  'images/ca-q3-9b98cdc1.jpg',
-  'images/ca-q30-6eccfe0c.jpg',
-  'images/ca-q32-89c5711c.jpg',
-  'images/ca-q35-17165b78.jpg',
-  'images/ca-q35-67936ba8.jpg',
-  'images/ca-q37-56c1e106.jpg',
-  'images/ca-q37-913d6b2e.jpg',
-  'images/ca-q37-c726314a.jpg',
-  'images/ca-q38-2b307a7c.jpg',
-  'images/ca-q39-2a723270.jpg',
-  'images/ca-q40-a6541d87.jpg',
-  'images/ca-q49-4256b847.jpg',
-  'images/ca-q51-ea143d2d.jpg',
-  'images/ca-q56-6db95c67.jpg',
-  'images/ca-q56-d28846d6.jpg',
-  'images/ca-q6-d0e00440.jpg',
-  'images/ca-q81-e3f6f325.jpg',
-  'images/ca-q82-4222af07.jpg',
-  'images/ca-q84-1668694d.jpg',
-  'images/ca-q85-827e2ecd.jpg',
-  'images/ca-q90-434afd2b.jpg',
-  'images/ca-q98-3469c363.jpg',
-  'images/ca-q98-a97ce252.jpg',
-  'images/ca-q99-12db938a.jpg',
   'images/cabank-001.webp',
   'images/cabank-002.webp',
   'images/cabank-003.webp',
@@ -114,24 +92,6 @@ var PRECACHE = [
   'images/cabank-034.webp',
   'images/cabank-035.webp',
   'images/cabank-036.webp',
-  'images/ga-q1-8463b42e.jpg',
-  'images/ga-q1-bd6647be.jpg',
-  'images/ga-q10-f5d71c90.jpg',
-  'images/ga-q11-7fdfd8b8.jpg',
-  'images/ga-q14-830ef17f.png',
-  'images/ga-q15-b351335a.jpg',
-  'images/ga-q16-882401bc.jpg',
-  'images/ga-q17-ff7958a9.jpg',
-  'images/ga-q18-cd7388d8.jpg',
-  'images/ga-q2-cb1f9917.jpg',
-  'images/ga-q20-abb4658b.jpg',
-  'images/ga-q25-8462760b.jpg',
-  'images/ga-q26-6d5bae2d.jpg',
-  'images/ga-q28-d1bcd305.jpg',
-  'images/ga-q29-512a243b.jpg',
-  'images/ga-q4-6aaea638.jpg',
-  'images/ga-q5-dd329b69.jpg',
-  'images/ga-q8-80289340.jpg',
   'images/gabank-001.webp',
   'images/gabank-002.webp',
   'images/gabank-003.webp',
@@ -631,49 +591,13 @@ var PRECACHE = [
   'images/ui-033.webp'
 ];
 
-/* url -> revision (git blob SHA, first 12 chars; 'v106' for
+/* url -> revision (git blob SHA, first 12 chars; 'v107' for
    'index.html' and 'manifest.json' — see header comment). */
 var PRECACHE_REV = {
-  'index.html': 'v106',
-  'manifest.json': 'v106',
-  'icon-192.png': '3b53b689bc45',
-  'icon-512.png': '674067fea3ee',
-  'images/ca-q100-10a5ac93.jpg': 'e54822ca5c5b',
-  'images/ca-q100-1e489cc1.jpg': 'ad2459f06d07',
-  'images/ca-q103-81b1bf85.jpg': 'e86833405c46',
-  'images/ca-q122-6ead4dc4.jpg': '9fb21ee675f9',
-  'images/ca-q13-b0eef985.jpg': '900ae58de5b1',
-  'images/ca-q17-d4c90ce4.jpg': '19a91b73cb81',
-  'images/ca-q19-a3b0365d.jpg': '55f6946ca999',
-  'images/ca-q20-b3bb99d9.jpg': 'a9de2cb48c13',
-  'images/ca-q22-ff85242d.jpg': '53b1ba4c6c85',
-  'images/ca-q25-72b452dc.jpg': '7bdd23e7584d',
-  'images/ca-q26-0319d95e.jpg': 'a561f89037db',
-  'images/ca-q29-7db6b149.jpg': 'a88b84de5630',
-  'images/ca-q3-9b98cdc1.jpg': 'a4072613e5d9',
-  'images/ca-q30-6eccfe0c.jpg': '7539e9fc662a',
-  'images/ca-q32-89c5711c.jpg': '6e854bd11240',
-  'images/ca-q35-17165b78.jpg': '79cacaa30964',
-  'images/ca-q35-67936ba8.jpg': 'f63eeed1c1c1',
-  'images/ca-q37-56c1e106.jpg': 'f7ddfc7870e1',
-  'images/ca-q37-913d6b2e.jpg': '2324fcce0f73',
-  'images/ca-q37-c726314a.jpg': 'a7a7b73f7346',
-  'images/ca-q38-2b307a7c.jpg': '77b1548681c5',
-  'images/ca-q39-2a723270.jpg': '787021af563e',
-  'images/ca-q40-a6541d87.jpg': '78216225d9ff',
-  'images/ca-q49-4256b847.jpg': 'f3e495181cbb',
-  'images/ca-q51-ea143d2d.jpg': '6f196bcf6667',
-  'images/ca-q56-6db95c67.jpg': 'a159bd444b65',
-  'images/ca-q56-d28846d6.jpg': '8b02cb2675f2',
-  'images/ca-q6-d0e00440.jpg': 'b81c5fcbe876',
-  'images/ca-q81-e3f6f325.jpg': '64aaccc5a5b1',
-  'images/ca-q82-4222af07.jpg': 'e193870e80ec',
-  'images/ca-q84-1668694d.jpg': '3b3e1d64e8d2',
-  'images/ca-q85-827e2ecd.jpg': '4c0d890bc56c',
-  'images/ca-q90-434afd2b.jpg': '33edf1f5a3d1',
-  'images/ca-q98-3469c363.jpg': '4b34ef3f16ac',
-  'images/ca-q98-a97ce252.jpg': 'ec158b6467d5',
-  'images/ca-q99-12db938a.jpg': '8dbf69a586e2',
+  'index.html': 'v107',
+  'manifest.json': 'v107',
+  'icon-192.png': 'f6ba28916a1c',
+  'icon-512.png': '5755abd73ea3',
   'images/cabank-001.webp': '4aa3263cba01',
   'images/cabank-002.webp': 'fd5c9f39b298',
   'images/cabank-003.webp': '2b734683dacb',
@@ -710,24 +634,6 @@ var PRECACHE_REV = {
   'images/cabank-034.webp': '09c46ab710d7',
   'images/cabank-035.webp': 'c037bd98d3ad',
   'images/cabank-036.webp': '5d79a9e24f56',
-  'images/ga-q1-8463b42e.jpg': 'a1148fc0cf89',
-  'images/ga-q1-bd6647be.jpg': '695517396a37',
-  'images/ga-q10-f5d71c90.jpg': '34e278ba08f8',
-  'images/ga-q11-7fdfd8b8.jpg': '57afd3c5845b',
-  'images/ga-q14-830ef17f.png': '4cda832a27ec',
-  'images/ga-q15-b351335a.jpg': '842f447258cb',
-  'images/ga-q16-882401bc.jpg': '8fa29c8f9f21',
-  'images/ga-q17-ff7958a9.jpg': '91e6cde88849',
-  'images/ga-q18-cd7388d8.jpg': 'e9d02eff7286',
-  'images/ga-q2-cb1f9917.jpg': 'a1a68a0a0f06',
-  'images/ga-q20-abb4658b.jpg': '038479402edb',
-  'images/ga-q25-8462760b.jpg': '591c8824cc23',
-  'images/ga-q26-6d5bae2d.jpg': '8069ad0a91b2',
-  'images/ga-q28-d1bcd305.jpg': 'b0f9c1e7205e',
-  'images/ga-q29-512a243b.jpg': 'acb6cd32b893',
-  'images/ga-q4-6aaea638.jpg': 'd54e45c893d0',
-  'images/ga-q5-dd329b69.jpg': 'c0ddaf97d849',
-  'images/ga-q8-80289340.jpg': 'a4326900a011',
   'images/gabank-001.webp': '0465435c2430',
   'images/gabank-002.webp': '7fa2932e7656',
   'images/gabank-003.webp': 'c33241b9c0e9',
