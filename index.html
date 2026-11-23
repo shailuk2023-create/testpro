@@ -117,8 +117,8 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 .bottom-nav button.active{color:var(--teal)}
 @media (max-width:900px){
   .bottom-nav.show{display:flex}
-  .list-body{padding-bottom:92px!important}
-  .settings-wrap{padding-bottom:92px!important}
+  .list-body{padding-bottom:148px!important}
+  .settings-wrap{padding-bottom:148px!important}
 }
 /* ---------- SETTINGS ---------- */
 #view-settings{min-height:100vh}
@@ -285,7 +285,7 @@ input,select,textarea{font-family:inherit;color:var(--text)}
 /* modals */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.show{display:flex}
-#reportToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center}
+#reportToast{position:fixed;left:50%;bottom:152px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:90vw;text-align:center}
 #reportToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #modalReport .rep-type{width:100%;text-align:left;justify-content:flex-start}
 #modalReport .rep-type.selected{border:2px solid #0b7196;background:#e0f2f7;color:#0b7196;font-weight:700}
@@ -863,7 +863,7 @@ table.sum th{background:var(--surface2);color:var(--muted);font-size:12px;text-t
 }
 
 /* ============ TESTPRO mobile redesign + saved + folder home ============ */
-.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:300;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:152px;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:300;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:90vw;text-align:center}
 [data-theme="dark"] .toast{background:#e2e8f0;color:#0f172a}
 .logo-mark{height:28px;width:auto;flex-shrink:0}
 .mob-only{display:none!important}
@@ -3181,7 +3181,7 @@ html:not([data-theme="dark"]) .qa-btn{color:#0f172a!important}
 #view-list .list-topbar .avatar{background:linear-gradient(135deg,#0EA5A5,#f0b429)}
 #view-list .list-topbar .icon-btn{border-radius:14px}
 /* ---- bottom nav: floating pill, active = gradient ---- */
-.bottom-nav{left:12px;right:12px;bottom:12px;border-radius:22px;border:1px solid var(--border);box-shadow:0 12px 32px -10px rgba(23,18,43,.35);padding:6px}
+.bottom-nav{left:12px;right:12px;bottom:68px;border-radius:22px;border:1px solid var(--border);box-shadow:0 12px 32px -10px rgba(23,18,43,.35);padding:6px}
 .bottom-nav button{border-radius:16px;padding:8px 0 6px}
 .bottom-nav button.active{background:linear-gradient(135deg,#0EA5A5,#0d9488);color:#fff;box-shadow:0 8px 18px -6px rgba(14,165,165,.55)}
 .bottom-nav button.active::before{display:none}
@@ -7317,7 +7317,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 104; /* must match version.txt - bump on every release */
+var APP_VERSION = 105; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
