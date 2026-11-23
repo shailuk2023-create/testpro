@@ -814,5 +814,20 @@
   "responseId": "ACYDBNi6iL4RcqPll4aQbucayqCK-GiqkQDzq7z07BKpWBM1M2jv_Mk5-G6wHL2Es1fG5Ro",
   "fixedSummary": "July Test 2 Q50 (Kargil Vijay Diwas) image replaced: Kargil War Memorial Dras photo -> reporter-supplied 'KARGIL VIJAY DIWAS 26 JULY 2026' graphic, embedded offline as base64 JPEG",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Ancient History • Ancient 3 • Q8 (GA Test Q8) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795411969132,
+  "data": {
+   "chapter": "GA – Ancient History",
+   "test": "Ancient 3",
+   "qnum": "Q8 (GA Test Q8)"
+  },
+  "responseId": "ACYDBNjqpAgpKiqrLXWFlkr4Kj_vWo_zEpde4tkbnGKmKsS849DpMU3m0rOHxtZbEK7Em9I",
+  "fixedSummary": "Ancient 3 Q8 (Junagadh inscription of Rudradaman I) image replaced: 1869 Ashoka Girnar edict photo -> reporter-supplied Rudradaman Junagadh inscription graphic, embedded offline as base64 JPEG",
+  "sent": false
  }
 ]
