@@ -273,7 +273,12 @@ function repairEngagement(coinsObj){
      corrected ledger is the source of truth, so set eng to it directly.
      Do NOT use the /10 branch below (Vimal: 58.1 vs correct 239). */
   if (ledgerHasStaleOpen(coinsObj)){
-    if (eng !== ledgerSum) return {changed: true, oldEng: eng, newEng: r1(ledgerSum), ledgerSum: ledgerSum};
+    /* v113 (D2): keep the pruned base — newEng is the max of the corrected
+       ledger sum and eng/10 (rounded). For Vimal max(239, 58.1) = 239,
+       unchanged; a long-history user whose ledger is pruned to 31 days
+       keeps the base instead of being zeroed to the visible ledger. */
+    var newEng = Math.max(ledgerSum, r1(eng / 10));
+    if (eng !== newEng) return {changed: true, oldEng: eng, newEng: r1(newEng), ledgerSum: ledgerSum};
     return {changed: false, oldEng: eng, newEng: eng, ledgerSum: ledgerSum};
   }
   if (eng < ledgerSum){
