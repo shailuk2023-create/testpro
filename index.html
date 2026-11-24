@@ -7330,7 +7330,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 110; /* must match version.txt - bump on every release */
+var APP_VERSION = 111; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -7474,8 +7474,10 @@ function restoreLastView(){
 function showView(name){
   if (state.view !== name){
     if (state.routeDepth > 0 && _viewAt[state.routeDepth - 1] === name){
-      /* going back to the screen we came from: step back in history instead of stacking a duplicate entry */
-      window.history.back();
+      /* v111: was async window.history.back() — the popstate then applied the REAL previous history entry, which had drifted from _viewAt (closeOverlayForBack re-pushes entries without updating _viewAt), so Saved/Attempted from the slider landed on Home like a back press. Synchronous replaceState instead: same entry, no popstate race, no duplicate stacked. */
+      window.history.replaceState({appView:name, routeDepth:state.routeDepth, homeRoot:false, homeGuard:false}, '', '#view-' + name);
+      _viewAt[state.routeDepth] = name;
+      state.homeGuard = false;
     } else if ((state.view === 'instructions' && name === 'test') || (state.view === 'test' && name === 'result')){
       /* instructions -> test -> result is one flow: replace the entry so Back never returns into a finished test */
       window.history.replaceState({appView:name, routeDepth:state.routeDepth, homeRoot:false, homeGuard:false}, '', '#view-' + name);
