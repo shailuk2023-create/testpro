@@ -829,5 +829,20 @@
   "responseId": "ACYDBNjqpAgpKiqrLXWFlkr4Kj_vWo_zEpde4tkbnGKmKsS849DpMU3m0rOHxtZbEK7Em9I",
   "fixedSummary": "Ancient 3 Q8 (Junagadh inscription of Rudradaman I) image replaced: 1869 Ashoka Girnar edict photo -> reporter-supplied Rudradaman Junagadh inscription graphic, embedded offline as base64 JPEG",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Geography • Geography 3 • Q10 (GA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795520078285,
+  "data": {
+   "chapter": "GA – Geography",
+   "test": "Geography 3",
+   "qnum": "Q10 (GA Test Q10)"
+  },
+  "responseId": "ACYDBNhc66PcrVGy0OabuhGvK3pKWrLpy-ykoV4vFc__1l9meuZRL3hI899xjDmK0tdiu_Q",
+  "fixedSummary": "Geography 3 Q10 (Kalahari desert) solution image replaced: generic red-dunes Namibia photo -> reporter-supplied world deserts map with Kalahari labelled (repo file images/rep-ga-geography-geography3-q10.jpg)",
+  "sent": false
  }
 ]
