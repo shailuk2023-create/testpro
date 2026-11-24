@@ -237,6 +237,28 @@ function ledgerHasStaleOpen(coinsObj){
   return false;
 }
 
+/* v112-backfill: normalise stale old-scale day opens IN PLACE on a
+   (deep-copied) coins object: 50 -> 5, 100 -> 10. Returns true when
+   any day was changed. The stored days are the ledger the repair
+   reads — rewriting them makes the console show the true values and
+   stops every future repair from having to normalise the same days
+   again. Never changes the computed totals: ledgerEngagementSum
+   already divides these opens by 10 when it reads them. */
+function normalizeStaleDayOpens(coinsObj){
+  if (!coinsObj || typeof coinsObj !== 'object') return false;
+  var days = coinsObj.days;
+  if (!days || typeof days !== 'object' || Array.isArray(days)) return false;
+  var changed = false;
+  Object.keys(days).forEach(function(k){
+    var d = days[k];
+    if (d && typeof d.open === 'number' && isFinite(d.open) && d.open > 10){
+      d.open = r1(d.open / 10);
+      changed = true;
+    }
+  });
+  return changed;
+}
+
 /* Decide whether the stored eng (on the EFFECTIVE, post-migration coins
    object) is stale against the ledger. Returns
    {changed, oldEng, newEng, ledgerSum}. Never mutates its input.
@@ -385,9 +407,11 @@ async function recomputeAllUsers(db){
          value on next pull and the fix is never applied twice. The write
          is a deep copy with the repaired eng set — the stored object is
          never mutated in place. */
-      if (computed.engagementMigrated || repair.changed){
+      var staleDays = ledgerHasStaleOpen(effectiveCoins);
+      if (computed.engagementMigrated || repair.changed || staleDays){
         var toPersist = deepCopyCoins(effectiveCoins);
         if (repair.changed) toPersist.eng = repair.newEng;
+        var daysFixed = normalizeStaleDayOpens(toPersist);
         await docRef(db, 'users/' + uid + '/profile/data').set(
           {coins: toPersist},
           {merge: true}
@@ -397,6 +421,9 @@ async function recomputeAllUsers(db){
         }
         if (repair.changed){
           console.log('[repair] ' + uid + ': eng ' + repair.oldEng + ' -> ' + repair.newEng + ' (ledger ' + repair.ledgerSum + ')');
+        }
+        if (daysFixed){
+          console.log('[dayfix] ' + uid + ': stale old-scale day opens normalised to new scale');
         }
       }
 
@@ -427,7 +454,7 @@ async function recomputeAllUsers(db){
   return {usersUpdated: usersUpdated, usersSkipped: usersSkipped, results: results, questionStats: questionStats};
 }
 
-module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum, ledgerHasStaleOpen: ledgerHasStaleOpen, syncQuestionStats: syncQuestionStats, statsEqual: statsEqual};
+module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum, ledgerHasStaleOpen: ledgerHasStaleOpen, normalizeStaleDayOpens: normalizeStaleDayOpens, syncQuestionStats: syncQuestionStats, statsEqual: statsEqual};
 
 /* ---- Direct run: node run.js --------------------------------------------
    Service account JSON comes ONLY from env var
