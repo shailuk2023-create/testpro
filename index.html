@@ -7324,7 +7324,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 108; /* must match version.txt - bump on every release */
+var APP_VERSION = 109; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -14194,6 +14194,13 @@ function migrateCoinsEngagement(c){
                           base already in the new scale).
      eng == ledgerSum, or no/empty ledger -> no change; eng is NEVER
                           zeroed here.
+   v109 STALE-OPEN NORMALISATION (all-users fix, 24 Nov 2026): a day's
+   `open` above 10 is stale old-scale (max legit daily open is 10;
+   old-scale awards were 50/100). The v68 migration never divided such
+   values once engV68 was already true, so coinDaysSum uses open/10 for
+   open > 10, and when ANY day was normalised the repair sets eng :=
+   corrected ledgerSum directly — the /10 branch must NOT run there
+   (for Vimal it would give 58.1 while the corrected ledger is 239).
    IDEMPOTENT: a repaired value no-ops on the next call (eng/10 is
    farther from ledgerSum than eng is once eng is in the new scale).
    Called from getCoins right after migrateCoinsEngagement, persisted
@@ -14204,6 +14211,13 @@ function repairCoinsEngagement(c){
   if (Object.keys(c.days).length === 0) return false;
   var ledgerSum = coinDaysSum(c.days);
   var eng = +c.eng || 0;
+  /* v109: stale old-scale daily opens in the ledger (open > 10) — the
+     corrected ledger sum is the source of truth, set eng to it directly.
+     Do NOT use the /10 branch below (Vimal: 58.1 vs correct 239). */
+  if (coinDaysHasStaleOpen(c.days)){
+    if (eng !== ledgerSum){ c.eng = ledgerSum; return true; }
+    return false;
+  }
   if (eng < ledgerSum){ c.eng = ledgerSum; return true; }
   if (eng > ledgerSum){
     if (Math.abs(eng / 10 - ledgerSum) < Math.abs(eng - ledgerSum)){ c.eng = eng / 10; return true; }
@@ -14271,16 +14285,30 @@ function coinDayEntry(c, dateStr){
 }
 /* Canonical per-day sum: usage/sol are DERIVED from usageSecs/solIds (not
    trusted from the stored fields), so a raw cloud/stash entry whose fields
-   disagree with its counters can never double-count. */
+   disagree with its counters can never double-count.
+   v109: a stored open above 10 is stale old-scale (max legit daily open
+   is 10) and is normalised to open/10 (50 -> 5, 100 -> 10). */
 function coinDaysSum(days){
   var s = 0;
   Object.keys(days || {}).forEach(function(k){
     var e = days[k] || {};
-    s += (+e.open || 0)
+    var o = (+e.open || 0);
+    if (o > 10) o = o / 10; /* v109: stale old-scale open */
+    s += o
       + Math.min(10, Math.floor((+e.usageSecs || 0) / 600) * 1)
       + Math.min(5, (Array.isArray(e.solIds) ? e.solIds.length : 0) * 0.5);
   });
   return s;
+}
+/* v109: true when any day's stored open award is stale old-scale
+   (> 10 — the max legit daily open is 10 on a 7+ day streak). */
+function coinDaysHasStaleOpen(days){
+  var ks = Object.keys(days || {});
+  for (var i = 0; i < ks.length; i++){
+    var o = +((days[ks[i]] || {}).open || 0);
+    if (o > 10) return true;
+  }
+  return false;
 }
 /* Per-day ledger merge (cloud pull + orphan-stash restore), v59-A2.
    The ledger `coins.days[YYYY-MM-DD] = {open, usage, usageSecs, sol,
