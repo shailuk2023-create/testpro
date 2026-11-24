@@ -6110,12 +6110,12 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 <!-- ================= SIDE MENU (mobile) ================= -->
 <div class="side-menu" id="sideMenu" aria-label="Menu">
   <div class="sm-brand"><svg class="logo-mark" viewBox="120 110 770 500" aria-hidden="true"><use href="#tpLogoArt"/></svg><span class="bw">TEST<b>PRO</b></span></div>
-  <a href="#" id="smHome"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
-  <a href="#" id="smTests"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg>Tests</a>
-  <a href="#" id="smSaved"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved Questions</a>
-  <a href="#" id="smLeader"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</a>
-  <a href="#" id="smAttempted"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg>Attempted Tests</a>
-  <a href="#" id="smRefresh"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh</a>
+  <a href="#" id="smHome" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+  <a href="#" id="smTests" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-tests"/></svg>Tests</a>
+  <a href="#" id="smSaved" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bookmark"/></svg>Saved Questions</a>
+  <a href="#" id="smLeader" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg>Leaderboard</a>
+  <a href="#" id="smAttempted" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg>Attempted Tests</a>
+  <a href="#" id="smRefresh" onclick="return false"><svg class="i" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh</a>
   <a href="#" id="smPush" onclick="return false"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span id="smPushLbl">System notifications</span><label class="sm-push-toggle" id="smPushToggleWrap" for="smPushToggle"><input type="checkbox" id="smPushToggle" aria-label="System notifications on/off"><span class="sm-push-track"><span class="sm-push-knob"></span></span></label></a>
 </div>
 <div class="menu-backdrop" id="menuBackdrop"></div>
@@ -7330,7 +7330,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 111; /* must match version.txt - bump on every release */
+var APP_VERSION = 112; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
