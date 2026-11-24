@@ -7330,7 +7330,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 112; /* must match version.txt - bump on every release */
+var APP_VERSION = 113; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -14269,20 +14269,45 @@ function migrateCoinsEngagement(c){
    (for Vimal it would give 58.1 while the corrected ledger is 239).
    IDEMPOTENT: a repaired value no-ops on the next call (eng/10 is
    farther from ledgerSum than eng is once eng is in the new scale).
+   v113 (D1): stale opens are now normalised IN PLACE in the stored days
+   (50 -> 5) before the ledger sum is computed — previously only the
+   read was normalised, so mergeCoins' MAX re-poisoned the cloud after
+   the server backfill cleaned it. v113 (D2): the stale-open branch now
+   keeps the pruned base, newEng = max(ledgerSum, eng/10).
    Called from getCoins right after migrateCoinsEngagement, persisted
    via storeSet when it changes. */
 function repairCoinsEngagement(c){
   if (!c || typeof c !== 'object') return false;
   if (!c.days || typeof c.days !== 'object' || Array.isArray(c.days)) return false;
   if (Object.keys(c.days).length === 0) return false;
+  /* v113 (D1): normalise stale old-scale daily opens IN PLACE (50 -> 5,
+     100 -> 10) BEFORE computing the ledger sum. Previously the repair only
+     normalised at read (coinDaysSum) and left the stored 50 in place, so
+     mergeCoins' MAX step re-poisoned the cloud after the server backfill
+     cleaned it (local 50 beat cloud 5, then pushNow pushed it back). Now
+     the cleaned days persist via storeSet (getCoins) and the merge sees
+     5 vs 5. Returns true when eng changed OR any day was normalised, so
+     the cleaned days are always persisted. */
+  var hadStale = false;
+  Object.keys(c.days).forEach(function(k){
+    var e = c.days[k];
+    if (e && typeof e.open === 'number' && isFinite(e.open) && e.open > 10){
+      e.open = e.open / 10; hadStale = true;
+    }
+  });
   var ledgerSum = coinDaysSum(c.days);
   var eng = +c.eng || 0;
-  /* v109: stale old-scale daily opens in the ledger (open > 10) — the
-     corrected ledger sum is the source of truth, set eng to it directly.
-     Do NOT use the /10 branch below (Vimal: 58.1 vs correct 239). */
-  if (coinDaysHasStaleOpen(c.days)){
-    if (eng !== ledgerSum){ c.eng = ledgerSum; return true; }
-    return false;
+  /* v113 (D2): stale-open branch keeps the pruned base — newEng is the max
+     of the corrected ledger sum and eng/10 (rounded). For Vimal
+     max(239, 58.1) = 239, unchanged; a long-history user whose ledger is
+     pruned to 31 days keeps the base instead of being zeroed to the
+     visible ledger sum. */
+  if (hadStale){
+    /* NOTE: r1() is IIFE-local to the leaderboard script and NOT callable
+       here — this is its expansion: Math.round(eng/10*10)/10. */
+    var newEng = Math.max(ledgerSum, Math.round(eng / 10 * 10) / 10);
+    if (eng !== newEng){ c.eng = newEng; return true; }
+    return hadStale;
   }
   if (eng < ledgerSum){ c.eng = ledgerSum; return true; }
   if (eng > ledgerSum){
@@ -14431,7 +14456,8 @@ function mergeCoins(dst, src){
         var e = days[date] || {};
         var m = mergedDays[date];
         if (!m) m = mergedDays[date] = {open: 0, usage: 0, usageSecs: 0, sol: 0, solIds: []};
-        if ((+e.open || 0) > m.open) m.open = +e.open || 0;
+        var o = +e.open || 0; if (o > 10) o = o / 10; /* v113: a stale old-scale open can never win the MAX */
+        if (o > m.open) m.open = o;
         if ((+e.usageSecs || 0) > m.usageSecs) m.usageSecs = +e.usageSecs || 0;
         m.usage = Math.min(10, Math.floor(m.usageSecs / 600) * 1);
         (Array.isArray(e.solIds) ? e.solIds : []).forEach(function(k){
