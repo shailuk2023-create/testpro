@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b7196">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -55,7 +55,7 @@
 }
 /* ================= BASE ================= */
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%}
+html,body{height:100%;touch-action:pan-x pan-y}
 body{font-family:'Segoe UI',system-ui,-apple-system,'Noto Sans Devanagari',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;color:var(--text)}
@@ -10964,6 +10964,8 @@ function closeImgLightboxUI(){
     sc.addEventListener('touchend', function(e){ if (e.touches.length < 2) lbPinch = null; }, {passive:true});
   }
 })();
+/* zoomfix 24 Nov 2026 (v108, no version bump): professional-app behaviour — no page pinch/double-tap zoom on the mobile UI. The viewport user-scalable=no + touch-action on html,body do the blocking; the image lightbox keeps its own pinch (JS two-finger scale + buttons) and its .lb-scroll touch-action:pan-x pan-y pinch-zoom, so images still zoom. */
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
 /* v79: hybrid images — URL images may fail when offline; hide a failed
    .sol-img cleanly instead of showing a broken-image icon. (error events
    don't bubble, so listen in the capture phase.) */
