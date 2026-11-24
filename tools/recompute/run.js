@@ -168,6 +168,14 @@ async function getDocData(ref){
      - eng > ledgerSum AND |eng/10 - ledgerSum| < |eng - ledgerSum|
                                -> eng := eng/10
      - otherwise               -> keep eng
+   v109 STALE-OPEN NORMALISATION (all-users fix, 24 Nov 2026): a day's
+   `open` above 10 is stale old-scale (the max legit daily open is 10
+   on a 7+ day streak; old-scale awards were 50/100). The v68 migration
+   never divided such values once engV68 was already true, so
+   ledgerEngagementSum uses open/10 for open > 10, and when ANY day was
+   normalised the repair sets eng := corrected ledgerSum directly — the
+   /10 branch must NOT run there (for Vimal it would give 58.1 while
+   the corrected ledger is 239).
    The repair runs on the EFFECTIVE coins object (after the v68 /10
    migration, so days[].open is already new-scale, matching the usage/sol
    caps) and never mutates its input. All values are 1-decimal.
@@ -182,8 +190,10 @@ function deepCopyCoins(v){
    truth for what the user actually earned). Per day: the stored open
    award + usage coins re-derived from usageSecs (+1 per 10 min, cap 10)
    + solution coins re-derived from solIds (+0.5 per unique question,
-   cap 5). Returns null when there is no usable ledger (no days object,
-   empty, or no day with any usable field) so the caller keeps eng. */
+   cap 5). v109: a stored open above 10 is stale old-scale and is
+   normalised to open/10 (50 -> 5, 100 -> 10). Returns null when there
+   is no usable ledger (no days object, empty, or no day with any usable
+   field) so the caller keeps eng. */
 function ledgerEngagementSum(coinsObj){
   if (!coinsObj || typeof coinsObj !== 'object') return null;
   var days = coinsObj.days;
@@ -196,7 +206,9 @@ function ledgerEngagementSum(coinsObj){
   for (i = 0; i < keys.length; i++){
     d = days[keys[i]];
     if (!d || typeof d !== 'object') continue;
+    /* v109: stale old-scale open (max legit daily open is 10). */
     open = (typeof d.open === 'number' && isFinite(d.open)) ? d.open : 0;
+    if (open > 10) open = open / 10;
     usageSecs = (typeof d.usageSecs === 'number' && isFinite(d.usageSecs)) ? d.usageSecs : 0;
     if (Array.isArray(d.solIds)) solCount = d.solIds.length;
     else if (typeof d.solIds === 'number' && isFinite(d.solIds)) solCount = d.solIds;
@@ -210,6 +222,21 @@ function ledgerEngagementSum(coinsObj){
   return r1(sum);
 }
 
+/* v109: true when any day's stored open award is stale old-scale
+   (> 10 — the max legit daily open is 10 on a 7+ day streak). */
+function ledgerHasStaleOpen(coinsObj){
+  if (!coinsObj || typeof coinsObj !== 'object') return false;
+  var days = coinsObj.days;
+  if (!days || typeof days !== 'object' || Array.isArray(days)) return false;
+  var keys = Object.keys(days);
+  for (var i = 0; i < keys.length; i++){
+    var d = days[keys[i]];
+    var o = (d && typeof d.open === 'number' && isFinite(d.open)) ? d.open : 0;
+    if (o > 10) return true;
+  }
+  return false;
+}
+
 /* Decide whether the stored eng (on the EFFECTIVE, post-migration coins
    object) is stale against the ledger. Returns
    {changed, oldEng, newEng, ledgerSum}. Never mutates its input.
@@ -220,6 +247,13 @@ function repairEngagement(coinsObj){
   var ledgerSum = ledgerEngagementSum(coinsObj);
   if (ledgerSum == null) return none; /* empty ledger -> keep eng */
   var eng = (typeof coinsObj.eng === 'number' && isFinite(coinsObj.eng)) ? coinsObj.eng : 0;
+  /* v109: stale old-scale opens were normalised in ledgerSum above — the
+     corrected ledger is the source of truth, so set eng to it directly.
+     Do NOT use the /10 branch below (Vimal: 58.1 vs correct 239). */
+  if (ledgerHasStaleOpen(coinsObj)){
+    if (eng !== ledgerSum) return {changed: true, oldEng: eng, newEng: r1(ledgerSum), ledgerSum: ledgerSum};
+    return {changed: false, oldEng: eng, newEng: eng, ledgerSum: ledgerSum};
+  }
   if (eng < ledgerSum){
     return {changed: true, oldEng: eng, newEng: r1(ledgerSum), ledgerSum: ledgerSum};
   }
@@ -393,7 +427,7 @@ async function recomputeAllUsers(db){
   return {usersUpdated: usersUpdated, usersSkipped: usersSkipped, results: results, questionStats: questionStats};
 }
 
-module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum, syncQuestionStats: syncQuestionStats, statsEqual: statsEqual};
+module.exports = {recomputeAllUsers: recomputeAllUsers, repairEngagement: repairEngagement, ledgerEngagementSum: ledgerEngagementSum, ledgerHasStaleOpen: ledgerHasStaleOpen, syncQuestionStats: syncQuestionStats, statsEqual: statsEqual};
 
 /* ---- Direct run: node run.js --------------------------------------------
    Service account JSON comes ONLY from env var
