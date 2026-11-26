@@ -859,5 +859,20 @@
   "responseId": "ACYDBNj5bdXCb1GMmdKPUABaPuHbH0tqFH3amgOODCCA7S5KPSnWrJ4FdcjOFPVCIfd_Ar4",
   "fixedSummary": "July Test 4 Q84 image replaced: generic Beomeosa temple photo (Wikimedia) -> UNESCO 48th-session group photo from reporter-supplied UNESCO link (images/rep-ca-jul2026-q84.jpg)",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 4 • Q85 (CA Test Q10) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795678044814,
+  "data": {
+   "chapter": "CA – July 2026",
+   "test": "July Test 4",
+   "qnum": "Q85 (CA Test Q10)"
+  },
+  "responseId": "ACYDBNgfBF6eLtaqOGbMv1_OP8xq4rABluMV6bOzQsccRWbxq2Kn7e5z8krtO9oIkNLn2xA",
+  "fixedSummary": "July Test 4 Q85 image replaced: generic Mehrangarh Fort, Jodhpur photo (Wikimedia) -> reporter's T1D Summit Jodhpur panel photo (images/rep-ca-jul2026-q85.jpg)",
+  "sent": false
  }
 ]
