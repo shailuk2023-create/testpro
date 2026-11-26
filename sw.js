@@ -14,7 +14,7 @@
  *   - Cross-origin requests (Firebase, Google APIs, fonts, hotlinked news
  *     images) are never intercepted.
  *
- * Cache name: 'testpro-v113'. On activate, ONLY caches whose name starts
+ * Cache name: 'testpro-v114'. On activate, ONLY caches whose name starts
  * with 'testpro-v' (other than this one) are deleted — this removes the
  * old 'testpro-v17' / 'testpro-v20' shells but NEVER touches the app's
  * in-page image cache 'testpro-images-v1' or any other cache.
@@ -60,7 +60,7 @@
  */
 'use strict';
 
-var CACHE = 'testpro-v113';
+var CACHE = 'testpro-v114';
 
 /* Full precache URL list (37 entries). Revisions live in
    precache-list.json and are mirrored in PRECACHE_REV below. */
