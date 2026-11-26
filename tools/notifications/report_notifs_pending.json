@@ -888,5 +888,19 @@
   },
   "responseId": "ACYDBNhp54PZ1kosCVcF026Ns7KvApxdqJSp_EggeUwY2WVvML6vAVKs4TJGeJQW5pSVUxw",
   "fixedSummary": "July Test 4 Q90 image replaced: generic Wikimedia Lord's ground photo -> reporter-supplied Rohit Sharma Lord's ODI century image (rep-ca-jul2026-q90.jpg)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 4 • Q94 (CA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795681622079,
+  "data": {
+   "chapter": "CA – July 2026",
+   "test": "July Test 4",
+   "qnum": "Q94 (CA Test Q19)"
+  },
+  "responseId": "ACYDBNizGFhbBYcHXYt4zYh1rc7CRCKHja_F99fZ34x4gJXIH98DJ05sW6aCIneKPpdhpy4",
+  "fixedSummary": "July Test 4 Q94 image replaced: National Library Kolkata building photo -> reporter-supplied Shabdlok museum entrance image (rep-ca-jul2026-q94.jpg)"
  }
 ]
