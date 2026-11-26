@@ -902,5 +902,19 @@
   },
   "responseId": "ACYDBNizGFhbBYcHXYt4zYh1rc7CRCKHja_F99fZ34x4gJXIH98DJ05sW6aCIneKPpdhpy4",
   "fixedSummary": "July Test 4 Q94 image replaced: National Library Kolkata building photo -> reporter-supplied Shabdlok museum entrance image (rep-ca-jul2026-q94.jpg)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 4 • Q98 (CA Test Q23) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795682079648,
+  "data": {
+   "chapter": "CA – July 2026",
+   "test": "July Test 4",
+   "qnum": "Q98 (CA Test Q23)"
+  },
+  "responseId": "ACYDBNjIWmdufxU0ExfX4olPLKPcFOtJm898WxgEWrErRKmKQfKBg9jrny0zF_fbux9r-fI",
+  "fixedSummary": "July Test 4 Q98 image replaced: generic Kochi harbour photo -> reporter-supplied PIB Operation Southern Readiness 26-2 felicitation ceremony photo (rep-ca-jul2026-q98.jpeg)"
  }
 ]
