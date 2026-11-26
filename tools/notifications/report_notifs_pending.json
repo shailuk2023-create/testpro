@@ -844,5 +844,20 @@
   "responseId": "ACYDBNhc66PcrVGy0OabuhGvK3pKWrLpy-ykoV4vFc__1l9meuZRL3hI899xjDmK0tdiu_Q",
   "fixedSummary": "Geography 3 Q10 (Kalahari desert) solution image replaced: generic red-dunes Namibia photo -> reporter-supplied world deserts map with Kalahari labelled (repo file images/rep-ga-geography-geography3-q10.jpg)",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: CA – July 2026 • July Test 4 • Q84 (CA Test Q9) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795677569707,
+  "data": {
+   "chapter": "CA – July 2026",
+   "test": "July Test 4",
+   "qnum": "Q84 (CA Test Q9)"
+  },
+  "responseId": "ACYDBNj5bdXCb1GMmdKPUABaPuHbH0tqFH3amgOODCCA7S5KPSnWrJ4FdcjOFPVCIfd_Ar4",
+  "fixedSummary": "July Test 4 Q84 image replaced: generic Beomeosa temple photo (Wikimedia) -> UNESCO 48th-session group photo from reporter-supplied UNESCO link (images/rep-ca-jul2026-q84.jpg)",
+  "sent": false
  }
 ]
