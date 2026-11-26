@@ -5618,6 +5618,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <section class="card set-card set-account">
         <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>Account</h3>
         <p class="set-acct-status" id="setAccountStatus">Not logged in</p>
+        <p class="set-acct-status" id="setAppVersion"></p>
         <div id="setEmailForm">
           <label>Email
             <input id="setEmail" type="email" placeholder="you@example.com" autocomplete="email">
@@ -6393,11 +6394,12 @@ function toggleSavedCA(monthKey, n){
   var st = storeGet();
   if (!Array.isArray(st.saved_ca)) st.saved_ca = [];
   var k = savedKeyCA(monthKey, n), i = st.saved_ca.indexOf(k);
-  if (i === -1){ st.saved_ca.push(k); if (st._fbMeta && st._fbMeta.unsaved) delete st._fbMeta.unsaved[k]; }
+  if (i === -1){ st.saved_ca.push(k); if (st._fbMeta && st._fbMeta.unsaved) delete st._fbMeta.unsaved[k]; if (!st._fbMeta) st._fbMeta = {}; if (!st._fbMeta.resaved) st._fbMeta.resaved = {}; st._fbMeta.resaved[k] = Date.now(); /* v114 (B3): re-save marker */ }
   else { st.saved_ca.splice(i, 1); try { if (window.__fbSync && window.__fbSync.recordUnsaved) window.__fbSync.recordUnsaved(st, k); } catch(e){} }
   storeSet(st);
   /* v110: push a save now (same v40 reason as submitTest). */
-  try { if (window.__fbSync && window.__fbSync.pushNow) window.__fbSync.pushNow(); } catch(e){}
+  /* v114 (B8): surface a failed save (guests never reach here — no cloud). */
+  try { if (window.__fb && window.__fb.user && window.__fbSync && window.__fbSync.pushNow){ var _pr = window.__fbSync.pushNow(); if (_pr && _pr.then) _pr.then(function(ok){ if (ok === false) toastSavedOffline(); }); } } catch(e){}
   return i === -1;
 }
 function resolveSavedCA(){
@@ -6693,11 +6695,14 @@ function wireCAListButtons(root){
    so the old subject key ('ga-polity:5') marked the same question number
    in EVERY test of that subject, including tests never attempted. */
 function getSavedGA(){
+  /* v114 (B4): a READ path must never write the saved arrays — the old
+     storeSet here silently deleted any GA key that did not resolve against
+     the current GABANK, and the next diff pushed that delete to the cloud
+     although the user never tapped unsave. Migration is in-memory only now;
+     the raw keys stay in the store (and the cloud) until a real toggle. */
   var st = storeGet();
   var arr = Array.isArray(st.saved_ga) ? st.saved_ga.slice() : [];
-  var m = migrateSavedGAKeys(arr);
-  if (m.changed){ st.saved_ga = m.list; storeSet(st); }
-  return m.list;
+  return migrateSavedGAKeys(arr).list;
 }
 /* One-time, idempotent migration of legacy subject keys ('ga-polity:5')
    to per-test keys. A legacy key resolves to the test the OLD resolver
@@ -6705,22 +6710,27 @@ function getSavedGA(){
    Questions list is identical to before the fix. Keys that resolve
    nowhere are dropped (they were invisible already). */
 function migrateSavedGAKeys(arr){
+  /* v114 (B4): NON-DESTRUCTIVE migration. A key that cannot be retargeted
+     (unknown subject, no test holding that question number, ambiguous
+     across several tests, or malformed) is KEPT verbatim — it stays in the
+     store and the cloud instead of being silently dropped (which the next
+     diff pushed as a cloud delete). Only a key that resolves to EXACTLY ONE
+     test is rewritten; the old "last test wins" retarget is gone. */
   var out = [], changed = false;
   arr.forEach(function(k){
     var parts = String(k).split(':');
-    if (parts.length !== 2) return;
+    if (parts.length !== 2 || isNaN(parseInt(parts[1], 10))){ if (out.indexOf(k) === -1) out.push(k); return; }
     var head = parts[0], n = parseInt(parts[1], 10);
-    if (isNaN(n)) return;
     if (/^ga-[a-z]+-\d+$/.test(head)){ if (out.indexOf(k) === -1) out.push(k); return; }
     if (/^ga-[a-z]+$/.test(head)){
       var subj = (GABANK || []).filter(function(s){ return ('ga-' + s.subject) === head; })[0];
-      if (!subj) return;
-      var testId = null;
+      if (!subj){ if (out.indexOf(k) === -1) out.push(k); return; }
+      var hits = [];
       (subj.tests || []).forEach(function(t, idx){
-        if ((t.questions || []).some(function(x){ return x.n === n; })) testId = 'ga-' + subj.subject + '-' + (idx + 1);
+        if ((t.questions || []).some(function(x){ return x.n === n; })) hits.push('ga-' + subj.subject + '-' + (idx + 1));
       });
-      if (!testId) return;
-      var nk = testId + ':' + n;
+      if (hits.length !== 1){ if (out.indexOf(k) === -1) out.push(k); return; }
+      var nk = hits[0] + ':' + n;
       if (out.indexOf(nk) === -1) out.push(nk);
       changed = true;
       return;
@@ -6734,12 +6744,18 @@ function isSavedGA(testId, n){ return getSavedGA().indexOf(savedKeyGA(testId, n)
 function toggleSavedGA(testId, n){
   var st = storeGet();
   if (!Array.isArray(st.saved_ga)) st.saved_ga = [];
+  /* v114 (B4): normalise legacy keys in memory first (this IS a write path,
+     so persisting the normalised list via the storeSet below is legitimate)
+     — otherwise unsaving a legacy-key question would add the new key
+     instead of removing the old one, now that getSavedGA no longer writes. */
+  st.saved_ga = migrateSavedGAKeys(st.saved_ga.slice()).list;
   var k = savedKeyGA(testId, n), i = st.saved_ga.indexOf(k);
-  if (i === -1){ st.saved_ga.push(k); if (st._fbMeta && st._fbMeta.unsaved) delete st._fbMeta.unsaved[k]; }
+  if (i === -1){ st.saved_ga.push(k); if (st._fbMeta && st._fbMeta.unsaved) delete st._fbMeta.unsaved[k]; if (!st._fbMeta) st._fbMeta = {}; if (!st._fbMeta.resaved) st._fbMeta.resaved = {}; st._fbMeta.resaved[k] = Date.now(); /* v114 (B3): re-save marker */ }
   else { st.saved_ga.splice(i, 1); try { if (window.__fbSync && window.__fbSync.recordUnsaved) window.__fbSync.recordUnsaved(st, k); } catch(e){} }
   storeSet(st);
   /* v110: push a save now (same v40 reason as submitTest). */
-  try { if (window.__fbSync && window.__fbSync.pushNow) window.__fbSync.pushNow(); } catch(e){}
+  /* v114 (B8): surface a failed save (guests never reach here — no cloud). */
+  try { if (window.__fb && window.__fb.user && window.__fbSync && window.__fbSync.pushNow){ var _pr = window.__fbSync.pushNow(); if (_pr && _pr.then) _pr.then(function(ok){ if (ok === false) toastSavedOffline(); }); } } catch(e){}
   return i === -1;
 }
 function resolveSavedGA(){
@@ -7330,7 +7346,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 113; /* must match version.txt - bump on every release */
+var APP_VERSION = 114; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -8438,10 +8454,10 @@ $('instBackBtn').addEventListener('click', function(){
 });
 $('beginBtn').addEventListener('click', function(){
   var langSel = $('instLangSelect');
-  if (isMobile() && langSel){ state.lang = langSel.value; }
+  if (isMobile() && langSel){ setLangPersist(langSel.value); }
   else {
     var sel = document.querySelector('input[name="deflang"]:checked');
-    state.lang = sel ? sel.value : 'hi';
+    setLangPersist(sel ? sel.value : 'hi');
   }
   startTest();
 });
@@ -8901,7 +8917,7 @@ $('clearBtn').addEventListener('click', function(){
   saveProgress();
 });
 $('langSelect').addEventListener('change', function(){
-  state.lang = this.value;
+  setLangPersist(this.value);
   renderQuestion();
 });
 $('reportBtn').addEventListener('click', function(){
@@ -9207,8 +9223,28 @@ function applyTheme(){
 function toggleDark(){
   var store = storeGet();
   store.dark = !store.dark;
+  /* v114 (D1): mirror dark into the profile so it rides the existing
+     profile push/pull/listener machinery; the top-level key stays the
+     runtime source applyTheme() reads. */
+  if (!store.profile) store.profile = {name: 'Student', exam: 'RRB NTPC', target: 91};
+  store.profile.dark = store.dark;
+  if (window.__fb && window.__fb.user) touchProfileLocal(store);
   storeSet(store);
   applyTheme();
+}
+/* v114 (D2): language is a persisted setting — every in-memory switch also
+   writes store.lang + the profile mirror (so it survives reload AND Clear
+   Data + login via the profile push/pull machinery). storeSet's pushSoon
+   hook carries it to the cloud. */
+function setLangPersist(v){
+  state.lang = v;
+  try {
+    var _s = storeGet();
+    _s.lang = v;
+    if (!_s.profile) _s.profile = {name: 'Student', exam: 'RRB NTPC', target: 91};
+    _s.profile.lang = v;
+    storeSet(_s);
+  } catch(e){}
 }
 function applyProfile(){
   var store = storeGet();
@@ -9350,10 +9386,18 @@ async function saveSettings(){
   var store = storeGet();
   var _np = {name: name, exam: $('setExam').value || 'RRB NTPC', target: parseInt($('setTarget').value, 10) || 91};
   if (store.profile && store.profile.avatar) _np.avatar = store.profile.avatar;
+  /* v114 (D1-D3): keep the synced mirrors across the wholesale rebuild. */
+  if (store.profile && store.profile.dark !== undefined) _np.dark = store.profile.dark;
+  if (store.profile && store.profile.topperCelebrated) _np.topperCelebrated = store.profile.topperCelebrated;
+  /* v114 (D2): language persists — into the store + profile BEFORE storeSet. */
+  _np.lang = $('setLang').value || 'hi';
+  store.lang = _np.lang;
   store.profile = _np;
-  touchProfileLocal(store);
+  /* v114 (A1): a guest Save must NOT stamp profileUpdatedAt — the stamp
+     would make the later login pull refuse the real cloud name. */
+  if (window.__fb && window.__fb.user) touchProfileLocal(store);
   storeSet(store);
-  state.lang = $('setLang').value || 'hi';
+  state.lang = _np.lang;
   applyProfile();
   applyTheme();
   /* v110: the name must reach the cloud NOW, not on the 1.5 s debounce —
@@ -10782,7 +10826,7 @@ $('reattemptToggle').addEventListener('change', function(){
   renderSolution();
 });
 $('solLangSelect').addEventListener('change', function(){
-  state.lang = this.value;
+  setLangPersist(this.value);
   renderSolution();
 });
 $('solPrev').addEventListener('click', function(){
@@ -11135,6 +11179,7 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
   };
   var _st0 = storeGet();
   if (_st0.dark === undefined && isMobile()){ _st0.dark = true; storeSet(_st0); }
+  if (_st0.lang === 'hi' || _st0.lang === 'en') state.lang = _st0.lang; /* v114 (D2): restore persisted language at boot */
   applyTheme();
   initSlider();
   /* v68-I: restore-after-refresh — v40 always landed on HOME; now the
@@ -11184,6 +11229,11 @@ $('solSummaryBtn2').addEventListener('click', openSummary);
 <script>
 'use strict';
 /* ================= TESTPRO mobile: saved questions + folder home + side menu ================= */
+/* v114 (B8): one shared "saved locally but not online yet" notice for the
+   saved-question toggles — same wording pattern as saveSettings' setAuthErr. */
+function toastSavedOffline(){
+  toast('Saved on this device, but it could not be saved online yet — check internet and try again.');
+}
 function toast(msg){
   var t = document.querySelector('.toast');
   if (!t){ t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); }
@@ -11215,12 +11265,13 @@ function toggleSaved(ch, n){
   var st = storeGet();
   if (!Array.isArray(st.saved)) st.saved = [];
   var k = savedKey(ch, n), i = st.saved.indexOf(k);
-  if (i === -1){ st.saved.push(k); if (st._fbMeta && st._fbMeta.unsaved) delete st._fbMeta.unsaved[k]; }
+  if (i === -1){ st.saved.push(k); if (st._fbMeta && st._fbMeta.unsaved) delete st._fbMeta.unsaved[k]; if (!st._fbMeta) st._fbMeta = {}; if (!st._fbMeta.resaved) st._fbMeta.resaved = {}; st._fbMeta.resaved[k] = Date.now(); /* v114 (B3): re-save marker */ }
   else { st.saved.splice(i, 1); try { if (window.__fbSync && window.__fbSync.recordUnsaved) window.__fbSync.recordUnsaved(st, k); } catch(e){} }
   storeSet(st);
   /* v110: push a save now (same v40 reason as submitTest) — the 1.5 s
      debounce alone loses it if the app closes right after the tap. */
-  try { if (window.__fbSync && window.__fbSync.pushNow) window.__fbSync.pushNow(); } catch(e){}
+  /* v114 (B8): surface a failed save (guests never reach here — no cloud). */
+  try { if (window.__fb && window.__fb.user && window.__fbSync && window.__fbSync.pushNow){ var _pr = window.__fbSync.pushNow(); if (_pr && _pr.then) _pr.then(function(ok){ if (ok === false) toastSavedOffline(); }); } } catch(e){}
   return i === -1;
 }
 function resolveSaved(){
@@ -11916,7 +11967,7 @@ function closeMenu(){ $('sideMenu').classList.remove('open'); $('menuBackdrop').
   });
   on('pauseBtnMob', 'click', function(){ togglePause(); });
   on('langIconBtn', 'click', function(){
-    state.lang = state.lang === 'hi' ? 'en' : 'hi';
+    setLangPersist(state.lang === 'hi' ? 'en' : 'hi');
     var ls = $('langSelect'); if (ls) ls.value = state.lang;
     renderQuestion();
     toast(state.lang === 'hi' ? 'Language: Hindi' : 'Language: English');
@@ -12391,6 +12442,10 @@ function myAvatarId(){
     var s2 = storeGet();
     var p2 = s2.profile || {name: 'Student', exam: 'RRB NTPC', target: 91};
     s2.profile = {name: p2.name, exam: p2.exam, target: p2.target, avatar: rid};
+    /* v114 (D1-D3): keep the synced mirrors across the wholesale rebuild. */
+    if (p2.dark !== undefined) s2.profile.dark = p2.dark;
+    if (p2.lang) s2.profile.lang = p2.lang;
+    if (p2.topperCelebrated) s2.profile.topperCelebrated = p2.topperCelebrated;
     /* v110: NO touchProfileLocal here — a default random avatar is NOT a
        user edit. Stamping it would make a fresh device's "Student" profile
        look newer than cloud and block the login pull from adopting the real
@@ -12404,8 +12459,13 @@ function setMyAvatar(id){
   var s = storeGet();
   var p = s.profile || {name: 'Student', exam: 'RRB NTPC', target: 91};
   p = {name: p.name, exam: p.exam, target: p.target, avatar: id};
+  /* v114 (D1-D3): keep the synced mirrors across the wholesale rebuild. */
+  if (s.profile && s.profile.dark !== undefined) p.dark = s.profile.dark;
+  if (s.profile && s.profile.lang) p.lang = s.profile.lang;
+  if (s.profile && s.profile.topperCelebrated) p.topperCelebrated = s.profile.topperCelebrated;
   s.profile = p;
-  touchProfileLocal(s);
+  /* v114 (A1): a guest avatar tap must NOT stamp profileUpdatedAt. */
+  if (window.__fb && window.__fb.user) touchProfileLocal(s);
   storeSet(s);
   applyAvatars();
   syncAvatarGrid();
@@ -13807,7 +13867,7 @@ window.openLeaderboard = openLeaderboard;
 'use strict';
 var NOTIF_FS_URL = 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
 var LS_PREFIX = 'tp_notif_read_v1_';
-var READ_CAP = 200;
+var READ_CAP = 1000; /* v114 (D4): was 200 — a long read history must not be truncated away */
 var QUERY_LIMIT = 50;
 var WRITE_DEBOUNCE_MS = 800;
 var N = {list: [], allList: [], myList: [], read: {}, readKey: null, unsubs: [], fsP: null, subscribed: false, subscribing: false, uid: null, pulledUid: null, pullRetryAfter: 0, writeTimer: null, cloudDirty: false, hookDone: false, retryAfter: 0, timer: null};
@@ -13940,6 +14000,10 @@ function notifFlushRead(){
   var uid = notifLiveUid();
   if (!uid) { N.cloudDirty = true; return; }
   if (uid !== N.uid) return;
+  /* v114 (D4): do NOT flush until the cloud reads have been pulled once —
+     a fresh device flushing its (empty/small) local list wholesale would
+     overwrite the cloud's reads. Queue as cloudDirty until then. */
+  if (N.pulledUid !== uid){ N.cloudDirty = true; return; }
   N.cloudDirty = false;
   notifFsMod().then(function(m){
     try {
@@ -13971,6 +14035,9 @@ function notifPullRead(){
       for (i = 0; i < d.readNotifs.length; i++) { if (d.readNotifs[i] && !N.read[d.readNotifs[i]]) { N.read[d.readNotifs[i]] = 1; changed = true; } }
       if (changed) { notifSaveRead(); notifRender(); }
     }
+    /* v114 (D4): the pull just unioned the cloud reads into local, so a
+       queued wholesale flush is safe now — drain it. */
+    if (N.cloudDirty) notifFlushRead();
   }).catch(function(){ N.fsP = null; N.pullRetryAfter = Date.now() + 60000; });
 }
 function notifSnapToItems(snap){
@@ -14138,7 +14205,7 @@ function notifWire(){
   if (window.addEventListener) window.addEventListener('online', function(){ notifEnsure(); });
   return true;
 }
-window.__notif = {ensure: notifEnsure, markAllRead: notifMarkAllRead, unread: notifUnreadCount, list: function(){ return N.list.slice(); }, open: function(){ notifSetPanel(true); }, close: function(){ notifSetPanel(false); }};
+window.__notif = {ensure: notifEnsure, markAllRead: notifMarkAllRead, unread: notifUnreadCount, list: function(){ return N.list.slice(); }, open: function(){ notifSetPanel(true); }, close: function(){ notifSetPanel(false); }, unsubscribe: notifUnsubscribe /* v114 (C5): logout calls this explicitly */};
 notifLoadRead(notifUid());
 N.uid = notifUid();
 notifRender();
@@ -14469,8 +14536,24 @@ function mergeCoins(dst, src){
     var _mk = Object.keys(mergedDays).sort();
     while (_mk.length > 31) delete mergedDays[_mk.shift()];
     var mergedSum = coinDaysSum(mergedDays);
-    var dstBase = Math.max(0, (+dst.eng || 0) - coinDaysSum(dst.days));
-    var srcBase = Math.max(0, (+src.eng || 0) - coinDaysSum(src.days));
+    /* v114 (C6): each side's base must come from the MERGED (pruned) window
+       only — the old code subtracted the side's FULL ledger, so eng earned on
+       days pruned out of the 31-day window vanished from both the base and
+       the merged sum (a silent under-count on long histories). With no
+       pruning this is identical to the old computation. */
+    var _winSum = function(days){
+      var t = 0;
+      Object.keys(mergedDays).forEach(function(d){
+        var e = (days || {})[d];
+        if (!e) return;
+        var o = (+e.open || 0); if (o > 10) o = o / 10;
+        t += o + Math.min(10, Math.floor((+e.usageSecs || 0) / 600) * 1)
+             + Math.min(5, (Array.isArray(e.solIds) ? e.solIds.length : 0) * 0.5);
+      });
+      return t;
+    };
+    var dstBase = Math.max(0, (+dst.eng || 0) - _winSum(dst.days));
+    var srcBase = Math.max(0, (+src.eng || 0) - _winSum(src.days));
     var newEng = Math.max(dstBase, srcBase) + mergedSum;
     if (JSON.stringify(dst.days) !== JSON.stringify(mergedDays)){ dst.days = mergedDays; changed = true; }
     if (newEng !== (+dst.eng || 0)){ dst.eng = newEng; changed = true; }
@@ -14977,6 +15060,28 @@ function mergeStoreData(dst, src){
     dst.profile.name = src.profile.name;
     changed = true;
   }
+  /* v114 (B5): merge the stash avatar when the destination has none. */
+  if (src.profile && src.profile.avatar && dst.profile && !dst.profile.avatar){
+    dst.profile.avatar = src.profile.avatar;
+    changed = true;
+  }
+  /* v114 (B5): tombstones + resaved markers + the profile stamp cross the
+     stash — an unsave must survive a foreign login + owner re-login.
+     Newer timestamp wins per key; the stamp takes the max. */
+  if (src._fbMeta){
+    if (!dst._fbMeta) dst._fbMeta = {};
+    ['unsaved', 'resaved'].forEach(function(mk){
+      if (src._fbMeta[mk]){
+        if (!dst._fbMeta[mk]) dst._fbMeta[mk] = {};
+        Object.keys(src._fbMeta[mk]).forEach(function(k){
+          var sv = +src._fbMeta[mk][k] || 0, dv = +dst._fbMeta[mk][k] || 0;
+          if (sv > dv){ dst._fbMeta[mk][k] = src._fbMeta[mk][k]; changed = true; }
+        });
+      }
+    });
+    var _sp = +src._fbMeta.profileUpdatedAt || 0, _dp = +dst._fbMeta.profileUpdatedAt || 0;
+    if (_sp > _dp){ dst._fbMeta.profileUpdatedAt = _sp; changed = true; }
+  }
   /* v59 coins: stashed engagement coins merge back with the owner (same
      monotonic merge as the cloud pull). */
   if (src.coins){
@@ -15061,11 +15166,19 @@ function setSyncError(msg){
 }
 function scheduleRetry(kind, fn, ms){
   if (retryTimers[kind]) return;
-  if ((retryCount[kind] || 0) >= 3) return; /* give up after 3 — the error stays visible */
+  if ((retryCount[kind] || 0) >= 10) return; /* v114 (B8): give up after 10 (was 3) */
   retryCount[kind] = (retryCount[kind] || 0) + 1;
   retryTimers[kind] = setTimeout(function(){
     retryTimers[kind] = null;
     if (fb && fb.user && navigator.onLine){ try { fn(); } catch(e){} }
+    else if (fb && fb.user && typeof navigator !== 'undefined' && navigator.onLine === false){
+      /* v114 (B8): firing while offline must NOT consume a retry slot —
+         refund it and re-arm; a genuinely offline device retries when it
+         comes back instead of silently giving up. (No user: the slot stays
+         consumed, so this still gives up after 10.) */
+      retryCount[kind] = Math.max(0, (retryCount[kind] || 0) - 1);
+      scheduleRetry(kind, fn, ms);
+    }
   }, ms);
 }
 function clearRetry(kind){
@@ -15381,6 +15494,9 @@ function updateSettingsAccount(){
       ? ('Logged in: ' + pn + (u.email ? ' (' + u.email + ')' : ''))
       : 'Not logged in';
   }
+  /* v114 (E1): show the RUNNING version (the update toast shows the
+     AVAILABLE version — the two must never disagree). */
+  var _av = $('setAppVersion'); if (_av) _av.textContent = 'Version ' + APP_VERSION;
   var ef = $('setEmailForm'); if (ef) ef.hidden = !!u;
   var cp = $('setChangePwWrap'); if (cp) cp.hidden = !u;
   var lo = $('setLogoutBtn'); if (lo) lo.hidden = !u;
@@ -15564,12 +15680,26 @@ function signInFailed(e){
 async function logoutUser(){
   var hadUser = !!(fb && fb.user);
   var flushed = false;
-  try { if (hadUser && fb.db) flushed = await diffAndPush(); } catch(e){ flushed = false; }
+  /* v114 (B2): drain any in-flight push first, then run a FRESH diff — the
+     old single await treated a coalesced in-flight promise as flushed and
+     wiped a toggle that was never pushed. Only wipe when the fresh diff
+     reports no pending diff. */
+  try {
+    if (hadUser && fb.db){
+      await diffAndPush();
+      flushed = await diffAndPush();
+    }
+  } catch(e){ flushed = false; }
   fbSignOutRequested = true; /* v40: the null firing that follows is a real logout, not a transient */
   try { window.__fbSkipped = false; } catch(e){} /* v39: logout brings the gate back */
   try { if (fb && F) await F.signOut(fb.auth); } catch(e){}
   try { if (fb) fb.user = null; } catch(e){}
   try { detachProfileSync(); } catch(e){} /* v110: realtime profile + saved listeners off on logout */
+  /* v114 (C5): unsubscribe the leaderboard + notification listeners
+     explicitly — the setStatus hook early-returns on a same-value status, so
+     logout could leave them attached. */
+  try { if (typeof lbUnsubscribe === 'function') lbUnsubscribe(); } catch(e){}
+  try { if (window.__notif && typeof window.__notif.unsubscribe === 'function') window.__notif.unsubscribe(); } catch(e){}
   if (flushed || !hadUser){
     var dark = null;
     try { dark = storeLocal().dark; } catch(e){}
@@ -15594,6 +15724,60 @@ async function logoutUser(){
   try { if (window.applyProfile) window.applyProfile(); } catch(e){}
   try { updateHeader(); updateModalView(); updateSettingsAccount(); } catch(e){}
   try { showGate(!navigator.onLine, null); } catch(e){}
+}
+var WIPE_MARKER_KEY = 'testpro_wipe_v114_done';
+var _wipeV114Running = false;
+async function maybeWipeV114(){
+  /* v114 ONE-TIME SAVE-FIRST WIPE (user order 26 Nov 2026): on the first
+     v114 launch, after the pull-merge + confirmed push, clear the device's
+     offline data once so no stale pre-v114 realm (old code, old-scale days,
+     poisoned store) can ever re-push — then restart and pull fresh.
+     Safety: logged-in users ONLY (guests never wipe, and no marker is set
+     for them, so a guest who later logs in still gets the one wipe);
+     offline or unconfirmed push ABORTS with no marker (retry next launch);
+     Firebase Auth persistence (firebase:* localStorage keys) and the
+     IndexedDB firebaseLocalStorageDb are NEVER touched (IndexedDB is not
+     touched at all); orphan stashes of other UIDs are preserved (another
+     user's unsynced safety net); the marker is set BEFORE clearing so the
+     wipe can never run twice even if the clear throws midway. */
+  if (_wipeV114Running) return false;
+  try { if (localStorage.getItem(WIPE_MARKER_KEY)) return false; } catch(e){ return false; }
+  if (!fb || !fb.user) return false;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return false;
+  _wipeV114Running = true;
+  try {
+    /* Save-first: push the merged state and AWAIT confirmed success (15 s,
+       same timeout pattern as saveSettings). The pull-merge already ran in
+       pullAndMerge; this push uses the FIXED sync engine (C1 repair inside
+       diffAndPush) and confirms the merged state really landed. */
+    var ok = false;
+    try { ok = await withTimeout(pushNow(), 15000); } catch(e){ ok = false; }
+    if (!ok) return false;
+    try { localStorage.setItem(WIPE_MARKER_KEY, '1'); } catch(e){}
+    try {
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++){ var k = localStorage.key(i); if (k) keys.push(k); }
+      keys.forEach(function(k){
+        if (k === WIPE_MARKER_KEY) return;
+        if (k.indexOf('firebase:') === 0) return; /* auth persistence — never cleared */
+        if (k.indexOf('super1000_v1_orphan_') === 0) return; /* another user's stash — never cleared */
+        try { localStorage.removeItem(k); } catch(e){}
+      });
+      try { sessionStorage.clear(); } catch(e){}
+      /* Service-worker caches (guarded: jsdom / old browsers lack caches). */
+      if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function'){
+        var _ck = caches.keys();
+        if (_ck && typeof _ck.then === 'function') _ck.then(function(names){ (names || []).forEach(function(n){ try { caches.delete(n); } catch(e){} }); }).catch(function(){});
+      }
+    } catch(e){}
+    /* Test seam: the harness sets window.__wipeTest.onReload instead of a
+       real reload (jsdom has no navigation). Production always reloads. */
+    try {
+      if (window.__wipeTest && typeof window.__wipeTest.onReload === 'function'){ window.__wipeTest.onReload(); return true; }
+    } catch(e){}
+    try { location.reload(); } catch(e){}
+    return true;
+  } finally { _wipeV114Running = false; }
 }
 function signOut(){ return logoutUser(); }
 function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
@@ -15737,7 +15921,22 @@ async function applyPendingLinkName(user){
   if (!nm) return;
   if (user.displayName){ try { localStorage.removeItem('nameForSignIn'); } catch(e){} return; }
   try {
-    if (F && F.updateProfile){ await F.updateProfile(user, {displayName: nm}); try { localStorage.removeItem('nameForSignIn'); } catch(e2){} }
+    if (F && F.updateProfile){
+      await F.updateProfile(user, {displayName: nm});
+      /* v114 (A2): same as submitRegister — land the name in the local store
+         profile before the pull runs, or the pull pushes "Student". */
+      try {
+        var _ls = storeGet();
+        var _lp = _ls.profile || {};
+        _ls.profile = {name: nm, exam: _lp.exam || 'RRB NTPC', target: _lp.target || 91, avatar: _lp.avatar};
+        if (_lp.dark !== undefined) _ls.profile.dark = _lp.dark;
+        if (_lp.lang) _ls.profile.lang = _lp.lang;
+        if (_lp.topperCelebrated) _ls.profile.topperCelebrated = _lp.topperCelebrated;
+        touchProfileLocal(_ls);
+        storeSet(_ls);
+      } catch(e3){}
+      try { localStorage.removeItem('nameForSignIn'); } catch(e2){}
+    }
   } catch(e){}
 }
 function showEmailLinkPrompt(){
@@ -15830,17 +16029,22 @@ function savedDocId(key){ return String(key).replace(/:/g, '_'); }
    delete push lands cannot resurrect the key from the cloud. Tombstones
    are local-only (never pushed) and pruned after 30 days. */
 function recordUnsaved(store, key){
+  /* v114 (B6): NO age-based expiry — a tombstone is pruned only when its
+     delete is confirmed in the cloud (success-path clearing in diffAndPush).
+     Expiring it after 30 days let the next pull resurrect the key with no
+     delete op ever generated again. */
   try {
     if (!store._fbMeta) store._fbMeta = {};
     if (!store._fbMeta.unsaved) store._fbMeta.unsaved = {};
     var u = store._fbMeta.unsaved;
-    var now = Date.now();
-    u[key] = now;
-    Object.keys(u).forEach(function(k){ if (now - (+u[k] || 0) > 30 * 86400000) delete u[k]; });
+    u[key] = Date.now();
+    if (store._fbMeta.resaved) delete store._fbMeta.resaved[key];
   } catch(e){}
 }
 function stableTs(testId, at){
-  var s = testId + '|' + (at.no || 0) + '|' + (at.score || 0) + '|' + (at.date || '');
+  /* v114 (C7): the hash input now includes correct/wrong/timeTaken — two
+     attempts that differ only in those fields used to collide on one ts. */
+  var s = testId + '|' + (at.no || 0) + '|' + (at.score || 0) + '|' + (at.date || '') + '|' + (at.correct || 0) + '|' + (at.wrong || 0) + '|' + (at.timeTaken || 0);
   var h = 0;
   for (var i = 0; i < s.length; i++){ h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
   return 1700000000000 + (Math.abs(h) % 900000000);
@@ -15890,6 +16094,17 @@ function diffAndPush(){
   discardForeignStore(fb.user.uid);
   if (pushRunning) return pushRunning;
   var store = storeLocal();
+  /* v114 (C1/E2): repair stale old-scale engagement days BEFORE the diff is
+     built, so a push can never carry (or re-poison the cloud with) open:50
+     days. Direct localStorage write (not storeSet) so the push hook does not
+     re-trigger mid-push.
+     GATED on coinDaysHasStaleOpen: repairCoinsEngagement's eng branches also
+     divide a LEGITIMATE eng whenever eng exceeds the 31-day ledger sum (the
+     pre-ledger "base") — an ungated call here divided a real eng 10 -> 1 on
+     push (T1 regression). The stale-days gate keeps exactly the prescribed
+     behaviour (stale 50s normalised in place, T20) and never touches a
+     store with no stale day. */
+  if (store.coins && store.coins.days && typeof coinDaysHasStaleOpen === 'function' && coinDaysHasStaleOpen(store.coins.days) && typeof repairCoinsEngagement === 'function' && repairCoinsEngagement(store.coins)){ try { localStorage.setItem('super1000_v1', JSON.stringify(store)); } catch(e){} }
   /* v40: legacy attempts without ts never pushed before — give them a
      deterministic ts so they sync too (same doc id on every device).
      Written straight to localStorage (not via storeSet) so the push
@@ -15912,8 +16127,14 @@ function diffAndPush(){
   cur.saved.forEach(function(k){ curSaved[k] = true; });
   var oldSaved = {};
   (shadow && shadow.saved || []).forEach(function(k){ oldSaved[k] = true; });
+  /* v114 (B3): a re-saved key carries a resaved marker — force a `set` op
+     for it even when it is already in the shadow, so a remote delete that
+     landed meanwhile cannot swallow the re-save. */
+  var _resaved = (store._fbMeta && store._fbMeta.resaved) || {};
+  var _resavedPushed = {};
   cur.saved.forEach(function(k){
-    if (!oldSaved[k]){
+    if (!oldSaved[k] || _resaved[k]){
+      if (_resaved[k]) _resavedPushed[k] = true;
       var series = (String(k).indexOf('ga-') === 0) ? 'ga' : ((String(k).indexOf('ca-') === 0) ? 'ca' : 'maths');
       ops.push({type: 'set', path: 'users/' + uid + '/saved/' + savedDocId(k),
                 data: {key: k, series: series, savedAt: Date.now()}});
@@ -15932,7 +16153,10 @@ function diffAndPush(){
      coinsChanged is falsy and nothing pushes. */
   var coinsChanged = shadow && JSON.stringify(shadow.coins || null) !== JSON.stringify(cur.coins || null);
   var pushedProfileAt = 0;
-  if (cur.profile && profChanged){
+  /* v114 (C2): push-side LWW guard — when the shadow (last pull) saw a NEWER
+     cloud profile than our local edit stamp, do not push our stale profile;
+     leave it pending for a pull to resolve. */
+  if (cur.profile && profChanged && !(shadow && shadow.profileUpdatedAt > ((store._fbMeta && store._fbMeta.profileUpdatedAt) || 0))){
     /* v110: a genuine profile change pushes the whole profile with a
        fresh, monotonic updatedAt. The meta stamp is recorded only AFTER
        the batch commits (success path below) — stamping it here would
@@ -15948,9 +16172,21 @@ function diffAndPush(){
        newer cloud name/avatar with its own stale local profile. */
     ops.push({type: 'set', path: 'users/' + uid + '/profile/data', data: {coins: deepCopy(cur.coins)}, merge: true});
   }
-  if (!ops.length){ setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(true); }
+  /* v114 (B2/GAP 6): with a null shadow (no pull yet) a non-default profile
+     or non-zero coins are genuinely pending — the v40 guard suppressed their
+     ops, but reporting `true` here told logoutUser the store was flushed and
+     it wiped unpushed data. Report false so the caller keeps the store. */
+  if (!ops.length){
+    if (!shadow){
+      var _pendProf = cur.profile && (cur.profile.name !== 'Student' || cur.profile.avatar || (cur.profile.exam && cur.profile.exam !== 'RRB NTPC') || (cur.profile.target != null && cur.profile.target !== 91));
+      var _pendCoins = cur.coins && ((+cur.coins.eng || 0) > 0 || cur.coins.lastOpenDate || (cur.coins.days && Object.keys(cur.coins.days).length));
+      if (_pendProf || _pendCoins){ setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(false); }
+    }
+    setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(true);
+  }
   setStatus('pending');
   pushRunning = (async function(){
+    var _pushOk = false; /* v114 (B1): only a successful push re-checks for mid-push mutations — a failed push must not re-run inline (its retry is scheduled), or a persistently failing commit would loop. */
     try {
       for (var i = 0; i < ops.length; i += 500){
         var batch = F.writeBatch(fb.db);
@@ -15989,17 +16225,45 @@ function diffAndPush(){
           if (pruned3){ try { localStorage.setItem('super1000_v1', JSON.stringify(s3)); } catch(e3){} }
         }
       } catch(e3){}
+      /* v114 (B3): clear ONLY the resaved markers whose `set` op was in
+         this push — a marker recorded mid-push survives for the re-run
+         below (B1), so the re-save cannot be lost. */
+      try {
+        var s3b = storeLocal();
+        var r3 = (s3b._fbMeta && s3b._fbMeta.resaved) || null;
+        if (r3){
+          var cleared3 = false;
+          Object.keys(_resavedPushed).forEach(function(k){ if (r3[k]){ delete r3[k]; cleared3 = true; } });
+          if (cleared3){ try { localStorage.setItem('super1000_v1', JSON.stringify(s3b)); } catch(e3){} }
+        }
+      } catch(e3){}
       tagStoreUid(uid); /* v43: stamp the store with its owner's UID on every successful push */
       lastSyncAt = Date.now();
       lastSyncError = '';
       clearRetry('push');
       setStatus(navigator.onLine ? 'synced' : 'offline');
+      _pushOk = true;
       return true;
     } catch(e){
       setSyncError((e && e.code) || (e && e.message) || 'push failed');
       scheduleRetry('push', function(){ diffAndPush(); }, 10000);
       return false;
-    } finally { pushRunning = null; }
+    } finally {
+      pushRunning = null;
+      /* v114 (B1): a toggle made while this push was in flight was coalesced
+         into the returned promise and never made it into this push's ops.
+         Re-read the store — if it moved under us, run one more push. Each
+         re-run needs a fresh mutation during the previous push, so this
+         terminates as soon as the store stops moving. */
+      if (_pushOk){
+        try {
+          if (shadow){
+            var _sNow = storeLocal();
+            if (JSON.stringify(shadowOf(_sNow)) !== JSON.stringify(shadow)) diffAndPush();
+          }
+        } catch(e){}
+      }
+    }
   })();
   return pushRunning;
 }
@@ -16009,6 +16273,10 @@ function pushSoon(){
   pushTimer = setTimeout(function(){ pushTimer = null; diffAndPush(); }, 1500);
 }
 function pushNow(){
+  /* v114 (B1): when a push is already in flight, return it WITHOUT clearing
+     the debounce timer — clearing it dropped the toggle that arrived
+     mid-push (its only remaining ride to the cloud). */
+  if (pushRunning) return pushRunning;
   if (pushTimer){ clearTimeout(pushTimer); pushTimer = null; }
   return diffAndPush();
 }
@@ -16054,7 +16322,7 @@ async function pullAndMerge(){
        profile — never inside it, or the JSON diff would always differ. */
     var prevShadowSaved = (shadow && shadow.saved) ? shadow.saved.slice() : [];
     var _sp = null;
-    if (cloudProfile){ _sp = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target}; if (cloudProfile.avatar) _sp.avatar = cloudProfile.avatar; }
+    if (cloudProfile){ _sp = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target}; if (cloudProfile.avatar) _sp.avatar = cloudProfile.avatar; if (cloudProfile.dark !== undefined) _sp.dark = cloudProfile.dark; if (cloudProfile.lang) _sp.lang = cloudProfile.lang; if (cloudProfile.topperCelebrated) _sp.topperCelebrated = cloudProfile.topperCelebrated; }
     shadow = {attempts: cloudAttempts, saved: cloudSaved.slice(), profile: _sp,
               profileUpdatedAt: (cloudProfile && cloudProfile.updatedAt) || 0};
     Object.keys(cloudAttempts).forEach(function(id){
@@ -16093,16 +16361,29 @@ async function pullAndMerge(){
         savedSet[k] = true; changed = true;
       }
     });
+    var _resavedPull = (store._fbMeta && store._fbMeta.resaved) || {};
     prevShadowSaved.forEach(function(k){
-      if (!cloudSavedSet[k] && savedSet[k] && !unsaved[k]){
+      if (!cloudSavedSet[k] && savedSet[k] && !unsaved[k] && !_resavedPull[k]){
         var arr = (String(k).indexOf('ga-') === 0) ? store.saved_ga : ((String(k).indexOf('ca-') === 0) ? store.saved_ca : store.saved);
         var ix = arr.indexOf(k);
         if (ix !== -1){ arr.splice(ix, 1); delete savedSet[k]; changed = true; }
       }
     });
     var localProfAt = (store._fbMeta && store._fbMeta.profileUpdatedAt) || 0;
-    if (cloudProfile && (localProfAt === 0 || (cloudProfile.updatedAt && cloudProfile.updatedAt > localProfAt))){
+    /* v114 (A1/C3): adopt the cloud profile on a tie (>=), and whenever the
+       local name is still the default "Student" — a guest-stamped local
+       profile must never block the real cloud name. */
+    if (cloudProfile && (localProfAt === 0 || (cloudProfile.updatedAt && cloudProfile.updatedAt >= localProfAt) || (store.profile && store.profile.name === 'Student'))){
+      var _oldProf = store.profile || {};
       store.profile = {name: cloudProfile.name, exam: cloudProfile.exam, target: cloudProfile.target, avatar: cloudProfile.avatar || (store.profile && store.profile.avatar)};
+      /* v114 (D1-D3): restore the synced mirrors from the cloud profile;
+         keep the local value when the cloud doc predates the mirror. */
+      if (cloudProfile.dark !== undefined){ store.profile.dark = cloudProfile.dark; store.dark = !!cloudProfile.dark; }
+      else if (_oldProf.dark !== undefined) store.profile.dark = _oldProf.dark;
+      if (cloudProfile.lang){ store.profile.lang = cloudProfile.lang; store.lang = cloudProfile.lang; if (window.state) window.state.lang = cloudProfile.lang; }
+      else if (_oldProf.lang){ store.profile.lang = _oldProf.lang; store.lang = _oldProf.lang; }
+      if (cloudProfile.topperCelebrated){ store.profile.topperCelebrated = cloudProfile.topperCelebrated; store.topperCelebrated = cloudProfile.topperCelebrated; }
+      else if (_oldProf.topperCelebrated){ store.profile.topperCelebrated = _oldProf.topperCelebrated; store.topperCelebrated = _oldProf.topperCelebrated; }
       if (!store._fbMeta) store._fbMeta = {};
       store._fbMeta.profileUpdatedAt = cloudProfile.updatedAt;
       changed = true;
@@ -16151,10 +16432,12 @@ async function pullAndMerge(){
       if (window.state && window.state.view !== 'test' && window.state.view !== 'instructions' && window.renderHome) window.renderHome();
     } catch(e){}
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+    try { if (window.applyTheme) window.applyTheme(); } catch(e){} /* v114 (D1): a restored cloud theme paints at once */
     /* v40: dead post-login branch removed — destination is HOME now. */
     updateHeader(); updateModalView(); updateSettingsAccount();
     try { if (window.__lb && window.__lb.schedulePublish) window.__lb.schedulePublish(true); } catch(e){} /* v52: forced — retries a publish that earlier failed with permission-denied (rules pasted later); debounced, sig-deduped, tn>0-only */
     try { subscribeProfileSync(); } catch(e){} /* v110: realtime profile + saved listeners (best-effort, fire-and-forget) */
+    try { maybeWipeV114(); } catch(e){} /* v114: one-time save-first wipe — fires only once per device, only when logged in, only after a confirmed push; aborts (no marker) if the push fails/offline */
     return true;
   } catch(e){ setSyncError((e && e.code) || (e && e.message) || 'pull failed'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
 }
@@ -16217,24 +16500,44 @@ function applyCloudProfileSnap(snap){
   if (!cp) return;
   var store = storeLocal();
   var localProfAt = (store._fbMeta && store._fbMeta.profileUpdatedAt) || 0;
-  if (localProfAt === 0 || (cp.updatedAt && cp.updatedAt > localProfAt)){
+  /* v114 (C3): adopt on a tie (>=), like the pull; and when the local name is
+     still the default "Student" (A1 belt-and-braces, mirrored here). */
+  if (localProfAt === 0 || (cp.updatedAt && cp.updatedAt >= localProfAt) || (store.profile && store.profile.name === 'Student')){
+    var _oldProf2 = store.profile || {};
     store.profile = {name: cp.name, exam: cp.exam, target: cp.target, avatar: cp.avatar || (store.profile && store.profile.avatar)};
+    if (cp.dark !== undefined){ store.profile.dark = cp.dark; store.dark = !!cp.dark; }
+    else if (_oldProf2.dark !== undefined) store.profile.dark = _oldProf2.dark;
+    if (cp.lang){ store.profile.lang = cp.lang; store.lang = cp.lang; if (window.state) window.state.lang = cp.lang; }
+    else if (_oldProf2.lang){ store.profile.lang = _oldProf2.lang; store.lang = _oldProf2.lang; }
+    if (cp.topperCelebrated){ store.profile.topperCelebrated = cp.topperCelebrated; store.topperCelebrated = cp.topperCelebrated; }
+    else if (_oldProf2.topperCelebrated){ store.profile.topperCelebrated = _oldProf2.topperCelebrated; store.topperCelebrated = _oldProf2.topperCelebrated; }
     if (!store._fbMeta) store._fbMeta = {};
     store._fbMeta.profileUpdatedAt = cp.updatedAt;
     if (shadow){
       var _sp2 = {name: cp.name, exam: cp.exam, target: cp.target};
       if (cp.avatar) _sp2.avatar = cp.avatar;
+      if (cp.dark !== undefined) _sp2.dark = cp.dark;
+      if (cp.lang) _sp2.lang = cp.lang;
+      if (cp.topperCelebrated) _sp2.topperCelebrated = cp.topperCelebrated;
       shadow.profile = _sp2; shadow.profileUpdatedAt = cp.updatedAt || 0;
     }
     saveLocal(store);
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
+    try { if (window.applyTheme) window.applyTheme(); } catch(e){}
     try { updateHeader(); updateSettingsAccount(); } catch(e){}
   }
   /* coins ride the same doc — merge them the way the pull does (monotonic). */
   if (cp.coins){
     var store2 = storeLocal();
     if (!store2.coins) store2.coins = defaultCoins();
-    if (mergeCoins(store2.coins, cp.coins)){ saveLocal(store2); }
+    /* v114 (C4): mirror the pull — after a successful coins merge, keep the
+       shadow in step and republish the leaderboard, or the next push would
+       re-push the same coins as a spurious diff. */
+    if (mergeCoins(store2.coins, cp.coins)){
+      saveLocal(store2);
+      if (shadow) shadow.coins = deepCopy(store2.coins);
+      try { if (window.__lb && window.__lb.scheduleRepairPublish) window.__lb.scheduleRepairPublish(); } catch(e){}
+    }
   }
 }
 function applyCloudSavedSnap(snap){
@@ -16262,11 +16565,19 @@ function applyCloudSavedSnap(snap){
     }
   });
   var prevShadowSaved = (shadow && shadow.saved) ? shadow.saved.slice() : [];
+  var _resavedSnap = (store._fbMeta && store._fbMeta.resaved) || {};
   prevShadowSaved.forEach(function(k){
-    if (!cloudSavedSet[k] && savedSet[k] && !unsaved[k]){
+    if (!cloudSavedSet[k] && savedSet[k] && !unsaved[k] && !_resavedSnap[k]){
       var arr = (String(k).indexOf('ga-') === 0) ? store.saved_ga : ((String(k).indexOf('ca-') === 0) ? store.saved_ca : store.saved);
       var ix = arr.indexOf(k);
-      if (ix !== -1){ arr.splice(ix, 1); delete savedSet[k]; changed = true; }
+      if (ix !== -1){
+        arr.splice(ix, 1); delete savedSet[k]; changed = true;
+        /* v114 (B7): a listener prune must leave a tombstone — otherwise a
+           pull whose getDocs ran before the delete re-adds the key locally
+           with no pending push to fix it. A genuine re-save deletes the
+           tombstone as today, so this does not block re-saves. */
+        recordUnsaved(store, k);
+      }
     }
   });
   if (shadow) shadow.saved = cloudSaved.slice();
@@ -16290,6 +16601,19 @@ async function submitRegister(){
   try {
     var cred = await F.createUserWithEmailAndPassword(fb.auth, email, pw);
     try { await F.updateProfile(cred.user, {displayName: name}); } catch(e){}
+    /* v114 (A2): the name must ALSO land in the local store profile before
+       the first pull — otherwise the pull pushes a default "Student" profile
+       to the cloud and the registration name is lost. */
+    try {
+      var _rs = storeGet();
+      var _rp = _rs.profile || {};
+      _rs.profile = {name: name, exam: _rp.exam || 'RRB NTPC', target: _rp.target || 91, avatar: _rp.avatar};
+      if (_rp.dark !== undefined) _rs.profile.dark = _rp.dark;
+      if (_rp.lang) _rs.profile.lang = _rp.lang;
+      if (_rp.topperCelebrated) _rs.profile.topperCelebrated = _rp.topperCelebrated;
+      touchProfileLocal(_rs);
+      storeSet(_rs);
+    } catch(e){}
     sendVerifyMail(cred.user);
     /* onAuthStateChanged fires with the new user -> enterApp */
   } catch(e){
@@ -16426,7 +16750,7 @@ function wireSettings(){
 function installBridge(){
   window.__fbSync = {
     signIn: signIn, signOut: signOut, logoutUser: logoutUser, isAuthLoading: function(){ return fbAuthLoading; }, isOptimisticLaunch: function(){ return fbOptimisticLaunch; }, isStandalonePwa: isStandalonePwa, isPopupInFlight: function(){ return fbPopupInFlight; }, skipAuth: skipAuth,
-    pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge,
+    pushSoon: pushSoon, pushNow: pushNow, pullNow: pullAndMerge, maybeWipeV114: maybeWipeV114,
     openModal: openFbModal, closeModal: closeFbModal,
     syncNow: syncNow,
     status: function(){ return status; },
@@ -16964,7 +17288,16 @@ function topperFlags(){
   catch (e){ return {}; }
 }
 function topperSetFlags(f){
-  try { var s = storeGet(); s.topperCelebrated = f; storeSet(s); } catch (e){}
+  /* v114 (D3): mirror the flags into the profile so they survive Clear Data
+     + login via the profile push/pull machinery; the top-level key stays the
+     runtime source maybeShowTopperCelebration reads. */
+  try {
+    var s = storeGet(); s.topperCelebrated = f;
+    if (!s.profile) s.profile = {name: 'Student', exam: 'RRB NTPC', target: 91};
+    s.profile.topperCelebrated = f;
+    if (window.__fb && window.__fb.user) touchProfileLocal(s);
+    storeSet(s);
+  } catch (e){}
 }
 function buildTopperCelebration(){
   var ov = $('topperCelebration');
