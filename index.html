@@ -1245,6 +1245,8 @@ html,body{overflow-x:hidden;overscroll-behavior:none}
 .i-lg{width:26px;height:26px}
 :where(.icon-btn,.qa-btn,.series-card,.avatar,.link-btn,.chip,.sidebar nav a,.side-menu a,.bottom-nav button,.resume-card .btn):focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 [data-theme="dark"] :where(.icon-btn,.qa-btn,.series-card,.avatar,.link-btn,.chip,.side-menu a,.bottom-nav button):focus-visible{outline-color:#7dd3fc}
+/* v115: kill the browser tap highlight on EVERY tappable element — the blue/grey flash on tap made the app feel like a website. The :focus-visible teal outlines above are untouched (keyboard accessibility). */
+*{-webkit-tap-highlight-color:transparent;tap-highlight-color:transparent}
 
 /* ---- sidebar (desktop) ---- */
 .sidebar{width:248px;min-width:248px;background:#14212f;border-right:1px solid rgba(255,255,255,.05)}
@@ -2268,9 +2270,10 @@ html.skel-on #skel-testlist:not(.skel-hide)+[data-skel-for="skel-testlist"],
 html.skel-on #skel-calist:not(.skel-hide)+[data-skel-for="skel-calist"],
 html.skel-on #skel-lb:not(.skel-hide)+[data-skel-for="skel-lb"],
 html.skel-on #skel-lb:not(.skel-hide)~[data-skel-pair="skel-lb"]{display:none!important}
-.skel{position:relative;overflow:hidden;border-radius:10px;background:linear-gradient(100deg,var(--surface3) 30%,var(--surface2) 50%,var(--surface3) 70%);background-size:200% 100%;animation:skelShimmer 1.3s linear infinite}
+/* v115: skeletons are static placeholders now — the sweeping shimmer read as a "loader running at the top" and made launch feel like a website. Layout reservation is unchanged; the controller still removes the nodes when data lands (4s fallback). */
+.skel{position:relative;overflow:hidden;border-radius:10px;background:var(--surface3)}
 @keyframes skelShimmer{to{background-position:-200% 0}}
-[data-theme="dark"] .skel{background:linear-gradient(100deg,#1e293b 30%,#334155 50%,#1e293b 70%)}
+[data-theme="dark"] .skel{background:#1e293b}
 .skel-title{height:20px;width:180px;margin-bottom:12px}
 .skel-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
 .skel-tiles{display:grid;gap:10px}
@@ -7346,7 +7349,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 114; /* must match version.txt - bump on every release */
+var APP_VERSION = 115; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
