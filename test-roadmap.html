@@ -5359,6 +5359,29 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-su-go:active{transform:scale(.98)}
 .rg-su-go .i{width:20px;height:20px;fill:#fff}
 @media (max-width:360px){.rg-su-grid{grid-template-columns:1fr}}
+/* ---- Firebase exam dates: setup recommendation ---- */
+.rg-su-rec{margin-top:10px;padding:12px 14px;border-radius:16px;font-size:13.5px;line-height:1.5;font-weight:600;color:var(--muted2);background:rgba(34,197,94,.09);border:1px dashed rgba(34,197,94,.55)}
+.rg-su-rec b{color:#15803d}
+.rg-su-rec-btn{margin-left:8px;padding:7px 12px;border:0;border-radius:999px;cursor:pointer;color:#fff;font:inherit;font-size:12.5px;font-weight:800;background:linear-gradient(135deg,#22c55e,#15803d);box-shadow:0 8px 16px -8px rgba(21,128,61,.8)}
+.rg-su-rec-btn:active{transform:scale(.96)}
+/* ---- Tests-view suggestion strip (suggestion only, never a restriction) ---- */
+.rg-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 14px;margin-bottom:12px;border-radius:16px;background:linear-gradient(135deg,rgba(0,180,208,.13),rgba(20,184,166,.08));border:1px solid rgba(0,150,181,.35);box-shadow:var(--shadow);box-sizing:border-box}
+.rg-strip-t{font-size:13.5px;font-weight:800;color:var(--text-strong)}
+.rg-strip-c{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:800;background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.rg-strip-c b{color:var(--teal)}
+.rg-strip-c.done{color:#15803d;border-color:rgba(34,197,94,.5)}
+.rg-strip-c.done b{color:#15803d}
+.rg-strip-p{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--teal);white-space:nowrap}
+.rg-strip.done-all{border-color:rgba(34,197,94,.55);background:linear-gradient(135deg,rgba(34,197,94,.13),rgba(34,197,94,.06))}
+/* ---- Settings: owner-only exam-dates admin ---- */
+.rg-adm-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;margin-bottom:8px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+.rg-adm-row b{flex:1 1 120px;font-size:13.5px;color:var(--text-strong)}
+.rg-adm-row input[type="date"]{padding:8px 10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);color:var(--text);font-size:14px}
+.rg-adm-row label{font-size:13px;font-weight:600;color:var(--muted2);display:flex;gap:6px;align-items:center;cursor:pointer}
+.rg-adm-row label input{width:17px;height:17px;accent-color:var(--teal)}
+.rg-adm-status{font-size:13px;font-weight:700;margin-top:8px}
+.rg-adm-status.ok{color:#15803d}
+.rg-adm-status.err{color:#dc2626}
 </style>
 
 </head>
@@ -5696,6 +5719,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         </div>
         <div id="testSeries" style="display:none">
           <div id="seriesPicker" style="display:none">
+            <div id="rgStrip" class="rg-strip" style="display:none" aria-live="polite"></div>
             <div class="tt-hero"><div><small>Practice Hub</small><h2>Test Series</h2><p>Apni series chuno, attempted tests dekho ya agla test shuru karo.</p></div><span class="tt-hero-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span></div>
             <div class="tt-actions" id="ttActions">
               <button type="button" class="tt-btn tt-att" id="ttAttempted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg><span class="tt-l">Attempted Tests</span><b class="tt-n" id="ttAttN">0</b></button>
@@ -5857,6 +5881,14 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
         <label>Target score (out of 100)
           <input id="setTarget" type="number" min="1" max="100" value="91">
         </label>
+      </section>
+
+      <section class="card set-card" id="rgAdminCard" style="display:none">
+        <h3><span class="set-ic ic-teal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>Exam dates (Admin)</h3>
+        <p class="set-acct-status">Sirf owner ke liye — official notice aate hi yahan se exam dates badlo. Ye dates sab users ke Roadmap me dikhengi.</p>
+        <div id="rgAdminRows"></div>
+        <button class="btn btn-teal" id="rgAdminSaveBtn" type="button">Save exam dates</button>
+        <p class="rg-adm-status" id="rgAdminStatus"></p>
       </section>
 
       <section class="card set-card">
@@ -9457,6 +9489,7 @@ function submitTest(auto){
   testsMap[state.test.id] = rec;
   storeSet(store);
   try { if (window.rgCountTestToday) window.rgCountTestToday(state.test.id); } catch(e){} /* roadmap: distinct-test-per-day plant growth */
+  try { if (window.rgRenderStrip) window.rgRenderStrip(); } catch(e){} /* roadmap strip: refresh remaining mix after any test */
   /* v40 sync: push this attempt to Firestore immediately — the 1500 ms
      debounce alone loses it if the app is closed right after submit. */
   try { if (window.__fbSync && window.__fbSync.pushNow) window.__fbSync.pushNow(); } catch(e){}
@@ -9618,6 +9651,7 @@ function openSettings(){
   $('setTarget').value = (p.target != null ? p.target : 91);
   $('setLang').value = state.lang || 'hi';
   var dt = $('setDarkToggle'); if (dt) dt.checked = !!store.dark;
+  try { if (window.rgRefreshAdmin) window.rgRefreshAdmin(); } catch(e){}
   showView('settings');
 }
 /* v110: a local profile edit (name/exam/target/avatar) must immediately
@@ -11669,6 +11703,7 @@ function renderHome(){
   if (state.gaView) renderGAPage();
   try { if (window.__lb && window.__lb.syncSeriesPicker) window.__lb.syncSeriesPicker(); } catch(e){}
   renderFeatCards();
+  try { if (window.rgRenderStrip) window.rgRenderStrip(); } catch(e){} /* roadmap strip: daily suggestion mix, live counts */
   try { saveLastView(); } catch(e){} /* v68-I: in-list navigation (Back / CA pages) never calls setView — re-save here so the restored tab stays truthful */
   try { if (typeof upd === 'function') upd(); } catch(e){} /* v94-perf: refresh hero shortcut tiles on render (replaces the 1.5 s poll). */
 }
@@ -16339,7 +16374,11 @@ function shadowOf(store){
     attempts: collectAttemptIds(store),
     saved: (store.saved || []).concat(store.saved_ca || []).concat(store.saved_ga || []),
     profile: store.profile ? deepCopy(store.profile) : null,
-    coins: store.coins ? deepCopy(store.coins) : null
+    coins: store.coins ? deepCopy(store.coins) : null,
+    /* roadmap build: savedAt map + garden/roadmap state ride the profile
+       doc (merge:true) — they survive Clear Data + login, like profile. */
+    savedAt: store.savedAt ? deepCopy(store.savedAt) : null,
+    roadmap: store.roadmap ? deepCopy(store.roadmap) : null
   };
 }
 function diffAndPush(){
@@ -16415,6 +16454,11 @@ function diffAndPush(){
      path). The shadow-null guard still applies: before the first pull,
      coinsChanged is falsy and nothing pushes. */
   var coinsChanged = shadow && JSON.stringify(shadow.coins || null) !== JSON.stringify(cur.coins || null);
+  /* roadmap build: roadmap + savedAt are their own diff — independent of
+     the profile LWW guard below, so a garden change never waits on a
+     profile edit and never clobbers a newer cloud profile. */
+  var roadmapChanged = shadow && JSON.stringify(shadow.roadmap || null) !== JSON.stringify(cur.roadmap || null);
+  var savedAtChanged = shadow && JSON.stringify(shadow.savedAt || null) !== JSON.stringify(cur.savedAt || null);
   var pushedProfileAt = 0;
   /* v114 (C2): push-side LWW guard — when the shadow (last pull) saw a NEWER
      cloud profile than our local edit stamp, do not push our stale profile;
@@ -16435,6 +16479,14 @@ function diffAndPush(){
        newer cloud name/avatar with its own stale local profile. */
     ops.push({type: 'set', path: 'users/' + uid + '/profile/data', data: {coins: deepCopy(cur.coins)}, merge: true});
   }
+  if (roadmapChanged || savedAtChanged){
+    /* One merge:true op on the profile doc — same doc the profile/coins
+       use, no new collection, no version bump. */
+    var rmData = {};
+    if (roadmapChanged) rmData.roadmap = deepCopy(cur.roadmap);
+    if (savedAtChanged) rmData.savedAt = deepCopy(cur.savedAt);
+    ops.push({type: 'set', path: 'users/' + uid + '/profile/data', data: rmData, merge: true});
+  }
   /* v114 (B2/GAP 6): with a null shadow (no pull yet) a non-default profile
      or non-zero coins are genuinely pending — the v40 guard suppressed their
      ops, but reporting `true` here told logoutUser the store was flushed and
@@ -16443,7 +16495,9 @@ function diffAndPush(){
     if (!shadow){
       var _pendProf = cur.profile && (cur.profile.name !== 'Student' || cur.profile.avatar || (cur.profile.exam && cur.profile.exam !== 'RRB NTPC') || (cur.profile.target != null && cur.profile.target !== 91));
       var _pendCoins = cur.coins && ((+cur.coins.eng || 0) > 0 || cur.coins.lastOpenDate || (cur.coins.days && Object.keys(cur.coins.days).length));
-      if (_pendProf || _pendCoins){ setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(false); }
+      var _pendRoadmap = !!cur.roadmap;
+      var _pendSavedAt = !!(cur.savedAt && Object.keys(cur.savedAt).length);
+      if (_pendProf || _pendCoins || _pendRoadmap || _pendSavedAt){ setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(false); }
     }
     setStatus(navigator.onLine ? 'synced' : 'offline'); return Promise.resolve(true);
   }
@@ -16670,6 +16724,27 @@ async function pullAndMerge(){
        itself is offline-safe. */
     if (store.coins && (+store.coins.eng || 0) !== _v70EngBefore){ try { if (window.__lb && window.__lb.scheduleRepairPublish) window.__lb.scheduleRepairPublish(); } catch(e){} }
     if (shadow) shadow.coins = deepCopy(_cloudCoins);
+    /* roadmap build: savedAt merges as a union (max ts per key); the
+       garden roadmap is LWW by updatedAt — the newer copy wins, a stale
+       cloud copy never wipes a newer local garden. Shadow keeps the
+       PRE-merge cloud values so the end-of-pull push uploads any merge. */
+    if (cloudProfile && cloudProfile.savedAt){
+      if (!store.savedAt) store.savedAt = {};
+      Object.keys(cloudProfile.savedAt).forEach(function(k){
+        var cv = cloudProfile.savedAt[k];
+        if (store.savedAt[k] == null || (typeof cv === 'number' && cv > store.savedAt[k])){ store.savedAt[k] = cv; changed = true; }
+      });
+    }
+    if (cloudProfile && cloudProfile.roadmap){
+      var _lr = store.roadmap;
+      if (!_lr || ((cloudProfile.roadmap.updatedAt || 0) >= (_lr.updatedAt || 0))){
+        store.roadmap = deepCopy(cloudProfile.roadmap); changed = true;
+      }
+    }
+    if (shadow){ shadow.roadmap = deepCopy((cloudProfile && cloudProfile.roadmap) || null); shadow.savedAt = deepCopy((cloudProfile && cloudProfile.savedAt) || null); }
+    /* roadmap build: restore the garden state from the (merged) store —
+       this is what brings the plant back after Clear Data + login. */
+    try { if (window.__rgRestoreRoadmap && window.__rgRestoreRoadmap(store)) changed = true; } catch(e){}
     if (!store._fbMigrated){ store._fbMigrated = true; changed = true; }
     if (changed) saveLocal(store);
     /* v59-A2 coins: daily-open safety net after the pull (see 6g). */
@@ -16700,6 +16775,7 @@ async function pullAndMerge(){
     updateHeader(); updateModalView(); updateSettingsAccount();
     try { if (window.__lb && window.__lb.schedulePublish) window.__lb.schedulePublish(true); } catch(e){} /* v52: forced — retries a publish that earlier failed with permission-denied (rules pasted later); debounced, sig-deduped, tn>0-only */
     try { subscribeProfileSync(); } catch(e){} /* v110: realtime profile + saved listeners (best-effort, fire-and-forget) */
+    try { if (window.rgFetchExamDates) window.rgFetchExamDates(); } catch(e){} /* roadmap: Firebase exam dates — first read once the SDK/db is ready */
     try { maybeWipeV114(); } catch(e){} /* v114: one-time save-first wipe — fires only once per device, only when logged in, only after a confirmed push; aborts (no marker) if the push fails/offline */
     return true;
   } catch(e){ setSyncError((e && e.code) || (e && e.message) || 'pull failed'); scheduleRetry('pull', function(){ pullAndMerge(); }, 20000); return false; }
@@ -16788,6 +16864,28 @@ function applyCloudProfileSnap(snap){
     try { if (window.applyProfile) window.applyProfile(); } catch(e){}
     try { if (window.applyTheme) window.applyTheme(); } catch(e){}
     try { updateHeader(); updateSettingsAccount(); } catch(e){}
+  }
+  /* roadmap build: roadmap + savedAt ride the same profile doc — merge
+     them the way the pull does (savedAt union, roadmap LWW by updatedAt),
+     then restore the garden state from the merged store. */
+  if (cp.roadmap || cp.savedAt){
+    try {
+      var store3 = storeLocal(); var ch3 = false;
+      if (cp.savedAt){
+        if (!store3.savedAt) store3.savedAt = {};
+        Object.keys(cp.savedAt).forEach(function(k){
+          var cv3 = cp.savedAt[k];
+          if (store3.savedAt[k] == null || (typeof cv3 === 'number' && cv3 > store3.savedAt[k])){ store3.savedAt[k] = cv3; ch3 = true; }
+        });
+        if (shadow) shadow.savedAt = deepCopy(cp.savedAt);
+      }
+      if (cp.roadmap){
+        if (!store3.roadmap || ((cp.roadmap.updatedAt || 0) >= (store3.roadmap.updatedAt || 0))){ store3.roadmap = deepCopy(cp.roadmap); ch3 = true; }
+        if (shadow) shadow.roadmap = deepCopy(cp.roadmap);
+      }
+      if (ch3) saveLocal(store3);
+      try { if (window.__rgRestoreRoadmap) window.__rgRestoreRoadmap(storeLocal()); } catch(e){}
+    } catch(e){}
   }
   /* coins ride the same doc — merge them the way the pull does (monotonic). */
   if (cp.coins){
@@ -18995,6 +19093,11 @@ var raf = window.requestAnimationFrame || function(cb){ return setTimeout(functi
 
 /* ============ CONFIG ============ */
 var KEY='plantGardenV2';
+/* ---- Firebase exam dates (meta/exam_dates) + owner admin ---- */
+var RG_OWNER_UID='VbViNkewJoeiPsFykW131j1XvIi2'; /* owner UID — only this account may write exam dates */
+var RG_FB_CACHE_KEY='rgExamDatesV1'; /* localStorage cache of the fetched config doc */
+var rgFbExams=null; /* last known Firebase exam dates {name:{date,official,note,updatedAt}} — null until read */
+var rgFbFetched=false; /* true once a fetch was actually attempted with a live db (at most once per launch) */
 /* Prototype defaults — the app has NO exam-date store, so the garden owns it. */
 var EXAMS={'RRB NTPC Graduate':{date:'2026-12-28',official:false},'RRB NTPC UG':{date:'2027-01-20',official:false},'RRB Group D':{date:'2027-02-15',official:false},'RRB ALP':{date:'2027-02-25',official:false}};
 var EXAM_ORDER=['RRB NTPC Graduate','RRB NTPC UG','RRB Group D','RRB ALP'];
@@ -19010,18 +19113,47 @@ var SP=[
 var spIdx = function(s){ return Math.floor(Date.parse(s)/864e5)%SP.length; };
 
 /* ============ STATE ============ */
-var S={target:6,today:0,date:'',streak:0,exam:'RRB NTPC Graduate',exams:JSON.parse(JSON.stringify(EXAMS)),history:[],layout:{},counted:{date:'',ids:[]},revSeen:{},plan:null,setupDone:false};
+var S={target:6,today:0,date:'',streak:0,exam:'RRB NTPC Graduate',exams:JSON.parse(JSON.stringify(EXAMS)),history:[],layout:{},counted:{date:'',ids:[]},revSeen:{},plan:null,setupDone:false,examCustom:{},updatedAt:0};
 try{ var _r=localStorage.getItem(KEY); if(_r) Object.assign(S,JSON.parse(_r)); }catch(e){}
 if(!S.counted || !S.counted.ids) S.counted={date:'',ids:[]};
 if(!S.revSeen) S.revSeen={};
 if(!S.exams) S.exams=JSON.parse(JSON.stringify(EXAMS));
+if(!S.examCustom) S.examCustom={};
+if(!S.updatedAt) S.updatedAt=0;
+/* Restore the garden from the synced store when it is newer (e.g. after
+   Clear Data the local plantGardenV2 key is gone — the store copy is the
+   one the pull rebuilt from Firebase). Runs before the first save() so a
+   stale local S can never overwrite the synced copy. */
+try{ var _st0=storeGet(); if(_st0&&_st0.roadmap) rgRestoreRoadmap(_st0); }catch(e){}
+try{ rgFetchExamDates(); }catch(e){} /* non-blocking config read; silent fallback to baked-in dates */
 var closing=null;
 function derived(){ var prog=clamp(S.today/S.target),f=clamp((hourNow()-8)/14),th=S.today>=S.target?0:clamp(f-prog);
   return {prog:prog,ex:clamp((S.today-S.target)/S.target),health:closing?closing.h:1-.9*th}; }
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){}
+function saveKey(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){}
   var st=Object.assign({},S,derived(),{species:SP[spIdx(S.date)].n}); delete st.history; delete st.layout; delete st.exams;
   try{ window.dispatchEvent(new CustomEvent('plant:change',{detail:st}));
   if(window.parent!==window) window.parent.postMessage({type:'plant:change',state:st},'*'); }catch(e){} }
+/* Every S mutation persists to the synced app store (store.roadmap) so the
+   whole garden survives Clear Data + login and syncs across devices.
+   storeSet fires the debounced pushSoon — no immediate push here. */
+function rgPersistRoadmap(){ try{ if(typeof storeGet!=='function'||typeof storeSet!=='function') return; var st=storeGet(); st.roadmap=JSON.parse(JSON.stringify(S)); storeSet(st); }catch(e){} }
+function save(){ try{ S.updatedAt=Date.now(); }catch(e){} saveKey(); rgPersistRoadmap(); }
+/* Restore S from a store object (called on init + on login/pull + on the
+   live profile listener). LWW by updatedAt: a newer local garden is never
+   clobbered by a stale cloud copy. Returns true when S was adopted. */
+function rgRestoreRoadmap(st){
+  var rm=st&&st.roadmap; if(!rm||typeof rm!=='object') return false;
+  if((rm.updatedAt||0)<(S.updatedAt||0)) return false;
+  var fields=['target','today','date','streak','exam','exams','history','layout','counted','revSeen','plan','setupDone','examCustom','updatedAt'];
+  fields.forEach(function(f){ if(rm[f]!==undefined){ try{ S[f]=JSON.parse(JSON.stringify(rm[f])); }catch(e){ S[f]=rm[f]; } } });
+  if(!S.counted||!S.counted.ids) S.counted={date:'',ids:[]};
+  if(!S.revSeen) S.revSeen={};
+  if(!S.exams) S.exams=JSON.parse(JSON.stringify(EXAMS));
+  if(!S.examCustom) S.examCustom={};
+  saveKey(); try{ ui(); }catch(e){}
+  return true;
+}
+window.__rgRestoreRoadmap=function(st){ try{ return rgRestoreRoadmap(st); }catch(e){ return false; } };
 function finish(done,date){ S.history.push({d:date,done:done,t:S.target,sp:spIdx(date),ex:S.exam}); S.history=S.history.slice(-34);
   S.streak=done>=S.target?S.streak+1:0; }
 function sync(){ var t=todayStr(); if(!S.date){ S.date=t; return; } if(S.date>=t) return;
@@ -19058,6 +19190,182 @@ window.rgStartTestFromRoadmap=function(t){
   try{ openInstructions(t); }catch(e){ window.__rgReturn=null; }
 };
 addEventListener('message',function(e){ var d=e.data||{}; if(d.plant&&API[d.plant]){ try{ API[d.plant](d.value); }catch(x){} } });
+
+/* ============ FIREBASE EXAM DATES (meta/exam_dates) ============ */
+function rgFmtDate(d){ try{ return new Date(d+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}); }catch(e){ return String(d||''); } }
+function rgIsOwner(){ try{ var u=(window.__fb&&window.__fb.user)||null; return !!(u&&u.uid===RG_OWNER_UID); }catch(e){ return false; } }
+window.rgIsOwner=function(){ return rgIsOwner(); };
+window.__rgGetFbExams=function(){ try{ return rgFbExams?JSON.parse(JSON.stringify(rgFbExams)):null; }catch(e){ return null; } };
+window.__rgResetFbFetch=function(){ rgFbFetched=false; };
+function rgValidFbDate(d){ return typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&!isNaN(Date.parse(d)); }
+function rgNormFbExams(raw){
+  var out={}; if(!raw||typeof raw!=='object') return out;
+  EXAM_ORDER.forEach(function(n){
+    var e=raw[n]; if(!e||typeof e!=='object') return;
+    if(!rgValidFbDate(e.date)) return;
+    out[n]={date:e.date,official:!!e.official,note:String(e.note||'').slice(0,200),updatedAt:(typeof e.updatedAt==='number'?e.updatedAt:0)};
+  });
+  return out;
+}
+function rgReadFbCache(){ try{ var raw=localStorage.getItem(RG_FB_CACHE_KEY); if(!raw) return null; var c=JSON.parse(raw); return (c&&c.exams)?rgNormFbExams(c.exams):null; }catch(e){ return null; } }
+function rgWriteFbCache(exams){ try{ localStorage.setItem(RG_FB_CACHE_KEY,JSON.stringify({fetchedAt:Date.now(),exams:exams})); }catch(e){} }
+/* Apply a Firebase config map. A user's own manually-picked date (examCustom)
+   is never auto-overwritten — the Firebase official date is offered in the
+   setup modal instead (one tap to apply). Everything else adopts. */
+function rgApplyFbExams(raw){
+  var norm=rgNormFbExams(raw); if(!Object.keys(norm).length) return false;
+  rgFbExams=norm;
+  var adopted=false;
+  EXAM_ORDER.forEach(function(n){
+    if(S.examCustom&&S.examCustom[n]) return; /* user picked their own date */
+    var cur=S.exams[n]||{};
+    if(cur.date!==norm[n].date||!!cur.official!==!!norm[n].official){
+      S.exams[n]={date:norm[n].date,official:!!norm[n].official,note:norm[n].note||'',updatedAt:norm[n].updatedAt||0};
+      adopted=true;
+    }
+  });
+  if(adopted){ S.plan=null; save(); ui(); }
+  return adopted;
+}
+window.rgApplyFbExams=function(x){ try{ return rgApplyFbExams(x); }catch(e){ return false; } };
+/* Read meta/exam_dates once per launch, when online. Non-blocking, 10 s
+   timeout (same pattern as meta/topper), cached in localStorage. Offline /
+   missing doc / error / timeout / SDK-not-ready -> silent fallback to the
+   baked-in EXAMS defaults; the UI never shows an error for a config read. */
+var rgFbRetries=0; /* SDK-not-ready retries: at most 3, 5 s apart (a retry is not a refresh) */
+async function rgFetchExamDates(){
+  if(rgFbFetched) return false;
+  var cached=rgReadFbCache(); if(cached) rgApplyFbExams(cached);
+  try{
+    if(typeof navigator!=='undefined'&&navigator.onLine===false) return false;
+    var _fb=window.__fb; if(!_fb||!_fb.db){ if(rgFbRetries<3){ rgFbRetries++; setTimeout(function(){ try{ rgFetchExamDates(); }catch(e){} },5000); } return false; } /* SDK not ready yet — retry shortly; the pull hook also retries after login */
+    if(typeof fsMod!=='function'||typeof withTimeout!=='function') return false;
+    rgFbFetched=true;
+    var m=await withTimeout(fsMod(),10000);
+    if(!m||typeof m.getDoc!=='function'||typeof m.doc!=='function') return false;
+    var snap=await withTimeout(m.getDoc(m.doc(_fb.db,'meta','exam_dates')),10000);
+    if(!snap||!snap.exists||!snap.exists()) return false;
+    var data=snap.data()||{};
+    var norm=rgNormFbExams(data.exams||data);
+    if(!Object.keys(norm).length) return false;
+    rgWriteFbCache(norm); rgApplyFbExams(norm); return true;
+  }catch(e){ return false; }
+}
+window.rgFetchExamDates=function(){ return rgFetchExamDates(); };
+/* ---- setup modal: Firebase official-date recommendation (one tap) ---- */
+function rgSuRec(n){
+  var r=$('rgSuRec'); if(!r) return;
+  var fbE=rgFbExams&&rgFbExams[n];
+  var cur=($('rgSuDate')&&$('rgSuDate').value)||'';
+  if(fbE&&fbE.official&&fbE.date&&fbE.date!==cur){
+    r.style.display='';
+    r.innerHTML='Official date: <b>'+rgFmtDate(fbE.date)+'</b> <button type="button" class="rg-su-rec-btn" id="rgSuRecBtn">Official date lagao</button>';
+    var b=$('rgSuRecBtn');
+    if(b) b.addEventListener('click',function(){ $('rgSuDate').value=fbE.date; $('rgSuOff').checked=true; r.style.display='none'; suPreview(); });
+  } else { r.style.display='none'; r.innerHTML=''; }
+}
+/* ---- owner-only admin (Settings) ---- */
+function rgRefreshAdmin(){
+  var card=$('rgAdminCard'); if(!card) return;
+  var owner=rgIsOwner();
+  card.style.display=owner?'':'none';
+  if(!owner) return;
+  var rows=$('rgAdminRows'); if(!rows) return;
+  if(!rows.children.length){
+    var h='';
+    EXAM_ORDER.forEach(function(n,i){
+      h+='<div class="rg-adm-row"><b>'+rgEsc(EXAM_SHORT[n]||n)+'</b><input type="date" id="rgAdmDate'+i+'" aria-label="'+rgEsc(n)+' date"><label><input type="checkbox" id="rgAdmOff'+i+'">Official</label></div>';
+    });
+    rows.innerHTML=h;
+    var sb=$('rgAdminSaveBtn');
+    if(sb&&!sb.getAttribute('data-bound')){ sb.setAttribute('data-bound','1'); sb.addEventListener('click',function(){ rgSaveExamDatesAdmin(); }); }
+  }
+  EXAM_ORDER.forEach(function(n,i){
+    var src=(rgFbExams&&rgFbExams[n])||S.exams[n]||EXAMS[n]||{};
+    var di=$('rgAdmDate'+i),oi=$('rgAdmOff'+i);
+    if(di) di.value=src.date||'';
+    if(oi) oi.checked=!!src.official;
+  });
+}
+window.rgRefreshAdmin=function(){ try{ rgRefreshAdmin(); }catch(e){} };
+async function rgSaveExamDatesAdmin(){
+  var st=$('rgAdminStatus');
+  var setSt=function(t,ok){ if(!st) return; st.textContent=t; st.className='rg-adm-status '+(ok?'ok':'err'); };
+  if(!rgIsOwner()){ setSt('Sirf owner exam dates badal sakta hai.',false); return false; }
+  var doc={exams:{},updatedAt:Date.now()};
+  for(var i=0;i<EXAM_ORDER.length;i++){
+    var n=EXAM_ORDER[i],di=$('rgAdmDate'+i),oi=$('rgAdmOff'+i);
+    var d=di?di.value:'';
+    if(!rgValidFbDate(d)){ setSt('Sahi date chuno: '+(EXAM_SHORT[n]||n),false); return false; }
+    var prev=(rgFbExams&&rgFbExams[n])||{};
+    doc.exams[n]={date:d,official:!!(oi&&oi.checked),note:prev.note||'',updatedAt:Date.now()};
+  }
+  try{
+    var _fb=window.__fb; if(!_fb||!_fb.db) throw new Error('no db');
+    if(typeof fsMod!=='function'||typeof withTimeout!=='function') throw new Error('no firestore');
+    var m=await withTimeout(fsMod(),10000);
+    await withTimeout(m.setDoc(m.doc(_fb.db,'meta','exam_dates'),doc,{merge:true}),10000);
+    rgFbExams=rgNormFbExams(doc.exams); rgWriteFbCache(rgFbExams);
+    EXAM_ORDER.forEach(function(n){ S.exams[n]={date:doc.exams[n].date,official:doc.exams[n].official,note:doc.exams[n].note,updatedAt:doc.exams[n].updatedAt}; if(S.examCustom) delete S.examCustom[n]; });
+    S.plan=null; save(); ui();
+    setSt('Exam dates save ho gayi — sab users ke Roadmap me update ho jayegi.',true);
+    return true;
+  }catch(e){ setSt('Save nahi hua — internet check karke dobara try karo.',false); return false; }
+}
+window.rgSaveExamDatesAdmin=function(){ return rgSaveExamDatesAdmin(); };
+
+/* ============ TESTS-VIEW SUGGESTION STRIP ============ */
+/* COUNTING RULE (user, 27 Nov 11:07 IST): the daily target is ANY 6 distinct
+   tests — one series or mixed, the suggestion mix never restricts counting.
+   Target progress = distinct tests today (rgTodayIds, any series/origin);
+   6/6 = target complete, plant full bloom. The strip only SHOWS the
+   suggested mix (same balance as rgBuildPlaylist: Maths cap min(2,
+   floor(target/3)), rest split CA/GA, round-robin). Remaining counts come
+   from the FIXED daily plan (S.plan, or a day-stamped cache built from the
+   playlist when the roadmap was never opened) — never from a fresh playlist
+   call, or the list refills and remaining never drops. Remaining clamps at
+   0, never negative; once done>=target the strip shows the complete state
+   whatever the mix. The playlist Maths cap is suggestion-only — it never
+   touches counting (rgCountTestToday/rgTodayIds have no series check). */
+var rgStripCache=null; /* {date, items} — today's fixed suggestion, built once */
+function rgStripItems(){
+  var t=todayStr();
+  try{ if(S.plan&&S.plan.date===t&&S.plan.exam===S.exam&&S.plan.items) return S.plan.items; }catch(e){}
+  if(rgStripCache&&rgStripCache.date===t) return rgStripCache.items;
+  var items=[];
+  try{ items=rgBuildPlaylist().items||[]; }catch(e){}
+  rgStripCache={date:t,items:items};
+  return items;
+}
+function rgStripMix(){
+  var done={}; try{ rgTodayIds().forEach(function(id){ done[id]=1; }); }catch(e){}
+  var target=6; try{ target=Math.max(1,S.target||6); }catch(e){}
+  var mix={maths:0,ca:0,ga:0,total:0,done:0,target:target};
+  try{
+    rgStripItems().forEach(function(it){ if(it.kind!=='test') return; if(done[it.testId]) return; if(mix[it.series]!=null) mix[it.series]++; });
+  }catch(e){}
+  mix.maths=Math.max(0,mix.maths); mix.ca=Math.max(0,mix.ca); mix.ga=Math.max(0,mix.ga);
+  mix.total=mix.maths+mix.ca+mix.ga;
+  mix.done=Object.keys(done).length;
+  return mix;
+}
+function rgRenderStrip(){
+  var el=$('rgStrip'); if(!el) return;
+  var mix=rgStripMix();
+  var chip=function(lbl,n){ return '<span class="rg-strip-c'+(n===0?' done':'')+'">'+lbl+' <b>'+n+'</b></span>'; };
+  if(mix.done>=mix.target||(mix.total===0&&mix.done>0)){
+    el.className='rg-strip done-all';
+    el.innerHTML='<span class="rg-strip-t">Aaj ka plan complete — shabash!</span><span class="rg-strip-p">'+mix.done+'/'+mix.target+' tests</span>';
+  } else {
+    el.className='rg-strip';
+    el.innerHTML='<span class="rg-strip-t">Aaj ka suggestion:</span>'
+      +chip('Maths',mix.maths)+chip('CA',mix.ca)+chip('GA',mix.ga)
+      +'<span class="rg-strip-p">'+mix.done+'/'+mix.target+' tests</span>';
+  }
+  el.style.display='';
+}
+window.rgRenderStrip=function(){ try{ rgRenderStrip(); }catch(e){} };
+window.rgStripMix=function(){ try{ return rgStripMix(); }catch(e){ return {maths:0,ca:0,ga:0,total:0,done:0,target:6}; } };
 
 /* ============ THREE — scoped renderers (WebGL missing, e.g. jsdom, -> stub) ============ */
 var heroBox=$('rgHeroBox'), gardenBox=$('rgGardenBox');
@@ -19425,7 +19733,7 @@ function ui(){
   var ex=S.exams[S.exam];
   var en=$('rgExamName'); if(en) en.textContent=S.exam;
   if(ex){ var dl=Math.ceil((Date.parse(ex.date)-Date.parse(todayStr()))/864e5);
-    var ei=$('rgExamInfo'); if(ei) ei.textContent=new Date(ex.date+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})+' - '+(ex.official?'official date':'expected date');
+    var ei=$('rgExamInfo'); if(ei){ var _lbl=ex.official?'Official date':'Expected date'; var _tx=rgFmtDate(ex.date)+' \u2013 '+_lbl; var _fbE=rgFbExams&&rgFbExams[S.exam]; if(_fbE&&_fbE.official&&_fbE.date&&_fbE.date!==ex.date) _tx+=' \u2022 Official: '+rgFmtDate(_fbE.date); ei.textContent=_tx; }
     var dd=$('rgDaysLeft'); if(dd) dd.textContent=Math.max(0,dl); }
 }
 
@@ -19633,8 +19941,6 @@ function rgRenderRoadmap(){
   if(tl) tl.textContent=P.needed>6
     ? 'Aaj ka target: '+P.target+' tests (exam tak sab khatam karne ke liye '+P.needed+' chahiye, '+fresh.remaining+' tests baaki, '+daysLeft+' din)'
     : 'Aaj ka target: '+P.target+' tests. Exam tak sab khatam karne ke liye kaafi hai ('+fresh.remaining+' tests baaki, '+daysLeft+' din)';
-  var ed=$('rgExamDate'); if(ed&&ex) ed.value=ex.date;
-  var eo=$('rgExamOfficial'); if(eo&&ex) eo.checked=!!ex.official;
   var list=$('rgPlaylist'), doneN=0, nextTest=null;
   P.items.forEach(function(it){ if(isDone(it)) doneN++; else if(!nextTest&&it.kind==='test'){ nextTest=findTestById(it.testId); } });
   var pc=$('rgPlanCount'); if(pc) pc.textContent=doneN+'/'+P.items.length;
@@ -19683,7 +19989,7 @@ function suBuild(){
    +'<div class="rg-su-hero"><span class="rg-ic">'+RG_ICO('spark')+'</span><h2 id="rgSuTitle">Apna AI Roadmap banao</h2><p>Exam aur date batao. Hum tumhare liye roz ka plan aur study garden bana denge.</p></div>'
    +'<div class="rg-su-sec">Exam chuno</div><div class="rg-su-grid" id="rgSuExams"></div>'
    +'<div class="rg-su-sec">Exam ki date</div>'
-   +'<div class="rg-su-date"><input type="date" id="rgSuDate" aria-label="Exam date"><label class="rg-su-off"><input type="checkbox" id="rgSuOff"><span>Ye official date hai</span></label></div><div class="rg-su-err" id="rgSuErr"></div>'
+   +'<div class="rg-su-date"><input type="date" id="rgSuDate" aria-label="Exam date"><label class="rg-su-off"><input type="checkbox" id="rgSuOff"><span>Ye official date hai</span></label></div><div class="rg-su-rec" id="rgSuRec" style="display:none"></div><div class="rg-su-err" id="rgSuErr"></div>'
    +'<div class="rg-su-prev" id="rgSuPrev"></div>'
    +'<button class="rg-su-go" id="rgSuGo"></button></div>';
   document.body.appendChild(suEl);
@@ -19696,7 +20002,7 @@ function suPick(n){
   suSel=n; var ex=S.exams[n]||{};
   $('rgSuDate').value=ex.date||''; $('rgSuOff').checked=!!ex.official;
   suEl.querySelectorAll('.rg-su-ex').forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-ex')===n); });
-  $('rgSuErr').textContent=''; suPreview();
+  $('rgSuErr').textContent=''; try{ rgSuRec(n); }catch(e){} suPreview();
 }
 function suPreview(){
   var d=$('rgSuDate').value,pv=$('rgSuPrev'); if(!pv) return;
@@ -19704,7 +20010,11 @@ function suPreview(){
   if(!d||!(left>0)){ pv.textContent='Date chuno, phir hum bata denge ki roz kitne tests karne honge.'; return; }
   var rem=0; try{ rem=rgBuildPlaylist().remaining; }catch(e){}
   var need=Math.ceil(rem/left),tg=Math.max(6,need);
-  pv.innerHTML='Exam me <b>'+left+' din</b> baaki hain aur <b>'+rem+' tests</b> bache hain. Roz ka target: <b>'+tg+' tests</b>'+(need>6?' (sab khatam karne ke liye)':' (kaafi hai)')+'.';
+   pv.innerHTML='Exam me <b>'+left+' din</b> baaki hain aur <b>'+rem+' tests</b> bache hain. Roz ka target: <b>'+tg+' tests</b>'+(need>6?' (sab khatam karne ke liye)':' (kaafi hai)')+'.';
+   var _fbP=rgFbExams&&rgFbExams[suSel];
+   if(_fbP&&_fbP.official&&_fbP.date&&_fbP.date!==d){ pv.innerHTML+=' Official date <b>'+rgFmtDate(_fbP.date)+'</b> hai — upar se ek tap me lagao.'; }
+   else if(_fbP&&_fbP.official){ pv.innerHTML+=' Ye official date hai.'; }
+   else { pv.innerHTML+=' Ye expected date hai (official notice abhi nahi aaya).'; }
 }
 function suClose(){ if(!suEl) return; suEl.classList.remove('show'); }
 function rgOpenSetup(first){
@@ -19724,6 +20034,9 @@ function suStart(){
   var d=$('rgSuDate').value,er=$('rgSuErr');
   if(!d||!(Date.parse(d)>Date.parse(todayStr()))){ er.textContent='Exam date aaj ke baad ki honi chahiye.'; er.classList.remove('shake'); void er.offsetWidth; er.classList.add('shake'); return; }
   var changed=(S.exam!==suSel);
+  if(!S.examCustom) S.examCustom={};
+  var _fbS=rgFbExams&&rgFbExams[suSel];
+  if(_fbS&&_fbS.official&&d===_fbS.date) delete S.examCustom[suSel]; else S.examCustom[suSel]=true;
   API.setExamDate(suSel,d,$('rgSuOff').checked);
   S.exam=suSel; S.setupDone=true; S.plan=null;
   try{ var st=storeGet(); st.profile=Object.assign({name:'Student',target:91},st.profile||{},{exam:SU_PROFILE[suSel]||suSel}); storeSet(st); }catch(e){}
@@ -19748,10 +20061,6 @@ rgBind('rgGardenBtn',function(){ showView('garden'); });
 rgBind('rgGardenBackBtn',function(){ showView('roadmap'); });
 rgBind('rgZoomIn',function(){ rgSetZoom(gZoom*1.25); });
 rgBind('rgZoomOut',function(){ rgSetZoom(gZoom/1.25); });
-rgBind('rgExamSave',function(){
-  var d=$('rgExamDate'),o=$('rgExamOfficial');
-  if(d&&d.value){ API.setExamDate(S.exam,d.value,o?!!o.checked:false); rgRenderRoadmap(); }
-});
 document.addEventListener('visibilitychange',function(){
   try{ sync(); save(); ui(); }catch(e){}
   try{ rgReconcileToday(); }catch(e){}
