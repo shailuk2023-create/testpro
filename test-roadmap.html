@@ -6393,7 +6393,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <div class="rg-hero" id="rgHeroBox"></div>
     <div class="rg-tiles">
       <div class="rg-tile t-fire"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-flame"/></svg></span><b id="rgTStreak">0</b><small>Din ki streak</small></div>
-      <div class="rg-tile"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><b id="rgTToday">0/6</b><small>Aaj ke tests</small></div>
+      <div class="rg-tile"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><b id="rgTToday">0/–</b><small>Aaj ke tests</small></div>
       <div class="rg-tile t-ok"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><b id="rgTHealth">100%</b><small>Paudhe ki sehat</small></div>
     </div>
     <div class="rg-status">
@@ -6403,7 +6403,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     </div>
     <button class="rg-next" id="rgNextBtn"></button>
     <h2 class="rg-sec">Aaj ka plan <span id="rgPlanCount">0/0</span></h2>
-    <div class="rg-any6">Koi bhi 6 tests de sakte ho <span>(daily target)</span></div>
+    <div class="rg-any6" id="rgAnyN">Koi bhi <b id="rgAnyNum">–</b> tests de sakte ho <span>(daily target)</span></div>
     <div id="rgPlaylist"></div>
   </div>
   <div class="rg-intro" id="rgIntro" hidden>
@@ -6411,7 +6411,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <div class="rg-intro-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></div>
       <h2>AI Roadmap kaise kaam karta hai?</h2>
       <ul>
-        <li>Roz <b>koi bhi 6 tests</b> do — Maths, CA ya GA, kisi bhi series se — paudha badhega.</li>
+        <li>Roz <b id="rgIntroN">koi bhi — tests</b> do — Maths, CA ya GA, kisi bhi series se — paudha badhega.</li>
         <li>Roz test doge to garden bharata jayega — har din ki fasal ek khana.</li>
         <li>Upar exam ki date aur din baaki dikhte hain; roz test dene se streak badhti hai.</li>
       </ul>
@@ -19161,6 +19161,8 @@ var spIdx = function(s){ return Math.floor(Date.parse(s)/864e5)%SP.length; };
 
 /* ============ STATE ============ */
 var S={target:6,today:0,date:'',streak:0,exam:'RRB NTPC Graduate',exams:JSON.parse(JSON.stringify(EXAMS)),history:[],layout:{},counted:{date:'',ids:[]},revSeen:{},plan:null,setupDone:false,examCustom:{},introSeen:false,updatedAt:0};
+/* target:6 sirf pre-setup fallback hai — neeche init par formula se overwrite hota hai, aur har roadmap render par bhi. */
+try{ var _un0=0; [TESTS,CA_TESTS,GA_TESTS].forEach(function(_a){ _a.forEach(function(_t){ var _r=null; try{ _r=getTestRec(_t); }catch(e){} var _att=false; try{ _att=_r&&(_r.attempts>0||getAttempts(_r).length>0); }catch(e){} if(!_att) _un0++; }); }); var _ct0=rgComputeTarget(_un0); if(_ct0&&_ct0.today>0) S.target=_ct0.today; }catch(e){}
 try{ var _r=localStorage.getItem(KEY); if(_r) Object.assign(S,JSON.parse(_r)); }catch(e){}
 if(!S.counted || !S.counted.ids) S.counted={date:'',ids:[]};
 if(!S.revSeen) S.revSeen={};
@@ -19362,10 +19364,12 @@ async function rgSaveExamDatesAdmin(){
 window.rgSaveExamDatesAdmin=function(){ return rgSaveExamDatesAdmin(); };
 
 /* ============ TESTS-VIEW SUGGESTION STRIP ============ */
-/* COUNTING RULE (user, 27 Nov 11:07 IST): the daily target is ANY 6 distinct
-   tests — one series or mixed, the suggestion mix never restricts counting.
+/* COUNTING RULE (user, 27 Nov 11:07 IST; target dynamic since 27 Nov 14:33):
+   the daily target is ANY N distinct tests (N = rgComputeTarget se — exam
+   date + remaining tests se, 10-day buffer; fixed 6 nahi) — one series or
+   mixed, the suggestion mix never restricts counting.
    Target progress = distinct tests today (rgTodayIds, any series/origin);
-   6/6 = target complete, plant full bloom. The strip only SHOWS the
+   N/N = target complete, plant full bloom. The strip only SHOWS the
    suggested mix (same balance as rgBuildPlaylist: Maths cap min(2,
    floor(target/3)), rest split CA/GA, round-robin). Remaining counts come
    from the FIXED daily plan (S.plan, or a day-stamped cache built from the
@@ -19377,7 +19381,7 @@ window.rgSaveExamDatesAdmin=function(){ return rgSaveExamDatesAdmin(); };
 var rgStripCache=null; /* {date, items} — today's fixed suggestion, built once */
 function rgStripItems(){
   var t=todayStr();
-  try{ if(S.plan&&S.plan.date===t&&S.plan.exam===S.exam&&S.plan.items) return S.plan.items; }catch(e){}
+  try{ if(S.plan&&S.plan.date===t&&S.plan.exam===S.exam&&S.plan.items&&S.plan.avg!=null) return S.plan.items; }catch(e){}
   if(rgStripCache&&rgStripCache.date===t) return rgStripCache.items;
   var items=[];
   try{ items=rgBuildPlaylist().items||[]; }catch(e){}
@@ -19386,7 +19390,11 @@ function rgStripItems(){
 }
 function rgStripMix(){
   var done={}; try{ rgTodayIds().forEach(function(id){ done[id]=1; }); }catch(e){}
-  var target=6; try{ target=Math.max(1,S.target||6); }catch(e){}
+  var target=1;
+  try{
+    if(S.plan&&S.plan.date===todayStr()&&S.plan.exam===S.exam&&typeof S.plan.target==='number'&&S.plan.avg!=null) target=S.plan.target;
+    else { var rem=0; try{ rem=rgBuildPlaylist().remaining; }catch(e){} target=rgComputeTarget(rem).today; }
+  }catch(e){}
   var mix={maths:0,ca:0,ga:0,total:0,done:0,target:target};
   try{
     rgStripItems().forEach(function(it){ if(it.kind!=='test') return; if(done[it.testId]) return; if(mix[it.series]!=null) mix[it.series]++; });
@@ -19412,7 +19420,7 @@ function rgRenderStrip(){
   el.style.display='';
 }
 window.rgRenderStrip=function(){ try{ rgRenderStrip(); }catch(e){} };
-window.rgStripMix=function(){ try{ return rgStripMix(); }catch(e){ return {maths:0,ca:0,ga:0,total:0,done:0,target:6}; } };
+window.rgStripMix=function(){ try{ return rgStripMix(); }catch(e){ return {maths:0,ca:0,ga:0,total:0,done:0,target:1}; } };
 
 /* ============ THREE — scoped renderers (WebGL missing, e.g. jsdom, -> stub) ============ */
 var heroBox=$('rgHeroBox'), gardenBox=$('rgGardenBox');
@@ -19779,7 +19787,7 @@ function frame(now){
 function ui(){
   var d=derived(),h=d.health,sp=SP[spIdx(S.date)],g=S.today/S.target;
   var sn=$('stage-name'); if(sn) sn.textContent=h<.08?'Murjha gaya':S.today>S.target?'Bonus: ghana aur chamakta!':g<.67?'Badh raha hai':g<1?'Hara-bhara':'Poora phool gaya';
-  var t1=$('rgTStreak'); if(t1) t1.textContent=S.streak; var t2=$('rgTToday'); if(t2) t2.textContent=S.today+'/'+S.target; var t3=$('rgTHealth'); if(t3) t3.textContent=Math.round(h*100)+'%';
+  var t1=$('rgTStreak'); if(t1) t1.textContent=S.streak; var t2=$('rgTToday'); if(t2) t2.textContent=(S.plan&&S.plan.target===0)?'✓':S.today+'/'+S.target; var t3=$('rgTHealth'); if(t3) t3.textContent=Math.round(h*100)+'%';
   var ms=$('msg'); if(ms) ms.textContent=h<.08?'Paudha murjha gaya. Test do to wapas jee uthega.':S.today>=S.target?(S.today>S.target?'Zabardast! Titliyan aur jugnu aa gaye.':'Target pura! Paudha poora khil gaya.'):h>.35?'Paudha pyaasa hai! Test do = paani.':'Murjha raha hai... jaldi test do!';
   var ex=S.exams[S.exam];
   var en=$('rgExamName'); if(en) en.textContent=S.exam;
@@ -19914,6 +19922,44 @@ function rgExamFromProfile(){
   if(/\bug\b|under\s*-?\s*grad|12th|inter/.test(t)) return 'RRB NTPC UG';
   return 'RRB NTPC Graduate';
 }
+/* ============ DYNAMIC DAILY TARGET (user, 27 Nov 14:33 IST) ============
+   Fixed 6 hata diya — roz ka target exam date + bache tests se compute
+   hota hai, taaki tests exam se 10 din pehle khatam ho jayein:
+     daysLeft = selected exam tak bache din (aaj se)
+     effDays  = daysLeft>10 ? daysLeft-10 : max(1,daysLeft)
+     raw      = remaining / effDays
+     avg      = raw ko nearest 0.5 tak UP round (ceil(raw*2)/2)
+     today    = avg integer ho to wahi; x.5 ho to date parity se alternate
+                floor/ceil (average x.5 bana rahe)
+     remaining=0 -> today=0, avg=0 (completed state)
+     remaining>0 -> today min 1
+   Example: 31 din bache, 114 tests -> eff 21 din -> 114/21=5.43 -> 5.5
+   -> ek din 5, agle din 6. Target recompute hota hai jab: naya din ho,
+   exam badle, exam date badle (Firebase se S.plan=null), ya plan rebuild
+   ho; plan ek din ke liye fixed rehta hai (tests dene se aaj ka target
+   intraday nahi badalta — kal ka target naye remaining se banta hai).
+   daysLeftIn (optional): picked exam ke liye din (setup preview). */
+function rgComputeTarget(remaining,daysLeftIn){
+  var daysLeft=1;
+  if(typeof daysLeftIn==='number'&&daysLeftIn>0) daysLeft=Math.max(1,Math.ceil(daysLeftIn));
+  else { var ex=S.exams[S.exam]; if(ex) daysLeft=Math.max(1,Math.ceil((Date.parse(ex.date)-dayStart(Date.now()))/864e5)); }
+  var eff=daysLeft>10?daysLeft-10:Math.max(1,daysLeft);
+  if(!(remaining>0)) return {today:0,avg:0,remaining:0,daysLeft:daysLeft,effDays:eff};
+  var raw=remaining/eff;
+  var avg=Math.ceil(raw*2)/2;
+  var today;
+  if(avg%1===0) today=avg;
+  else { var dnum=0; try{ dnum=Math.floor(Date.parse(todayStr())/864e5); }catch(e){} today=(dnum%2===0)?Math.floor(avg):Math.ceil(avg); }
+  today=Math.max(1,today);
+  return {today:today,avg:avg,remaining:remaining,daysLeft:daysLeft,effDays:eff};
+}
+function rgFmtAvg(a){ return (a%1===0)?String(a):a.toFixed(1); }
+window.__rgComputeTarget=function(r,d){ try{ return rgComputeTarget(r,d); }catch(e){ return null; } };
+function rgSetBanner(n){
+  var bn=$('rgAnyN'); if(!bn) return;
+  if(n>0) bn.innerHTML='Koi bhi <b>'+n+'</b> tests de sakte ho <span>(daily target)</span>';
+  else bn.innerHTML='Sab tests complete ho gaye! <span>(daily target)</span>';
+}
 function rgBuildPlaylist(){
   rgBackfillSavedAt();
   var all=TESTS.concat(CA_TESTS,GA_TESTS);
@@ -19940,8 +19986,10 @@ function rgBuildPlaylist(){
   weak.forEach(function(w){ var s=seriesOf(w.t); cand[s].push({kind:'test',series:s,testId:w.t.id,title:testTitle(w.t),reason:rgSeriesLabel(w.t)+' — '+w.t.nameEn+' me best score '+w.pct+'% hai, isliye revision'}); });
   rgDueRevisions().forEach(function(r){ cand[r.series].push({kind:'rev',series:r.series,key:r.key,title:r.label,reason:'ye saved question '+r.age+' din pehle save kiya tha — aaj revision ka time hai'}); });
   /* Balance: Maths is heavy — cap it at max 2/day (or 1/3 of the daily
-     target, whichever is smaller); the rest splits evenly between CA and GA. */
-  var target=Math.max(1,S.target||6);
+     target, whichever is smaller); the rest splits evenly between CA and GA.
+     Target yahan bhi formula se aata hai (fixed 6 nahi) — S.target tab tak
+     stale ho sakta hai jab plan abhi bana hi nahi. */
+  var target=Math.max(1,rgComputeTarget(unatt.length).today);
   var mathCap=Math.min(2,Math.floor(target/3));
   var quota={maths:mathCap,ca:Math.ceil((target-mathCap)/2),ga:Math.floor((target-mathCap)/2)};
   var taken={maths:0,ca:0,ga:0},sel={maths:[],ca:[],ga:[]};
@@ -19979,29 +20027,33 @@ function rgRenderRoadmap(){
   var doneIds={}; rgTodayIds().forEach(function(id){ doneIds[id]=1; });
   var isDone=function(it){ return it.kind==='rev'?(S.revSeen&&S.revSeen[it.key]===today):!!doneIds[it.testId]; };
   /* one fixed plan per day (+exam): completed items stay visible and get struck through */
-  if(!S.plan||S.plan.date!==today||S.plan.exam!==S.exam){
+  if(!S.plan||S.plan.date!==today||S.plan.exam!==S.exam||S.plan.avg==null){
     var keep=(S.plan&&S.plan.date===today)?S.plan.items.filter(isDone):[];
-    var needed=Math.ceil(fresh.remaining/daysLeft), tg=Math.max(6,needed);
+    var ct=rgComputeTarget(fresh.remaining);
+    var needed=ct.avg, tg=ct.today, effDays=ct.effDays;
     var keepKeys={}; keep.forEach(function(k){ keepKeys[rgItemKey(k)]=1; });
     var rest=fresh.items.filter(function(it){ return !keepKeys[rgItemKey(it)]; }).slice(0,Math.max(0,tg-keep.length));
-    S.plan={date:today,exam:S.exam,target:tg,needed:needed,remaining:fresh.remaining,days:daysLeft,items:keep.concat(rest),seen:(S.plan&&S.plan.date===today)?S.plan.seen:[]};
+    S.plan={date:today,exam:S.exam,target:tg,needed:needed,avg:ct.avg,effDays:effDays,remaining:fresh.remaining,days:daysLeft,items:keep.concat(rest),seen:(S.plan&&S.plan.date===today)?S.plan.seen:[]};
   }
   var P=S.plan;
   API.setTarget(P.target);
+  try{ rgSetBanner(P.target); }catch(e){}
   var tl=$('rgTargetLine');
-  if(tl) tl.textContent=P.needed>6
-    ? 'Aaj ka target: '+P.target+' tests (exam tak sab khatam karne ke liye '+P.needed+' chahiye, '+fresh.remaining+' tests baaki, '+daysLeft+' din)'
-    : 'Aaj ka target: '+P.target+' tests. Exam tak sab khatam karne ke liye kaafi hai ('+fresh.remaining+' tests baaki, '+daysLeft+' din)';
+  if(tl) tl.textContent=(P.target===0)
+    ? 'Sab tests complete ho gaye! Ab revision aur garden par dhyaan do.'
+    : 'Aaj ka target: '+P.target+' tests — exam se 10 din pehle sab khatam karne ke liye roz '+rgFmtAvg(P.avg!=null?P.avg:P.needed)+' tests chahiye ('+fresh.remaining+' tests baaki, '+(P.effDays||daysLeft)+' din)';
   var list=$('rgPlaylist'), doneN=0, nextTest=null;
   P.items.forEach(function(it){ if(isDone(it)) doneN++; else if(!nextTest&&it.kind==='test'){ nextTest=findTestById(it.testId); } });
   /* v116: tests done OUTSIDE the roadmap (Tests tab, any series/month/
-     chapter) also show in the playlist — struck-through, moved to the
-     bottom, counted toward the daily target. A test already in the plan
-     is skipped here (it is struck through in place). Off-plan done tests
-     resolve via findTestById so the row carries its real series + title.
-     Remaining = target - distinct done tests today (never below 0); the
-     strip's fixed-plan logic (S.plan) is untouched and same-day
-     re-attempts never double-count (rgTodayIds is distinct by test id). */
+     chapter) also show in the playlist — struck-through, counted toward
+     the daily target. A test already in the plan is skipped here (it is
+     struck through in place). Off-plan done tests resolve via findTestById
+     so the row carries its real series + title. Remaining = target -
+     distinct done tests today (never below 0); the strip's fixed-plan
+     logic (S.plan) is untouched and same-day re-attempts never
+     double-count (rgTodayIds is distinct by test id). ORDER (user,
+     27 Nov 14:35 IST): attempted rows on TOP (struck through), pending
+     suggestions below — supersedes the v116 pending-first order. */
   var inPlan={}; P.items.forEach(function(it){ if(it.kind==='test'&&it.testId) inPlan[it.testId]=1; });
   var extraDone=[];
   Object.keys(doneIds).forEach(function(id){
@@ -20018,8 +20070,8 @@ function rgRenderRoadmap(){
       list.innerHTML='<div class="rg-empty">Saare tests complete aur koi revision due nahi. Aaj garden me naya paudha lagao!</div>';
     } else {
       var h='', seen=P.seen||[], newSeen=[];
-      /* pending suggestions first, done rows (in-plan + off-plan) at the bottom */
-      var disp=P.items.filter(function(it){ return !isDone(it); }).concat(P.items.filter(isDone), extraDone);
+      /* attempted first (struck through), pending suggestions below */
+      var disp=P.items.filter(isDone).concat(extraDone, P.items.filter(function(it){ return !isDone(it); }));
       disp.forEach(function(it,i){
         var d=isDone(it), k=rgItemKey(it), pop=d&&seen.indexOf(k)===-1;
         if(d) newSeen.push(k);
@@ -20080,8 +20132,9 @@ function suPreview(){
   var left=Math.ceil((Date.parse(d)-Date.parse(todayStr()))/864e5);
   if(!d||!(left>0)){ pv.textContent='Date chuno, phir hum bata denge ki roz kitne tests karne honge.'; return; }
   var rem=0; try{ rem=rgBuildPlaylist().remaining; }catch(e){}
-  var need=Math.ceil(rem/left),tg=Math.max(6,need);
-   pv.innerHTML='Exam me <b>'+left+' din</b> baaki hain aur <b>'+rem+' tests</b> bache hain. Roz ka target: <b>'+tg+' tests</b>'+(need>6?' (sab khatam karne ke liye)':' (kaafi hai)')+'.';
+  var ct2=rgComputeTarget(rem,left);
+  var tgTxt=ct2.avg%1===0?(''+ct2.avg):(ct2.avg+' (ek din '+Math.floor(ct2.avg)+', agle din '+Math.ceil(ct2.avg)+')');
+   pv.innerHTML='Exam me <b>'+left+' din</b> baaki hain aur <b>'+rem+' tests</b> bache hain. Exam se 10 din pehle sab khatam karne ke liye roz ka target: <b>'+tgTxt+' tests</b>'+(rem===0?' — sab tests ho gaye!':'')+'.';
    var _fbP=rgFbExams&&rgFbExams[suSel];
    if(_fbP&&_fbP.official&&_fbP.date&&_fbP.date!==d){ pv.innerHTML+=' Official date <b>'+rgFmtDate(_fbP.date)+'</b> hai — upar se ek tap me lagao.'; }
    else if(_fbP&&_fbP.official){ pv.innerHTML+=' Ye official date hai.'; }
@@ -20130,7 +20183,7 @@ rgBind('rgExamEdit',function(){ rgOpenSetup(false); });
 rgBind('rgBackBtn',function(){ try{ goHome(); }catch(e){ showView('list'); } });
 rgBind('rgGardenBtn',function(){ showView('garden'); });
 rgBind('rgGardenBackBtn',function(){ showView('roadmap'); });
-function rgShowIntro(){ var el=$('rgIntro'); if(el) el.hidden=false; }
+function rgShowIntro(){ var el=$('rgIntro'); if(el) el.hidden=false; var n=$('rgIntroN'); if(n){ var t=1; try{ t=Math.max(1,S.target||1); }catch(e){} n.textContent='koi bhi '+t+' tests'; } }
 function rgMaybeIntro(){ if(S.setupDone&&!S.introSeen){ try{ rgShowIntro(); }catch(e){} } }
 rgBind('rgIntroBtn',function(){ try{ S.introSeen=true; save(); }catch(e){} var el=$('rgIntro'); if(el) el.hidden=true; });
 rgBind('rgZoomIn',function(){ rgSetZoom(gZoom*1.25); });
