@@ -5170,26 +5170,6 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-glow.g2{width:260px;height:260px;right:-80px;top:34%;background:#ffd9a8}
 .rg-glow.g3{width:200px;height:200px;left:30%;bottom:-40px;background:#c8f0c0}
 .rg-hills{position:absolute;left:0;right:0;bottom:0;height:150px;background:radial-gradient(130% 130% at 18% 115%,rgba(110,190,130,.30),rgba(110,190,130,0) 62%),radial-gradient(130% 130% at 82% 118%,rgba(80,170,150,.24),rgba(80,170,150,0) 60%)}
-.rg-fly{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
-.rg-bf{position:absolute;left:0;top:0;width:34px;height:26px;will-change:transform}
-.rg-bf b{position:absolute;top:0;width:16px;height:24px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:linear-gradient(160deg,#ffb3d9,#ff7fb8);transform-origin:right center;animation:rgFlap .28s ease-in-out infinite alternate}
-.rg-bf b:last-child{left:18px;transform-origin:left center;background:linear-gradient(200deg,#ffc4e2,#ff8fc0);animation-name:rgFlap2}
-@keyframes rgFlap{from{transform:rotateY(18deg) scaleX(1)}to{transform:rotateY(72deg) scaleX(.55)}}
-@keyframes rgFlap2{from{transform:rotateY(-18deg) scaleX(1)}to{transform:rotateY(-72deg) scaleX(.55)}}
-.rg-bf.b1{animation:rgFly1 26s linear infinite}
-.rg-bf.b2{animation:rgFly2 32s linear infinite;animation-delay:-9s}
-.rg-bf.b3{animation:rgFly3 38s linear infinite;animation-delay:-20s}
-@keyframes rgFly1{0%{transform:translate(-6vw,62vh)}25%{transform:translate(24vw,44vh)}50%{transform:translate(58vw,58vh)}75%{transform:translate(84vw,36vh)}100%{transform:translate(106vw,52vh)}}
-@keyframes rgFly2{0%{transform:translate(104vw,26vh)}30%{transform:translate(66vw,44vh)}60%{transform:translate(30vw,30vh)}100%{transform:translate(-8vw,50vh)}}
-@keyframes rgFly3{0%{transform:translate(20vw,104vh)}35%{transform:translate(48vw,70vh)}70%{transform:translate(70vw,80vh)}100%{transform:translate(44vw,-8vh)}}
-.rg-petal{position:absolute;width:11px;height:9px;border-radius:60% 40% 60% 40%;opacity:.55;animation:rgPetal 16s linear infinite}
-.rg-petal.p1{left:12%;top:-4%;background:#ffd6e8;animation-delay:-2s}
-.rg-petal.p2{left:34%;top:-4%;background:#fff3b0;animation-delay:-7s;animation-duration:19s}
-.rg-petal.p3{left:58%;top:-4%;background:#ffc9dd;animation-delay:-11s}
-.rg-petal.p4{left:76%;top:-4%;background:#d8f3ff;animation-delay:-4s;animation-duration:21s}
-.rg-petal.p5{left:88%;top:-4%;background:#ffe9a8;animation-delay:-14s}
-.rg-petal.p6{left:48%;top:-4%;background:#ffd6e8;animation-delay:-16s;animation-duration:18s}
-@keyframes rgPetal{0%{transform:translate(0,-4vh) rotate(0deg)}50%{transform:translate(-26px,52vh) rotate(200deg)}100%{transform:translate(18px,106vh) rotate(340deg)}}
 /* First-run intro modal */
 .rg-intro{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(5,52,70,.5);padding:20px;box-sizing:border-box}
 .rg-intro[hidden]{display:none}
@@ -5300,7 +5280,7 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-st-full{color:#16a34a}.rg-st-part{color:#d97706}.rg-st-dead{color:#dc2626}.rg-st-live{color:var(--teal)}
 @media (min-width:900px){.rg-hero{height:460px}}
 @media (max-width:390px){.rg-hero{height:320px}.rg-head h1{font-size:17px}}
-@media (prefers-reduced-motion:reduce){.rg-wrap>*,.rg-item,.rg-next,.rg-bar>i::after,.rg-gtop,.rg-gzoom{animation:none!important}.rg-fly{display:none}}
+@media (prefers-reduced-motion:reduce){.rg-wrap>*,.rg-item,.rg-next,.rg-bar>i::after,.rg-gtop,.rg-gzoom{animation:none!important}}
 /* ===== v3: home-page style cards ===== */
 .rg-exam{position:relative;overflow:hidden;isolation:isolate;margin-top:2px;padding:20px 18px;border:0;border-radius:24px;color:#fff;background:linear-gradient(125deg,#0b1d4a 0%,#1e3a8a 32%,#0e7490 70%,#14b8a6 100%);box-shadow:0 26px 50px -26px rgba(30,58,138,.85)}
 .rg-exam::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(360px 200px at 95% 0,rgba(56,189,248,.4),transparent 70%),radial-gradient(300px 180px at 0 100%,rgba(244,114,182,.28),transparent 70%)}
@@ -6399,7 +6379,6 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 
 <div id="view-roadmap" class="view">
   <div class="rg-sky" aria-hidden="true"><i class="rg-glow g1"></i><i class="rg-glow g2"></i><i class="rg-glow g3"></i><i class="rg-hills"></i></div>
-  <div class="rg-fly" aria-hidden="true"><i class="rg-bf b1"><b></b><b></b></i><i class="rg-bf b2"><b></b><b></b></i><i class="rg-bf b3"><b></b><b></b></i><i class="rg-petal p1"></i><i class="rg-petal p2"></i><i class="rg-petal p3"></i><i class="rg-petal p4"></i><i class="rg-petal p5"></i><i class="rg-petal p6"></i></div>
   <div class="rg-wrap">
     <div class="saved-head rg-head">
       <button class="btn btn-light sh-back" id="rgBackBtn" aria-label="Back"><svg class="i" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
