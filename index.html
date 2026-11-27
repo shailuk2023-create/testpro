@@ -19538,13 +19538,13 @@ var COLS=7,ROWS=5,CS=1.1,TOP=.14;
 var cellXZ=function(c){ return {x:((c%COLS)-(COLS-1)/2)*CS, z:(Math.floor(c/COLS)-(ROWS-1)/2)*CS}; };
 var island=null,tiles=[];
 /* ===== meadow around the field: lawn, hills, trees, fence, pond, path, flowers, butterflies ===== */
-var GY=-1.45,sBF=[];
+var GY=-1.45,sBF=[],gGround=null,gLawn=null;
 (function buildScenery(){
   var seed=7; var rnd=function(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; };
   var sc=new THREE.Group(); sceneG.add(sc);
   var M=function(c,o){ return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.9,flatShading:true},o||{})); };
-  var ground=new THREE.Mesh(new THREE.CylinderGeometry(46,46,.3,56),M(0x3c8a38,{flatShading:false})); ground.position.y=GY-.15; ground.receiveShadow=true; sc.add(ground);
-  var lawn=new THREE.Mesh(new THREE.CylinderGeometry(11,11,.02,48),M(0x4a9c40,{flatShading:false})); lawn.position.y=GY+.01; lawn.receiveShadow=true; sc.add(lawn);
+  var ground=new THREE.Mesh(new THREE.CylinderGeometry(46,46,.3,56),M(0x3c8a38,{flatShading:false})); ground.position.y=GY-.15; ground.receiveShadow=true; sc.add(ground); gGround=ground;
+  var lawn=new THREE.Mesh(new THREE.CylinderGeometry(11,11,.02,48),M(0x4a9c40,{flatShading:false})); lawn.position.y=GY+.01; lawn.receiveShadow=true; sc.add(lawn); gLawn=lawn;
   var yard=new THREE.Mesh(new THREE.BoxGeometry(5.3*2+1.6,.04,4.2*2+1.6),M(0xe3cd94,{flatShading:false})); yard.position.y=GY+.02; yard.receiveShadow=true; sc.add(yard);
   var yard2=new THREE.Mesh(new THREE.BoxGeometry(5.3*2+.5,.05,4.2*2+.5),M(0xd2b377,{flatShading:false})); yard2.position.y=GY+.025; sc.add(yard2);
   /* hills */
@@ -19606,7 +19606,7 @@ function buildIsland(){
   for(var c=0;c<COLS*ROWS;c++){ var xz=cellXZ(c),m=new THREE.Mesh(new THREE.BoxGeometry(CS*.96,.08,CS*.96),new THREE.MeshStandardMaterial({color:0x6cc04a,roughness:.9}));
     m.position.set(xz.x,.08,xz.z); m.receiveShadow=true; island.add(m); tiles.push(m); }
 }
-var gList=[],gAz=.8,gAzT=.8,gZoom=1;
+var gList=[],gAz=.8,gAzT=.8,gZoom=1,_gW=0,_gH=0;
 var statusOf=function(e){ return e.live?'live':e.done>=e.t?'full':e.done>0?'part':'dead'; };
 function paintTiles(hover){ tiles.forEach(function(m,c){ var odd=((c%COLS)+Math.floor(c/COLS))%2; m.material.color.set(odd?0x5c3a1e:0x6a4524); m.material.emissive.set(0); });
   gList.forEach(function(p){ var s=statusOf(p.e); if(s==='dead') tiles[p.cell].material.color.set(0xc9ad74); else if(s==='part') tiles[p.cell].material.color.set(0x8d6b3a); else if(s==='full') tiles[p.cell].material.color.set(0x3a2412); });
@@ -19619,6 +19619,9 @@ function buildGarden(){
   var ents=S.history.concat([{d:S.date,done:S.today,t:S.target,sp:spIdx(S.date),ex:S.exam,live:true}]),used={};
   ROWS=Math.max(5,Math.ceil(ents.length/COLS)); /* field grows: no day is ever dropped */
   buildIsland();
+  var rowFG=Math.max(1,ROWS/5); /* ground area grows with the field so the frame stays full as the camera zooms out */
+  if(gGround) gGround.scale.set(rowFG,1,rowFG);
+  if(gLawn) gLawn.scale.set(rowFG,1,rowFG);
   var nl={}; ents.forEach(function(e){ var c=S.layout[e.d]; if(c==null||used[c]||c>=COLS*ROWS){ c=0; while(used[c]) c++; } used[c]=1; nl[e.d]=c; });
   S.layout=nl;
   ents.forEach(function(e){ var plant=makePlant(e.sp,true,false),hit=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,3.2,8),new THREE.MeshBasicMaterial({visible:false}));
@@ -19635,11 +19638,12 @@ function resizeAll(){
     var w=heroBox.clientWidth,h=heroBox.clientHeight;
     if(w>0&&h>0){ rendererP.setSize(w,h); camP.aspect=w/h; var pt=w<h; camP.position.set(0,pt?3.4:3,pt?10.5:8.5); camP.lookAt(0,pt?1.6:1.5,0); camP.updateProjectionMatrix(); }
     var gw=gardenBox.clientWidth,gh=gardenBox.clientHeight;
-    if(gw>0&&gh>0){ rendererG.setSize(gw,gh); var a=gw/gh,rowF=Math.max(1,ROWS/5),hh=Math.max(5.2,6.2/a)*rowF/gZoom;
+    if(gw>0&&gh>0){ rendererG.setSize(gw,gh,false); domG.style.width='100%'; domG.style.height='100%'; var a=gw/gh,rowF=Math.max(1,ROWS/5),hh=Math.min(Math.max(5.2,6.2/a),12)*rowF/gZoom;
       camG.left=-hh*a; camG.right=hh*a; camG.top=hh; camG.bottom=-hh; camG.updateProjectionMatrix(); }
   }
 }
 addEventListener('resize',resizeAll);
+if(window.visualViewport) window.visualViewport.addEventListener('resize',resizeAll);
 
 /* ============ INPUT ============ */
 var rotY=0,idle=0,dragPlant=false,lx=0,ly=0,gp=null,gRot=false,moved=false,hoverCell=null,activeCanvas=null;
@@ -19707,7 +19711,8 @@ function frame(now){
   if(v==='roadmap') rgStepGrowth(dt,now);
   if(rgNoGL) return;
   if(v==='garden'){
-    gAz+=(gAzT-gAz)*Math.min(1,dt*6); var R=18,el=.62;
+    if(gardenBox.clientWidth>0&&gardenBox.clientHeight>0&&(gardenBox.clientWidth!==_gW||gardenBox.clientHeight!==_gH)){ _gW=gardenBox.clientWidth; _gH=gardenBox.clientHeight; resizeAll(); }
+    gAz+=(gAzT-gAz)*Math.min(1,dt*6); var R=18,el=.85;
     camG.position.set(Math.sin(gAz)*Math.cos(el)*R,Math.sin(el)*R,Math.cos(gAz)*Math.cos(el)*R); camG.lookAt(0,0,0);
     sBF.forEach(function(q,qi){ var an=t*q.s+q.p,fl=Math.sin(t*16+q.p)*.9; q.g.position.set(Math.cos(an)*q.r,q.y+Math.sin(t*1.3+q.p)*.25,Math.sin(an*1.2)*q.r*.85); q.g.rotation.y=-an; q.pl.rotation.z=fl; q.pr.rotation.z=-fl; });
     rendererG.render(sceneG,camG); return;
