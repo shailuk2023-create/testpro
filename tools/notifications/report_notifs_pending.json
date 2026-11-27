@@ -916,5 +916,20 @@
   },
   "responseId": "ACYDBNjIWmdufxU0ExfX4olPLKPcFOtJm898WxgEWrErRKmKQfKBg9jrny0zF_fbux9r-fI",
   "fixedSummary": "July Test 4 Q98 image replaced: generic Kochi harbour photo -> reporter-supplied PIB Operation Southern Readiness 26-2 felicitation ceremony photo (rep-ca-jul2026-q98.jpeg)"
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Ancient History • Ancient 4 • Q19 (GA Test Q19) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795776399020,
+  "data": {
+   "chapter": "GA – Ancient History",
+   "test": "Ancient 4",
+   "qnum": "Q19 (GA Test Q19)"
+  },
+  "responseId": "ACYDBNg658jyzaUaxl_tw0IksnCUjUivrwgue0qB_HfzYUab4rdvK31M1GAGkzMmSUfAqb0",
+  "fixedSummary": "Ancient 4 Q19 (Silappatikaram) solution image replaced: Wikimedia Kannagi statue -> reporter-supplied Kannagi in Pandya Court relief (images/rep-ga-ancient-4-q19.jpg)",
+  "sent": false
  }
 ]
