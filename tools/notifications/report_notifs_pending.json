@@ -976,5 +976,35 @@
   "responseId": "ACYDBNiSLMiAx8993AbYmornRxbCMYxKtp12x_j1jJo1uNSBH89cRuzHUvDuzMs0CntDMwc",
   "fixedSummary": "Modern 2 Q6 (Madraspattinam 1639) solution image replaced: present-day photo of pavilion inside Fort St George complex -> mid-18th-century copper engraving 'A Perspective View of Fort St George on the Coromandel Coast, belonging to the East India Company' (Wikimedia Commons, public domain), repo file images/rep-ga-modern-2-q6.jpg",
   "sent": false
+ },
+ {
+  "responseId": "ACYDBNgWl_w-ojpt55dzTRoXJPkbna4JFahtbrb0NfQ6VeJBHR4ZmEHXKhJHjgRFSRm9I18",
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 2 • Q7 (GA Test Q7) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795778525615,
+  "data": {
+   "chapter": "GA – Modern History",
+   "test": "Modern 2",
+   "qnum": "Q7 (GA Test Q7)"
+  },
+  "fixedSummary": "Modern 2 Q7 image replaced with reporter-supplied image (images/rep-ga-modern-2-q7.jpg)",
+  "sent": false
+ },
+ {
+  "responseId": "ACYDBNjLSAliQx_uE__k7IGfnDlpGRO6vWBhGT7ivDO2m35lCctAtsL0ImN2nDX0caL87Hc",
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 2 • Q8 (GA Test Q8) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795778525615,
+  "data": {
+   "chapter": "GA – Modern History",
+   "test": "Modern 2",
+   "qnum": "Q8 (GA Test Q8)"
+  },
+  "fixedSummary": "Modern 2 Q8 image removed as reporter asked (hata do)",
+  "sent": false
  }
 ]
