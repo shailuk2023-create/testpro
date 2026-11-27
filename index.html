@@ -5162,7 +5162,45 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 </style>
 <style id="roadmap-garden">
 /* AI Roadmap & Study Garden v2 - app tokens, line icons, modern motion */
-.rg-wrap{width:100%;max-width:860px;margin:0 auto;padding:12px 12px 110px;box-sizing:border-box}
+.rg-wrap{width:100%;max-width:860px;margin:0 auto;padding:12px 12px 110px;box-sizing:border-box;position:relative;z-index:1}
+/* Roadmap animated background — elegant soft sky (own design, NOT a copy of the 3D garden) */
+.rg-sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,#e8f7ff 0%,#f2fbff 42%,#fdf8ee 78%,#f3fbf0 100%);overflow:hidden}
+.rg-glow{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.rg-glow.g1{width:220px;height:220px;left:-60px;top:8%;background:#9fe0ef}
+.rg-glow.g2{width:260px;height:260px;right:-80px;top:34%;background:#ffd9a8}
+.rg-glow.g3{width:200px;height:200px;left:30%;bottom:-40px;background:#c8f0c0}
+.rg-hills{position:absolute;left:0;right:0;bottom:0;height:150px;background:radial-gradient(130% 130% at 18% 115%,rgba(110,190,130,.30),rgba(110,190,130,0) 62%),radial-gradient(130% 130% at 82% 118%,rgba(80,170,150,.24),rgba(80,170,150,0) 60%)}
+.rg-fly{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.rg-bf{position:absolute;left:0;top:0;width:34px;height:26px;will-change:transform}
+.rg-bf b{position:absolute;top:0;width:16px;height:24px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:linear-gradient(160deg,#ffb3d9,#ff7fb8);transform-origin:right center;animation:rgFlap .28s ease-in-out infinite alternate}
+.rg-bf b:last-child{left:18px;transform-origin:left center;background:linear-gradient(200deg,#ffc4e2,#ff8fc0);animation-name:rgFlap2}
+@keyframes rgFlap{from{transform:rotateY(18deg) scaleX(1)}to{transform:rotateY(72deg) scaleX(.55)}}
+@keyframes rgFlap2{from{transform:rotateY(-18deg) scaleX(1)}to{transform:rotateY(-72deg) scaleX(.55)}}
+.rg-bf.b1{animation:rgFly1 26s linear infinite}
+.rg-bf.b2{animation:rgFly2 32s linear infinite;animation-delay:-9s}
+.rg-bf.b3{animation:rgFly3 38s linear infinite;animation-delay:-20s}
+@keyframes rgFly1{0%{transform:translate(-6vw,62vh)}25%{transform:translate(24vw,44vh)}50%{transform:translate(58vw,58vh)}75%{transform:translate(84vw,36vh)}100%{transform:translate(106vw,52vh)}}
+@keyframes rgFly2{0%{transform:translate(104vw,26vh)}30%{transform:translate(66vw,44vh)}60%{transform:translate(30vw,30vh)}100%{transform:translate(-8vw,50vh)}}
+@keyframes rgFly3{0%{transform:translate(20vw,104vh)}35%{transform:translate(48vw,70vh)}70%{transform:translate(70vw,80vh)}100%{transform:translate(44vw,-8vh)}}
+.rg-petal{position:absolute;width:11px;height:9px;border-radius:60% 40% 60% 40%;opacity:.55;animation:rgPetal 16s linear infinite}
+.rg-petal.p1{left:12%;top:-4%;background:#ffd6e8;animation-delay:-2s}
+.rg-petal.p2{left:34%;top:-4%;background:#fff3b0;animation-delay:-7s;animation-duration:19s}
+.rg-petal.p3{left:58%;top:-4%;background:#ffc9dd;animation-delay:-11s}
+.rg-petal.p4{left:76%;top:-4%;background:#d8f3ff;animation-delay:-4s;animation-duration:21s}
+.rg-petal.p5{left:88%;top:-4%;background:#ffe9a8;animation-delay:-14s}
+.rg-petal.p6{left:48%;top:-4%;background:#ffd6e8;animation-delay:-16s;animation-duration:18s}
+@keyframes rgPetal{0%{transform:translate(0,-4vh) rotate(0deg)}50%{transform:translate(-26px,52vh) rotate(200deg)}100%{transform:translate(18px,106vh) rotate(340deg)}}
+/* First-run intro modal */
+.rg-intro{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(5,52,70,.5);padding:20px;box-sizing:border-box}
+.rg-intro[hidden]{display:none}
+.rg-intro-card{width:100%;max-width:420px;background:#fff;border-radius:22px;padding:24px 22px 20px;box-shadow:0 24px 60px -18px rgba(3,40,55,.5);text-align:center}
+.rg-intro-ic{width:56px;height:56px;margin:0 auto;border-radius:50%;background:linear-gradient(135deg,#0b7196,#0a94ad);display:flex;align-items:center;justify-content:center;color:#fff}
+.rg-intro-ic .i{width:28px;height:28px}
+.rg-intro-card h2{font-size:21px;line-height:1.35;color:#0b7196;margin:12px 0}
+.rg-intro-card ul{list-style:none;margin:0 0 16px;padding:0;text-align:left}
+.rg-intro-card li{font-size:15.5px;line-height:1.55;color:#334155;padding:7px 0 7px 30px;position:relative}
+.rg-intro-card li::before{content:'';position:absolute;left:2px;top:12px;width:14px;height:14px;border-radius:50%;background:#0b7196;box-shadow:inset 0 0 0 3px #d9f2f7}
+.rg-intro-btn{width:100%;border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,#0b7196,#0a94ad);box-shadow:0 10px 22px -8px rgba(11,113,150,.6);cursor:pointer}
 .rg-wrap>*{animation:rgUp .5s cubic-bezier(.2,.8,.2,1) both}
 .rg-wrap>*:nth-child(2){animation-delay:.05s}.rg-wrap>*:nth-child(3){animation-delay:.1s}.rg-wrap>*:nth-child(4){animation-delay:.15s}.rg-wrap>*:nth-child(5){animation-delay:.2s}.rg-wrap>*:nth-child(6){animation-delay:.25s}.rg-wrap>*:nth-child(7){animation-delay:.3s}
 @keyframes rgUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -5262,7 +5300,7 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-st-full{color:#16a34a}.rg-st-part{color:#d97706}.rg-st-dead{color:#dc2626}.rg-st-live{color:var(--teal)}
 @media (min-width:900px){.rg-hero{height:460px}}
 @media (max-width:390px){.rg-hero{height:320px}.rg-head h1{font-size:17px}}
-@media (prefers-reduced-motion:reduce){.rg-wrap>*,.rg-item,.rg-next,.rg-bar>i::after,.rg-gtop,.rg-gzoom{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.rg-wrap>*,.rg-item,.rg-next,.rg-bar>i::after,.rg-gtop,.rg-gzoom{animation:none!important}.rg-fly{display:none}}
 /* ===== v3: home-page style cards ===== */
 .rg-exam{position:relative;overflow:hidden;isolation:isolate;margin-top:2px;padding:20px 18px;border:0;border-radius:24px;color:#fff;background:linear-gradient(125deg,#0b1d4a 0%,#1e3a8a 32%,#0e7490 70%,#14b8a6 100%);box-shadow:0 26px 50px -26px rgba(30,58,138,.85)}
 .rg-exam::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(360px 200px at 95% 0,rgba(56,189,248,.4),transparent 70%),radial-gradient(300px 180px at 0 100%,rgba(244,114,182,.28),transparent 70%)}
@@ -6360,6 +6398,8 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
 </div>
 
 <div id="view-roadmap" class="view">
+  <div class="rg-sky" aria-hidden="true"><i class="rg-glow g1"></i><i class="rg-glow g2"></i><i class="rg-glow g3"></i><i class="rg-hills"></i></div>
+  <div class="rg-fly" aria-hidden="true"><i class="rg-bf b1"><b></b><b></b></i><i class="rg-bf b2"><b></b><b></b></i><i class="rg-bf b3"><b></b><b></b></i><i class="rg-petal p1"></i><i class="rg-petal p2"></i><i class="rg-petal p3"></i><i class="rg-petal p4"></i><i class="rg-petal p5"></i><i class="rg-petal p6"></i></div>
   <div class="rg-wrap">
     <div class="saved-head rg-head">
       <button class="btn btn-light sh-back" id="rgBackBtn" aria-label="Back"><svg class="i" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
@@ -6378,7 +6418,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <div class="rg-tile t-ok"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><b id="rgTHealth">100%</b><small>Paudhe ki sehat</small></div>
     </div>
     <div class="rg-status">
-      <div class="rg-status-top"><b id="stage-name">—</b><span id="spName">—</span></div>
+      <div class="rg-status-top"><b id="stage-name">—</b></div>
       <div class="rg-msg" id="msg"></div>
       <div class="rg-target" id="rgTargetLine"></div>
     </div>
@@ -6386,6 +6426,18 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     <h2 class="rg-sec">Aaj ka plan <span id="rgPlanCount">0/0</span></h2>
     <div class="rg-any6">Koi bhi 6 tests de sakte ho <span>(daily target)</span></div>
     <div id="rgPlaylist"></div>
+  </div>
+  <div class="rg-intro" id="rgIntro" hidden>
+    <div class="rg-intro-card">
+      <div class="rg-intro-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></div>
+      <h2>AI Roadmap kaise kaam karta hai?</h2>
+      <ul>
+        <li>Roz <b>koi bhi 6 tests</b> do — Maths, CA ya GA, kisi bhi series se — paudha badhega.</li>
+        <li>Roz test doge to garden bharata jayega — har din ki fasal ek khana.</li>
+        <li>Upar exam ki date aur din baaki dikhte hain; roz test dene se streak badhti hai.</li>
+      </ul>
+      <button class="rg-intro-btn" id="rgIntroBtn" type="button">Samajh gaya</button>
+    </div>
   </div>
 </div>
 <div id="view-garden" class="view">
@@ -19129,7 +19181,7 @@ var SP=[
 var spIdx = function(s){ return Math.floor(Date.parse(s)/864e5)%SP.length; };
 
 /* ============ STATE ============ */
-var S={target:6,today:0,date:'',streak:0,exam:'RRB NTPC Graduate',exams:JSON.parse(JSON.stringify(EXAMS)),history:[],layout:{},counted:{date:'',ids:[]},revSeen:{},plan:null,setupDone:false,examCustom:{},updatedAt:0};
+var S={target:6,today:0,date:'',streak:0,exam:'RRB NTPC Graduate',exams:JSON.parse(JSON.stringify(EXAMS)),history:[],layout:{},counted:{date:'',ids:[]},revSeen:{},plan:null,setupDone:false,examCustom:{},introSeen:false,updatedAt:0};
 try{ var _r=localStorage.getItem(KEY); if(_r) Object.assign(S,JSON.parse(_r)); }catch(e){}
 if(!S.counted || !S.counted.ids) S.counted={date:'',ids:[]};
 if(!S.revSeen) S.revSeen={};
@@ -19160,7 +19212,7 @@ function save(){ try{ S.updatedAt=Date.now(); }catch(e){} saveKey(); rgPersistRo
 function rgRestoreRoadmap(st){
   var rm=st&&st.roadmap; if(!rm||typeof rm!=='object') return false;
   if((rm.updatedAt||0)<(S.updatedAt||0)) return false;
-  var fields=['target','today','date','streak','exam','exams','history','layout','counted','revSeen','plan','setupDone','examCustom','updatedAt'];
+  var fields=['target','today','date','streak','exam','exams','history','layout','counted','revSeen','plan','setupDone','examCustom','introSeen','updatedAt'];
   fields.forEach(function(f){ if(rm[f]!==undefined){ try{ S[f]=JSON.parse(JSON.stringify(rm[f])); }catch(e){ S[f]=rm[f]; } } });
   if(!S.counted||!S.counted.ids) S.counted={date:'',ids:[]};
   if(!S.revSeen) S.revSeen={};
@@ -19747,10 +19799,9 @@ function frame(now){
 /* ============ HUD ============ */
 function ui(){
   var d=derived(),h=d.health,sp=SP[spIdx(S.date)],g=S.today/S.target;
-  var sn=$('stage-name'); if(sn) sn.textContent=h<.08?'Murjha gaya':S.today>S.target?'Bonus: ghana aur chamakta!':g<.34?'Chhota paudha':g<.67?'Badh raha hai':g<1?'Hara-bhara':'Poora phool gaya';
-  var spn=$('spName'); if(spn) spn.textContent='Aaj ka paudha: '+sp.n;
+  var sn=$('stage-name'); if(sn) sn.textContent=h<.08?'Murjha gaya':S.today>S.target?'Bonus: ghana aur chamakta!':g<.67?'Badh raha hai':g<1?'Hara-bhara':'Poora phool gaya';
   var t1=$('rgTStreak'); if(t1) t1.textContent=S.streak; var t2=$('rgTToday'); if(t2) t2.textContent=S.today+'/'+S.target; var t3=$('rgTHealth'); if(t3) t3.textContent=Math.round(h*100)+'%';
-  var ms=$('msg'); if(ms) ms.textContent=h<.08?'Paudha murjha gaya. Test do to wapas jee uthega.':S.today>=S.target?(S.today>S.target?'Zabardast! Titliyan aur jugnu aa gaye.':'Target pura! Paudha poora khil gaya.'):h>.7?'Mast! Test do to paudha badhega.':h>.35?'Paudha pyaasa hai! Test do = paani.':'Murjha raha hai... jaldi test do!';
+  var ms=$('msg'); if(ms) ms.textContent=h<.08?'Paudha murjha gaya. Test do to wapas jee uthega.':S.today>=S.target?(S.today>S.target?'Zabardast! Titliyan aur jugnu aa gaye.':'Target pura! Paudha poora khil gaya.'):h>.35?'Paudha pyaasa hai! Test do = paani.':'Murjha raha hai... jaldi test do!';
   var ex=S.exams[S.exam];
   var en=$('rgExamName'); if(en) en.textContent=S.exam;
   if(ex){ var dl=Math.ceil((Date.parse(ex.date)-Date.parse(todayStr()))/864e5);
@@ -20088,7 +20139,7 @@ function suStart(){
 function openRoadmap(){ try{ state.navTab='roadmap'; }catch(e){} rgRenderRoadmap(); showView('roadmap'); try{ syncBottomNav(); }catch(e){} }
 window.openRoadmap=openRoadmap;
 window.__rgOnView=function(name){
-  if(name==='roadmap'){ try{ rgRenderRoadmap(); }catch(e){} resizeAll(); if(!S.setupDone){ try{ rgOpenSetup(true); }catch(e){} } }
+  if(name==='roadmap'){ try{ rgRenderRoadmap(); }catch(e){} resizeAll(); if(!S.setupDone){ try{ rgOpenSetup(true); }catch(e){} } rgMaybeIntro(); }
   else if(name==='garden'){ try{ buildGarden(); }catch(e){} resizeAll(); }
   else if(['instructions','test','analysis','solutions'].indexOf(name)===-1){ window.__rgReturn=null; }
 };
@@ -20100,6 +20151,9 @@ rgBind('rgExamEdit',function(){ rgOpenSetup(false); });
 rgBind('rgBackBtn',function(){ try{ goHome(); }catch(e){ showView('list'); } });
 rgBind('rgGardenBtn',function(){ showView('garden'); });
 rgBind('rgGardenBackBtn',function(){ showView('roadmap'); });
+function rgShowIntro(){ var el=$('rgIntro'); if(el) el.hidden=false; }
+function rgMaybeIntro(){ if(S.setupDone&&!S.introSeen){ try{ rgShowIntro(); }catch(e){} } }
+rgBind('rgIntroBtn',function(){ try{ S.introSeen=true; save(); }catch(e){} var el=$('rgIntro'); if(el) el.hidden=true; });
 rgBind('rgZoomIn',function(){ rgSetZoom(gZoom*1.25); });
 rgBind('rgZoomOut',function(){ rgSetZoom(gZoom/1.25); });
 document.addEventListener('visibilitychange',function(){
@@ -20109,7 +20163,7 @@ document.addEventListener('visibilitychange',function(){
 });
 setInterval(function(){ try{ ui(); }catch(e){} },30000);
 resizeAll(); save(); ui();
-if(typeof state!=='undefined'&&state.view==='roadmap'){ try{ rgRenderRoadmap(); }catch(e){} if(!S.setupDone){ try{ rgOpenSetup(true); }catch(e){} } }
+if(typeof state!=='undefined'&&state.view==='roadmap'){ try{ rgRenderRoadmap(); }catch(e){} if(!S.setupDone){ try{ rgOpenSetup(true); }catch(e){} } rgMaybeIntro(); }
 if(typeof state!=='undefined'&&state.view==='garden'){ try{ buildGarden(); }catch(e){} }
 raf(frame);
 })();
