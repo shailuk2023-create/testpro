@@ -1006,19 +1006,5 @@
   },
   "fixedSummary": "Modern 2 Q8 image removed as reporter asked (hata do)",
   "sent": false
- },
- {
-  "responseId": "ACYDBNjXiPT2GzRKUEva3t_Wa7bQ30CzcHCUned8qJzZNfEb60_WpotmASjQslP9tLaWGsQ",
-  "type": "report",
-  "title": "Report fix ho gayi",
-  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 2 • Q11 (GA Test Q11) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
-  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
-  "createdAt": 1795778929705,
-  "data": {
-   "chapter": "GA – Modern History",
-   "test": "Modern 2",
-   "qnum": "Q11 (GA Test Q11)"
-  },
-  "fixedSummary": "GA Modern 2 Q11 image replaced: Charminar photo -> reporter-supplied Hyderabad state map (images/rep-ga-modern-2-q11.png)"
  }
 ]
