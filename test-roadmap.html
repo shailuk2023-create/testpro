@@ -5204,8 +5204,19 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-exam-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
 .rg-exam-row input[type="date"]{padding:8px 10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);color:var(--text);font-size:14px;max-width:100%}
 .rg-off{font-size:13px;display:flex;gap:6px;align-items:center}
-.rg-hero{height:340px;border-radius:20px;overflow:hidden;position:relative;margin-top:12px;background:linear-gradient(180deg,#7fc4ff,#e6f6ff);box-shadow:0 14px 30px -14px rgba(11,114,151,.45)}
+.rg-hero{height:340px;border-radius:20px;overflow:hidden;position:relative;margin-top:12px;background:linear-gradient(180deg,#cdeeb4 0%,#8ecb7f 45%,#5aa860 78%,#3e8e41 100%);box-shadow:0 14px 30px -14px rgba(11,114,151,.45)}
 .rg-hero canvas{display:block;width:100%;height:100%;touch-action:none}
+/* v116 plantview: per-day tree strip + table total pill (hero overlay) */
+.rg-day-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 0;margin-top:12px;scrollbar-width:none}
+.rg-day-strip::-webkit-scrollbar{display:none}
+.rg-day-chip{flex-shrink:0;border:1px solid #bbf7d0;background:#f0fdf4;color:#14532d;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
+.rg-day-chip b{color:#166534}
+.rg-day-chip.on{background:#16a34a;border-color:#16a34a;color:#fff}
+.rg-day-chip.on b{color:#fff}
+.rg-hero-count{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;background:rgba(20,83,45,.88);color:#fff;font-size:14px;font-weight:800;padding:7px 16px;border-radius:999px;box-shadow:0 6px 16px -6px rgba(0,0,0,.45);pointer-events:none;white-space:nowrap}
+.rg-hero-hint{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:3;background:rgba(255,255,255,.88);color:#14532d;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+[data-theme="dark"] .rg-day-chip{background:#052e16;border-color:#166534;color:#bbf7d0}
+[data-theme="dark"] .rg-day-chip.on{background:#16a34a;border-color:#16a34a;color:#fff}
 .rg-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px}
 .rg-row b{font-size:15px;color:var(--text-strong)}
 .rg-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(245,158,11,.14);color:#d97706;font-weight:800;font-size:12.5px}
@@ -6401,7 +6412,8 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
       <div class="rg-days"><b id="rgDaysLeft">0</b><span>din baaki</span></div>
     </div>
     <button class="rg-edit-btn" id="rgExamEdit"><svg class="i i-sm" aria-hidden="true"><use href="#i-cal"/></svg>Exam / date badlo</button>
-    <div class="rg-hero" id="rgHeroBox"></div>
+    <div class="rg-day-strip" id="rgDayStrip" role="tablist" aria-label="Din ke ped"></div>
+    <div class="rg-hero" id="rgHeroBox"><div class="rg-hero-hint" id="rgHeroHint"></div><div class="rg-hero-count" id="rgHeroCount"></div></div>
     <div class="rg-tiles">
       <div class="rg-tile t-fire"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-flame"/></svg></span><b id="rgTStreak">0</b><small>Din ki streak</small></div>
       <div class="rg-tile"><span class="rg-ti"><svg class="i" aria-hidden="true"><use href="#i-check-circle"/></svg></span><b id="rgTToday">0/–</b><small>Aaj ke tests</small></div>
@@ -20328,27 +20340,85 @@ var pot=new THREE.Mesh(new THREE.CylinderGeometry(.75,.52,.75,40),potMat); pot.p
 var rim=new THREE.Mesh(new THREE.TorusGeometry(.76,.08,12,40),potMat); rim.rotation.x=Math.PI/2; rim.position.y=.75; rim.castShadow=true; world.add(rim);
 var soilMat=new THREE.MeshStandardMaterial({color:0x3b2616,roughness:1});
 var soil=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.05,40),soilMat); soil.position.y=.72; soil.receiveShadow=true; world.add(soil);
-var main=null,curSp=-1,dp=0,dex=0,dispProg=0,growAnim=null,growPulse=0;
-function rebuildMain(si){ if(main) world.remove(main.g); main=makePlant(si,false,true); main.g.position.y=.74; world.add(main.g); curSp=si; dp=0; dex=0; dispProg=0; growAnim=null; growPulse=0; }
-/* Visible growth animation: when today's progress rises, the hero plant
-   animates from the old size to the new one over ~1.4s (ease-out) with a
-   scale pulse + sparkles — never an instant jump. */
-function rgStartGrowthAnim(to){
-  if(to<=dispProg+0.001) return;
-  growAnim={from:dispProg,to:to,t0:performance.now(),dur:1400};
-  growPulse=1;
-  if(to>=1&&dispProg<1){ try{ burst(); }catch(e){} }
+/* Hero garden background (scene ke andar): hari ghaas + mini scenery — sky-blue hata diya gaya */
+(function rgHeroScenery(){
+  var ground=new THREE.Mesh(new THREE.CylinderGeometry(9,9,.14,48),new THREE.MeshStandardMaterial({color:0x43a047,roughness:.95}));
+  ground.position.y=-.25; ground.receiveShadow=true; world.add(ground);
+  var lawn=new THREE.Mesh(new THREE.CylinderGeometry(6.4,6.4,.06,48),new THREE.MeshStandardMaterial({color:0x66bb6a,roughness:.95}));
+  lawn.position.y=-.16; lawn.receiveShadow=true; world.add(lawn);
+  [[-3.4,-1.6],[3.6,-1.4],[-4.2,.8]].forEach(function(p){
+    var tr=new THREE.Group();
+    var trunk=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,.5,7),new THREE.MeshStandardMaterial({color:0x7a4e2a,roughness:.9})); trunk.position.y=.25; tr.add(trunk);
+    for(var c=0;c<3;c++){ var cone=new THREE.Mesh(new THREE.ConeGeometry(.62-c*.16,.7,8),new THREE.MeshStandardMaterial({color:0x2b8a3e,roughness:.9})); cone.position.y=.7+c*.45; tr.add(cone); }
+    tr.position.set(p[0],-.18,p[1]); world.add(tr); });
+  var fl=[0xff7aa8,0xffe066,0xffffff,0xb197fc,0xff9f43];
+  for(var i=0;i<10;i++){ var a=i/10*6.283,r=3.1+(i%3)*.9;
+    var st=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.34,5),new THREE.MeshStandardMaterial({color:0x2e7d32})); st.position.set(Math.cos(a)*r,0,Math.sin(a)*r); world.add(st);
+    var bl=new THREE.Mesh(new THREE.SphereGeometry(.11,8,6),new THREE.MeshStandardMaterial({color:fl[i%5],roughness:.6})); bl.position.set(Math.cos(a)*r,.2,Math.sin(a)*r); world.add(bl); }
+  var pond=new THREE.Mesh(new THREE.CylinderGeometry(.85,.85,.05,28),new THREE.MeshStandardMaterial({color:0x4db6e8,roughness:.2,metalness:.2})); pond.position.set(3.9,-.15,1.6); world.add(pond);
+})();
+/* ============ HERO — TREES ONLY (plantview rework, v116, no bump) ============
+   Purana growth-stage chhota ped (makePlant) hero se hata diya gaya — hero me
+   ab sirf GardenTrees ped dikhta hai: chune hue din ka latest tree (ts se
+   newest). Koi tree na ho to next species ka preview. S.history DATA INTACT
+   hai — sirf rendering se hata hai (garden me bhi). */
+var HERO_TREE_SCALE=.62;
+var heroTree=null,heroTreeKey='',heroTreeH=2,heroIsPreview=true,heroPop=0,rgHeroDay=null;
+var dp=0,dex=0,dispProg=0; /* legacy: derived prog sirf burst()/testDone guards ke liye — hero scale se ab koi lena-dena nahi */
+function rgTreesByDay(){ var m={}; (S.trees||[]).forEach(function(tr){ (m[tr.d]=m[tr.d]||[]).push(tr); }); Object.keys(m).forEach(function(d){ m[d].sort(function(a,b){ return (b.ts||0)-(a.ts||0); }); }); return m; }
+function rgHeroDayList(){ var by=rgTreesByDay(),t=todayStr(),days=Object.keys(by).sort().reverse(); if(days.indexOf(t)===-1) days.unshift(t); return days.slice(0,7).map(function(d){ return {d:d,n:(by[d]||[]).length,latest:(by[d]||[])[0]||null}; }); }
+function rgHeroDayLabel(d){ var t=todayStr(); if(d===t) return 'Aaj'; if(d===addDays(t,-1)) return 'Kal'; try{ return new Date(d+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}); }catch(e){ return d; } }
+function rgHeroSel(){
+  var t=todayStr(),by=rgTreesByDay(),d=rgHeroDay||t;
+  if(!rgHeroDay){ var days=Object.keys(by).sort().reverse(); if(days.length&&!(by[t]&&by[t].length)) d=days[0]; }
+  var list=by[d]||[];
+  return {d:d,list:list,latest:list[0]||null};
 }
-window.__rgGrowth=function(){ return {disp:dispProg,anim:!!growAnim,pulse:growPulse}; };
-/* Growth clock: advances the displayed progress every frame while the
-   roadmap is open — runs even on the no-WebGL stub renderer so the state
-   always reaches the new value on schedule (rendering only needs GL). */
+function rgHeroKeyFor(sel){ return sel.latest? sel.d+'|'+sel.latest.testId+'|'+sel.list.length : sel.d+'|preview|'+(S.trees||[]).length; }
+var _heroMetaSig='';
+function rgRenderHeroMeta(sel){
+  var sig=sel.d+'|'+sel.list.length+'|'+(sel.latest?sel.latest.testId:'preview');
+  if(sig===_heroMetaSig) return; _heroMetaSig=sig;
+  var c=$('rgHeroCount'); if(c){ c.textContent=rgHeroDayLabel(sel.d)+' ke ped: '+sel.list.length; }
+  var h=$('rgHeroHint'); if(h){ if(!sel.latest){ h.textContent='Pehla test do — pehla ped lagega 🌳'; } else { var sp=null; try{ sp=GardenTrees.getSpecies(sel.latest.sp); }catch(e){} h.textContent=sp? (sp.emoji+' '+(sp.hi||sp.name)+' — '+rgHeroDayLabel(sel.d)+' ka taaza ped') : 'Ped'; } }
+}
+function rgRenderDayStrip(){
+  var el=$('rgDayStrip'); if(!el) return;
+  var days=rgHeroDayList(),sel=rgHeroSel();
+  var sig=days.map(function(x){ return x.d+':'+x.n; }).join(',')+'|'+sel.d;
+  if(el.getAttribute('data-sig')===sig) return;
+  el.setAttribute('data-sig',sig);
+  el.innerHTML=days.map(function(x){ return '<button type="button" class="rg-day-chip'+(x.d===sel.d?' on':'')+'" data-d="'+x.d+'" role="tab" aria-selected="'+(x.d===sel.d)+'">'+rgHeroDayLabel(x.d)+' &bull; <b>'+x.n+' ped</b></button>'; }).join('');
+  el.querySelectorAll('.rg-day-chip').forEach(function(b){ b.addEventListener('click',function(){ rgHeroDay=b.getAttribute('data-d'); try{ rebuildHero(); }catch(e){} try{ rgRenderDayStrip(); }catch(e){} }); });
+}
+var heroFailKey='';
+function rebuildHero(){
+  var sel=rgHeroSel(),key=rgHeroKeyFor(sel);
+  rgRenderHeroMeta(sel); /* label/hint hamesha — 3D build fail ho to bhi label blank na rahe */
+  if(key===heroTreeKey&&heroTree) return;
+  if(key===heroFailKey) return;
+  if(heroTree){ try{ GardenTrees.disposeTree(heroTree); }catch(e){} world.remove(heroTree); heroTree=null; }
+  var sp=sel.latest?(GardenTrees.getSpecies(sel.latest.sp)||GardenTrees.pickSpecies(0)):GardenTrees.pickSpecies((S.trees||[]).length);
+  try{
+    var tree=GardenTrees.buildTree(sp,THREE,HERO_TREE_SCALE);
+    tree.position.y=.74; world.add(tree); heroTree=tree; heroTreeKey=key; heroIsPreview=!sel.latest; heroPop=1; heroFailKey='';
+    var hh=GardenTrees.SPECIES_HEIGHTS&&GardenTrees.SPECIES_HEIGHTS[sp.id]?GardenTrees.SPECIES_HEIGHTS[sp.id].height:3;
+    heroTreeH=hh*HERO_TREE_SCALE;
+  }catch(e){ heroTree=null; heroFailKey=key; heroIsPreview=!sel.latest; }
+}
+function rebuildMain(si){ /* legacy alias — purana makePlant hero hata; ab hero tree rebuild karta hai */ try{ rebuildHero(); }catch(e){} }
+/* Hero pop-in: naye ped par halka scale pop — purana dispProg growth anim hata diya gaya. */
+function rgStartGrowthAnim(to){ heroPop=1; }
+window.__rgGrowth=function(){ return {disp:dispProg,anim:false,pulse:heroPop}; };
+window.__rgHeroInfo=function(){ try{ return {key:heroTreeKey,preview:heroIsPreview,h:heroTreeH,hasTree:!!heroTree,day:rgHeroSel().d,count:rgHeroSel().list.length,latestSp:rgHeroSel().latest?rgHeroSel().latest.sp:null}; }catch(e){ return {err:String(e&&e.message||e)}; } };
+window.__rgRebuildHero=function(){ try{ rebuildHero(); }catch(e){ return String(e&&e.message||e); } return 'ok'; };
+window.__rgRenderDayStrip=function(){ try{ rgRenderDayStrip(); }catch(e){ return String(e&&e.message||e); } return 'ok'; };
+window.__rgHeroSel=function(){ try{ var s2=rgHeroSel(); return {d:s2.d,n:s2.list.length,latest:s2.latest?{sp:s2.latest.sp,testId:s2.latest.testId,ts:s2.latest.ts}:null}; }catch(e){ return {err:String(e&&e.message||e)}; } };
+/* Hero clock: sirf pop-in decay + legacy prog state (burst ke liye) — koi growth scale nahi. */
 function rgStepGrowth(dt,now){
-  var d=derived(),k=Math.min(1,dt*1.3);
-  if(growAnim){ var e=(now-growAnim.t0)/growAnim.dur; if(e>=1){ dispProg=growAnim.to; growAnim=null; } else { var ec=1-Math.pow(1-e,3); dispProg=growAnim.from+(growAnim.to-growAnim.from)*ec; } }
-  else dispProg+=(d.prog-dispProg)*k;
-  dp=dispProg; dex+=(d.ex-dex)*k;
-  if(growPulse>0) growPulse=Math.max(0,growPulse-dt*.7);
+  try{ var d=derived(); dispProg=d.prog; dp=dispProg; dex=d.ex; }catch(e){}
+  if(heroPop>0) heroPop=Math.max(0,heroPop-dt*1.1);
+  if(heroTree) heroTree.scale.setScalar(HERO_TREE_SCALE*(1+.12*heroPop));
 }
 
 /* particles */
@@ -20450,24 +20520,18 @@ function paintTiles(hover){ tiles.forEach(function(m,c){ var odd=((c%COLS)+Math.
 function gState(e){ if(e.live){ var d=derived(); return {prog:d.prog,gg:.3+.7*d.prog,h:1,ex:d.ex}; }
   var prog=clamp(e.done/e.t); return {prog:prog,gg:.3+.7*prog,h:e.done>=e.t?1:e.done===0?0:.25+.5*prog,ex:clamp((e.done-e.t)/e.t)}; }
 function buildGarden(){
-  if(rgNoGL){ var gs=$('rgGStat'); if(gs) gs.textContent=rgGardenCount()+' ped / '+S.history.length+' din'; return; }
+  if(rgNoGL){ var gs=$('rgGStat'); if(gs) gs.textContent=rgGardenCount()+' ped'; return; }
   gList.forEach(function(p){ if(p.tree){ try{ GardenTrees.disposeTree(p.plant.g); }catch(e){} } island.remove(p.plant.g); }); gList=[];
-  var trees=(S.trees||[]);
-  var ents=S.history.concat([{d:S.date,done:S.today,t:S.target,sp:spIdx(S.date),ex:S.exam,live:true}]),used={};
-  ROWS=Math.max(5,Math.ceil((trees.length+ents.length)/COLS)); /* field grows: forest keeps growing, no tree is ever dropped */
+  var trees=(S.trees||[]),used={};
+  /* TREES ONLY: purane flower din (S.history + aaj ka live paudha) ki rendering
+     hata di gayi — S.history DATA INTACT hai (delete nahi hua), sirf dikhta nahi. */
+  ROWS=Math.max(5,Math.ceil(trees.length/COLS)); /* field grows: forest keeps growing, no tree is ever dropped */
   buildIsland();
   var rowFG=Math.max(1,ROWS/5); /* ground area grows with the field so the frame stays full as the camera zooms out */
   if(gGround) gGround.scale.set(rowFG,1,rowFG);
   if(gLawn) gLawn.scale.set(rowFG,1,rowFG);
-  var nl={}; ents.forEach(function(e){ var c=S.layout[e.d]; if(c==null||used[c]||c>=COLS*ROWS){ c=0; while(used[c]) c++; } used[c]=1; nl[e.d]=c; });
-  S.layout=nl;
   var ntl={}; trees.forEach(function(tr){ var k=rgTreeKey(tr),c=(S.treeLayout||{})[k]; if(c==null||used[c]||c>=COLS*ROWS){ c=0; while(used[c]) c++; } used[c]=1; ntl[k]=c; });
   S.treeLayout=ntl;
-  /* legacy: purane flower din (S.history + aaj ka live paudha) waise hi — makePlant, scale .36 */
-  ents.forEach(function(e){ var plant=makePlant(e.sp,true,false),hit=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,3.2,8),new THREE.MeshBasicMaterial({visible:false}));
-    hit.position.y=1.5; plant.g.add(hit); var s=gState(e); plant.update(Object.assign({t:0,dt:1,sway:0},s));
-    plant.g.scale.multiplyScalar(.36); var cell=nl[e.d],xz=cellXZ(cell); plant.g.position.set(xz.x,TOP,xz.z); island.add(plant.g);
-    var p={e:e,plant:plant,hit:hit,cell:cell}; hit.userData.p=p; gList.push(p); });
   /* trees: har test = ek ped (18 species, deterministic rotation) */
   trees.forEach(function(tr){ var sp=GardenTrees.getSpecies(tr.sp)||GardenTrees.pickSpecies(0);
     var tree=GardenTrees.buildTree(sp,THREE,TREE_SCALE);
@@ -20477,7 +20541,7 @@ function buildGarden(){
     var e={d:tr.d,done:1,t:1,sp:tr.sp,ex:tr.ex,tree:true,testId:tr.testId,ts:tr.ts};
     var p={e:e,plant:{g:tree},hit:hit,cell:cell,tree:true}; hit.userData.p=p; gList.push(p); });
   paintTiles();
-  var gs2=$('rgGStat'); if(gs2) gs2.textContent=rgGardenCount()+' ped / '+S.history.length+' din'; save(); }
+  var gs2=$('rgGStat'); if(gs2) gs2.textContent=rgGardenCount()+' ped'; save(); }
 function rgSetZoom(z){ gZoom=clamp(z,.5,2.2); resizeAll(); }
 
 /* ============ RESIZE (container-scoped, never fullscreen) ============ */
@@ -20571,24 +20635,22 @@ function frame(now){
     rendererG.render(sceneG,camG); return;
   }
   if(v!=='roadmap') return;
-  var si=spIdx(S.date); if(si!==curSp) rebuildMain(si);
-  var h=1; /* health hata diya — hero hamesha healthy (h=1) */ idle+=dt; if(!dragPlant&&idle>3) rotY+=dt*.15; world.rotation.y=rotY;
-  /* auto-fit camera: plant (any size) + pot always stay inside the frame */
-  var _ph=(.18+2.6*(.3+.7*dp))*main.sp.hs*(1+.2*dex)*(1+.07*growPulse), _top=.74+_ph+1.15, _bot=-.3;
-  var _tn=Math.tan(camP.fov*Math.PI/360), _hv=(_top-_bot)/2*1.1;
+  rebuildHero();
+  idle+=dt; if(!dragPlant&&idle>3) rotY+=dt*.15; world.rotation.y=rotY;
+  /* auto-fit camera: tree (any species) + pot always stay inside the frame */
+  var _top=.74+heroTreeH+0.55, _bot=-.3;
+  var _tn=Math.tan(camP.fov*Math.PI/360), _hv=(_top-_bot)/2*1.08;
   var _dist=Math.max(_hv/_tn, 2.7/(_tn*Math.max(.3,camP.aspect)), 6.5), _cy=(_top+_bot)/2;
   var _k=Math.min(1,dt*3); camDist+=(_dist-camDist)*_k; camCy+=(_cy-camCy)*_k;
   camP.position.set(0,camCy+camDist*.16,camDist); camP.lookAt(0,camCy,0);
-  main.update({gg:.3+.7*dp,prog:dp,h:h,ex:dex,t:t,dt:dt});
-  if(growPulse>0) main.g.scale.multiplyScalar(1+.07*growPulse);
   sun.intensity=1.4; hemi.intensity=.75; sun.color.set(0xfff1d0);
   soilMat.color.set(0x3b2616);
-  heroBox.style.background='linear-gradient(180deg,#7fc4ff,#e6f6ff)';
+  heroBox.style.background='linear-gradient(180deg,#cdeeb4,#3e8e41)';
   for(var s2=sparks.length-1;s2>=0;s2--){ var s=sparks[s2]; s.life-=dt; s.v.y-=2*dt; s.m.position.addScaledVector(s.v,dt); s.m.material.opacity=clamp(s.life); if(s.life<=0){ world.remove(s.m); sparks.splice(s2,1); } }
-  var on=dex>.02,ph=.3+.7*dp;
-  FF.forEach(function(f2,fi){ f2.m.visible=on&&fi<4+14*dex; if(!f2.m.visible) return; var a=f2.a+t*f2.s;
-    f2.m.position.set(Math.cos(a)*f2.r,f2.y*(.6+.4*ph)+Math.sin(t*1.7+f2.p)*.25,Math.sin(a)*f2.r); f2.m.material.opacity=.4+.6*Math.abs(Math.sin(t*2.2+f2.p)); });
-  BF.forEach(function(b,bi2){ b.g.visible=on&&bi2<1+3*dex; if(!b.g.visible) return; var a=t*b.s+b.p,fl=Math.sin(t*18+b.p)*.9;
+  var on=!heroIsPreview;
+  FF.forEach(function(f2,fi){ f2.m.visible=on; if(!f2.m.visible) return; var a=f2.a+t*f2.s;
+    f2.m.position.set(Math.cos(a)*f2.r,f2.y+Math.sin(t*1.7+f2.p)*.25,Math.sin(a)*f2.r); f2.m.material.opacity=.4+.6*Math.abs(Math.sin(t*2.2+f2.p)); });
+  BF.forEach(function(b,bi2){ b.g.visible=on; if(!b.g.visible) return; var a=t*b.s+b.p,fl=Math.sin(t*18+b.p)*.9;
     b.g.position.set(Math.cos(a)*b.r,b.y+Math.sin(t*1.3+b.p)*.3,Math.sin(a*1.3)*b.r); b.g.rotation.y=-a; b.pl.rotation.z=fl; b.pr.rotation.z=-fl; });
   rendererP.render(sceneP,camP);
 }
@@ -20596,6 +20658,8 @@ function frame(now){
 /* ============ HUD ============ */
 function ui(){
   try{ rgRenderTodayTrees(); }catch(e){}
+  try{ rgRenderDayStrip(); }catch(e){}
+  try{ rebuildHero(); }catch(e){}
   var d=derived(),sp=SP[spIdx(S.date)],g=S.today/S.target;
   var sn=$('stage-name'); if(sn) sn.textContent=S.today>S.target?'Bonus: ghana aur chamakta!':g<.67?'Badh raha hai':g<1?'Hara-bhara':'Poora phool gaya';
   var t1=$('rgTStreak'); if(t1) t1.textContent=S.streak; var t2=$('rgTToday'); if(t2) t2.textContent=(S.plan&&S.plan.target===0)?'✓':S.today+'/'+S.target; var t3=$('rgTTrees'); if(t3) t3.textContent=rgGardenCount();
@@ -20614,8 +20678,9 @@ function ui(){
    paas wale pedon ke crown halke overlap karte hain = dense forest look. */
 var TREE_SCALE=.45;
 function rgTreeKey(tr){ return tr.d+'|'+tr.testId; }
-/* Garden me kul items: lagaye gaye ped + purane flower din + aaj ka live paudha. */
-function rgGardenCount(){ return (S.trees||[]).length+S.history.length+1; }
+/* Garden me kul ped: sirf lagaye gaye trees (S.trees). Purane flower din
+   (S.history) count me nahi — data intact hai, rendering/count se hata hai. */
+function rgGardenCount(){ return (S.trees||[]).length; }
 function rgPlantTree(testId){
   var t=todayStr();
   if((S.trees||[]).some(function(tr){ return tr.d===t&&tr.testId===testId; })) return null;
