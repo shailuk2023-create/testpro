@@ -946,5 +946,35 @@
   "responseId": "ACYDBNh2AkYttQjMHjPg6FY0dbc9c_-1Kgc1p5L_zPCR-qC9hxuQk7XFfpGUXfYT6xQy9Go",
   "fixedSummary": "Modern 2 Q1 image replaced: present-day Basilica of Bom Jesus photo -> 16th-century Braun & Hogenberg engraving of Goa (Wikimedia Commons, public domain), repo file images/rep-ga-modern-2-q1.jpg",
   "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 2 • Q3 (GA Test Q3) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795777830473,
+  "data": {
+   "chapter": "GA – Modern History",
+   "test": "Modern 2",
+   "qnum": "Q3 (GA Test Q3)"
+  },
+  "responseId": "ACYDBNhEeUQXiD3BdvDcGZxL_lv-ZRrz3JAXwDpol_paDQFO9jTm69YjdB91Amw6F402DK8",
+  "fixedSummary": "Modern 2 Q3 (Battle of Wandiwash) solution image replaced: present-day photo of ruined Vandavasi Fort wall -> authentic 1760 battle plan 'Plan of the Battle of Wandewash, 22 Jan 1760, Col. Eyre Coote vs Count Lally' (Wikimedia Commons, public domain), repo file images/rep-ga-modern-2-q3.jpg",
+  "sent": false
+ },
+ {
+  "type": "report",
+  "title": "Report fix ho gayi",
+  "body": "Aapki report fix ho gayi: GA – Modern History • Modern 2 • Q6 (GA Test Q6) — batayi gayi galti sahi kar di gayi hai. Dhanyavaad!",
+  "target": "VbViNkewJoeiPsFykW131j1XvIi2",
+  "createdAt": 1795777830474,
+  "data": {
+   "chapter": "GA – Modern History",
+   "test": "Modern 2",
+   "qnum": "Q6 (GA Test Q6)"
+  },
+  "responseId": "ACYDBNiSLMiAx8993AbYmornRxbCMYxKtp12x_j1jJo1uNSBH89cRuzHUvDuzMs0CntDMwc",
+  "fixedSummary": "Modern 2 Q6 (Madraspattinam 1639) solution image replaced: present-day photo of pavilion inside Fort St George complex -> mid-18th-century copper engraving 'A Perspective View of Fort St George on the Coromandel Coast, belonging to the East India Company' (Wikimedia Commons, public domain), repo file images/rep-ga-modern-2-q6.jpg",
+  "sent": false
  }
 ]
