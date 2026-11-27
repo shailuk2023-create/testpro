@@ -20336,10 +20336,35 @@ var world=new THREE.Group(); sceneP.add(world);
 var table=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,.18,48),new THREE.MeshStandardMaterial({color:0x8a6a4a,roughness:.7}));
 table.position.y=-.09; table.receiveShadow=true; world.add(table);
 var potMat=new THREE.MeshStandardMaterial({color:0xc2673a,roughness:.75});
-var pot=new THREE.Mesh(new THREE.CylinderGeometry(.75,.52,.75,40),potMat); pot.position.y=.375; pot.castShadow=pot.receiveShadow=true; world.add(pot);
-var rim=new THREE.Mesh(new THREE.TorusGeometry(.76,.08,12,40),potMat); rim.rotation.x=Math.PI/2; rim.position.y=.75; rim.castShadow=true; world.add(rim);
 var soilMat=new THREE.MeshStandardMaterial({color:0x3b2616,roughness:1});
-var soil=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.05,40),soilMat); soil.position.y=.72; soil.receiveShadow=true; world.add(soil);
+var heroPotGroup=new THREE.Group(); world.add(heroPotGroup); /* gamle dynamic hain — rebuildHero banata hai: max(1, us din ke ped) */
+/* Ek gamla banata hai (pot + rim + soil), scale s par. Geometry per rebuild banti hai; dispose agle rebuild par hota hai (material shared hai — dispose nahi karte). */
+function rgBuildHeroPot(s){
+  var g=new THREE.Group();
+  var pot=new THREE.Mesh(new THREE.CylinderGeometry(.75,.52,.75,40),potMat); pot.position.y=.375; pot.castShadow=pot.receiveShadow=true; g.add(pot);
+  var rim=new THREE.Mesh(new THREE.TorusGeometry(.76,.08,12,40),potMat); rim.rotation.x=Math.PI/2; rim.position.y=.75; rim.castShadow=true; g.add(rim);
+  var soil=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.05,40),soilMat); soil.position.y=.72; soil.receiveShadow=true; g.add(soil);
+  g.scale.setScalar(s); return g;
+}
+function rgDisposeHeroPots(){
+  heroPotGroup.children.slice().forEach(function(p){
+    p.traverse(function(o){ if(o.geometry) o.geometry.dispose(); });
+    heroPotGroup.remove(p);
+  });
+}
+/* Pot layout: n<=5 ek row (table r=2.4 ke andar — kinare wala gamla bhi table par), n>=6 grid (2+ rows). */
+function rgHeroPotLayout(n){
+  var pots=Math.max(1,n),out=[],i;
+  if(pots<=5){
+    var s=[1,.85,.75,.68,.62][pots-1], sp=[0,1.5,1.25,1.1,.95][pots-1];
+    for(i=0;i<pots;i++) out.push({x:(i-(pots-1)/2)*sp,z:0,s:s});
+    return out;
+  }
+  var cols=Math.min(4,Math.ceil(pots/2)), rows=Math.ceil(pots/cols), s2=.55, sp2=1.05, zsp=1.4;
+  for(i=0;i<pots;i++){ var r=Math.floor(i/cols), rc=Math.min(cols,pots-r*cols), c=i%cols;
+    out.push({x:(c-(rc-1)/2)*sp2,z:(r-(rows-1)/2)*zsp,s:s2}); }
+  return out;
+}
 /* Hero garden background (scene ke andar): hari ghaas + mini scenery — sky-blue hata diya gaya */
 (function rgHeroScenery(){
   var ground=new THREE.Mesh(new THREE.CylinderGeometry(9,9,.14,48),new THREE.MeshStandardMaterial({color:0x43a047,roughness:.95}));
@@ -20357,13 +20382,14 @@ var soil=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.05,40),soilMat); soil.
     var bl=new THREE.Mesh(new THREE.SphereGeometry(.11,8,6),new THREE.MeshStandardMaterial({color:fl[i%5],roughness:.6})); bl.position.set(Math.cos(a)*r,.2,Math.sin(a)*r); world.add(bl); }
   var pond=new THREE.Mesh(new THREE.CylinderGeometry(.85,.85,.05,28),new THREE.MeshStandardMaterial({color:0x4db6e8,roughness:.2,metalness:.2})); pond.position.set(3.9,-.15,1.6); world.add(pond);
 })();
-/* ============ HERO — TREES ONLY (plantview rework, v116, no bump) ============
+/* ============ HERO — TREES ONLY, MULTI-POT (v116, no bump) ============
    Purana growth-stage chhota ped (makePlant) hero se hata diya gaya — hero me
-   ab sirf GardenTrees ped dikhta hai: chune hue din ka latest tree (ts se
-   newest). Koi tree na ho to next species ka preview. S.history DATA INTACT
-   hai — sirf rendering se hata hai (garden me bhi). */
+   ab sirf GardenTrees ped dikhte hain: chune hue din ke SAARE ped, har ped
+   apne gamle me (gamle = max(1, us din ke ped)). 0 tests par KOI preview
+   tree nahi — sirf EK KHAALI GAMLA. S.history DATA INTACT hai — sirf
+   rendering se hata hai (garden me bhi). */
 var HERO_TREE_SCALE=.62;
-var heroTree=null,heroTreeKey='',heroTreeH=2,heroIsPreview=true,heroPop=0,rgHeroDay=null;
+var heroTree=null,heroTrees=[],heroTreeKey='',heroTreeH=2,heroIsPreview=false,heroPop=0,rgHeroDay=null,heroHalfW=2.7; /* heroTree = taaza ped ka alias (compat); heroTrees = saare ped [{g,base}] */
 var dp=0,dex=0,dispProg=0; /* legacy: derived prog sirf burst()/testDone guards ke liye — hero scale se ab koi lena-dena nahi */
 function rgTreesByDay(){ var m={}; (S.trees||[]).forEach(function(tr){ (m[tr.d]=m[tr.d]||[]).push(tr); }); Object.keys(m).forEach(function(d){ m[d].sort(function(a,b){ return (b.ts||0)-(a.ts||0); }); }); return m; }
 function rgHeroDayList(){ var by=rgTreesByDay(),t=todayStr(),days=Object.keys(by).sort().reverse(); if(days.indexOf(t)===-1) days.unshift(t); return days.slice(0,7).map(function(d){ return {d:d,n:(by[d]||[]).length,latest:(by[d]||[])[0]||null}; }); }
@@ -20374,7 +20400,7 @@ function rgHeroSel(){
   var list=by[d]||[];
   return {d:d,list:list,latest:list[0]||null};
 }
-function rgHeroKeyFor(sel){ return sel.latest? sel.d+'|'+sel.latest.testId+'|'+sel.list.length : sel.d+'|preview|'+(S.trees||[]).length; }
+function rgHeroKeyFor(sel){ return sel.d+'|'+sel.list.map(function(tr){ return tr.testId; }).join(','); } /* khaali din -> 'd|' (stable, preview nahi) */
 var _heroMetaSig='';
 function rgRenderHeroMeta(sel){
   var sig=sel.d+'|'+sel.list.length+'|'+(sel.latest?sel.latest.testId:'preview');
@@ -20395,22 +20421,40 @@ var heroFailKey='';
 function rebuildHero(){
   var sel=rgHeroSel(),key=rgHeroKeyFor(sel);
   rgRenderHeroMeta(sel); /* label/hint hamesha — 3D build fail ho to bhi label blank na rahe */
-  if(key===heroTreeKey&&heroTree) return;
-  if(key===heroFailKey) return;
-  if(heroTree){ try{ GardenTrees.disposeTree(heroTree); }catch(e){} world.remove(heroTree); heroTree=null; }
-  var sp=sel.latest?(GardenTrees.getSpecies(sel.latest.sp)||GardenTrees.pickSpecies(0)):GardenTrees.pickSpecies((S.trees||[]).length);
-  try{
-    var tree=GardenTrees.buildTree(sp,THREE,HERO_TREE_SCALE);
-    tree.position.y=.74; world.add(tree); heroTree=tree; heroTreeKey=key; heroIsPreview=!sel.latest; heroPop=1; heroFailKey='';
-    var hh=GardenTrees.SPECIES_HEIGHTS&&GardenTrees.SPECIES_HEIGHTS[sp.id]?GardenTrees.SPECIES_HEIGHTS[sp.id].height:3;
-    heroTreeH=hh*HERO_TREE_SCALE;
-  }catch(e){ heroTree=null; heroFailKey=key; heroIsPreview=!sel.latest; }
+  if(key===heroTreeKey) return;
+  /* purane ped + gamle dispose karke dobara banao */
+  heroTrees.forEach(function(ht){ try{ GardenTrees.disposeTree(ht.g); }catch(e){} world.remove(ht.g); });
+  heroTrees=[]; heroTree=null;
+  rgDisposeHeroPots();
+  var layout=rgHeroPotLayout(sel.list.length);
+  layout.forEach(function(L){ var pg=rgBuildHeroPot(L.s); pg.position.set(L.x,0,L.z); heroPotGroup.add(pg); });
+  heroHalfW=2.7;
+  layout.forEach(function(L){ heroHalfW=Math.max(heroHalfW,Math.abs(L.x)+.75*L.s+.7); });
+  heroTreeKey=key; heroIsPreview=false; heroPop=1; heroFailKey='';
+  if(!sel.list.length){ heroTreeH=1; return; } /* 0 tests -> sirf khaali gamla, koi preview tree nahi */
+  var chrono=sel.list.slice().reverse(); /* sabse purana ped sabse baayein, taaza sabse daayein */
+  var maxH=0,built=0;
+  chrono.forEach(function(tr,i){
+    var sp=GardenTrees.getSpecies(tr.sp)||GardenTrees.pickSpecies(0);
+    var L=layout[i];
+    var tScale=HERO_TREE_SCALE*(0.7+0.3*L.s); /* chhote gamle par ped bhi halka chhota */
+    try{
+      var tree=GardenTrees.buildTree(sp,THREE,tScale);
+      tree.position.set(L.x,.74*L.s,L.z); world.add(tree);
+      heroTrees.push({g:tree,base:tScale});
+      var hh=GardenTrees.SPECIES_HEIGHTS&&GardenTrees.SPECIES_HEIGHTS[sp.id]?GardenTrees.SPECIES_HEIGHTS[sp.id].height:3;
+      maxH=Math.max(maxH,hh*tScale);
+      built++;
+    }catch(e){ /* ek ped fail ho to baaki ped phir bhi lagte hain */ }
+  });
+  heroTree=heroTrees.length?heroTrees[heroTrees.length-1].g:null; /* alias: taaza (latest) ped */
+  heroTreeH=built?maxH:1;
 }
 function rebuildMain(si){ /* legacy alias — purana makePlant hero hata; ab hero tree rebuild karta hai */ try{ rebuildHero(); }catch(e){} }
 /* Hero pop-in: naye ped par halka scale pop — purana dispProg growth anim hata diya gaya. */
 function rgStartGrowthAnim(to){ heroPop=1; }
 window.__rgGrowth=function(){ return {disp:dispProg,anim:false,pulse:heroPop}; };
-window.__rgHeroInfo=function(){ try{ return {key:heroTreeKey,preview:heroIsPreview,h:heroTreeH,hasTree:!!heroTree,day:rgHeroSel().d,count:rgHeroSel().list.length,latestSp:rgHeroSel().latest?rgHeroSel().latest.sp:null}; }catch(e){ return {err:String(e&&e.message||e)}; } };
+window.__rgHeroInfo=function(){ try{ return {key:heroTreeKey,preview:heroIsPreview,h:heroTreeH,hasTree:heroTrees.length>0,pots:heroPotGroup.children.length,trees:heroTrees.length,treeSp:heroTrees.map(function(ht){ return ht.g.userData&&ht.g.userData.speciesId; }),day:rgHeroSel().d,count:rgHeroSel().list.length,latestSp:rgHeroSel().latest?rgHeroSel().latest.sp:null}; }catch(e){ return {err:String(e&&e.message||e)}; } };
 window.__rgRebuildHero=function(){ try{ rebuildHero(); }catch(e){ return String(e&&e.message||e); } return 'ok'; };
 window.__rgRenderDayStrip=function(){ try{ rgRenderDayStrip(); }catch(e){ return String(e&&e.message||e); } return 'ok'; };
 window.__rgHeroSel=function(){ try{ var s2=rgHeroSel(); return {d:s2.d,n:s2.list.length,latest:s2.latest?{sp:s2.latest.sp,testId:s2.latest.testId,ts:s2.latest.ts}:null}; }catch(e){ return {err:String(e&&e.message||e)}; } };
@@ -20418,7 +20462,7 @@ window.__rgHeroSel=function(){ try{ var s2=rgHeroSel(); return {d:s2.d,n:s2.list
 function rgStepGrowth(dt,now){
   try{ var d=derived(); dispProg=d.prog; dp=dispProg; dex=d.ex; }catch(e){}
   if(heroPop>0) heroPop=Math.max(0,heroPop-dt*1.1);
-  if(heroTree) heroTree.scale.setScalar(HERO_TREE_SCALE*(1+.12*heroPop));
+  heroTrees.forEach(function(ht){ ht.g.scale.setScalar(ht.base*(1+.12*heroPop)); });
 }
 
 /* particles */
@@ -20640,14 +20684,14 @@ function frame(now){
   /* auto-fit camera: tree (any species) + pot always stay inside the frame */
   var _top=.74+heroTreeH+0.55, _bot=-.3;
   var _tn=Math.tan(camP.fov*Math.PI/360), _hv=(_top-_bot)/2*1.08;
-  var _dist=Math.max(_hv/_tn, 2.7/(_tn*Math.max(.3,camP.aspect)), 6.5), _cy=(_top+_bot)/2;
+  var _dist=Math.max(_hv/_tn, heroHalfW/(_tn*Math.max(.3,camP.aspect)), 6.5), _cy=(_top+_bot)/2; /* multi-pot: chauda hero bhi frame me rahe */
   var _k=Math.min(1,dt*3); camDist+=(_dist-camDist)*_k; camCy+=(_cy-camCy)*_k;
   camP.position.set(0,camCy+camDist*.16,camDist); camP.lookAt(0,camCy,0);
   sun.intensity=1.4; hemi.intensity=.75; sun.color.set(0xfff1d0);
   soilMat.color.set(0x3b2616);
   heroBox.style.background='linear-gradient(180deg,#cdeeb4,#3e8e41)';
   for(var s2=sparks.length-1;s2>=0;s2--){ var s=sparks[s2]; s.life-=dt; s.v.y-=2*dt; s.m.position.addScaledVector(s.v,dt); s.m.material.opacity=clamp(s.life); if(s.life<=0){ world.remove(s.m); sparks.splice(s2,1); } }
-  var on=!heroIsPreview;
+  var on=heroTrees.length>0; /* khaali gamle par titli/jugnu nahi — sirf jab ped ho */
   FF.forEach(function(f2,fi){ f2.m.visible=on; if(!f2.m.visible) return; var a=f2.a+t*f2.s;
     f2.m.position.set(Math.cos(a)*f2.r,f2.y+Math.sin(t*1.7+f2.p)*.25,Math.sin(a)*f2.r); f2.m.material.opacity=.4+.6*Math.abs(Math.sin(t*2.2+f2.p)); });
   BF.forEach(function(b,bi2){ b.g.visible=on; if(!b.g.visible) return; var a=t*b.s+b.p,fl=Math.sin(t*18+b.p)*.9;
