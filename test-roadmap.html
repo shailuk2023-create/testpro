@@ -5283,6 +5283,17 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-tile b{display:block;margin-top:8px;font-size:21px;line-height:1.1;font-weight:900;background:linear-gradient(90deg,#0ea5e9,#14b8a6);-webkit-background-clip:text;background-clip:text;color:transparent}
 .rg-tile.t-fire b{background:linear-gradient(90deg,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text}
 .rg-tile small{display:block;margin-top:2px;font-size:11.5px;font-weight:700;color:var(--muted)}
+/* v116: home-card style decorative pattern on the RIGHT side of each stat
+   tile — same language as the roadmap cards (.rg-item::after radial glow
+   + .rg-exam::after dot texture). Pattern sits behind the content
+   (z-index), low opacity, right side only — numbers/labels never covered. */
+.rg-tile::before{content:"";position:absolute;right:0;top:0;bottom:0;width:46%;pointer-events:none;background-image:radial-gradient(rgba(14,165,233,.35) 1px,transparent 1.6px);background-size:14px 14px;-webkit-mask-image:linear-gradient(90deg,transparent,rgba(0,0,0,.9));mask-image:linear-gradient(90deg,transparent,rgba(0,0,0,.9))}
+.rg-tile::after{content:"";position:absolute;right:-26px;top:50%;transform:translateY(-50%);width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,#0ea5e9 22%,transparent),transparent 70%);pointer-events:none}
+.rg-tile.t-fire::before{background-image:radial-gradient(rgba(245,158,11,.4) 1px,transparent 1.6px)}
+.rg-tile.t-fire::after{background:radial-gradient(circle,color-mix(in srgb,#f59e0b 24%,transparent),transparent 70%)}
+.rg-tile.t-ok::before{background-image:radial-gradient(rgba(16,185,129,.4) 1px,transparent 1.6px)}
+.rg-tile.t-ok::after{background:radial-gradient(circle,color-mix(in srgb,#10b981 24%,transparent),transparent 70%)}
+.rg-tile>*{position:relative;z-index:1}
 .rg-status{margin-top:12px}
 .rg-status-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .rg-status-top b{font-size:16px;color:var(--text-strong)}
@@ -5295,6 +5306,10 @@ html #view-test, html #view-instructions{background-color:#ffffff!important;back
 .rg-sec{font-size:18px;font-weight:800}
 .rg-sec::before{content:"";width:5px;height:22px;border-radius:5px;background:linear-gradient(180deg,#0ea5e9,#14b8a6);margin-right:10px}
 .rg-sec{justify-content:flex-start}.rg-sec span{margin-left:auto}
+/* v116: big any-6 banner — any 6 tests (any series) complete the daily target */
+.rg-any6{margin:2px 2px 12px;padding:14px 16px;border-radius:18px;text-align:center;font-size:21px;font-weight:900;line-height:1.3;color:#fff;background:linear-gradient(135deg,#00b4d0,#0a7ea3 55%,#0d9488);box-shadow:0 14px 28px -14px rgba(0,130,170,.7)}
+.rg-any6 span{display:block;font-size:13px;font-weight:700;opacity:.92;margin-top:2px}
+@media (max-width:390px){.rg-any6{font-size:19px}}
 .rg-item{position:relative;overflow:hidden;padding:15px;gap:14px;border-radius:20px;margin-bottom:12px;box-shadow:0 18px 40px -28px rgba(15,23,42,.5);background:linear-gradient(135deg,var(--surface),color-mix(in srgb,var(--rg-c,#0ea5e9) 9%,var(--surface)))}
 .rg-item::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--rg-c,#0ea5e9)}
 .rg-item::after{content:"";position:absolute;right:-30px;bottom:-40px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--rg-c,#0ea5e9) 22%,transparent),transparent 70%);pointer-events:none}
@@ -6369,6 +6384,7 @@ s();window.addEventListener('resize',s);window.addEventListener('orientationchan
     </div>
     <button class="rg-next" id="rgNextBtn"></button>
     <h2 class="rg-sec">Aaj ka plan <span id="rgPlanCount">0/0</span></h2>
+    <div class="rg-any6">Koi bhi 6 tests de sakte ho <span>(daily target)</span></div>
     <div id="rgPlaylist"></div>
   </div>
 </div>
@@ -7627,7 +7643,7 @@ var state = {
   sqSolOpen: false
 };
 
-var APP_VERSION = 115; /* must match version.txt - bump on every release */
+var APP_VERSION = 116; /* must match version.txt - bump on every release */
 var VIDEO_INLINE_TEST = true; /* v21 TESTING: inline video player - true = video app ke andar hi chalega, false = YouTube khulega (purana behavior). Feature pasand na aaye to false kar do ya v21-video wala block hata do. */
 var _viewAt = {0:'list'};   /* routeDepth -> view name (mirrors the browser history stack) */
 /* ================= v68-I — restore state after refresh =================
@@ -19071,7 +19087,7 @@ window.tpSqSolHTML=tpSqSolHTML;
 </script>
 <script id="roadmap-garden">
 /* ============================================================================
-   TESTPRO — AI Roadmap & Study Garden (TEST BUILD ONLY, v115 — no version bump)
+   TESTPRO — AI Roadmap & Study Garden (v116)
    Adapted from prototype plant_garden2.html (plant factory + garden scene kept
    in 3D). Scoped into #view-roadmap / #view-garden; NO fullscreen overlay.
    Offline: Three.js is inlined in the preceding <script> block (r128).
@@ -19943,21 +19959,41 @@ function rgRenderRoadmap(){
     : 'Aaj ka target: '+P.target+' tests. Exam tak sab khatam karne ke liye kaafi hai ('+fresh.remaining+' tests baaki, '+daysLeft+' din)';
   var list=$('rgPlaylist'), doneN=0, nextTest=null;
   P.items.forEach(function(it){ if(isDone(it)) doneN++; else if(!nextTest&&it.kind==='test'){ nextTest=findTestById(it.testId); } });
-  var pc=$('rgPlanCount'); if(pc) pc.textContent=doneN+'/'+P.items.length;
+  /* v116: tests done OUTSIDE the roadmap (Tests tab, any series/month/
+     chapter) also show in the playlist — struck-through, moved to the
+     bottom, counted toward the daily target. A test already in the plan
+     is skipped here (it is struck through in place). Off-plan done tests
+     resolve via findTestById so the row carries its real series + title.
+     Remaining = target - distinct done tests today (never below 0); the
+     strip's fixed-plan logic (S.plan) is untouched and same-day
+     re-attempts never double-count (rgTodayIds is distinct by test id). */
+  var inPlan={}; P.items.forEach(function(it){ if(it.kind==='test'&&it.testId) inPlan[it.testId]=1; });
+  var extraDone=[];
+  Object.keys(doneIds).forEach(function(id){
+    if(inPlan[id]) return;
+    var t=null; try{ t=findTestById(id); }catch(e){}
+    if(!t) return;
+    var s=isCATest(t)?'ca':(isGATest(t)?'ga':'maths');
+    extraDone.push({kind:'test',series:s,testId:id,title:testTitle(t),reason:'',extra:true});
+  });
+  var totalDone=doneN+extraDone.length;
+  var pc=$('rgPlanCount'); if(pc) pc.textContent=totalDone+'/'+P.target;
   if(list){
-    if(!P.items.length){
+    if(!P.items.length&&!extraDone.length){
       list.innerHTML='<div class="rg-empty">Saare tests complete aur koi revision due nahi. Aaj garden me naya paudha lagao!</div>';
     } else {
       var h='', seen=P.seen||[], newSeen=[];
-      P.items.forEach(function(it,i){
+      /* pending suggestions first, done rows (in-plan + off-plan) at the bottom */
+      var disp=P.items.filter(function(it){ return !isDone(it); }).concat(P.items.filter(isDone), extraDone);
+      disp.forEach(function(it,i){
         var d=isDone(it), k=rgItemKey(it), pop=d&&seen.indexOf(k)===-1;
         if(d) newSeen.push(k);
-        h+='<button class="rg-item rg-s-'+it.series+(d?' done':'')+(pop?' rg-pop':'')+'" style="--d:'+i+'" data-i="'+i+'" '+(d?'disabled aria-label="Complete"':'')+'><span class="rg-item-ico rg-ico-'+it.series+'">'+(d?RG_ICO('check'):rgItemIco(it))+'</span><span class="rg-item-tx"><b>'+rgEsc(it.title)+'</b><span class="rg-reason">'+(d?'Aaj complete ho gaya':rgEsc(it.reason))+'</span></span><span class="rg-item-go">'+(d?RG_ICO('check-circle'):RG_ICO('chev-r'))+'</span></button>';
+        h+='<button class="rg-item rg-s-'+it.series+(d?' done':'')+(pop?' rg-pop':'')+'" style="--d:'+i+'" data-i="'+i+'" '+(d?'disabled aria-label="Complete"':'')+'><span class="rg-item-ico rg-ico-'+it.series+'">'+(d?RG_ICO('check'):rgItemIco(it))+'</span><span class="rg-item-tx"><b>'+rgEsc(it.title)+'</b><span class="rg-reason">'+(d?(it.extra?'Tests tab se complete — aaj count ho gaya':'Aaj complete ho gaya'):rgEsc(it.reason))+'</span></span><span class="rg-item-go">'+(d?RG_ICO('check-circle'):RG_ICO('chev-r'))+'</span></button>';
       });
       list.innerHTML=h; P.seen=newSeen; save();
       list.querySelectorAll('.rg-item:not(.done)').forEach(function(b){
         b.addEventListener('click',function(){
-          var it=P.items[parseInt(b.getAttribute('data-i'),10)];
+          var it=disp[parseInt(b.getAttribute('data-i'),10)];
           if(!it) return;
           if(it.kind==='rev'){ rgOpenRevision(it.series,it.key); return; }
           var t=findTestById(it.testId); if(t) rgStartTestFromRoadmap(t);
