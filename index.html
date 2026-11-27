@@ -20677,6 +20677,7 @@ function rgCountTestToday(testId){
     try{ rgPlantTree(testId); }catch(e){} /* ONE TEST = ONE TREE — S.today/target/streak untouched, parallel list */
     API.testDone(1);
   }
+  save(); /* defense: same-day count/plant turant persist ho, API.testDone par nirbhar nahi */
 }
 window.rgCountTestToday=function(id){ try{ rgCountTestToday(id); }catch(e){} };
 function rgReconcileToday(){
@@ -20691,6 +20692,7 @@ function rgReconcileToday(){
     return;
   }
   rgTodayIds().forEach(function(id){ rgCountTestToday(id); });
+  rgTodayIds().forEach(function(id){ try{ rgPlantTree(id); }catch(e){} }); /* adopt: pre-rework / pre-count tests ke ped bhi lagein */
   save();
 }
 window.rgReconcileToday=function(){ try{ rgReconcileToday(); }catch(e){} };
@@ -21017,7 +21019,7 @@ function openRoadmap(){ try{ state.navTab='roadmap'; }catch(e){} rgRenderRoadmap
 window.openRoadmap=openRoadmap;
 window.__rgOnView=function(name){
   if(name==='roadmap'){ try{ rgRenderRoadmap(); }catch(e){} resizeAll(); if(!S.setupDone){ try{ rgOpenSetup(true); }catch(e){} } rgMaybeIntro(); }
-  else if(name==='garden'){ try{ buildGarden(); }catch(e){} resizeAll(); }
+  else if(name==='garden'){ try{ rgReconcileToday(); }catch(e){} try{ buildGarden(); }catch(e){} resizeAll(); }
   else if(['instructions','test','analysis','solutions'].indexOf(name)===-1){ window.__rgReturn=null; }
 };
 
