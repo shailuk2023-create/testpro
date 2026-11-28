@@ -10949,9 +10949,22 @@ window.addEventListener('message', function(ev){
     inlineVideoApiState = 'ready'; setInlineSpeedButtons(true);
     if (inlineVideoPendingRate !== null) ivPost('setPlaybackRate', [inlineVideoPendingRate]);
     ivPost('playVideo');
-  } else if (d.event === 'onStateChange' && typeof d.info === 'number'){ inlineVideoState = d.info; if (d.info === 1) ivReveal(); }
+  } else if (d.event === 'onStateChange' && typeof d.info === 'number'){ inlineVideoState = d.info; if (d.info === 1 || d.info === 3) ivReveal(); }
   else if (d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number'){ inlineVideoState = d.info.playerState; if (d.info.playerState === 1) ivReveal(); }
 });
+var ivWarmed = false;
+/* player ki JS/CSS pehle se cache me aa jaye taaki asli video jaldi khule */
+function ivPrewarm(){
+  if (ivWarmed) return; ivWarmed = true;
+  try {
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/M7lc1UVf-VE?rel=0&modestbranding=1';
+    f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1; f.title = '';
+    f.style.cssText = 'position:fixed;width:1px;height:1px;left:-9999px;top:0;border:0;opacity:0;pointer-events:none';
+    document.body.appendChild(f);
+    setTimeout(function(){ if (f.parentNode) f.parentNode.removeChild(f); }, 10000);
+  } catch (e) {}
+}
 function ivReveal(){
   var fr = $('inlineVideoFrame'), w = $('inlineVideoWrap');
   if (fr) fr.style.opacity = '1';
@@ -10980,11 +10993,11 @@ function ivStartWatch(){
     if (!$('inlineVideoFrame')){ ivStopWatch(); return; }
     var el = Date.now() - inlineVideoT0;
     if (inlineVideoState === 1){ ivReveal(); ivStopWatch(); return; }          /* PLAYING - kaam ho gaya */
-    if (el >= 4500) ivReveal();                                    /* autoplay block ho to YouTube ka play button dikhe */
+    if (el >= 2200 || inlineVideoState === 3) ivReveal();                                    /* autoplay block ho to YouTube ka play button dikhe */
     if (!inlineVideoSeenMsg) ivListen();
     var ok = (inlineVideoState === 1 || inlineVideoState === 3);
-    if (!ok && el >= 1100 && Date.now() - inlineVideoLastPlay >= 800){ inlineVideoLastPlay = Date.now(); ivPost('playVideo'); }
-    if (!ok && el >= 2800 && inlineVideoTries < 2){ inlineVideoTries++; ivMakeFrame(); return; }
+    if (!ok && el >= 700 && Date.now() - inlineVideoLastPlay >= 700){ inlineVideoLastPlay = Date.now(); ivPost('playVideo'); }
+    if (inlineVideoSeenMsg && !ok && el >= 3200 && inlineVideoTries < 1){ inlineVideoTries++; ivMakeFrame(); return; }
     if (el > 12000){ ivReveal(); ivStopWatch(); }
   }, 250);
 }
@@ -11048,7 +11061,7 @@ function solTimeIcon(secs, attempted, wrong){
     '<path d="' + conf.mouth + '" stroke="' + conf.c + '" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></span>';
 }
 function renderSolution(keepOpen){
-  closeInlineVideo();
+  closeInlineVideo(); ivPrewarm();
   var t = state.test, i = state.solIdx, q = t.questions[i], st = state.qStates[i];
   var savedQuizMode = state.savedQuizMode;
   /* GA render tags (v14): in saved-quiz mode the pseudo-test id is
