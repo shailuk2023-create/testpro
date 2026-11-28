@@ -10949,9 +10949,14 @@ window.addEventListener('message', function(ev){
     inlineVideoApiState = 'ready'; setInlineSpeedButtons(true);
     if (inlineVideoPendingRate !== null) ivPost('setPlaybackRate', [inlineVideoPendingRate]);
     ivPost('playVideo');
-  } else if (d.event === 'onStateChange' && typeof d.info === 'number'){ inlineVideoState = d.info; }
-  else if (d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number'){ inlineVideoState = d.info.playerState; }
+  } else if (d.event === 'onStateChange' && typeof d.info === 'number'){ inlineVideoState = d.info; if (d.info === 1) ivReveal(); }
+  else if (d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number'){ inlineVideoState = d.info.playerState; if (d.info.playerState === 1) ivReveal(); }
 });
+function ivReveal(){
+  var fr = $('inlineVideoFrame'), w = $('inlineVideoWrap');
+  if (fr) fr.style.opacity = '1';
+  if (w) w.classList.remove('iv-loading');
+}
 function ivMakeFrame(){
   var w = $('inlineVideoWrap'); if (!w) return null;
   var old = $('inlineVideoFrame'); if (old && old.parentNode) old.parentNode.removeChild(old);
@@ -10960,6 +10965,8 @@ function ivMakeFrame(){
   nf.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
   nf.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin'); nf.setAttribute('allowfullscreen', '');
   nf.addEventListener('load', ivListen);
+  nf.style.opacity = '0'; nf.style.transition = 'opacity .2s'; /* YouTube ka apna thumbnail/play button chhupa rahe, play shuru hote hi dikhao */
+  w.classList.add('iv-loading');
   nf.src = inlineVideoSrc;
   w.insertBefore(nf, w.firstChild);
   inlineVideoState = -1; inlineVideoSeenMsg = false; inlineVideoT0 = Date.now(); inlineVideoLastPlay = 0;
@@ -10972,12 +10979,13 @@ function ivStartWatch(){
   inlineVideoWatch = setInterval(function(){
     if (!$('inlineVideoFrame')){ ivStopWatch(); return; }
     var el = Date.now() - inlineVideoT0;
-    if (inlineVideoState === 1){ ivStopWatch(); return; }          /* PLAYING - kaam ho gaya */
+    if (inlineVideoState === 1){ ivReveal(); ivStopWatch(); return; }          /* PLAYING - kaam ho gaya */
+    if (el >= 4500) ivReveal();                                    /* autoplay block ho to YouTube ka play button dikhe */
     if (!inlineVideoSeenMsg) ivListen();
     var ok = (inlineVideoState === 1 || inlineVideoState === 3);
     if (!ok && el >= 1100 && Date.now() - inlineVideoLastPlay >= 800){ inlineVideoLastPlay = Date.now(); ivPost('playVideo'); }
     if (!ok && el >= 2800 && inlineVideoTries < 2){ inlineVideoTries++; ivMakeFrame(); return; }
-    if (el > 12000) ivStopWatch();
+    if (el > 12000){ ivReveal(); ivStopWatch(); }
   }, 250);
 }
 function closeInlineVideo(){
@@ -10990,7 +10998,7 @@ function closeInlineVideo(){
   setInlineSpeedButtons(false);
   markInlineSpeed(1);
   var w = $('inlineVideoWrap');
-  if (w){ w.innerHTML = ''; w.classList.add('hidden'); }
+  if (w){ w.innerHTML = ''; w.classList.add('hidden'); w.classList.remove('iv-loading'); }
   var vb = $('videoBtn');
   if (vb) vb.textContent = '▶ See Video Solution';
 }
@@ -21291,6 +21299,9 @@ raf(frame);
 </script>
 <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap');</style>
 <style id="rg-upd-style">
+#inlineVideoWrap{position:relative;background:#0b1220}
+#inlineVideoWrap.iv-loading::after{content:"";position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:ivspin .8s linear infinite;pointer-events:none}
+@keyframes ivspin{to{transform:rotate(360deg)}}
 #rgTodayTrees,#rgNextBtn{display:none!important}
 #rgTargetLine.rg-target{margin:10px 0 6px;padding:16px 18px 15px;border-radius:20px;background:var(--surface,#fff);border:1px solid var(--border,#e2e8f0);box-shadow:0 12px 28px -16px rgba(14,116,144,.55);text-align:left;font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--text-strong,#0f172a)}
 #rgTargetLine .rg-tg-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
