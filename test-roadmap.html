@@ -10997,7 +10997,7 @@ function ivStartWatch(){
     if (!inlineVideoSeenMsg) ivListen();
     var ok = (inlineVideoState === 1 || inlineVideoState === 3);
     if (!ok && el >= 700 && Date.now() - inlineVideoLastPlay >= 700){ inlineVideoLastPlay = Date.now(); ivPost('playVideo'); }
-    if (inlineVideoSeenMsg && !ok && el >= 3200 && inlineVideoTries < 1){ inlineVideoTries++; ivMakeFrame(); return; }
+    /* auto-reload hata diya (test) */
     if (el > 12000){ ivReveal(); ivStopWatch(); }
   }, 250);
 }
