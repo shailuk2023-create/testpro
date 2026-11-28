@@ -20752,14 +20752,17 @@ function rgGardenCount(){ return (S.trees||[]).length; }
 function rgPlantTree(testId,d,ts){
   if(testId==='saved-quiz') return null; /* Saved Questions quiz test nahi hai — ped nahi */
   var t=d||todayStr();
-  if((S.trees||[]).some(function(tr){ return tr.d===t&&tr.testId===testId; })) return null;
+  /* ONE TEST = ONE TREE (user rule, 28 Nov 2026): ek test dobara kisi bhi din
+     do to naya ped nahi — dedup sirf testId se, (din, testId) se nahi. */
+  if((S.trees||[]).some(function(tr){ return tr.testId===testId; })) return null;
   var sp=GardenTrees.pickSpecies(S.trees.length); /* deterministic rotation, period 18 */
   var tr={sp:sp.id,d:t,testId:testId,ts:(typeof ts==='number'?ts:Date.now()),ex:S.exam};
   S.trees.push(tr); return tr;
 }
-/* Past-days backfill: store ke SAARE attempts se har (din, test) ka pehla attempt
+/* Past-days backfill: store ke SAARE attempts se har test ka PEHLA attempt
    nikalo (sirf aaj ka nahi) — kal/pichhle dinon ke tests ke ped bhi lagein.
-   Idempotent: dedup S.trees ke (d, testId) se hota hai; re-attempt = koi extra ped nahi. */
+   ONE TEST = ONE TREE (user rule, 28 Nov 2026): dedup sirf testId se — ek
+   test doosre din dobara dene par uska ped pehli date par hi rehta hai. */
 function rgDateStr(ts){ var d=new Date(ts); return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()); }
 function rgAllAttemptDays(){
   var st=null; try{ st=storeGet(); }catch(e){ return []; }
@@ -20772,7 +20775,7 @@ function rgAllAttemptDays(){
         if(!at||typeof at.ts!=='number') return;
         var d=rgDateStr(at.ts),id=at.testId||tid;
         if(id==='saved-quiz') return; /* Saved Questions quiz test nahi hai — ped nahi */
-        var k=d+'|'+id;
+        var k=id;
         if(!best[k]||at.ts<best[k].ts) best[k]={d:d,testId:id,ts:at.ts};
       });
     });
@@ -20786,13 +20789,25 @@ function rgBackfillPastTrees(){
   /* migration: pehle se lage Saved-Questions-quiz ped hatao (quiz test nahi hai) */
   var _sqN=S.trees.length;
   S.trees=S.trees.filter(function(tr){ return tr.testId!=='saved-quiz'; });
-  if(S.treeLayout&&S.trees.length!==_sqN){ Object.keys(S.treeLayout).forEach(function(k){ if(k.indexOf('|saved-quiz')!==-1) delete S.treeLayout[k]; }); }
-  var have={}; S.trees.forEach(function(tr){ have[tr.d+'|'+tr.testId]=1; });
+  /* migration (ONE TEST = ONE TREE, user rule 28 Nov 2026): pehle se lage
+     duplicate ped hatao — ek testId do dinon me ho to sirf sabse pehle wala
+     (earliest ts/date) rakho, baad wale hatao. Idempotent: dobara chalne par
+     kuch nahi badlega (31 -> 30 ped agle launch par apne aap). */
+  var _seen={},_dup=false;
+  S.trees=S.trees.slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); }).filter(function(tr){
+    if(_seen[tr.testId]){ _dup=true; return false; }
+    _seen[tr.testId]=1; return true;
+  });
+  if(S.treeLayout&&(_dup||S.trees.length!==_sqN)){
+    var _keep={}; S.trees.forEach(function(tr){ _keep[rgTreeKey(tr)]=1; });
+    Object.keys(S.treeLayout).forEach(function(k){ if(!_keep[k]) delete S.treeLayout[k]; });
+  }
+  var have={}; S.trees.forEach(function(tr){ have[tr.testId]=1; });
   var added=0;
   rgAllAttemptDays().forEach(function(c){
-    if(have[c.d+'|'+c.testId]) return;
+    if(have[c.testId]) return;
     var tr=null; try{ tr=rgPlantTree(c.testId,c.d,c.ts); }catch(e){}
-    if(tr){ have[c.d+'|'+c.testId]=1; added++; }
+    if(tr){ have[c.testId]=1; added++; }
   });
   return added;
 }
