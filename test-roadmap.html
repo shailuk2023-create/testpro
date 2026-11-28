@@ -20726,6 +20726,7 @@ function rgTreeKey(tr){ return tr.d+'|'+tr.testId; }
    (S.history) count me nahi — data intact hai, rendering/count se hata hai. */
 function rgGardenCount(){ return (S.trees||[]).length; }
 function rgPlantTree(testId,d,ts){
+  if(testId==='saved-quiz') return null; /* Saved Questions quiz test nahi hai — ped nahi */
   var t=d||todayStr();
   if((S.trees||[]).some(function(tr){ return tr.d===t&&tr.testId===testId; })) return null;
   var sp=GardenTrees.pickSpecies(S.trees.length); /* deterministic rotation, period 18 */
@@ -20745,7 +20746,9 @@ function rgAllAttemptDays(){
       var atts=[]; try{ atts=getAttempts(map[tid])||[]; }catch(e){}
       atts.forEach(function(at){
         if(!at||typeof at.ts!=='number') return;
-        var d=rgDateStr(at.ts),id=at.testId||tid,k=d+'|'+id;
+        var d=rgDateStr(at.ts),id=at.testId||tid;
+        if(id==='saved-quiz') return; /* Saved Questions quiz test nahi hai — ped nahi */
+        var k=d+'|'+id;
         if(!best[k]||at.ts<best[k].ts) best[k]={d:d,testId:id,ts:at.ts};
       });
     });
@@ -20756,6 +20759,10 @@ function rgAllAttemptDays(){
 }
 function rgBackfillPastTrees(){
   if(!S.trees) S.trees=[];
+  /* migration: pehle se lage Saved-Questions-quiz ped hatao (quiz test nahi hai) */
+  var _sqN=S.trees.length;
+  S.trees=S.trees.filter(function(tr){ return tr.testId!=='saved-quiz'; });
+  if(S.treeLayout&&S.trees.length!==_sqN){ Object.keys(S.treeLayout).forEach(function(k){ if(k.indexOf('|saved-quiz')!==-1) delete S.treeLayout[k]; }); }
   var have={}; S.trees.forEach(function(tr){ have[tr.d+'|'+tr.testId]=1; });
   var added=0;
   rgAllAttemptDays().forEach(function(c){
@@ -20816,7 +20823,7 @@ function rgCountTestToday(testId){
   }
   if(S.counted.ids.indexOf(testId)===-1){
     S.counted.ids.push(testId);
-    try{ rgPlantTree(testId); }catch(e){} /* ONE TEST = ONE TREE — S.today/target/streak untouched, parallel list */
+    if(testId!=='saved-quiz'){ try{ rgPlantTree(testId); }catch(e){} } /* ONE TEST = ONE TREE — Saved Questions quiz test nahi hai, ped nahi; target count waisa hi rahe */
     API.testDone(1);
   }
   save(); /* defense: same-day count/plant turant persist ho, API.testDone par nirbhar nahi */
