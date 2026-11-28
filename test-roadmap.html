@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head>
+<head><link rel="preconnect" href="https://www.youtube-nocookie.com"><link rel="preconnect" href="https://www.youtube.com"><link rel="preconnect" href="https://i.ytimg.com"><link rel="dns-prefetch" href="https://www.google.com">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0b7196">
@@ -10919,68 +10919,72 @@ function setInlineVideoRate(rate){
     try { inlineVideoPlayer.setPlaybackRate(rate); } catch (e) {}
   }
 }
-/* Ad-blocker ke saath pehli load par black screen aati hai -> play shuru hone ke ~1s baad
-   sirf video iframe ek baar auto-refresh hota hai (page nahi), phir sahi chalta hai. */
-var inlineVideoReloadTimer = null;
-function reloadInlineVideoOnce(){
-  inlineVideoReloadTimer = null;
-  var w = $('inlineVideoWrap'), fr = $('inlineVideoFrame');
-  if (!w || !fr) return;
-  var src = fr.src;
-  if (inlineVideoPlayer){ try { inlineVideoPlayer.destroy(); } catch (e) {} inlineVideoPlayer = null; }
-  var old = $('inlineVideoFrame');
-  if (old && old.parentNode) old.parentNode.removeChild(old);
+/* ===== Video solution: turant play, no thumbnail/play-button =====
+   YouTube iframe API script load nahi karte (ad-blocker/slow network me wahi atakta tha) —
+   iframe se seedha postMessage handshake karte hain. Play shuru na ho (black/unstarted)
+   to ~1.1s par playVideo dobara, ~2.8s par sirf video iframe fresh reload (max 2 baar). */
+var inlineVideoReloadTimer = null, inlineVideoState = -1, inlineVideoSrc = '', inlineVideoTries = 0,
+    inlineVideoSeenMsg = false, inlineVideoWatch = null, inlineVideoT0 = 0, inlineVideoLastPlay = 0;
+function ivPost(func, args){
+  var fr = $('inlineVideoFrame');
+  if (fr && fr.contentWindow){ try { fr.contentWindow.postMessage(JSON.stringify({event:'command', func:func, args:args || []}), '*'); } catch (e) {} }
+}
+function ivListen(){
+  var fr = $('inlineVideoFrame');
+  if (fr && fr.contentWindow){ try { fr.contentWindow.postMessage(JSON.stringify({event:'listening', id:1, channel:'widget'}), '*'); } catch (e) {} }
+}
+var ivShim = {
+  playVideo: function(){ ivPost('playVideo'); },
+  setPlaybackRate: function(r){ ivPost('setPlaybackRate', [r]); },
+  destroy: function(){}
+};
+window.addEventListener('message', function(ev){
+  var fr = $('inlineVideoFrame');
+  if (!fr || ev.source !== fr.contentWindow) return;
+  var d = ev.data;
+  if (typeof d === 'string'){ try { d = JSON.parse(d); } catch (e) { return; } }
+  if (!d || typeof d !== 'object') return;
+  inlineVideoSeenMsg = true;
+  if (d.event === 'onReady'){
+    inlineVideoApiState = 'ready'; setInlineSpeedButtons(true);
+    if (inlineVideoPendingRate !== null) ivPost('setPlaybackRate', [inlineVideoPendingRate]);
+    ivPost('playVideo');
+  } else if (d.event === 'onStateChange' && typeof d.info === 'number'){ inlineVideoState = d.info; }
+  else if (d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number'){ inlineVideoState = d.info.playerState; }
+});
+function ivMakeFrame(){
+  var w = $('inlineVideoWrap'); if (!w) return null;
+  var old = $('inlineVideoFrame'); if (old && old.parentNode) old.parentNode.removeChild(old);
   var nf = document.createElement('iframe');
-  nf.id = 'inlineVideoFrame'; nf.src = src; nf.title = 'Video solution'; nf.setAttribute('frameborder', '0');
+  nf.id = 'inlineVideoFrame'; nf.title = 'Video solution'; nf.setAttribute('frameborder', '0');
   nf.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
   nf.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin'); nf.setAttribute('allowfullscreen', '');
+  nf.addEventListener('load', ivListen);
+  nf.src = inlineVideoSrc;
   w.insertBefore(nf, w.firstChild);
-  setInlineSpeedButtons(false);
-  if (inlineVideoPosterTimer) clearTimeout(inlineVideoPosterTimer);
-  inlineVideoPosterTimer = setTimeout(hideInlineVideoPoster, 3500);
-  if (window.YT && window.YT.Player) createInlineVideoPlayer(); else loadInlineVideoApi();
+  inlineVideoState = -1; inlineVideoSeenMsg = false; inlineVideoT0 = Date.now(); inlineVideoLastPlay = 0;
+  inlineVideoApiState = 'loading'; setInlineSpeedButtons(false);
+  return nf;
 }
-function createInlineVideoPlayer(){
-  var fr = $('inlineVideoFrame');
-  if (!fr || !window.YT || !window.YT.Player) return;
-  try {
-    inlineVideoPlayer = new window.YT.Player(fr, {
-      events: {
-        onReady: function(){
-          inlineVideoApiState = 'ready';
-          setInlineSpeedButtons(true);
-          if (inlineVideoPendingRate !== null){
-            try { inlineVideoPlayer.setPlaybackRate(inlineVideoPendingRate); } catch (e) {}
-          }
-        },
-        onStateChange: function(ev){
-          if (window.YT && window.YT.PlayerState && ev.data === window.YT.PlayerState.PLAYING) hideInlineVideoPoster();
-        }
-      }
-    });
-  } catch (e) {
-    inlineVideoPlayer = null;
-    inlineVideoApiState = 'failed';
-  }
-}
-function loadInlineVideoApi(){
-  if (inlineVideoApiState !== 'idle') return;
-  inlineVideoApiState = 'loading';
-  window.onYouTubeIframeAPIReady = function(){ createInlineVideoPlayer(); };
-  var s = document.createElement('script');
-  s.src = 'https://www.youtube.com/iframe_api';
-  s.async = true;
-  s.onerror = function(){ inlineVideoApiState = 'failed'; };
-  document.head.appendChild(s);
+function ivStopWatch(){ if (inlineVideoWatch){ clearInterval(inlineVideoWatch); inlineVideoWatch = null; } }
+function ivStartWatch(){
+  ivStopWatch();
+  inlineVideoWatch = setInterval(function(){
+    if (!$('inlineVideoFrame')){ ivStopWatch(); return; }
+    var el = Date.now() - inlineVideoT0;
+    if (inlineVideoState === 1){ ivStopWatch(); return; }          /* PLAYING - kaam ho gaya */
+    if (!inlineVideoSeenMsg) ivListen();
+    var ok = (inlineVideoState === 1 || inlineVideoState === 3);
+    if (!ok && el >= 1100 && Date.now() - inlineVideoLastPlay >= 800){ inlineVideoLastPlay = Date.now(); ivPost('playVideo'); }
+    if (!ok && el >= 2800 && inlineVideoTries < 2){ inlineVideoTries++; ivMakeFrame(); return; }
+    if (el > 12000) ivStopWatch();
+  }, 250);
 }
 function closeInlineVideo(){
+  ivStopWatch();
   if (inlineVideoReloadTimer){ clearTimeout(inlineVideoReloadTimer); inlineVideoReloadTimer = null; }
   if (inlineVideoPosterTimer){ clearTimeout(inlineVideoPosterTimer); inlineVideoPosterTimer = null; }
-  if (inlineVideoPlayer){
-    try { inlineVideoPlayer.destroy(); } catch (e) {}
-    inlineVideoPlayer = null;
-  }
-  inlineVideoPendingRate = null;
+  inlineVideoPlayer = null; inlineVideoPendingRate = null; inlineVideoState = -1;
   var sp = $('inlineVideoSpeeds');
   if (sp) sp.classList.add('hidden');
   setInlineSpeedButtons(false);
@@ -10998,38 +11002,20 @@ function toggleInlineVideo(url){
   if (!m){ window.open(url, '_blank'); return; }
   var tm = url.match(/[?&]t=(\d+)/);
   var start = tm ? parseInt(tm[1], 10) : 0;
-  inlineVideoPlayer = null;
-  inlineVideoPendingRate = null;
+  inlineVideoPendingRate = null; inlineVideoTries = 0;
   markInlineSpeed(1);
-  setInlineSpeedButtons(false);
-  w.innerHTML = '<iframe id="inlineVideoFrame" src="https://www.youtube-nocookie.com/embed/' + m[1] +
-    '?start=' + start + '&autoplay=1&rel=0&enablejsapi=1&modestbranding=1" title="Video solution" frameborder="0" ' +
-    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
-    'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' +
-    '<img class="inline-video-poster" id="inlineVideoPoster" src="https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg" alt="Video thumbnail">' +
-    '<span class="inline-video-play" id="inlineVideoPlay">▶</span>';
+  inlineVideoSrc = 'https://www.youtube-nocookie.com/embed/' + m[1] + '?start=' + start +
+    '&autoplay=1&rel=0&enablejsapi=1&modestbranding=1&playsinline=1&widgetid=1' +
+    (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
+  w.innerHTML = '';
   w.classList.remove('hidden');
+  ivMakeFrame();
+  inlineVideoPlayer = ivShim;
   var sp = $('inlineVideoSpeeds');
   if (sp) sp.classList.remove('hidden');
   var vb = $('videoBtn');
   if (vb) vb.textContent = '✕ Hide Video';
-  /* poster: playback shuru hote hi hat jata hai (PLAYING event); 2.5s ka timeout
-     fallback hai - API load na ho ya autoplay block ho tab bhi poster hat jayega
-     aur YouTube ka apna play button dab sakta hai. Poster par tap karne se bhi
-     poster hat jata hai aur video play hoti hai. */
-  var posterTap = function(){
-    hideInlineVideoPoster();
-    if (inlineVideoPlayer && inlineVideoPlayer.playVideo){
-      try { inlineVideoPlayer.playVideo(); } catch (e) {}
-    }
-  };
-  var p = $('inlineVideoPoster'), pl = $('inlineVideoPlay');
-  if (p){ p.addEventListener('click', posterTap); p.onerror = function(){ p.style.display = 'none'; }; }
-  if (pl) pl.addEventListener('click', posterTap);
-  inlineVideoPosterTimer = setTimeout(hideInlineVideoPoster, 2500);
-  inlineVideoReloadTimer = setTimeout(reloadInlineVideoOnce, 1000);
-  if (window.YT && window.YT.Player) createInlineVideoPlayer();
-  else loadInlineVideoApi();
+  ivStartWatch();
 }
 /* speed pills: ek baar boot par wire karo (static markup hai) */
 document.querySelectorAll('#inlineVideoSpeeds .spd-btn').forEach(function(b){
