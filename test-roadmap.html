@@ -20965,16 +20965,17 @@ function rgComputeTarget(remaining,daysLeftIn){
   if(typeof daysLeftIn==='number'&&daysLeftIn>0) daysLeft=Math.max(1,Math.ceil(daysLeftIn));
   else { var ex=S.exams[S.exam]; if(ex) daysLeft=Math.max(1,Math.ceil((Date.parse(ex.date)-dayStart(Date.now()))/864e5)); }
   var eff=daysLeft>10?daysLeft-10:Math.max(1,daysLeft);
-  if(!(remaining>0)) return {today:0,avg:0,remaining:0,daysLeft:daysLeft,effDays:eff};
+  if(!(remaining>0)) return {today:0,avg:0,raw:0,remaining:0,daysLeft:daysLeft,effDays:eff};
   var raw=remaining/eff;
   var avg=Math.ceil(raw*2)/2;
   var today;
   if(avg%1===0) today=avg;
   else { var dnum=0; try{ dnum=Math.floor(Date.parse(todayStr())/864e5); }catch(e){} today=(dnum%2===0)?Math.floor(avg):Math.ceil(avg); }
   today=Math.max(1,today);
-  return {today:today,avg:avg,remaining:remaining,daysLeft:daysLeft,effDays:eff};
+  return {today:today,avg:avg,raw:raw,remaining:remaining,daysLeft:daysLeft,effDays:eff};
 }
 function rgFmtAvg(a){ return (a%1===0)?String(a):a.toFixed(1); }
+function rgFmtRatio(a){ var n=+a; if(!(n>0)) return '0.00'; return n.toFixed(2); }
 window.__rgComputeTarget=function(r,d){ try{ return rgComputeTarget(r,d); }catch(e){ return null; } };
 function rgSetBanner(n){
   var bn=$('rgAnyN'); if(!bn) return;
@@ -21060,9 +21061,10 @@ function rgRenderRoadmap(){
   API.setTarget(P.target);
   try{ rgSetBanner(P.target); }catch(e){}
   var tl=$('rgTargetLine');
+  var liveCt=null; try{ liveCt=rgComputeTarget(fresh.remaining); }catch(e){}
   if(tl) tl.textContent=(P.target===0)
     ? 'Sab tests complete ho gaye! Ab revision aur garden par dhyaan do.'
-    : 'Aaj ka target: '+P.target+' tests — exam se 10 din pehle sab khatam karne ke liye roz '+rgFmtAvg(P.avg!=null?P.avg:P.needed)+' tests chahiye ('+fresh.remaining+' tests baaki, '+(P.effDays||daysLeft)+' din)';
+    : 'Aaj ka target: '+P.target+' tests — exam se 10 din pehle sab khatam karne ke liye roz '+rgFmtRatio(liveCt?liveCt.raw:0)+' tests chahiye ('+fresh.remaining+' tests baaki, '+(liveCt?liveCt.effDays:(P.effDays||daysLeft))+' din)';
   var list=$('rgPlaylist'), doneN=0, nextTest=null;
   P.items.forEach(function(it){ if(isDone(it)) doneN++; else if(!nextTest&&it.kind==='test'){ nextTest=findTestById(it.testId); } });
   /* v116: tests done OUTSIDE the roadmap (Tests tab, any series/month/
@@ -21154,7 +21156,7 @@ function suPreview(){
   if(!d||!(left>0)){ pv.textContent='Date chuno, phir hum bata denge ki roz kitne tests karne honge.'; return; }
   var rem=0; try{ rem=rgBuildPlaylist().remaining; }catch(e){}
   var ct2=rgComputeTarget(rem,left);
-  var tgTxt=ct2.avg%1===0?(''+ct2.avg):(ct2.avg+' (ek din '+Math.floor(ct2.avg)+', agle din '+Math.ceil(ct2.avg)+')');
+  var tgTxt=ct2.avg%1===0?rgFmtRatio(ct2.raw):(rgFmtRatio(ct2.raw)+' (ek din '+Math.floor(ct2.avg)+', agle din '+Math.ceil(ct2.avg)+')');
    pv.innerHTML='Exam me <b>'+left+' din</b> baaki hain aur <b>'+rem+' tests</b> bache hain. Exam se 10 din pehle sab khatam karne ke liye roz ka target: <b>'+tgTxt+' tests</b>'+(rem===0?' — sab tests ho gaye!':'')+'.';
    var _fbP=rgFbExams&&rgFbExams[suSel];
    if(_fbP&&_fbP.official&&_fbP.date&&_fbP.date!==d){ pv.innerHTML+=' Official date <b>'+rgFmtDate(_fbP.date)+'</b> hai — upar se ek tap me lagao.'; }
