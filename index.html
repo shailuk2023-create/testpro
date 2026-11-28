@@ -20396,7 +20396,7 @@ function rgHeroDayList(){ var by=rgTreesByDay(),t=todayStr(),days=Object.keys(by
 function rgHeroDayLabel(d){ var t=todayStr(); if(d===t) return 'Aaj'; if(d===addDays(t,-1)) return 'Kal'; try{ return new Date(d+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}); }catch(e){ return d; } }
 function rgHeroSel(){
   var t=todayStr(),by=rgTreesByDay(),d=rgHeroDay||t;
-  if(!rgHeroDay){ var days=Object.keys(by).sort().reverse(); if(days.length&&!(by[t]&&by[t].length)) d=days[0]; }
+  /* default HAMESHA aaj: 0 tests par khaali gamla (empty-pot rule) — pichhle din ka ped khud se nahi dikhna chahiye; past days day-strip se dekhe jate hain */
   var list=by[d]||[];
   return {d:d,list:list,latest:list[0]||null};
 }
@@ -20725,12 +20725,45 @@ function rgTreeKey(tr){ return tr.d+'|'+tr.testId; }
 /* Garden me kul ped: sirf lagaye gaye trees (S.trees). Purane flower din
    (S.history) count me nahi — data intact hai, rendering/count se hata hai. */
 function rgGardenCount(){ return (S.trees||[]).length; }
-function rgPlantTree(testId){
-  var t=todayStr();
+function rgPlantTree(testId,d,ts){
+  var t=d||todayStr();
   if((S.trees||[]).some(function(tr){ return tr.d===t&&tr.testId===testId; })) return null;
   var sp=GardenTrees.pickSpecies(S.trees.length); /* deterministic rotation, period 18 */
-  var tr={sp:sp.id,d:t,testId:testId,ts:Date.now(),ex:S.exam};
+  var tr={sp:sp.id,d:t,testId:testId,ts:(typeof ts==='number'?ts:Date.now()),ex:S.exam};
   S.trees.push(tr); return tr;
+}
+/* Past-days backfill: store ke SAARE attempts se har (din, test) ka pehla attempt
+   nikalo (sirf aaj ka nahi) — kal/pichhle dinon ke tests ke ped bhi lagein.
+   Idempotent: dedup S.trees ke (d, testId) se hota hai; re-attempt = koi extra ped nahi. */
+function rgDateStr(ts){ var d=new Date(ts); return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()); }
+function rgAllAttemptDays(){
+  var st=null; try{ st=storeGet(); }catch(e){ return []; }
+  var best={};
+  ['tests','tests_ca','tests_ga'].forEach(function(sec){
+    var map=(st&&st[sec])||{};
+    Object.keys(map).forEach(function(tid){
+      var atts=[]; try{ atts=getAttempts(map[tid])||[]; }catch(e){}
+      atts.forEach(function(at){
+        if(!at||typeof at.ts!=='number') return;
+        var d=rgDateStr(at.ts),id=at.testId||tid,k=d+'|'+id;
+        if(!best[k]||at.ts<best[k].ts) best[k]={d:d,testId:id,ts:at.ts};
+      });
+    });
+  });
+  var out=Object.keys(best).map(function(k){ return best[k]; });
+  out.sort(function(a,b){ return (a.ts-b.ts)||((a.d<b.d)?-1:(a.d>b.d?1:0)); });
+  return out;
+}
+function rgBackfillPastTrees(){
+  if(!S.trees) S.trees=[];
+  var have={}; S.trees.forEach(function(tr){ have[tr.d+'|'+tr.testId]=1; });
+  var added=0;
+  rgAllAttemptDays().forEach(function(c){
+    if(have[c.d+'|'+c.testId]) return;
+    var tr=null; try{ tr=rgPlantTree(c.testId,c.d,c.ts); }catch(e){}
+    if(tr){ have[c.d+'|'+c.testId]=1; added++; }
+  });
+  return added;
 }
 function rgLayoutGet(e){ return e.tree?(S.treeLayout||{})[rgTreeKey(e)]:S.layout[e.d]; }
 function rgLayoutSet(e,cell){ if(e.tree){ if(!S.treeLayout) S.treeLayout={}; S.treeLayout[rgTreeKey(e)]=cell; } else S.layout[e.d]=cell; }
@@ -20791,6 +20824,7 @@ function rgCountTestToday(testId){
 window.rgCountTestToday=function(id){ try{ rgCountTestToday(id); }catch(e){} };
 function rgReconcileToday(){
   try{ sync(); }catch(e){}
+  try{ rgBackfillPastTrees(); }catch(e){} /* past days ke tests ke ped bhi lagein (idempotent, dedup guard) */
   var t=todayStr();
   if(!S.counted||S.counted.date!==t){
     var ids=rgTodayIds();
